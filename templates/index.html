@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentum Scanner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.3/lightweight-charts.standalone.production.js"></script>
+    <style>
+        /* ═══════════════════════════════════════════════════════
+           RESET & BASE
+           ═══════════════════════════════════════════════════════ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-card-hover: #1f2640;
+            --border: #2a3148;
+            --border-glow: #3b82f620;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --green: #22c55e;
+            --green-dim: #16a34a;
+            --green-bg: #22c55e15;
+            --red: #ef4444;
+            --red-dim: #dc2626;
+            --red-bg: #ef444415;
+            --blue: #3b82f6;
+            --blue-bg: #3b82f615;
+            --amber: #f59e0b;
+            --amber-bg: #f59e0b15;
+            --purple: #a78bfa;
+            --cyan: #22d3ee;
+            --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ═══════════════════════════════════════════════════════
+           HEADER
+           ═══════════════════════════════════════════════════════ */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.scanning {
+            background: var(--amber);
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font);
+        }
+
+        .btn:hover { background: var(--bg-card-hover); border-color: var(--blue); }
+        .btn.primary { background: var(--blue); border-color: var(--blue); }
+        .btn.primary:hover { background: #2563eb; }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
+
+        /* ═══════════════════════════════════════════════════════
+           MAIN LAYOUT
+           ═══════════════════════════════════════════════════════ */
+        .main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
+
+        /* ── Stats Bar ────────────────────────────────────────── */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: var(--mono);
+        }
+
+        .stat-value.green { color: var(--green); }
+        .stat-value.amber { color: var(--amber); }
+        .stat-value.blue { color: var(--blue); }
+
+        /* ── Signal Cards ─────────────────────────────────────── */
+        .signals-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .signal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .signal-card:hover {
+            border-color: var(--blue);
+            box-shadow: 0 0 30px var(--border-glow);
+        }
+
+        .signal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .signal-ticker-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .signal-ticker {
+            font-size: 22px;
+            font-weight: 700;
+            font-family: var(--mono);
+            letter-spacing: -0.5px;
+        }
+
+        .signal-price {
+            font-size: 18px;
+            font-family: var(--mono);
+            color: var(--text-secondary);
+        }
+
+        .signal-badges {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: var(--mono);
+        }
+
+        .badge.score {
+            background: var(--green-bg);
+            color: var(--green);
+            border: 1px solid var(--green-dim);
+            font-size: 14px;
+            padding: 6px 14px;
+        }
+
+        .badge.rvol {
+            background: var(--blue-bg);
+            color: var(--blue);
+            border: 1px solid #3b82f640;
+        }
+
+        .badge.sentiment-pos {
+            background: var(--green-bg);
+            color: var(--green);
+            border: 1px solid var(--green-dim);
+        }
+
+        .badge.sentiment-neg {
+            background: var(--red-bg);
+            color: var(--red);
+            border: 1px solid var(--red-dim);
+        }
+
+        .badge.sentiment-neutral {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        /* ── Signal Body (collapsible) ────────────────────────── */
+        .signal-body {
+            display: none;
+            padding: 24px;
+        }
+
+        .signal-card.expanded .signal-body { display: block; }
+
+        .signal-body-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .signal-body-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ── Chart Container ──────────────────────────────────── */
+        .chart-container {
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        /* ── Trade Levels ─────────────────────────────────────── */
+        .trade-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .level-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .level-row.entry { background: var(--blue-bg); border-color: #3b82f640; }
+        .level-row.target { background: var(--green-bg); border-color: var(--green-dim); }
+        .level-row.stop { background: var(--red-bg); border-color: var(--red-dim); }
+
+        .level-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .level-row.entry .level-label { color: var(--blue); }
+        .level-row.target .level-label { color: var(--green); }
+        .level-row.stop .level-label { color: var(--red); }
+
+        .level-value {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: var(--mono);
+        }
+
+        .level-row.entry .level-value { color: var(--blue); }
+        .level-row.target .level-value { color: var(--green); }
+        .level-row.stop .level-value { color: var(--red); }
+
+        .level-detail {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: var(--mono);
+        }
+
+        /* ── Position Sizing ──────────────────────────────────── */
+        .position-info {
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-top: 8px;
+        }
+
+        .position-info-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .position-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 13px;
+        }
+
+        .position-row .label { color: var(--text-secondary); }
+        .position-row .value { font-family: var(--mono); font-weight: 600; }
+
+        /* ── Technical Details ─────────────────────────────────── */
+        .tech-details {
+            margin-top: 16px;
+        }
+
+        .tech-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tech-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: background 0.2s;
+        }
+
+        .tech-row:hover { background: var(--bg-secondary); }
+
+        .tech-indicator {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 60px;
+        }
+
+        .tech-status {
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex: 1;
+            margin: 0 16px;
+        }
+
+        .tech-score-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .tech-score-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .tech-score-fill.bullish { background: var(--green); }
+        .tech-score-fill.bearish { background: var(--red); }
+
+        /* ── News Section ──────────────────────────────────────── */
+        .news-section { margin-top: 20px; }
+
+        .news-item {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .news-item:hover { border-color: var(--text-muted); }
+
+        .news-headline {
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .news-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .news-sentiment {
+            font-weight: 600;
+        }
+
+        .news-sentiment.pos { color: var(--green); }
+        .news-sentiment.neg { color: var(--red); }
+
+        /* ── Reasoning ─────────────────────────────────────────── */
+        .reasoning {
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--cyan);
+        }
+
+        .reasoning-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--cyan);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .reasoning-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ── Empty State ───────────────────────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 80px 32px;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            max-width: 500px;
+            margin: 0 auto 24px;
+        }
+
+        /* ── Warning Banner ────────────────────────────────────── */
+        .warning-banner {
+            background: var(--amber-bg);
+            border: 1px solid #f59e0b40;
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--amber);
+        }
+
+        /* ── Footer ────────────────────────────────────────────── */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border);
+            margin-top: 48px;
+        }
+
+        /* ── Expand indicator ──────────────────────────────────── */
+        .expand-icon {
+            font-size: 18px;
+            color: var(--text-muted);
+            transition: transform 0.3s;
+        }
+
+        .signal-card.expanded .expand-icon { transform: rotate(180deg); }
+
+        /* ── Scrollbar ─────────────────────────────────────────── */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <span class="logo">Momentum Scanner</span>
+            <div class="header-status">
+                <span class="status-dot {{ 'scanning' if is_scanning else '' }}" id="statusDot"></span>
+                <span id="statusText">
+                    {% if is_scanning %}Scanning...{% else %}Last scan: {{ last_scan }}{% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="header-right">
+            <a href="/logic" class="nav-link">Algorithm Logic</a>
+            <button class="btn primary" onclick="triggerScan()" id="scanBtn">
+                Run Scan Now
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        {% if not has_finnhub_key %}
+        <div class="warning-banner">
+            <span>&#9888;</span>
+            <span>No Finnhub API key set. News sentiment is disabled. Get a free key at
+                <a href="https://finnhub.io" style="color: var(--amber); text-decoration: underline;">finnhub.io</a>
+                and set <code style="background: var(--bg-card); padding: 2px 6px; border-radius: 4px;">FINNHUB_API_KEY</code> environment variable.
+            </span>
+        </div>
+        {% endif %}
+
+        <!-- STATS BAR -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-label">Active Signals</div>
+                <div class="stat-value green" id="signalCount">{{ signals|length }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Top Score</div>
+                <div class="stat-value amber" id="topScore">
+                    {{ "%.1f"|format(signals[0].composite_score) if signals else "—" }}
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Scan Interval</div>
+                <div class="stat-value blue">{{ scan_interval }}m</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Universe</div>
+                <div class="stat-value" style="color: var(--purple);">S&P 500</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Risk Profile</div>
+                <div class="stat-value" style="color: var(--amber); font-size: 18px;">Aggressive</div>
+            </div>
+        </div>
+
+        <!-- SIGNALS -->
+        {% if signals %}
+        <div class="signals-grid" id="signalsGrid">
+            {% for signal in signals %}
+            <div class="signal-card" id="card-{{ signal.ticker }}">
+                <div class="signal-header" onclick="toggleCard('{{ signal.ticker }}')">
+                    <div class="signal-ticker-group">
+                        <span class="signal-ticker">{{ signal.ticker }}</span>
+                        <span class="signal-price">${{ "%.2f"|format(signal.price) }}</span>
+                    </div>
+                    <div class="signal-badges">
+                        {% if signal.sentiment_score > 0.15 %}
+                        <span class="badge sentiment-pos">Sentiment +{{ "%.0f"|format(signal.sentiment_score * 100) }}%</span>
+                        {% elif signal.sentiment_score < -0.15 %}
+                        <span class="badge sentiment-neg">Sentiment {{ "%.0f"|format(signal.sentiment_score * 100) }}%</span>
+                        {% else %}
+                        <span class="badge sentiment-neutral">Neutral</span>
+                        {% endif %}
+                        <span class="badge rvol">RVOL {{ "%.1f"|format(signal.rvol) }}x</span>
+                        <span class="badge score">{{ "%.0f"|format(signal.composite_score) }}</span>
+                        <span class="expand-icon">&#9660;</span>
+                    </div>
+                </div>
+
+                <div class="signal-body">
+                    <div class="signal-body-grid">
+                        <!-- LEFT: Chart + News -->
+                        <div>
+                            <div class="chart-container" id="chart-{{ signal.ticker }}"></div>
+
+                            {% if signal.news %}
+                            <div class="news-section">
+                                <div class="tech-section-title">Recent News</div>
+                                {% for news in signal.news %}
+                                <div class="news-item">
+                                    <div class="news-headline">
+                                        <a href="{{ news.url }}" target="_blank" style="color: inherit; text-decoration: none;">
+                                            {{ news.headline }}
+                                        </a>
+                                    </div>
+                                    <div class="news-meta">
+                                        <span>{{ news.source }}</span>
+                                        <span>{{ news.hours_ago }}h ago</span>
+                                        <span class="news-sentiment {{ 'pos' if news.sentiment > 0 else 'neg' if news.sentiment < 0 else '' }}">
+                                            {{ "%.0f"|format(news.sentiment * 100) }}% sentiment
+                                        </span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- RIGHT: Trade Levels + Technicals -->
+                        <div>
+                            <div class="trade-levels">
+                                <div class="tech-section-title">Trade Recommendation</div>
+                                <div class="level-row entry">
+                                    <div>
+                                        <div class="level-label">Entry</div>
+                                        <div class="level-detail">At current price</div>
+                                    </div>
+                                    <div class="level-value">${{ "%.2f"|format(signal.trade.entry) }}</div>
+                                </div>
+                                <div class="level-row target">
+                                    <div>
+                                        <div class="level-label">Target</div>
+                                        <div class="level-detail">+{{ "%.1f"|format(signal.trade.reward_pct) }}% ({{ signal.trade.risk_reward_ratio }}:1 R/R)</div>
+                                    </div>
+                                    <div class="level-value">${{ "%.2f"|format(signal.trade.target) }}</div>
+                                </div>
+                                <div class="level-row stop">
+                                    <div>
+                                        <div class="level-label">Stop Loss</div>
+                                        <div class="level-detail">-{{ "%.1f"|format(signal.trade.risk_pct) }}% ({{ signal.trade.atr_stop_multiplier if signal.trade.atr_stop_multiplier is defined else '2.0' }}x ATR)</div>
+                                    </div>
+                                    <div class="level-value">${{ "%.2f"|format(signal.trade.stop_loss) }}</div>
+                                </div>
+
+                                <div class="position-info">
+                                    <div class="position-info-title">Position Sizing (1% risk on $100K)</div>
+                                    <div class="position-row">
+                                        <span class="label">Shares</span>
+                                        <span class="value">{{ signal.trade.suggested_shares }}</span>
+                                    </div>
+                                    <div class="position-row">
+                                        <span class="label">Position Value</span>
+                                        <span class="value">${{ "{:,.0f}".format(signal.trade.position_value) }}</span>
+                                    </div>
+                                    <div class="position-row">
+                                        <span class="label">Max Risk</span>
+                                        <span class="value" style="color: var(--red);">${{ "{:,.0f}".format(signal.trade.risk_dollars) }}</span>
+                                    </div>
+                                    <div class="position-row">
+                                        <span class="label">ATR (14)</span>
+                                        <span class="value">${{ "%.2f"|format(signal.trade.atr) }}</span>
+                                    </div>
+                                    <div class="position-row">
+                                        <span class="label" style="color: var(--amber); font-weight: 600;">Close by 3:55 PM ET</span>
+                                        <span class="value" style="color: var(--amber);">Intraday only</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Technical Breakdown -->
+                            <div class="tech-details">
+                                <div class="tech-section-title">Technical Breakdown</div>
+                                {% for key, detail in signal.tech_details.items() %}
+                                <div class="tech-row">
+                                    <span class="tech-indicator">{{ key.upper() }}</span>
+                                    <span class="tech-status">{{ detail.status }}</span>
+                                    <div class="tech-score-bar">
+                                        <div class="tech-score-fill {{ 'bullish' if detail.bullish else 'bearish' }}"
+                                             style="width: {{ (detail.score / detail.max * 100)|int }}%"></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reasoning -->
+                    <div class="reasoning">
+                        <div class="reasoning-title">Why This Signal</div>
+                        <div class="reasoning-text" id="reasoning-{{ signal.ticker }}"></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            <h2>No Signals Yet</h2>
+            <p>Click "Run Scan Now" to scan the S&P 500 for momentum opportunities, or wait for the next scheduled scan.</p>
+            <button class="btn primary" onclick="triggerScan()" style="font-size: 15px; padding: 12px 28px;">
+                Run First Scan
+            </button>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        Momentum Scanner v3.0 &mdash; For educational and informational purposes only. Not financial advice. Always do your own research.
+    </footer>
+
+    <!-- ═══════════════════════════════════════════════════════
+         JAVASCRIPT
+         ═══════════════════════════════════════════════════════ -->
+    <script>
+        // Signal data from backend
+        const signals = {{ signals | tojson | safe }};
+
+        // Toggle card expand/collapse
+        function toggleCard(ticker) {
+            const card = document.getElementById(`card-${ticker}`);
+            const wasExpanded = card.classList.contains('expanded');
+            card.classList.toggle('expanded');
+
+            // Initialize chart on first expand
+            if (!wasExpanded) {
+                initChart(ticker);
+            }
+        }
+
+        // Initialize TradingView Lightweight Chart
+        function initChart(ticker) {
+            const signal = signals.find(s => s.ticker === ticker);
+            if (!signal || !signal.chart_data || signal.chart_data.length === 0) return;
+
+            const container = document.getElementById(`chart-${ticker}`);
+            if (container.dataset.initialized) return;
+            container.dataset.initialized = 'true';
+
+            const chart = LightweightCharts.createChart(container, {
+                layout: {
+                    background: { color: '#111827' },
+                    textColor: '#94a3b8',
+                    fontSize: 12,
+                },
+                grid: {
+                    vertLines: { color: '#1e293b' },
+                    horzLines: { color: '#1e293b' },
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                    vertLine: { color: '#3b82f640', width: 1, style: 0 },
+                    horzLine: { color: '#3b82f640', width: 1, style: 0 },
+                },
+                rightPriceScale: {
+                    borderColor: '#2a3148',
+                },
+                timeScale: {
+                    borderColor: '#2a3148',
+                    timeVisible: true,
+                    secondsVisible: false,
+                },
+            });
+
+            // Candlestick series
+            const candleSeries = chart.addCandlestickSeries({
+                upColor: '#22c55e',
+                downColor: '#ef4444',
+                borderUpColor: '#22c55e',
+                borderDownColor: '#ef4444',
+                wickUpColor: '#22c55e80',
+                wickDownColor: '#ef444480',
+            });
+            candleSeries.setData(signal.chart_data);
+
+            // Entry line
+            if (signal.trade) {
+                candleSeries.createPriceLine({
+                    price: signal.trade.entry,
+                    color: '#3b82f6',
+                    lineWidth: 2,
+                    lineStyle: 0,
+                    axisLabelVisible: true,
+                    title: 'ENTRY',
+                });
+                candleSeries.createPriceLine({
+                    price: signal.trade.target,
+                    color: '#22c55e',
+                    lineWidth: 1,
+                    lineStyle: 2,
+                    axisLabelVisible: true,
+                    title: 'TARGET',
+                });
+                candleSeries.createPriceLine({
+                    price: signal.trade.stop_loss,
+                    color: '#ef4444',
+                    lineWidth: 1,
+                    lineStyle: 2,
+                    axisLabelVisible: true,
+                    title: 'STOP',
+                });
+            }
+
+            // Volume series
+            const volumeSeries = chart.addHistogramSeries({
+                priceFormat: { type: 'volume' },
+                priceScaleId: '',
+            });
+            volumeSeries.priceScale().applyOptions({
+                scaleMargins: { top: 0.85, bottom: 0 },
+            });
+            volumeSeries.setData(signal.chart_data.map(d => ({
+                time: d.time,
+                value: d.volume,
+                color: d.close >= d.open ? '#22c55e30' : '#ef444430',
+            })));
+
+            chart.timeScale().fitContent();
+
+            // Generate reasoning text
+            generateReasoning(ticker, signal);
+        }
+
+        // Generate natural-language reasoning for each signal
+        function generateReasoning(ticker, signal) {
+            const el = document.getElementById(`reasoning-${ticker}`);
+            if (!el) return;
+
+            let parts = [];
+
+            // Technical summary
+            const ts = signal.technical_score;
+            if (ts >= 80) parts.push(`${ticker} shows a strong technical setup (score: ${ts}/100).`);
+            else if (ts >= 60) parts.push(`${ticker} has a solid technical setup (score: ${ts}/100).`);
+            else parts.push(`${ticker}'s technicals are moderate (score: ${ts}/100) but other factors compensate.`);
+
+            // EMA
+            const ema = signal.tech_details?.ema;
+            if (ema?.bullish) parts.push(ema.status + '.');
+
+            // RSI
+            const rsi = signal.tech_details?.rsi;
+            if (rsi) parts.push(`RSI at ${rsi.value} — ${rsi.status.toLowerCase()}.`);
+
+            // MACD
+            const macd = signal.tech_details?.macd;
+            if (macd?.bullish) parts.push(`MACD is ${macd.status.toLowerCase()}.`);
+
+            // Volume
+            parts.push(`Relative volume is ${signal.rvol}x the time-adjusted average — ${signal.rvol >= 2 ? 'very strong' : 'elevated'} institutional interest.`);
+
+            // Sentiment
+            if (signal.sentiment_score > 0.15) {
+                parts.push(`News sentiment is bullish (+${(signal.sentiment_score * 100).toFixed(0)}%), adding conviction.`);
+            } else if (signal.sentiment_score < -0.15) {
+                parts.push(`Note: news sentiment is negative (${(signal.sentiment_score * 100).toFixed(0)}%), but technicals and volume outweigh it.`);
+            }
+
+            // Trade
+            parts.push(`Entry at $${signal.trade.entry} with a ${signal.trade.risk_reward_ratio}:1 reward-to-risk ratio. Risk ${signal.trade.risk_pct}% to make ${signal.trade.reward_pct}%. Close position by 3:55 PM ET — no overnight holds.`);
+
+            el.textContent = parts.join(' ');
+        }
+
+        // Trigger manual scan
+        async function triggerScan() {
+            const btn = document.getElementById('scanBtn');
+            const dot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+
+            btn.disabled = true;
+            btn.textContent = 'Scanning...';
+            dot.classList.add('scanning');
+            statusText.textContent = 'Scanning S&P 500...';
+
+            try {
+                await fetch('/api/scan', { method: 'POST' });
+                // Poll for completion
+                let attempts = 0;
+                const poll = setInterval(async () => {
+                    attempts++;
+                    const resp = await fetch('/api/signals');
+                    const data = await resp.json();
+
+                    if (!data.is_scanning || attempts > 120) {
+                        clearInterval(poll);
+                        window.location.reload();
+                    }
+                }, 3000);
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = 'Run Scan Now';
+                dot.classList.remove('scanning');
+            }
+        }
+
+        // Auto-refresh every scan interval
+        setInterval(() => {
+            fetch('/api/signals')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.last_scan !== '{{ last_scan }}') {
+                        window.location.reload();
+                    }
+                })
+                .catch(() => {});
+        }, 60000);
+
+        // Expand first card automatically if there are signals
+        if (signals.length > 0) {
+            toggleCard(signals[0].ticker);
+        }
+    </script>
+</body>
+</html>

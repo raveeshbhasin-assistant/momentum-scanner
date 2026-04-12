@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Logic — Momentum Scanner</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --border: #2a3148;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --green: #22c55e;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --amber: #f59e0b;
+            --cyan: #22d3ee;
+            --purple: #a78bfa;
+            --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+            --mono: 'SF Mono', 'Fira Code', monospace;
+        }
+        body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font); line-height: 1.8; }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .logo {
+            font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-link {
+            color: var(--text-secondary); text-decoration: none; font-size: 13px;
+            font-weight: 500; padding: 8px 12px; border-radius: 6px; transition: all 0.2s;
+        }
+        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
+
+        .content { max-width: 900px; margin: 0 auto; padding: 48px 32px; }
+        h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+        h2 {
+            font-size: 20px; font-weight: 600; margin: 40px 0 16px;
+            color: var(--cyan); padding-bottom: 8px; border-bottom: 1px solid var(--border);
+        }
+        h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; color: var(--text-primary); }
+        p { color: var(--text-secondary); margin-bottom: 16px; font-size: 15px; }
+
+        .flow {
+            display: flex; flex-direction: column; gap: 0;
+            margin: 24px 0;
+        }
+        .flow-step {
+            display: flex; gap: 20px; align-items: flex-start;
+            padding: 20px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        .flow-step:first-child { border-radius: 12px 12px 0 0; }
+        .flow-step:last-child { border-radius: 0 0 12px 12px; }
+        .flow-step + .flow-step { border-top: none; }
+
+        .step-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; flex-shrink: 0;
+            font-family: var(--mono);
+        }
+        .step-1 .step-num { background: var(--blue); color: white; }
+        .step-2 .step-num { background: var(--purple); color: white; }
+        .step-3 .step-num { background: var(--amber); color: #000; }
+        .step-4 .step-num { background: var(--green); color: #000; }
+        .step-5 .step-num { background: var(--cyan); color: #000; }
+
+        .step-content h4 { font-size: 16px; margin-bottom: 6px; }
+        .step-content p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+
+        .formula {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 10px; padding: 16px 20px; margin: 16px 0;
+            font-family: var(--mono); font-size: 14px; color: var(--cyan);
+            overflow-x: auto;
+        }
+
+        .weight-bar {
+            display: flex; height: 32px; border-radius: 8px; overflow: hidden;
+            margin: 12px 0; border: 1px solid var(--border);
+        }
+        .weight-segment { display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 600; }
+        .w-tech { background: var(--blue); width: 65%; color: white; }
+        .w-sent { background: var(--amber); width: 25%; color: #000; }
+        .w-vol { background: var(--purple); width: 10%; color: white; }
+
+        .indicator-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0;
+        }
+        @media (max-width: 700px) { .indicator-grid { grid-template-columns: 1fr; } }
+
+        .indicator-card {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 10px; padding: 16px;
+        }
+        .indicator-card h5 {
+            font-size: 14px; font-weight: 600; margin-bottom: 4px;
+            font-family: var(--mono);
+        }
+        .indicator-card p { font-size: 13px; margin: 0; }
+        .indicator-card .params { font-family: var(--mono); font-size: 12px;
+            color: var(--cyan); margin-top: 6px; }
+
+        .risk-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        .risk-table th, .risk-table td {
+            padding: 10px 16px; text-align: left;
+            border-bottom: 1px solid var(--border); font-size: 14px;
+        }
+        .risk-table th { color: var(--text-muted); font-size: 12px;
+            text-transform: uppercase; letter-spacing: 1px; }
+        .risk-table td { color: var(--text-secondary); }
+        .risk-table code { font-family: var(--mono); color: var(--cyan);
+            background: var(--bg-card); padding: 2px 6px; border-radius: 4px; }
+
+        .footer {
+            text-align: center; padding: 24px; color: var(--text-muted);
+            font-size: 12px; border-top: 1px solid var(--border); margin-top: 48px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo" style="text-decoration: none;">Momentum Scanner</a>
+        <a href="/" class="nav-link">&larr; Back to Dashboard</a>
+    </header>
+
+    <main class="content">
+        <h1>Algorithm Logic</h1>
+        <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, and the risk management rules. Nothing is a black box.</p>
+
+        <h2>Signal Generation Pipeline</h2>
+        <div class="flow">
+            <div class="flow-step step-1">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h4>Volume Filter (Gate)</h4>
+                    <p>Fetch 5-minute candles for ~100 liquid S&P 500 stocks. Calculate time-of-day-adjusted Relative Volume (RVOL). Stocks with RVOL &lt; 1.5x are immediately discarded — insufficient institutional interest.</p>
+                </div>
+            </div>
+            <div class="flow-step step-2">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h4>Technical Scoring (65% weight)</h4>
+                    <p>Score each surviving stock on 5 technical dimensions: EMA alignment, RSI momentum zone, MACD trend, VWAP position, and Bollinger Band position. Each dimension gets 15-25 points, normalized to 0-100.</p>
+                </div>
+            </div>
+            <div class="flow-step step-3">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h4>News Sentiment Scoring (25% weight)</h4>
+                    <p>Pull recent news headlines from Finnhub. Score each headline with VADER (finance-tuned NLP). Apply recency decay: news &lt;15 min old gets full weight, &gt;1 hour old gets 30% weight. Aggregate into -1.0 to +1.0 sentiment score.</p>
+                </div>
+            </div>
+            <div class="flow-step step-4">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <h4>Composite Score &amp; Ranking</h4>
+                    <p>Composite = (Technical × 0.65) + (Sentiment × 0.25) + (Volume × 0.10). Stocks scoring below 60 are dropped. Top 10 are displayed, ranked by score.</p>
+                </div>
+            </div>
+            <div class="flow-step step-5">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                    <h4>Trade Level Calculation</h4>
+                    <p>For each signal: Entry = current price. Stop-loss = Entry − (ATR × 2.0). Target = Entry + (stop distance × 2.5). Position size = 1% account risk / stop distance. Hard close by 3:55 PM ET.</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>Composite Score Weights</h2>
+        <div class="weight-bar">
+            <div class="weight-segment w-tech">Technical 65%</div>
+            <div class="weight-segment w-sent">Sentiment 25%</div>
+            <div class="weight-segment w-vol">Vol 10%</div>
+        </div>
+
+        <h2>Technical Indicators</h2>
+        <div class="indicator-grid">
+            <div class="indicator-card">
+                <h5>EMA Alignment</h5>
+                <p>Bullish when 9-EMA &gt; 21-EMA &gt; 50-EMA. This confirms a multi-timeframe uptrend. Full points (25) for triple alignment, partial for 9 &gt; 21 only.</p>
+                <div class="params">Periods: 9, 21, 50</div>
+            </div>
+            <div class="indicator-card">
+                <h5>RSI Momentum</h5>
+                <p>Sweet spot is 55–75: strong momentum without being overbought. Below 50 is bearish. Above 75 is overbought — reduced conviction.</p>
+                <div class="params">Period: 14 | Zone: 55–75</div>
+            </div>
+            <div class="indicator-card">
+                <h5>MACD</h5>
+                <p>Histogram positive AND growing = bullish acceleration. Just positive = bullish but decelerating. Negative but improving = early reversal signal.</p>
+                <div class="params">Fast: 12 | Slow: 26 | Signal: 9</div>
+            </div>
+            <div class="indicator-card">
+                <h5>VWAP</h5>
+                <p>Volume-Weighted Average Price — the institutional benchmark. Price above VWAP = net buyers dominating. &gt;0.5% above = strong conviction.</p>
+                <div class="params">Intraday calculation</div>
+            </div>
+            <div class="indicator-card">
+                <h5>Bollinger Bands</h5>
+                <p>Position within bands indicates momentum. Upper half with room to run = bullish. Near upper band = possible breakout or exhaustion. Width indicates volatility regime.</p>
+                <div class="params">Period: 20 | Std Dev: 2.0</div>
+            </div>
+            <div class="indicator-card">
+                <h5>ATR (Risk Only)</h5>
+                <p>Average True Range measures volatility. Used to set stop-losses and profit targets dynamically — wider ATR = wider stops but also larger targets. Not scored directly.</p>
+                <div class="params">Period: 14 | Stop: 2.0× ATR</div>
+            </div>
+        </div>
+
+        <h2>Relative Volume (RVOL)</h2>
+        <p>RVOL compares current volume to the average volume at the same time of day over the past 20 sessions. This matters because volume naturally spikes at open (9:30–10:00 AM) and close (3:30–4:00 PM), and dips at midday. A simple daily average would show false positives in the morning and false negatives at noon.</p>
+        <div class="formula">
+            RVOL(now) = Volume(now) / Avg Volume(same time of day, past 20 days)<br><br>
+            Thresholds:<br>
+            &nbsp;&nbsp;&lt; 1.0x  → Below average (SKIP)<br>
+            &nbsp;&nbsp;1.5x   → Minimum for entry consideration<br>
+            &nbsp;&nbsp;2.0x+  → Strong institutional interest<br>
+            &nbsp;&nbsp;3.0x+  → Catalyst event likely
+        </div>
+
+        <h2>News Sentiment Scoring</h2>
+        <p>Headlines are scored using VADER (Valence Aware Dictionary for Sentiment Reasoning), enhanced with a finance-specific lexicon. Words like "bullish", "beat", "upgrade" get strong positive scores; "crash", "downgrade", "miss" get negative scores.</p>
+
+        <h3>Recency Decay</h3>
+        <p>Recent news matters more. A headline from 10 minutes ago gets full weight; one from 2 hours ago gets half weight.</p>
+        <div class="formula">
+            Weighted Sentiment = Raw Score × Recency Weight<br><br>
+            &lt; 15 min old  → 1.0× weight<br>
+            15–30 min     → 0.9×<br>
+            30–60 min     → 0.7×<br>
+            1–2 hours     → 0.5×<br>
+            &gt; 2 hours     → 0.3×
+        </div>
+
+        <h3>First-Order vs. Second-Order Impact</h3>
+        <p><strong>First-order:</strong> Direct effect on the company in the headline. Apple beats earnings → Apple stock moves. This is scored directly from the headline.</p>
+        <p><strong>Second-order:</strong> Spillover to related companies. Apple beats earnings → semiconductor suppliers (AVGO, QCOM) benefit from implied demand strength. The scanner tracks sector peer mappings and can flag when a peer has strong recent sentiment.</p>
+
+        <h2>Risk Management Rules</h2>
+        <table class="risk-table">
+            <thead>
+                <tr><th>Rule</th><th>Setting</th><th>Rationale</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Stop-Loss</td>
+                    <td><code>Entry − (ATR × 2.0)</code></td>
+                    <td>ATR-based stops adapt to volatility. 2× ATR gives room for normal noise while cutting losses on real reversals.</td>
+                </tr>
+                <tr>
+                    <td>Profit Target</td>
+                    <td><code>Entry + (stop × 2.5)</code></td>
+                    <td>2.5:1 reward-to-risk. You only need to win 30% of trades to be profitable at this ratio.</td>
+                </tr>
+                <tr>
+                    <td>Position Sizing</td>
+                    <td><code>1% account risk</code></td>
+                    <td>On a $100K account, max $1,000 loss per trade. Number of shares = $1,000 / stop distance.</td>
+                </tr>
+                <tr>
+                    <td>Hard Close</td>
+                    <td><code>3:55 PM ET</code></td>
+                    <td>No overnight holds. Overnight gaps, news, and after-hours moves create uncontrollable risk.</td>
+                </tr>
+                <tr>
+                    <td>RVOL Gate</td>
+                    <td><code>≥ 1.5×</code></td>
+                    <td>Low-volume moves are unreliable. RVOL filter ensures institutional participation.</td>
+                </tr>
+                <tr>
+                    <td>Min Score</td>
+                    <td><code>≥ 60/100</code></td>
+                    <td>Only trade high-conviction setups where technicals, sentiment, and volume align.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Data Sources</h2>
+        <table class="risk-table">
+            <thead>
+                <tr><th>Data</th><th>Source</th><th>Cost</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Price Candles (5-min)</td><td>yfinance (Yahoo Finance)</td><td>Free</td></tr>
+                <tr><td>News Headlines</td><td>Finnhub API</td><td>Free (60 calls/min)</td></tr>
+                <tr><td>Sentiment Scoring</td><td>VADER NLP (local)</td><td>Free</td></tr>
+                <tr><td>Technical Indicators</td><td>pandas-ta (local)</td><td>Free</td></tr>
+            </tbody>
+        </table>
+
+        <h2>Known Limitations</h2>
+        <p><strong>Free-tier data delays:</strong> yfinance data may be 1–15 minutes delayed. For truly real-time signals, upgrade to Polygon.io or Alpha Vantage ($50–$200/month).</p>
+        <p><strong>News coverage:</strong> Finnhub free tier covers major headlines but may miss niche or breaking news. Sentiment scoring is keyword-based (VADER), not deep-learning. It catches obvious sentiment but may miss sarcasm or complex narratives.</p>
+        <p><strong>Not financial advice:</strong> This scanner is an educational tool. Past technical patterns don't guarantee future results. Always do your own research and consider consulting a financial advisor.</p>
+    </main>
+
+    <footer class="footer">
+        Momentum Scanner v3.0 &mdash; Algorithm documentation. For educational purposes only.
+    </footer>
+</body>
+</html>
