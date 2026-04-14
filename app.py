@@ -47,14 +47,10 @@ is_scanning: bool = False
 # ═══════════════════════════════════════════════════════════════
 
 def scheduled_scan():
-    """Run by APScheduler every N minutes during market hours."""
+    """Run by APScheduler every 30 min during market hours (Mon-Fri 9 AM – 4:30 PM ET)."""
     global scan_results, last_scan_time, is_scanning
 
     now = datetime.now(config.ET)
-    hour, minute = now.hour, now.minute
-
-    # Only scan during market hours (ET)
-    # For now, we run scans regardless of time so you can test anytime
     logger.info("Running scheduled scan...")
     is_scanning = True
 
@@ -65,21 +61,8 @@ def scheduled_scan():
             logger.warning(f"Live scan error: {scan_err}")
             results = []
 
-        # During market hours, never fall back to demo data — show real results or empty
-        is_market_hours = (
-            now.weekday() < 5 and  # Mon-Fri
-            (now.hour > config.MARKET_OPEN_HOUR or
-             (now.hour == config.MARKET_OPEN_HOUR and now.minute >= config.MARKET_OPEN_MINUTE)) and
-            (now.hour < config.MARKET_CLOSE_HOUR or
-             (now.hour == config.MARKET_CLOSE_HOUR and now.minute == 0))
-        )
-
-        if not results and not is_market_hours:
-            # Outside market hours: show demo data for preview
-            logger.info("Outside market hours — using demo data for preview")
-            results = generate_demo_signals(count=8)
-        elif not results:
-            logger.warning("Live scan returned no results during market hours — no demo fallback")
+        if not results:
+            logger.warning("Live scan returned no results — no demo fallback during market hours")
 
         scan_results = results
         last_scan_time = now.strftime("%Y-%m-%d %I:%M:%S %p ET")
@@ -107,13 +90,17 @@ def scheduled_scan():
 
 
 # ── Scheduler Setup ───────────────────────────────────────────
-scheduler = BackgroundScheduler()
+scheduler = BackgroundScheduler(timezone=config.ET)
 scheduler.add_job(
     scheduled_scan,
-    "interval",
-    minutes=config.SCAN_INTERVAL_MINUTES,
+    "cron",
+    day_of_week="mon-fri",
+    hour="9-16",
+    minute="0,30",
+    timezone=config.ET,
     id="momentum_scan",
     max_instances=1,
+    misfire_grace_time=300,  # Allow 5-min grace if a run is slightly late
 )
 
 
@@ -121,7 +108,10 @@ scheduler.add_job(
 async def startup():
     scheduler.start()
     cleanup_old_files()
-    logger.info(f"Scheduler started: scanning every {config.SCAN_INTERVAL_MINUTES} minutes")
+    logger.info(
+        f"Scheduler started: scanning every 30 min, "
+        f"Mon-Fri 9:00 AM – 4:30 PM ET"
+    )
     logger.info(f"Dashboard running at http://localhost:{config.PORT}")
 
 
