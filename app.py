@@ -7,7 +7,7 @@ a professional trading dashboard.
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -19,6 +19,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import config
 from scanner import run_scan
 from demo_data import generate_demo_signals
+from history import add_signals_to_daily, load_daily_finds, get_history_days, cleanup_old_files
 
 # ── Logging ───────────────────────────────────────────────────
 logging.basicConfig(
@@ -49,10 +50,10 @@ def scheduled_scan():
     """Run by APScheduler every N minutes during market hours."""
     global scan_results, last_scan_time, is_scanning
 
-    now = datetime.now()
+    now = datetime.now(config.ET)
     hour, minute = now.hour, now.minute
 
-    # Only scan during market hours (ET) — adjust if your server is in a different timezone
+    # Only scan during market hours (ET)
     # For now, we run scans regardless of time so you can test anytime
     logger.info("Running scheduled scan...")
     is_scanning = True
@@ -63,12 +64,29 @@ def scheduled_scan():
         except Exception as scan_err:
             logger.warning(f"Live scan error: {scan_err}")
             results = []
-        # Fall back to demo data if live scan returns nothing (e.g., API blocked)
-        if not results:
-            logger.warning("Live scan returned no results — using demo data")
+
+        # During market hours, never fall back to demo data — show real results or empty
+        is_market_hours = (
+            now.weekday() < 5 and  # Mon-Fri
+            (now.hour > config.MARKET_OPEN_HOUR or
+             (now.hour == config.MARKET_OPEN_HOUR and now.minute >= config.MARKET_OPEN_MINUTE)) and
+            (now.hour < config.MARKET_CLOSE_HOUR or
+             (now.hour == config.MARKET_CLOSE_HOUR and now.minute == 0))
+        )
+
+        if not results and not is_market_hours:
+            # Outside market hours: show demo data for preview
+            logger.info("Outside market hours — using demo data for preview")
             results = generate_demo_signals(count=8)
+        elif not results:
+            logger.warning("Live scan returned no results during market hours — no demo fallback")
+
         scan_results = results
-        last_scan_time = now.strftime("%Y-%m-%d %H:%M:%S ET")
+        last_scan_time = now.strftime("%Y-%m-%d %I:%M:%S %p ET")
+
+        # Persist to daily cumulative finds (for /today and /history pages)
+        if results:
+            add_signals_to_daily(results)
 
         # Store in history
         scan_history.append({
@@ -102,6 +120,7 @@ scheduler.add_job(
 @app.on_event("startup")
 async def startup():
     scheduler.start()
+    cleanup_old_files()
     logger.info(f"Scheduler started: scanning every {config.SCAN_INTERVAL_MINUTES} minutes")
     logger.info(f"Dashboard running at http://localhost:{config.PORT}")
 
@@ -127,6 +146,7 @@ async def dashboard(request: Request):
             "scan_interval": config.SCAN_INTERVAL_MINUTES,
             "is_scanning": is_scanning,
             "has_finnhub_key": bool(config.FINNHUB_API_KEY),
+            "data_source": "FMP Real-Time" if config.FMP_API_KEY else "yfinance (15m delay)",
         },
     )
 
@@ -177,6 +197,39 @@ async def get_config():
         "volume_weight": config.VOLUME_WEIGHT,
         "ticker_count": len(config.SP500_LIQUID),
     }
+
+
+@app.get("/today", response_class=HTMLResponse)
+async def today_page(request: Request):
+    """Serve today's cumulative finds table."""
+    finds = load_daily_finds()
+    return templates.TemplateResponse(
+        request=request,
+        name="today.html",
+        context={
+            "finds": finds,
+            "find_count": len(finds),
+            "unique_tickers": len(set(f["ticker"] for f in finds)),
+        },
+    )
+
+
+@app.get("/history", response_class=HTMLResponse)
+async def history_page(request: Request):
+    """Serve multi-day history page."""
+    days = get_history_days()
+    return templates.TemplateResponse(
+        request=request,
+        name="history.html",
+        context={"days": days},
+    )
+
+
+@app.get("/api/today", response_class=JSONResponse)
+async def api_today():
+    """JSON API for today's cumulative finds."""
+    finds = load_daily_finds()
+    return {"finds": finds, "count": len(finds)}
 
 
 @app.get("/logic", response_class=HTMLResponse)

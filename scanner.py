@@ -4,11 +4,14 @@ Momentum Scanner Engine
 Scans S&P 500 stocks for intraday momentum opportunities.
 Combines technical analysis (65%), news sentiment (25%), and volume (10%)
 into a composite score, then generates entry/exit recommendations.
+
+Data source priority: FMP (real-time) → yfinance (free fallback)
 """
 
 import logging
 import time
 from datetime import datetime, timedelta
+import config as _config_module  # for ET timezone
 from typing import Optional
 
 import numpy as np
@@ -25,14 +28,39 @@ logger = logging.getLogger(__name__)
 
 
 # ═══════════════════════════════════════════════════════════════
-#  DATA FETCHING
+#  DATA FETCHING — FMP (primary) with yfinance fallback
 # ═══════════════════════════════════════════════════════════════
 
 def fetch_intraday_data(tickers: list[str], interval: str = "5m", days: int = 5) -> dict[str, pd.DataFrame]:
     """
-    Fetch intraday candle data for a list of tickers using yfinance.
+    Fetch intraday candle data for a list of tickers.
+    Uses FMP (real-time) when API key is available, falls back to yfinance.
     Returns dict of {ticker: DataFrame with OHLCV columns}.
-    Quick-fails if the first test batch returns no data (e.g., Yahoo blocked).
+    """
+    # Map yfinance-style interval to FMP-style
+    interval_map = {"5m": "5min", "1m": "1min", "15m": "15min", "30m": "30min", "1h": "1hour"}
+    fmp_interval = interval_map.get(interval, "5min")
+
+    if config.FMP_API_KEY:
+        logger.info("Using FMP for real-time intraday data")
+        try:
+            from fmp_data import fetch_intraday_data as fmp_fetch
+            data = fmp_fetch(tickers, interval=fmp_interval, days=days)
+            if data:
+                return data
+            logger.warning("FMP returned no data — falling back to yfinance")
+        except Exception as e:
+            logger.warning(f"FMP fetch failed: {e} — falling back to yfinance")
+
+    # Fallback: yfinance (15-min delayed, free)
+    logger.info("Using yfinance for intraday data (15-min delayed)")
+    return _fetch_intraday_yfinance(tickers, interval, days)
+
+
+def _fetch_intraday_yfinance(tickers: list[str], interval: str = "5m", days: int = 5) -> dict[str, pd.DataFrame]:
+    """
+    Fetch intraday candle data using yfinance (free, 15-min delayed).
+    Kept as fallback when FMP is unavailable.
     """
     data = {}
 
@@ -83,7 +111,7 @@ def fetch_intraday_data(tickers: list[str], interval: str = "5m", days: int = 5)
             continue
         time.sleep(0.5)  # Rate-limit courtesy
 
-    logger.info(f"Fetched intraday data for {len(data)} tickers")
+    logger.info(f"yfinance: Fetched intraday data for {len(data)} tickers")
     return data
 
 
@@ -302,6 +330,73 @@ def score_technicals(df: pd.DataFrame) -> tuple[float, dict]:
     return round(normalized, 1), details
 
 
+def calculate_pivot_levels(df: pd.DataFrame) -> dict:
+    """
+    Calculate Standard (Floor) Pivot Point resistance/support levels
+    from the prior trading day's High, Low, Close.
+    This mirrors how Barchart calculates its resistance levels.
+    """
+    try:
+        # Get the prior day's OHLC — group by date and take the second-to-last day
+        daily = df.copy()
+        daily["date"] = daily.index.date
+        grouped = daily.groupby("date").agg({"High": "max", "Low": "min", "Close": "last"})
+
+        if len(grouped) < 2:
+            return {}
+
+        # Prior day's values (second-to-last complete day)
+        prev_day = grouped.iloc[-2]
+        h = float(prev_day["High"])
+        l = float(prev_day["Low"])
+        c = float(prev_day["Close"])
+
+        # Standard Pivot Point formula
+        pivot = (h + l + c) / 3.0
+        r1 = (2.0 * pivot) - l
+        r2 = pivot + (h - l)
+        r3 = h + 2.0 * (pivot - l)
+        s1 = (2.0 * pivot) - h
+        s2 = pivot - (h - l)
+        s3 = l - 2.0 * (h - pivot)
+
+        return {
+            "pivot": round(pivot, 2),
+            "r1": round(r1, 2),
+            "r2": round(r2, 2),
+            "r3": round(r3, 2),
+            "s1": round(s1, 2),
+            "s2": round(s2, 2),
+            "s3": round(s3, 2),
+        }
+    except Exception:
+        return {}
+
+
+def find_nearest_resistance(pivot_levels: dict, entry_price: float) -> dict:
+    """
+    Find the nearest resistance level above the entry price.
+    Returns the level name and value.
+    """
+    if not pivot_levels:
+        return {"level": "N/A", "price": 0.0}
+
+    resistances = [
+        ("R1", pivot_levels.get("r1", 0)),
+        ("R2", pivot_levels.get("r2", 0)),
+        ("R3", pivot_levels.get("r3", 0)),
+    ]
+
+    # Filter to levels above entry, pick nearest
+    above = [(name, price) for name, price in resistances if price > entry_price]
+    if above:
+        nearest = min(above, key=lambda x: x[1])
+        return {"level": nearest[0], "price": nearest[1]}
+
+    # If price is above all resistance levels, return R3
+    return {"level": "Above R3", "price": resistances[-1][1]}
+
+
 def calculate_trade_levels(df: pd.DataFrame) -> dict:
     """
     Calculate entry, stop-loss, and profit target levels.
@@ -327,10 +422,17 @@ def calculate_trade_levels(df: pd.DataFrame) -> dict:
     risk_pct = round(stop_distance / entry * 100, 2)
     reward_pct = round((target - entry) / entry * 100, 2)
 
+    # Pivot point resistance levels (Barchart-style)
+    pivot_levels = calculate_pivot_levels(df)
+    nearest_resistance = find_nearest_resistance(pivot_levels, entry)
+
     return {
         "entry": entry,
         "stop_loss": stop_loss,
         "target": target,
+        "resistance_target": nearest_resistance["price"],
+        "resistance_level": nearest_resistance["level"],
+        "pivot_levels": pivot_levels,
         "stop_distance": stop_distance,
         "atr": round(atr, 2),
         "risk_pct": risk_pct,
@@ -398,7 +500,7 @@ def run_scan(tickers: Optional[list[str]] = None) -> list[dict]:
             latest = df.iloc[-1]
             signal = {
                 "ticker": ticker,
-                "timestamp": datetime.now().isoformat(),
+                "timestamp": datetime.now(_config_module.ET).isoformat(),
                 "price": round(float(latest["Close"]), 2),
                 "composite_score": round(composite, 1),
                 "technical_score": tech_score,

@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 
 import numpy as np
 
+from config import ET
+
 
 def generate_demo_signals(count: int = 6) -> list[dict]:
     """Generate realistic demo signals for dashboard preview."""
@@ -166,7 +168,7 @@ def _generate_chart_data(current_price: float, atr: float, trend: str) -> list[d
     data = []
 
     # Start time: today 9:30 AM
-    now = datetime.now()
+    now = datetime.now(ET)
     start = now.replace(hour=9, minute=30, second=0, microsecond=0)
     if now.hour < 9:
         start -= timedelta(days=1)
@@ -221,7 +223,7 @@ def _generate_chart_data(current_price: float, atr: float, trend: str) -> list[d
 
 def _generate_demo_news(ticker: str, sector: str, sentiment: float) -> list[dict]:
     """Generate plausible demo news headlines."""
-    now = datetime.now()
+    now = datetime.now(ET)
 
     bullish_headlines = [
         f"{ticker} shares surge on strong quarterly earnings beat",

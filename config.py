@@ -2,8 +2,16 @@
 Configuration for Momentum Scanner
 """
 import os
+from zoneinfo import ZoneInfo
+
+# ── Timezone ─────────────────────────────────────────────────
+ET = ZoneInfo("America/New_York")
 
 # ── Data Sources ──────────────────────────────────────────────
+# FMP: Starter plan — real-time quotes + 5-min intraday candles
+FMP_API_KEY = os.getenv("FMP_API_KEY", "")
+FMP_BASE_URL = "https://financialmodelingprep.com/stable"  # Post Aug-2025 stable API
+
 # Finnhub: Free tier (60 calls/min) for news + quotes
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY", "d7dv411r01qkuebibongd7dv411r01qkuebiboo0")
 
@@ -14,7 +22,7 @@ CANDLE_LOOKBACK_DAYS = 5            # yfinance free limit for intraday
 RVOL_LOOKBACK_DAYS = 20             # Days for avg volume baseline
 
 # ── Signal Thresholds ────────────────────────────────────────
-MIN_RVOL = 1.5                      # Minimum relative volume to consider
+MIN_RVOL = 1.33                     # Minimum relative volume (30%+ above avg)
 RSI_MOMENTUM_LOW = 55               # RSI lower bound for bullish momentum
 RSI_MOMENTUM_HIGH = 75              # RSI upper bound (avoid overbought)
 MIN_COMPOSITE_SCORE = 60            # Minimum score (0-100) to generate signal

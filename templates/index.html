@@ -561,6 +561,8 @@
             </div>
         </div>
         <div class="header-right">
+            <a href="/today" class="nav-link">Today's Finds</a>
+            <a href="/history" class="nav-link">History</a>
             <a href="/logic" class="nav-link">Algorithm Logic</a>
             <button class="btn primary" onclick="triggerScan()" id="scanBtn">
                 Run Scan Now
@@ -600,6 +602,10 @@
             <div class="stat-card">
                 <div class="stat-label">Universe</div>
                 <div class="stat-value" style="color: var(--purple);">S&P 500</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Data Source</div>
+                <div class="stat-value" style="color: {{ 'var(--green)' if 'Real-Time' in data_source else 'var(--amber)' }}; font-size: 16px;">{{ data_source }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Risk Profile</div>
@@ -673,11 +679,20 @@
                                 </div>
                                 <div class="level-row target">
                                     <div>
-                                        <div class="level-label">Target</div>
+                                        <div class="level-label">ATR Target</div>
                                         <div class="level-detail">+{{ "%.1f"|format(signal.trade.reward_pct) }}% ({{ signal.trade.risk_reward_ratio }}:1 R/R)</div>
                                     </div>
                                     <div class="level-value">${{ "%.2f"|format(signal.trade.target) }}</div>
                                 </div>
+                                {% if signal.trade.resistance_target and signal.trade.resistance_target > 0 %}
+                                <div class="level-row target" style="border-color: #a78bfa40; background: #a78bfa15;">
+                                    <div>
+                                        <div class="level-label" style="color: var(--purple);">Resistance ({{ signal.trade.resistance_level }})</div>
+                                        <div class="level-detail">Pivot point resistance — Barchart method</div>
+                                    </div>
+                                    <div class="level-value" style="color: var(--purple);">${{ "%.2f"|format(signal.trade.resistance_target) }}</div>
+                                </div>
+                                {% endif %}
                                 <div class="level-row stop">
                                     <div>
                                         <div class="level-label">Stop Loss</div>
@@ -843,6 +858,17 @@
                     axisLabelVisible: true,
                     title: 'STOP',
                 });
+                // Resistance target (pivot point)
+                if (signal.trade.resistance_target && signal.trade.resistance_target > 0) {
+                    candleSeries.createPriceLine({
+                        price: signal.trade.resistance_target,
+                        color: '#a78bfa',
+                        lineWidth: 1,
+                        lineStyle: 1,
+                        axisLabelVisible: true,
+                        title: signal.trade.resistance_level || 'RES',
+                    });
+                }
             }
 
             // Volume series
