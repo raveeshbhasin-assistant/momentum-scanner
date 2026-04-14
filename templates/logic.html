@@ -79,6 +79,7 @@
         .step-3 .step-num { background: var(--amber); color: #000; }
         .step-4 .step-num { background: var(--green); color: #000; }
         .step-5 .step-num { background: var(--cyan); color: #000; }
+        .step-6 .step-num { background: var(--red); color: white; }
 
         .step-content h4 { font-size: 16px; margin-bottom: 6px; }
         .step-content p { font-size: 14px; color: var(--text-secondary); margin: 0; }
@@ -137,7 +138,9 @@
 <body>
     <header class="header">
         <a href="/" class="logo" style="text-decoration: none;">Momentum Scanner</a>
-        <a href="/" class="nav-link">&larr; Back to Dashboard</a>
+        <a href="/" class="nav-link">&larr; Dashboard</a>
+        <a href="/today" class="nav-link">Today's Finds</a>
+        <a href="/history" class="nav-link">History</a>
     </header>
 
     <main class="content">
@@ -150,7 +153,7 @@
                 <div class="step-num">1</div>
                 <div class="step-content">
                     <h4>Volume Filter (Gate)</h4>
-                    <p>Fetch 5-minute candles for ~100 liquid S&P 500 stocks. Calculate time-of-day-adjusted Relative Volume (RVOL). Stocks with RVOL &lt; 1.5x are immediately discarded — insufficient institutional interest.</p>
+                    <p>Fetch 5-minute candles for ~100 liquid S&P 500 stocks via FMP real-time API (with yfinance fallback). Calculate time-of-day-adjusted Relative Volume (RVOL). Stocks with RVOL &lt; 1.33x are immediately discarded — insufficient institutional interest.</p>
                 </div>
             </div>
             <div class="flow-step step-2">
@@ -178,7 +181,14 @@
                 <div class="step-num">5</div>
                 <div class="step-content">
                     <h4>Trade Level Calculation</h4>
-                    <p>For each signal: Entry = current price. Stop-loss = Entry − (ATR × 2.0). Target = Entry + (stop distance × 2.5). Position size = 1% account risk / stop distance. Hard close by 3:55 PM ET.</p>
+                    <p>For each signal: Entry = current price. Stop-loss = Entry − (ATR × 2.0). ATR Target = Entry + (stop distance × 2.5). <strong>Resistance Target</strong> = nearest pivot-point resistance (R1/R2/R3) above entry, calculated from prior day's High/Low/Close using the Standard Floor Pivot formula. Position size = 1% account risk / stop distance. Hard close by 3:55 PM ET.</p>
+                </div>
+            </div>
+            <div class="flow-step step-6">
+                <div class="step-num">6</div>
+                <div class="step-content">
+                    <h4>Signal Persistence &amp; History</h4>
+                    <p>Every signal is saved to a cumulative daily log (Today's Finds). Signals accumulate across all scans throughout the day, giving a complete picture of what triggered. A 3-day rolling history is maintained so you can review patterns and compare across sessions. Files older than 3 days are automatically cleaned up.</p>
                 </div>
             </div>
         </div>
@@ -230,7 +240,7 @@
             RVOL(now) = Volume(now) / Avg Volume(same time of day, past 20 days)<br><br>
             Thresholds:<br>
             &nbsp;&nbsp;&lt; 1.0x  → Below average (SKIP)<br>
-            &nbsp;&nbsp;1.5x   → Minimum for entry consideration<br>
+            &nbsp;&nbsp;1.33x  → Minimum for entry consideration (v3.1 — lowered from 1.5x for wider coverage)<br>
             &nbsp;&nbsp;2.0x+  → Strong institutional interest<br>
             &nbsp;&nbsp;3.0x+  → Catalyst event likely
         </div>
@@ -252,6 +262,19 @@
         <h3>First-Order vs. Second-Order Impact</h3>
         <p><strong>First-order:</strong> Direct effect on the company in the headline. Apple beats earnings → Apple stock moves. This is scored directly from the headline.</p>
         <p><strong>Second-order:</strong> Spillover to related companies. Apple beats earnings → semiconductor suppliers (AVGO, QCOM) benefit from implied demand strength. The scanner tracks sector peer mappings and can flag when a peer has strong recent sentiment.</p>
+
+        <h2>Pivot Point Resistance Levels</h2>
+        <p>In addition to ATR-based targets, each signal includes the nearest <strong>Standard Floor Pivot</strong> resistance level above the entry price. This gives a Barchart-style overhead resistance estimate based on the prior day's price action.</p>
+        <div class="formula">
+            Pivot (P) = (High + Low + Close) / 3<br><br>
+            R1 = (2 × P) − Low<br>
+            R2 = P + (High − Low)<br>
+            R3 = High + 2 × (P − Low)<br><br>
+            S1 = (2 × P) − High<br>
+            S2 = P − (High − Low)<br>
+            S3 = Low − 2 × (High − P)
+        </div>
+        <p>The scanner finds the nearest R1, R2, or R3 above the current entry price and displays it as the <strong style="color: var(--purple);">Resistance Target</strong> (purple line on the chart). This helps you gauge how much room a trade has before hitting a natural ceiling.</p>
 
         <h2>Risk Management Rules</h2>
         <table class="risk-table">
@@ -281,8 +304,8 @@
                 </tr>
                 <tr>
                     <td>RVOL Gate</td>
-                    <td><code>≥ 1.5×</code></td>
-                    <td>Low-volume moves are unreliable. RVOL filter ensures institutional participation.</td>
+                    <td><code>≥ 1.33×</code></td>
+                    <td>Low-volume moves are unreliable. RVOL filter ensures institutional participation. Lowered from 1.5× in v3.1 to capture more setups while still filtering noise.</td>
                 </tr>
                 <tr>
                     <td>Min Score</td>
@@ -298,21 +321,26 @@
                 <tr><th>Data</th><th>Source</th><th>Cost</th></tr>
             </thead>
             <tbody>
-                <tr><td>Price Candles (5-min)</td><td>yfinance (Yahoo Finance)</td><td>Free</td></tr>
+                <tr><td>Price &amp; Quotes (real-time)</td><td>Financial Modeling Prep (FMP) — Stable API</td><td>$29/mo (Starter)</td></tr>
+                <tr><td>Price Candles (fallback)</td><td>yfinance (Yahoo Finance) — 15 min delay</td><td>Free</td></tr>
                 <tr><td>News Headlines</td><td>Finnhub API</td><td>Free (60 calls/min)</td></tr>
                 <tr><td>Sentiment Scoring</td><td>VADER NLP (local)</td><td>Free</td></tr>
-                <tr><td>Technical Indicators</td><td>pandas-ta (local)</td><td>Free</td></tr>
+                <tr><td>Technical Indicators</td><td>pandas-ta / ta (local)</td><td>Free</td></tr>
+                <tr><td>Pivot Resistance</td><td>Calculated locally from prior day OHLC</td><td>Free</td></tr>
             </tbody>
         </table>
 
         <h2>Known Limitations</h2>
-        <p><strong>Free-tier data delays:</strong> yfinance data may be 1–15 minutes delayed. For truly real-time signals, upgrade to Polygon.io or Alpha Vantage ($50–$200/month).</p>
+        <p><strong>Data source failover:</strong> FMP is the primary data source for real-time quotes and 5-minute candles. If the FMP API is unreachable or returns errors, the scanner automatically falls back to yfinance (15-minute delayed data). During market hours, demo data is never shown — if both sources fail, the scan returns empty rather than stale prices.</p>
+        <p><strong>FMP Starter plan limits:</strong> The Starter plan does not support batch-quote endpoints, so quotes are fetched one ticker at a time with rate limiting (4 calls/sec). A full S&P 100 scan takes ~25 seconds for quotes alone.</p>
+        <p><strong>Pivot accuracy:</strong> Pivot resistance levels require at least 2 days of intraday data to calculate (prior day's H/L/C). On the first day of scanning a new ticker or after extended market closures, pivots may be unavailable.</p>
+        <p><strong>History persistence:</strong> Daily finds are stored as JSON files on disk. On Railway (ephemeral filesystem), history is lost on redeploy. For persistent storage, a Railway volume mount is needed.</p>
         <p><strong>News coverage:</strong> Finnhub free tier covers major headlines but may miss niche or breaking news. Sentiment scoring is keyword-based (VADER), not deep-learning. It catches obvious sentiment but may miss sarcasm or complex narratives.</p>
         <p><strong>Not financial advice:</strong> This scanner is an educational tool. Past technical patterns don't guarantee future results. Always do your own research and consider consulting a financial advisor.</p>
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.0 &mdash; Algorithm documentation. For educational purposes only.
+        Momentum Scanner v3.1 &mdash; Algorithm documentation. For educational purposes only.
     </footer>
 </body>
 </html>
