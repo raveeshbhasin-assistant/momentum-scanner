@@ -222,6 +222,83 @@ async def api_today():
     return {"finds": finds, "count": len(finds)}
 
 
+@app.get("/performance", response_class=HTMLResponse)
+async def performance_page(request: Request):
+    """Serve the performance tracker dashboard."""
+    trades, daily_summary = _load_trade_log()
+    return templates.TemplateResponse(
+        request=request,
+        name="performance.html",
+        context={
+            "trades": trades,
+            "daily_summary": daily_summary,
+        },
+    )
+
+
+def _load_trade_log() -> tuple[list[dict], list[dict]]:
+    """Read scanner_trade_log.xlsx and return (trades, daily_summary) for the dashboard."""
+    xlsx_path = BASE_DIR / "scanner_trade_log.xlsx"
+    if not xlsx_path.exists():
+        return [], []
+
+    try:
+        import openpyxl
+        wb = openpyxl.load_workbook(xlsx_path, data_only=True)
+        ws = wb["Trade Log"]
+
+        trades = []
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            if not row[0]:  # skip empty rows
+                continue
+            trades.append({
+                "date": str(row[0]),
+                "batch_time": str(row[1]) if row[1] else "",
+                "ticker": str(row[2]) if row[2] else "",
+                "entry_price": float(row[3]) if row[3] else 0,
+                "target": float(row[4]) if row[4] else 0,
+                "stop": float(row[5]) if row[5] else 0,
+                "rvol": float(row[6]) if row[6] else 0,
+                "rsi": float(row[7]) if row[7] else 0,
+                "score": float(row[8]) if row[8] else 0,
+                "result": str(row[9]) if row[9] else "",
+                "exit_price": float(row[10]) if row[10] else 0,
+                "pnl_dollar": float(row[11]) if row[11] else 0,
+                "pnl_pct": float(row[12]) if row[12] else 0,
+                "appearance": int(row[13]) if row[13] else 1,
+            })
+
+        # Build daily summary
+        from collections import defaultdict
+        by_day = defaultdict(list)
+        for t in trades:
+            by_day[t["date"]].append(t)
+
+        daily_summary = []
+        for day in sorted(by_day.keys()):
+            day_trades = by_day[day]
+            w = sum(1 for t in day_trades if t["result"] == "WIN")
+            l = sum(1 for t in day_trades if t["result"] == "LOSS")
+            e = sum(1 for t in day_trades if t["result"] == "EOD")
+            dec = w + l
+            daily_summary.append({
+                "date": day,
+                "total": len(day_trades),
+                "wins": w,
+                "losses": l,
+                "eods": e,
+                "win_rate": round(w / dec * 100, 1) if dec > 0 else 0,
+                "net_pnl": round(sum(t["pnl_dollar"] for t in day_trades), 2),
+            })
+
+        wb.close()
+        return trades, daily_summary
+
+    except Exception as e:
+        logger.error(f"Failed to load trade log: {e}")
+        return [], []
+
+
 @app.get("/logic", response_class=HTMLResponse)
 async def logic_page(request: Request):
     """Serve the algorithm logic explanation page."""

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Momentum Scanner</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.3/lightweight-charts.standalone.production.js"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         /* ═══════════════════════════════════════════════════════
            RESET & BASE
@@ -545,6 +545,56 @@
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* ═══════════════════════════════════════════════════════
+           MOBILE RESPONSIVE
+           ═══════════════════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            .header {
+                flex-wrap: wrap;
+                padding: 12px 16px;
+                gap: 10px;
+            }
+            .header-left { width: 100%; justify-content: space-between; }
+            .header-right {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 6px;
+                justify-content: center;
+            }
+            .nav-link { font-size: 12px; padding: 6px 8px; }
+            .btn { padding: 10px 16px; font-size: 14px; width: 100%; text-align: center; }
+            .btn.primary { order: -1; }
+            .logo { font-size: 18px; }
+            .main { padding: 16px 12px; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .stat-card { padding: 12px 14px; }
+            .stat-value { font-size: 18px; }
+            .stat-label { font-size: 10px; }
+            .signal-header { padding: 14px 16px; flex-wrap: wrap; gap: 8px; }
+            .signal-ticker-group { gap: 10px; }
+            .signal-ticker { font-size: 18px; }
+            .signal-price { font-size: 15px; }
+            .signal-badges { flex-wrap: wrap; gap: 6px; }
+            .badge { font-size: 11px; padding: 3px 8px; }
+            .badge.score { font-size: 12px; padding: 4px 10px; }
+            .signal-body { padding: 16px 12px; }
+            .signal-body-grid { grid-template-columns: 1fr; }
+            .chart-container { height: 250px; }
+            .level-value { font-size: 15px; }
+            .level-row { padding: 10px 12px; }
+            .position-info { padding: 12px; }
+            .tech-row { flex-wrap: wrap; gap: 4px; }
+            .tech-score-bar { width: 80px; }
+            .reasoning { padding: 12px 14px; }
+            .reasoning-text { font-size: 13px; }
+            .warning-banner { font-size: 12px; padding: 10px 14px; }
+        }
+
+        @media (max-width: 400px) {
+            .stats-bar { grid-template-columns: 1fr; }
+            .signal-badges { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -563,6 +613,7 @@
         <div class="header-right">
             <a href="/today" class="nav-link">Today's Finds</a>
             <a href="/history" class="nav-link">History</a>
+            <a href="/performance" class="nav-link">Performance</a>
             <a href="/logic" class="nav-link">Algorithm Logic</a>
             <button class="btn primary" onclick="triggerScan()" id="scanBtn">
                 Run Scan Now
@@ -790,102 +841,133 @@
         // Initialize TradingView Lightweight Chart
         function initChart(ticker) {
             const signal = signals.find(s => s.ticker === ticker);
-            if (!signal || !signal.chart_data || signal.chart_data.length === 0) return;
+            if (!signal || !signal.chart_data || signal.chart_data.length === 0) {
+                // Show a message instead of blank box
+                const container = document.getElementById(`chart-${ticker}`);
+                if (container && !container.dataset.initialized) {
+                    container.dataset.initialized = 'true';
+                    container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:13px;">Chart data unavailable</div>';
+                }
+                return;
+            }
 
             const container = document.getElementById(`chart-${ticker}`);
             if (container.dataset.initialized) return;
+
+            // Wait for container to have dimensions (mobile expand animation)
+            if (container.offsetWidth === 0) {
+                requestAnimationFrame(() => initChart(ticker));
+                return;
+            }
             container.dataset.initialized = 'true';
 
-            const chart = LightweightCharts.createChart(container, {
-                layout: {
-                    background: { color: '#111827' },
-                    textColor: '#94a3b8',
-                    fontSize: 12,
-                },
-                grid: {
-                    vertLines: { color: '#1e293b' },
-                    horzLines: { color: '#1e293b' },
-                },
-                crosshair: {
-                    mode: LightweightCharts.CrosshairMode.Normal,
-                    vertLine: { color: '#3b82f640', width: 1, style: 0 },
-                    horzLine: { color: '#3b82f640', width: 1, style: 0 },
-                },
-                rightPriceScale: {
-                    borderColor: '#2a3148',
-                },
-                timeScale: {
-                    borderColor: '#2a3148',
-                    timeVisible: true,
-                    secondsVisible: false,
-                },
-            });
-
-            // Candlestick series
-            const candleSeries = chart.addCandlestickSeries({
-                upColor: '#22c55e',
-                downColor: '#ef4444',
-                borderUpColor: '#22c55e',
-                borderDownColor: '#ef4444',
-                wickUpColor: '#22c55e80',
-                wickDownColor: '#ef444480',
-            });
-            candleSeries.setData(signal.chart_data);
-
-            // Entry line
-            if (signal.trade) {
-                candleSeries.createPriceLine({
-                    price: signal.trade.entry,
-                    color: '#3b82f6',
-                    lineWidth: 2,
-                    lineStyle: 0,
-                    axisLabelVisible: true,
-                    title: 'ENTRY',
-                });
-                candleSeries.createPriceLine({
-                    price: signal.trade.target,
-                    color: '#22c55e',
-                    lineWidth: 1,
-                    lineStyle: 2,
-                    axisLabelVisible: true,
-                    title: 'TARGET',
-                });
-                candleSeries.createPriceLine({
-                    price: signal.trade.stop_loss,
-                    color: '#ef4444',
-                    lineWidth: 1,
-                    lineStyle: 2,
-                    axisLabelVisible: true,
-                    title: 'STOP',
-                });
-                // Resistance target (pivot point)
-                if (signal.trade.resistance_target && signal.trade.resistance_target > 0) {
-                    candleSeries.createPriceLine({
-                        price: signal.trade.resistance_target,
-                        color: '#a78bfa',
-                        lineWidth: 1,
-                        lineStyle: 1,
-                        axisLabelVisible: true,
-                        title: signal.trade.resistance_level || 'RES',
-                    });
-                }
+            // Check if TradingView library loaded
+            if (typeof LightweightCharts === 'undefined') {
+                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:13px;">Chart library failed to load — try refreshing</div>';
+                return;
             }
 
-            // Volume series
-            const volumeSeries = chart.addHistogramSeries({
-                priceFormat: { type: 'volume' },
-                priceScaleId: '',
-            });
-            volumeSeries.priceScale().applyOptions({
-                scaleMargins: { top: 0.85, bottom: 0 },
-            });
-            volumeSeries.setData(signal.chart_data.map(d => ({
-                time: d.time,
-                value: d.volume,
-                color: d.close >= d.open ? '#22c55e30' : '#ef444430',
-            })));
+            try {
+                const chart = LightweightCharts.createChart(container, {
+                    width: container.clientWidth,
+                    height: container.clientHeight,
+                    layout: {
+                        background: { color: '#111827' },
+                        textColor: '#94a3b8',
+                        fontSize: 12,
+                    },
+                    grid: {
+                        vertLines: { color: '#1e293b' },
+                        horzLines: { color: '#1e293b' },
+                    },
+                    crosshair: {
+                        mode: LightweightCharts.CrosshairMode.Normal,
+                        vertLine: { color: '#3b82f640', width: 1, style: 0 },
+                        horzLine: { color: '#3b82f640', width: 1, style: 0 },
+                    },
+                    rightPriceScale: {
+                        borderColor: '#2a3148',
+                    },
+                    timeScale: {
+                        borderColor: '#2a3148',
+                        timeVisible: true,
+                        secondsVisible: false,
+                    },
+                });
 
-            chart.timeScale().fitContent();
+                // Candlestick series
+                const candleSeries = chart.addCandlestickSeries({
+                    upColor: '#22c55e',
+                    downColor: '#ef4444',
+                    borderUpColor: '#22c55e',
+                    borderDownColor: '#ef4444',
+                    wickUpColor: '#22c55e80',
+                    wickDownColor: '#ef444480',
+                });
+                candleSeries.setData(signal.chart_data);
+
+                // Entry line
+                if (signal.trade) {
+                    candleSeries.createPriceLine({
+                        price: signal.trade.entry,
+                        color: '#3b82f6',
+                        lineWidth: 2,
+                        lineStyle: 0,
+                        axisLabelVisible: true,
+                        title: 'ENTRY',
+                    });
+                    candleSeries.createPriceLine({
+                        price: signal.trade.target,
+                        color: '#22c55e',
+                        lineWidth: 1,
+                        lineStyle: 2,
+                        axisLabelVisible: true,
+                        title: 'TARGET',
+                    });
+                    candleSeries.createPriceLine({
+                        price: signal.trade.stop_loss,
+                        color: '#ef4444',
+                        lineWidth: 1,
+                        lineStyle: 2,
+                        axisLabelVisible: true,
+                        title: 'STOP',
+                    });
+                    // Resistance target (pivot point)
+                    if (signal.trade.resistance_target && signal.trade.resistance_target > 0) {
+                        candleSeries.createPriceLine({
+                            price: signal.trade.resistance_target,
+                            color: '#a78bfa',
+                            lineWidth: 1,
+                            lineStyle: 1,
+                            axisLabelVisible: true,
+                            title: signal.trade.resistance_level || 'RES',
+                        });
+                    }
+                }
+
+                // Volume series
+                const volumeSeries = chart.addHistogramSeries({
+                    priceFormat: { type: 'volume' },
+                    priceScaleId: '',
+                });
+                volumeSeries.priceScale().applyOptions({
+                    scaleMargins: { top: 0.85, bottom: 0 },
+                });
+                volumeSeries.setData(signal.chart_data.map(d => ({
+                    time: d.time,
+                    value: d.volume,
+                    color: d.close >= d.open ? '#22c55e30' : '#ef444430',
+                })));
+
+                chart.timeScale().fitContent();
+
+                // Store chart instance for resize handling
+                chart._container = container;
+                chartInstances[ticker] = chart;
+            } catch (err) {
+                console.error(`Chart error for ${ticker}:`, err);
+                container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:13px;padding:12px;text-align:center;">Chart rendering error: ${err.message}</div>`;
+            }
 
             // Generate reasoning text
             generateReasoning(ticker, signal);
@@ -975,6 +1057,19 @@
                 })
                 .catch(() => {});
         }, 60000);
+
+        // Track chart instances for resize handling
+        const chartInstances = {};
+
+        // Handle window resize — resize all active charts
+        window.addEventListener('resize', () => {
+            Object.values(chartInstances).forEach(chart => {
+                const container = chart._container;
+                if (container) {
+                    chart.applyOptions({ width: container.clientWidth });
+                }
+            });
+        });
 
         // Expand first card automatically if there are signals
         if (signals.length > 0) {

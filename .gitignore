@@ -3,3 +3,6 @@ __pycache__/
 .env
 *.egg-info/
 data/
+"scanner_trade_log.xlsx" 
+"April15_Scanner_Analysis.md" 
+"Momentum_Scanner_v3.1_Summary.pdf" 
