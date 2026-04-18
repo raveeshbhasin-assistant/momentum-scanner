@@ -20,8 +20,6 @@ import config
 from scanner import run_scan
 from demo_data import generate_demo_signals
 from history import add_signals_to_daily, load_daily_finds, get_history_days, cleanup_old_files
-from sector_rotation import detect_sector_rotation, get_sector_priority_tickers
-from premarket import run_premarket_scan, reset_daily as reset_premarket, get_premarket_flags
 
 # ── Logging ───────────────────────────────────────────────────
 logging.basicConfig(
@@ -31,7 +29,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.2")
+app = FastAPI(title="Momentum Scanner", version="3.0")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -42,101 +40,29 @@ scan_results: list[dict] = []
 last_scan_time: str = "Never"
 scan_history: list[dict] = []  # History of past scans
 is_scanning: bool = False
-_today_tickers_seen: set = set()  # For re-entry suppression
-_last_reset_date: str = ""        # Track daily reset
-_sector_priority: list[str] = []  # Current hot-sector tickers
 
 
 # ═══════════════════════════════════════════════════════════════
-#  SCANNER JOBS
+#  SCANNER JOB
 # ═══════════════════════════════════════════════════════════════
-
-def _reset_daily_state():
-    """Reset daily tracking state at start of each trading day."""
-    global _today_tickers_seen, _last_reset_date
-    today = datetime.now(config.ET).strftime("%Y-%m-%d")
-    if today != _last_reset_date:
-        _today_tickers_seen = set()
-        _last_reset_date = today
-        reset_premarket()
-        logger.info(f"Daily state reset for {today}")
-
-
-def premarket_scan_job():
-    """Run pre-market scan at 8:00 and 9:00 AM ET."""
-    _reset_daily_state()
-    logger.info("Running pre-market catalyst scan...")
-    try:
-        tickers = config.get_full_universe()
-        flagged = run_premarket_scan(tickers)
-        logger.info(f"Pre-market scan: {len(flagged)} tickers flagged")
-    except Exception as e:
-        logger.error(f"Pre-market scan failed: {e}")
-
-
-def sector_rotation_job():
-    """Detect sector rotation at 9:30 and periodically during the day."""
-    global _sector_priority
-    logger.info("Running sector rotation detection...")
-    try:
-        top_sectors = detect_sector_rotation(top_n=config.SECTOR_TOP_N)
-        _sector_priority = get_sector_priority_tickers(top_sectors)
-        sector_names = [s["sector"] for s in top_sectors]
-        logger.info(
-            f"Sector rotation: {sector_names} → "
-            f"{len(_sector_priority)} priority tickers"
-        )
-    except Exception as e:
-        logger.error(f"Sector rotation detection failed: {e}")
-
 
 def scheduled_scan():
     """Run by APScheduler every 30 min during market hours (Mon-Fri 9 AM – 4:30 PM ET)."""
     global scan_results, last_scan_time, is_scanning
 
     now = datetime.now(config.ET)
-    _reset_daily_state()
-
-    # ── DEAD ZONE FILTER: Skip lunch batches (0W/21L over 3 days) ──
-    batch_key = now.strftime("%H:%M")
-    # Map scheduler times to batch keys
-    dead_zone_times = {"11:30", "12:00"}  # scheduler fires at :00/:30
-    if batch_key in dead_zone_times:
-        logger.info(f"SKIP: {batch_key} is in the lunch dead zone (0W/21L). Skipping scan.")
-        return
-
     logger.info("Running scheduled scan...")
     is_scanning = True
 
     try:
         try:
-            results = run_scan(sector_priority=_sector_priority)
+            results = run_scan()
         except Exception as scan_err:
             logger.warning(f"Live scan error: {scan_err}")
             results = []
 
-        # ── RE-ENTRY SUPPRESSION: Mark and filter re-entries ──
-        if config.SUPPRESS_REENTRIES and results:
-            filtered = []
-            for signal in results:
-                ticker = signal["ticker"]
-                if ticker in _today_tickers_seen:
-                    signal["is_reentry"] = True
-                    logger.info(f"RE-ENTRY suppressed: {ticker} (already signaled today)")
-                    # Still record it but don't show in top signals
-                    continue
-                else:
-                    signal["is_reentry"] = False
-                    _today_tickers_seen.add(ticker)
-                    filtered.append(signal)
-            # Log what was filtered
-            suppressed = len(results) - len(filtered)
-            if suppressed > 0:
-                logger.info(f"Re-entry filter: {suppressed} signals suppressed, {len(filtered)} kept")
-            results = filtered
-
         if not results:
-            logger.warning("Live scan returned no results after filters")
+            logger.warning("Live scan returned no results — no demo fallback during market hours")
 
         scan_results = results
         last_scan_time = now.strftime("%Y-%m-%d %I:%M:%S %p ET")
@@ -165,8 +91,6 @@ def scheduled_scan():
 
 # ── Scheduler Setup ───────────────────────────────────────────
 scheduler = BackgroundScheduler(timezone=config.ET)
-
-# Main momentum scan: every 30 min during market hours
 scheduler.add_job(
     scheduled_scan,
     "cron",
@@ -176,31 +100,7 @@ scheduler.add_job(
     timezone=config.ET,
     id="momentum_scan",
     max_instances=1,
-    misfire_grace_time=300,
-)
-
-# Pre-market catalyst scan: 8:00 AM and 9:00 AM ET
-scheduler.add_job(
-    premarket_scan_job,
-    "cron",
-    day_of_week="mon-fri",
-    hour="8,9",
-    minute="0",
-    timezone=config.ET,
-    id="premarket_scan",
-    max_instances=1,
-)
-
-# Sector rotation: 9:30 AM then every hour
-scheduler.add_job(
-    sector_rotation_job,
-    "cron",
-    day_of_week="mon-fri",
-    hour="9-15",
-    minute="30",
-    timezone=config.ET,
-    id="sector_rotation",
-    max_instances=1,
+    misfire_grace_time=300,  # Allow 5-min grace if a run is slightly late
 )
 
 
@@ -209,9 +109,8 @@ async def startup():
     scheduler.start()
     cleanup_old_files()
     logger.info(
-        f"Scheduler started: v3.2 with sector rotation, pre-market scan, "
-        f"dead zone filter, and re-entry suppression. "
-        f"Mon-Fri 8:00 AM – 4:30 PM ET"
+        f"Scheduler started: scanning every 30 min, "
+        f"Mon-Fri 9:00 AM – 4:30 PM ET"
     )
     logger.info(f"Dashboard running at http://localhost:{config.PORT}")
 

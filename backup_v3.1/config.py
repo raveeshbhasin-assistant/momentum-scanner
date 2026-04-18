@@ -61,8 +61,9 @@ MARKET_CLOSE_MINUTE = 0
 HARD_CLOSE_HOUR = 15                # Recommend closing by 3:55 PM
 HARD_CLOSE_MINUTE = 55
 
-# ── Stock Universe ───────────────────────────────────────────
-# Core: Top ~100 liquid large-caps (original S&P 500 subset)
+# ── S&P 500 Universe ─────────────────────────────────────────
+# Top 100 most liquid S&P 500 stocks (full 500 is too slow on free tier)
+# These are the highest average daily volume stocks
 SP500_LIQUID = [
     "AAPL", "MSFT", "AMZN", "NVDA", "GOOGL", "META", "TSLA", "BRK-B",
     "UNH", "XOM", "JNJ", "JPM", "V", "PG", "MA", "HD", "CVX", "MRK",
@@ -76,47 +77,8 @@ SP500_LIQUID = [
     "USB", "PNC", "APD", "SHW", "ICE", "MMM", "EMR", "NOC", "FDX",
     "WM", "GM", "F", "RIVN", "SOFI", "PLTR", "COIN", "SQ", "SNAP",
     "UBER", "ABNB", "DKNG", "HOOD", "MARA", "ARM", "SMCI", "CRWD",
-    "NET", "PANW", "SNOW", "MDB",
+    "NET", "PANW", "SNOW", "MDB"
 ]
-
-# Extended: High-beta mid/small caps from thematic clusters
-# These are the stocks that move 3-10%+ intraday on sector rotation
-HIGH_BETA_EXTENDED = [
-    # Fiber optics / photonics (group chat's best cluster)
-    "AAOI", "LITE", "COHR", "SNDK", "CRDO", "GLW",
-    # AI infrastructure / data center
-    "ORCL", "DELL", "ANET", "MU", "MRVL",
-    # Crypto / fintech
-    "MSTR", "IREN", "APLD", "CRML",
-    # High-momentum mid-caps
-    "APP", "HIMS", "PATH", "FSLY", "MOD", "NBIS",
-    "DDOG", "NOW", "OKLO", "AEVA", "EOSE",
-]
-
-# Full scan universe = core + extended (deduped at runtime)
-def get_full_universe() -> list[str]:
-    """Return deduplicated full scan universe."""
-    seen = set()
-    result = []
-    for t in SP500_LIQUID + HIGH_BETA_EXTENDED:
-        if t not in seen:
-            result.append(t)
-            seen.add(t)
-    return result
-
-# ── Sector Rotation Settings ────────────────────────────────
-SECTOR_TOP_N = 3                     # How many top sectors to prioritize
-SECTOR_BOOST_POINTS = 8              # Score boost for tickers in hot sectors
-
-# ── Pre-Market Settings ─────────────────────────────────────
-PREMARKET_BOOST_CAP = 15             # Max score boost from pre-market flags
-PREMARKET_VOL_THRESHOLD = 2.0        # Min volume ratio to flag pre-market
-
-# ── Confirmed Filters (from 3-day analysis) ──────────────────
-# Lunch dead zone: 0 wins in 21 decided trades (p < 0.001)
-DEAD_ZONE_BATCHES = {"11:31", "12:01", "12:02"}
-# Re-entries: 1 win in 32 decided trades (3.1% WR)
-SUPPRESS_REENTRIES = True
 
 # ── Server ────────────────────────────────────────────────────
 HOST = "0.0.0.0"

@@ -278,32 +278,21 @@ def score_technicals(df: pd.DataFrame) -> tuple[float, dict]:
         else:
             details["macd"] = {"score": 0, "max": 20, "status": "Bearish & declining", "bullish": False}
 
-    # ── 4. VWAP Position + Crossover Detection (20 points) ────
-    # Upgraded: detect the MOMENT of VWAP crossover, not just position
-    max_score += 20
+    # ── 4. VWAP Position (15 points) ─────────────────────────
+    max_score += 15
     vwap = latest.get("VWAP")
-    prev_vwap = prev.get("VWAP") if len(df) >= 2 else None
-
     if pd.notna(vwap) and vwap > 0:
         price_vs_vwap = (latest["Close"] - vwap) / vwap * 100
-        prev_below = pd.notna(prev_vwap) and prev["Close"] < prev_vwap
-        now_above = latest["Close"] > vwap
-
-        if prev_below and now_above:
-            # VWAP crossover detected — this is the earliest signal
-            score += 20
-            details["vwap"] = {"score": 20, "max": 20,
-                               "status": f"VWAP CROSSOVER detected! Price just broke above VWAP", "bullish": True}
-        elif price_vs_vwap > 0.5:
+        if price_vs_vwap > 0.5:
             score += 15
-            details["vwap"] = {"score": 15, "max": 20,
+            details["vwap"] = {"score": 15, "max": 15,
                                "status": f"Price {price_vs_vwap:.1f}% above VWAP — strong", "bullish": True}
         elif price_vs_vwap > 0:
             score += 10
-            details["vwap"] = {"score": 10, "max": 20,
+            details["vwap"] = {"score": 10, "max": 15,
                                "status": f"Slightly above VWAP", "bullish": True}
         else:
-            details["vwap"] = {"score": 0, "max": 20,
+            details["vwap"] = {"score": 0, "max": 15,
                                "status": f"Below VWAP ({price_vs_vwap:.1f}%)", "bullish": False}
 
     # ── 5. Bollinger Band Position (20 points) ───────────────
@@ -459,33 +448,16 @@ def calculate_trade_levels(df: pd.DataFrame) -> dict:
 #  MAIN SCAN FUNCTION
 # ═══════════════════════════════════════════════════════════════
 
-def run_scan(tickers: Optional[list[str]] = None,
-             sector_priority: Optional[list[str]] = None) -> list[dict]:
+def run_scan(tickers: Optional[list[str]] = None) -> list[dict]:
     """
     Run a full momentum scan across all tickers.
     Returns a list of signal dicts, sorted by composite score descending.
-
-    v3.2 enhancements:
-    - Expanded universe (SP500 + high-beta extended)
-    - Sector rotation boost for tickers in hot sectors
-    - Pre-market catalyst boost (additive, never filters)
-    - VWAP crossover detection for earlier signals
     """
     if tickers is None:
-        tickers = config.get_full_universe()
+        tickers = config.SP500_LIQUID
 
     logger.info(f"Starting scan of {len(tickers)} tickers...")
     start_time = time.time()
-
-    # Import pre-market module for score boost
-    try:
-        from premarket import get_premarket_boost, is_premarket_flagged
-    except ImportError:
-        get_premarket_boost = lambda t: 0.0
-        is_premarket_flagged = lambda t: False
-
-    # Build set of sector-priority tickers for boost
-    sector_priority_set = set(sector_priority) if sector_priority else set()
 
     # Fetch data
     all_data = fetch_intraday_data(tickers, interval=config.CANDLE_INTERVAL, days=config.CANDLE_LOOKBACK_DAYS)
@@ -509,29 +481,14 @@ def run_scan(tickers: Optional[list[str]] = None,
             sentiment_score, news_items = get_sentiment_score(ticker)
 
             # Volume score (normalized RVOL, capped at 100)
-            # Penalize extreme RVOL > 5x (possible exhaustion)
-            if rvol > 5.0:
-                vol_score = min(rvol / 3.0 * 100, 100) * 0.7  # 30% penalty
-            else:
-                vol_score = min(rvol / 3.0 * 100, 100)
+            vol_score = min(rvol / 3.0 * 100, 100)
 
-            # Composite score (base)
+            # Composite score
             composite = (
                 tech_score * config.TECHNICAL_WEIGHT +
                 max(sentiment_score * 100, 0) * config.SENTIMENT_WEIGHT +
                 vol_score * config.VOLUME_WEIGHT
             )
-
-            # ── BOOST: Sector rotation ──────────────────────────
-            sector_boost = 0.0
-            if ticker in sector_priority_set:
-                sector_boost = config.SECTOR_BOOST_POINTS
-                composite += sector_boost
-
-            # ── BOOST: Pre-market catalyst ──────────────────────
-            pm_boost = get_premarket_boost(ticker)
-            if pm_boost > 0:
-                composite += pm_boost
 
             if composite < config.MIN_COMPOSITE_SCORE:
                 continue
@@ -550,12 +507,9 @@ def run_scan(tickers: Optional[list[str]] = None,
                 "sentiment_score": round(sentiment_score, 3),
                 "rvol": round(rvol, 2),
                 "volume_score": round(vol_score, 1),
-                "sector_boost": round(sector_boost, 1),
-                "premarket_boost": round(pm_boost, 1),
-                "is_premarket_flagged": is_premarket_flagged(ticker),
                 "tech_details": tech_details,
                 "trade": levels,
-                "news": news_items[:3],
+                "news": news_items[:3],  # Top 3 news items
                 "indicators": {
                     "rsi": round(float(latest.get("RSI", 0)), 1) if pd.notna(latest.get("RSI")) else None,
                     "ema_9": round(float(latest.get(f"EMA_{config.EMA_FAST}", 0)), 2) if pd.notna(latest.get(f"EMA_{config.EMA_FAST}")) else None,
