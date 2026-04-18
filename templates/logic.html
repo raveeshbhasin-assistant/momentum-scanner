@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.3</title>
+    <title>Algorithm Logic — Momentum Scanner v3.4.1</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -254,7 +254,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.3</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.4.1</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -264,18 +264,165 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-3" class="current">v3.3 (current)</a>
+            <a href="#v3-4-1" class="current">v3.4.1 (current)</a>
+            <a href="#v3-4">v3.4</a>
+            <a href="#v3-3-2">v3.3.2</a>
+            <a href="#v3-3">v3.3</a>
             <a href="#v3-2">v3.2</a>
             <a href="#v3-1">v3.1</a>
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.4.1 ───── -->
+        <div class="release current" id="v3-4-1">
+            <div class="release-header">
+                <span class="release-version">v3.4.1</span>
+                <span class="release-date">Released 2026-04-18</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"60-minute MAE check" — backtest-validated optional manual exit rule. No live scanner changes.</div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>New optional manual trading rule — the 60-minute MAE check.</strong> When running a trade on Fidelity, if <em>both</em> of the following are true at the 60-minute mark after entry, close the position flat:
+                        <ol style="margin: 4px 0 4px 24px;">
+                            <li>The stock at some point dropped more than <strong>0.75R</strong> below your entry (e.g., entry $100, stop $96 → R = $4 → threshold is $97 or lower), and</li>
+                            <li>The stock is <strong>still below your entry price</strong> at the 60-min candle close.</li>
+                        </ol>
+                        Over 20 trading days this rule would have saved <strong>$2,611</strong> across 10 manual exits, with only 2 false-positives (trades closed that would have turned positive).</li>
+                    <li><strong>MAE_EXIT simulator mode</strong> in <code>backtest.py</code> — codifies the rule above with constants <code>MAE_EXIT_BAR = 12</code> (bars), <code>MAE_EXIT_MAE_R = −0.75</code>, <code>MAE_EXIT_MAX_CUR_R = 0.0</code>. Stop and target checks still take priority at every bar.</li>
+                    <li><strong>Bar-8 and bar-12 MFE/MAE/R snapshots</strong> on every backtest trade for future rule research.</li>
+                    <li>Two additional exit variants simulated for comparison: <code>MFE_KILL</code> (close at bar 8 if MFE &lt; 0.3R — rejected, see below) and <code>TIGHT_ABANDON</code> (bar-12 chop + MAE &lt; −0.5R — worse than MAE_EXIT).</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Unchanged (important)</span>
+                <ul>
+                    <li><strong>Live scanner: untouched.</strong> scanner.py and config.py have zero v3.4 / v3.4.1 references. The 60-minute MAE rule is a <em>manual</em> rule the user applies at Fidelity — there is no automated closing.</li>
+                    <li>Backtest default exit remains FLAT (target / stop / EOD). MAE_EXIT is a simulator-only parallel track.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>How the rule was found (honest methodology):</strong>
+                <ol style="margin: 8px 0 8px 20px;">
+                    <li><strong>v3.4 hypothesis:</strong> "Close any trade whose MFE hasn't reached +0.3R by 40 min — should save ~$35–40K over 20 days" (based on the 48 trades that never exceed +0.5R MFE lifetime, which bleed $46K).</li>
+                    <li><strong>Implementation:</strong> added MFE_KILL as a parallel stream in the simulator, re-ran the 20-day backtest.</li>
+                    <li><strong>Reality check:</strong> MFE_KILL at 0.3R cost <strong>$6,149</strong>, not saved $35K. The rule closed 12 real winners that happened to be sitting below +0.3R at bar 8. The "48 never-profitable" trades don't identify themselves reliably that early — many poke above +0.3R then fade.</li>
+                    <li><strong>Parameter sweep:</strong> tested 8 MFE thresholds at bar 8 and 7 gate-combinations at bar 12. Best rule was <code>MAE &lt; −0.75R AND current R &lt; 0</code> at bar 12 — fires 11 times, 2 false-positives, saves $2,379.</li>
+                    <li><strong>Codified as MAE_EXIT</strong> and re-ran the simulation. Final: +$2,611 P&amp;L, $2,289 less drawdown, 10 fires, 2 false-positives.</li>
+                </ol>
+                <strong>Why MAE beats MFE as the signal:</strong> MFE answers "has the trade ever looked good?" — a noisy, high-false-positive question. MAE answers "has the trade actually gone against me?" — much more selective. Combined with a "not recovering" gate (current R &lt; 0), it catches genuine losers-in-progress without culling winners that briefly pulled back.
+            </div>
+
+            <div class="release-rationale" style="margin-top: 12px;">
+                <strong>Backtest headline — 20 trading days (2026-03-23 → 2026-04-17), 144 trades, moderate leader mode:</strong>
+                <table style="width:100%; margin-top:8px; border-collapse:collapse;">
+                    <tr style="background: rgba(255,255,255,0.04);">
+                        <th style="text-align:left; padding:6px;">Strategy</th>
+                        <th style="text-align:right; padding:6px;">WR</th>
+                        <th style="text-align:right; padding:6px;">P&amp;L</th>
+                        <th style="text-align:right; padding:6px;">Max DD</th>
+                        <th style="text-align:right; padding:6px;">Δ vs flat</th>
+                    </tr>
+                    <tr><td style="padding:6px;">FLAT <em>(live default)</em></td><td style="text-align:right;">47.9%</td><td style="text-align:right;">$+18,919</td><td style="text-align:right;">$19,775</td><td style="text-align:right;">—</td></tr>
+                    <tr><td style="padding:6px;">TIERED</td><td style="text-align:right;">54.2%</td><td style="text-align:right;">$+4,168</td><td style="text-align:right;">$17,176</td><td style="text-align:right; color: var(--red);">−$14,751</td></tr>
+                    <tr><td style="padding:6px;">ABANDON (1.3 rule)</td><td style="text-align:right;">45.8%</td><td style="text-align:right;">$+14,159</td><td style="text-align:right;">$11,269</td><td style="text-align:right; color: var(--red);">−$4,760</td></tr>
+                    <tr><td style="padding:6px;">COMBO (tiered + abandon)</td><td style="text-align:right;">52.1%</td><td style="text-align:right;">$+5,172</td><td style="text-align:right;">$10,515</td><td style="text-align:right; color: var(--red);">−$13,747</td></tr>
+                    <tr><td style="padding:6px;">MFE_KILL (0.3R @ bar 8)</td><td style="text-align:right;">41.7%</td><td style="text-align:right;">$+12,770</td><td style="text-align:right;">$18,448</td><td style="text-align:right; color: var(--red);">−$6,149</td></tr>
+                    <tr><td style="padding:6px;">TIGHT_ABANDON</td><td style="text-align:right;">41.0%</td><td style="text-align:right;">$+17,856</td><td style="text-align:right;">$15,385</td><td style="text-align:right; color: var(--red);">−$1,063</td></tr>
+                    <tr style="background: rgba(52,211,153,0.08);"><td style="padding:6px;"><strong>MAE_EXIT (60-min rule)</strong></td><td style="text-align:right;"><strong>46.5%</strong></td><td style="text-align:right;"><strong>$+21,530</strong></td><td style="text-align:right;"><strong>$17,486</strong></td><td style="text-align:right; color: var(--green);"><strong>+$2,611</strong></td></tr>
+                </table>
+            </div>
+
+            <div class="release-rationale" style="margin-top: 12px;">
+                <strong>Caveats:</strong> 10 fires over 20 days is a thin sample — the confidence interval on the $2,611 save is wide. The rule's long-run edge should be re-validated after another 40+ days of live data. Expected to remain positive because it rides a genuine causal signal (MAE is a leading indicator of stops), but the magnitude may shrink.
+            </div>
+        </div>
+
+        <!-- ───── v3.4 ───── -->
+        <div class="release" id="v3-4">
+            <div class="release-header">
+                <span class="release-version">v3.4</span>
+                <span class="release-date">Released 2026-04-18</span>
+            </div>
+            <div class="release-title">"Exit-strategy laboratory" — win redefined, MFE/MAE tracking, four parallel exit simulations.</div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Win definition redefined.</strong> A trade is now a "win" if final P&amp;L is positive, not only if the +2.5R target is hit. The old TARGET-hit rate is still reported as <code>target_hits</code> for reference. This surfaced that the scanner's real profitable rate was 46% (58/126), not the headline 26.2% — 37 EOD-win trades that banked +$27,541 were being mislabelled as not-wins.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>MFE / MAE tracking per trade</strong> — peak favorable and adverse excursion in R units, plus the bar index at which each peak occurred. Enables all subsequent exit-logic research.</li>
+                    <li><strong>TIERED exit simulation</strong> — 33% off at +1R (stop → breakeven) / 33% off at +1.75R (trailing stop on prev-bar low) / 33% runs to target or EOD.</li>
+                    <li><strong>ABANDON rule simulation ("1.3 rule")</strong> — if at bar 12 (60 min) the trade is inside ±0.5R of entry, close flat at the bar close.</li>
+                    <li><strong>COMBO simulation</strong> — TIERED exits + abandon rule applied only while no tranches have been banked.</li>
+                    <li>Aggregate <code>mfe_mae_stats</code>, <code>tiered_summary</code>, <code>abandon_summary</code>, <code>combo_summary</code> blocks on every backtest result.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> v3.3.2 cut the scanner's entry noise but left drawdowns sizable ($20K max in the baseline run) and the "real WR" question unresolved. This release was a pure exit-logic research pass to (a) get the true WR on the books and (b) quantify whether tiered exits / time-based abandonment would help.
+                <br><br>
+                <strong>Findings from the 20-day backtest:</strong>
+                <ul style="margin: 8px 0 8px 20px;">
+                    <li><strong>Tiered exits halve P&amp;L.</strong> WR jumps to 54.2% but total P&amp;L drops $14.7K because tiered caps every runner. Of 24 trades that hit ≥2R MFE, FLAT earned $54,836 vs TIERED $33,818 — a $21K giveaway.</li>
+                    <li><strong>The abandon rule (|R| &lt; 0.5 at bar 12) killed slow winners.</strong> BKNG on 2026-04-06 hit target at $+1,847 on bar 61 with MFE +2.50R; COMBO abandoned it at bar 12 for $−243. BRK-B on 2026-04-09: FLAT $+2,395, COMBO $+153.</li>
+                    <li><strong>The real leak is the 48 never-profitable trades</strong> (33% of volume, bleed $46K). They look identical to the profitable cohort at entry (same composite, tech, RVOL, leadership, regime) but differ in what happens in the first ~10 minutes: avg bars held 11.6 vs 38.3, avg MFE +0.18R vs +1.44R.</li>
+                </ul>
+                <strong>Conclusion:</strong> don't default to tiered or abandon — they both hurt P&amp;L. The exit-rule work is worth continuing, but with tighter, MAE-aware gates. See v3.4.1 above for the follow-up.
+            </div>
+        </div>
+
+        <!-- ───── v3.3.2 ───── -->
+        <div class="release" id="v3-3-2">
+            <div class="release-header">
+                <span class="release-version">v3.3.2</span>
+                <span class="release-date">Released 2026-04-18</span>
+            </div>
+            <div class="release-title">"Tighten the leak" — leadership promoted from score adjustment to hard gate, driven by a 20-day backtest.</div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Sector Leadership is now a hard filter, not a score boost.</strong> Default mode <code>LEADER_FILTER_MODE = "moderate"</code> admits only <strong>LEADER</strong> and <strong>SOLO_MOVER</strong> candidates. FOLLOWER, LAGGARD, and UNKNOWN are dropped at the filter stage. The +10 / 0 / −10 score adjustments are skipped — admitted tickers must still clear the raw composite min-score on their own merits.</li>
+                    <li><strong>SOLO_MOVER boost lowered</strong> from +3 to 0 (applied only in legacy <code>"score"</code> mode; irrelevant in moderate).</li>
+                    <li><strong>Backtest engine default</strong> <code>Filters.leader_filter_mode</code> flipped from <code>"score"</code> → <code>"moderate"</code> to match live behavior.</li>
+                    <li>Badge UI: LEADER/SOLO badges no longer show the "+N" number in hard-filter mode (adjustment is always 0).</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>Full sector mapping</strong> — all 137 scanner tickers now have a sector assignment (up from 80/137). Previously unmapped tickers (blue-chips like JNJ, COST, PG; v3.2 speculative adds like OKLO, AEVA, EOSE; fintech/auto names) are now classified by the leadership engine. Extended via <code>sector_rotation.SECTOR_ADDITIONAL_TICKERS</code> without polluting the sector-rotation priority list.</li>
+                    <li>Four selectable leader-filter modes: <code>"strict"</code> (LEADER only), <code>"moderate"</code> (LEADER + SOLO_MOVER, default), <code>"permissive"</code> (adds FOLLOWER), <code>"score"</code> (legacy v3.3 behaviour).</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> The 20-trading-day backtest (2026-03-23 → 2026-04-17, 137 tickers, 10-slot grid) made the flaw in v3.3's score-adjustment approach obvious:
+                <ul style="margin: 8px 0 8px 20px;">
+                    <li><strong>"score" mode</strong> — 337 trades, 18.9% WR, $15,184 P&amp;L, PF 1.09, max DD $22,993</li>
+                    <li><strong>"moderate" mode</strong> — 126 trades, 26.2% WR, $15,086 P&amp;L, PF 1.24, max DD $19,775</li>
+                </ul>
+                Same absolute P&amp;L, 211 fewer trades, better win rate, lower drawdown, cleaner profit factor. The +10 LEADER boost was letting marginal-technical leaders slip past the min-score gate — most damaging during ELEVATED/HIGH VIX regimes where 121 of those marginal trades bled ~$16k. Making leadership a gate (not a boost) lets the VIX regime filter properly suppress those periods.
+            </div>
+        </div>
+
         <!-- ───── v3.3 ───── -->
-        <div class="release current" id="v3-3">
+        <div class="release" id="v3-3">
             <div class="release-header">
                 <span class="release-version">v3.3</span>
                 <span class="release-date">Released 2026-04-18</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Superseded</span>
             </div>
             <div class="release-title">"Context awareness" — sector leadership, market regime via VIX, earnings calendar, and a standalone backtest page.</div>
 
@@ -564,10 +711,9 @@
             + Sector Rotation Boost:   up to +8 pts (if ticker is in top 3 sectors)<br>
             + Pre-Market Catalyst:     up to +15 pts (volume + news combo)<br>
             − RVOL Exhaustion Penalty: −30% of volume score if RVOL > 5×<br><br>
-            <span style="color: var(--amber);">v3.3 Context Adjustments:</span><br>
-            + Sector Leader (ticker > sector > SPY):  +10 pts<br>
-            + Solo Mover  (ticker up, sector flat):   +3 pts<br>
-            − Sector Laggard (sector up, ticker not): −10 pts<br>
+            <span style="color: var(--amber);">v3.3.2 Context Gates &amp; Adjustments:</span><br>
+            ⛔ Not LEADER and not SOLO_MOVER:         HARD DROP (v3.3.2)<br>
+            &nbsp;&nbsp;(strict/permissive overrides via config.LEADER_FILTER_MODE)<br>
             − Earnings Tomorrow BMO:                  −5 pts<br>
             ⛔ Earnings Today AMC + after 14:00 ET:   HARD BLOCK<br><br>
             <span style="color: var(--cyan);">Effective Min-Score (by VIX regime):</span><br>
@@ -662,18 +808,20 @@
         <p>Sector Rotation tells us <em>which sector is hot</em>. Sector Leadership tells us <em>whether this specific ticker is leading, following, or lagging its sector</em>. The two complement each other: a stock can be in a hot sector but still be a laggard within it — and those laggards historically underperform even in favorable conditions.</p>
 
         <h3>How It Works</h3>
-        <p>At scan time, the scanner compares three intraday % moves: the ticker's move since the open, its sector ETF's move, and SPY's move. The relative ordering produces a label and a score adjustment:</p>
+        <p>At scan time, the scanner compares three intraday % moves: the ticker's move since the open, its sector ETF's move, and SPY's move. The relative ordering produces a label:</p>
         <div class="formula">
-            LEADER      (ticker% &gt; sector% &gt; SPY%)       → +10 pts<br>
-            SOLO MOVER  (ticker &gt; SPY, sector &lt; SPY)      → +3 pts<br>
-            FOLLOWER    (ticker &gt; SPY, ≤ sector)           →  0 pts<br>
-            LAGGARD     (ticker weaker than its sector)    → −10 pts<br>
-            UNKNOWN     (sector ETF data unavailable)      →  0 pts<br><br>
-            Example: NVDA +2.1% &nbsp;|&nbsp; SMH +1.4% &nbsp;|&nbsp; SPY +0.5% → LEADER (+10)<br>
-            Example: AMD  +0.4% &nbsp;|&nbsp; SMH +1.4% &nbsp;|&nbsp; SPY +0.5% → LAGGARD (−10)
+            LEADER      (ticker% &gt; sector% &gt; SPY%)       → ADMIT<br>
+            SOLO MOVER  (ticker &gt; SPY, sector &lt; SPY)      → ADMIT<br>
+            FOLLOWER    (ticker &gt; SPY, ≤ sector)           → DROP<br>
+            LAGGARD     (ticker weaker than its sector)    → DROP<br>
+            UNKNOWN     (sector ETF data unavailable)      → DROP<br><br>
+            Example: NVDA +2.1% &nbsp;|&nbsp; SMH +1.4% &nbsp;|&nbsp; SPY +0.5% → LEADER (admit)<br>
+            Example: AMD  +0.4% &nbsp;|&nbsp; SMH +1.4% &nbsp;|&nbsp; SPY +0.5% → LAGGARD (drop)
         </div>
-        <p>This is a <strong>score adjustment, not a hard filter</strong> — a laggard with elite technicals can still signal, just at a downgrade. Classification is skipped in the first 15 minutes after the open (before 9:45 AM) because early-session % moves are noisy and misleading.</p>
-        <p>Pills on the dashboard and Today's Finds page show the label with a tooltip containing the three % numbers that drove the classification.</p>
+        <p><strong>As of v3.3.2 this is a hard filter</strong> — only LEADER and SOLO MOVER candidates survive to the composite-score stage. The earlier +10/+3/−10 score adjustments are no longer added; admitted tickers must clear the raw min-score on their own technical merits. A 20-day backtest showed the score-boost approach was letting marginal-technical leaders through and causing disproportionate bleed during ELEVATED/HIGH VIX regimes.</p>
+        <p>Classification is skipped in the first 15 minutes after the open (before 9:45 AM) because early-session % moves are noisy and misleading — during this window all tickers come back UNKNOWN and are dropped.</p>
+        <p>Operators can override via <code>config.LEADER_FILTER_MODE</code>: <code>"strict"</code> (LEADER only), <code>"moderate"</code> (default, LEADER + SOLO), <code>"permissive"</code> (adds FOLLOWER), <code>"score"</code> (legacy boost-not-gate behaviour).</p>
+        <p>All 137 scanner tickers are now sector-mapped (v3.3.2), so "UNKNOWN" should only appear in the opening-15-min window or when yfinance is unavailable.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
         <!--  v3.3  MARKET REGIME FILTER                            -->
@@ -824,6 +972,11 @@
                     <td>No overnight holds. Overnight gaps, news, and after-hours moves create uncontrollable risk.</td>
                 </tr>
                 <tr>
+                    <td>60-Min MAE Check <span class="new-badge">v3.4.1</span></td>
+                    <td><code>MAE ≤ −0.75R AND R &lt; 0</code></td>
+                    <td><strong>Manual Fidelity rule.</strong> 60 min after entry, if the stock at any point dropped more than 0.75R below entry AND is still below entry now, close flat. Backtest: +$2,611 / 20 days on 10 fires, 2 false positives.</td>
+                </tr>
+                <tr>
                     <td>RVOL Gate</td>
                     <td><code>≥ 1.33×</code></td>
                     <td>Low-volume moves are unreliable. RVOL filter ensures institutional participation.</td>
@@ -897,7 +1050,7 @@
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.3 &mdash; Algorithm documentation. For educational purposes only.
+        Momentum Scanner v3.4.1 &mdash; Algorithm documentation. For educational purposes only.
     </footer>
 </body>
 </html>

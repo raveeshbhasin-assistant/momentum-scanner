@@ -596,13 +596,26 @@ def run_scan(tickers: Optional[list[str]] = None,
             if pm_boost > 0:
                 composite += pm_boost
 
-            # ── ADJUST: Sector Leadership (v3.3) ────────────────
+            # ── FILTER / ADJUST: Sector Leadership (v3.3.2) ─────
+            # In "moderate" (default) / "strict" / "permissive" modes
+            # leadership is a HARD GATE: non-admitted labels are dropped
+            # entirely. In legacy "score" mode it only tweaks composite.
             ticker_pct = _calc_ticker_intraday_pct(df)
             leadership = classify_leadership(
                 ticker,
                 ticker_pct if ticker_pct is not None else 0.0,
             )
-            leader_adj = leadership.get("score_adjustment", 0)
+            _LEADER_ALLOWED = {
+                "score":      {"LEADER", "SOLO_MOVER", "FOLLOWER", "LAGGARD", "UNKNOWN"},
+                "strict":     {"LEADER"},
+                "moderate":   {"LEADER", "SOLO_MOVER"},
+                "permissive": {"LEADER", "SOLO_MOVER", "FOLLOWER"},
+            }
+            _mode = getattr(config, "LEADER_FILTER_MODE", "moderate")
+            if leadership.get("label") not in _LEADER_ALLOWED.get(_mode, _LEADER_ALLOWED["moderate"]):
+                continue  # hard-filter drop
+            # Score adjustment applies only in legacy "score" mode
+            leader_adj = leadership.get("score_adjustment", 0) if _mode == "score" else 0
             composite += leader_adj
 
             # ── ADJUST: Earnings context (v3.3) ─────────────────

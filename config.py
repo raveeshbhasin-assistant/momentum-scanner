@@ -111,13 +111,31 @@ SECTOR_BOOST_POINTS = 8              # Score boost for tickers in hot sectors
 # ── Sector Leadership (v3.3) ────────────────────────────────
 # Classify ticker vs its sector vs SPY:
 #   LEADER:     ticker% > sector% > SPY%   → +10
-#   SOLO_MOVER: ticker% > SPY% but sector < SPY (counter-trend) → +3
+#   SOLO_MOVER: ticker% > SPY% but sector < SPY (counter-trend) → 0 (tightened v3.3.1)
 #   FOLLOWER:   ticker% > SPY% but below sector → 0
 #   LAGGARD:    ticker% < sector% → -10
-# Score adjustment, NOT a hard filter.
+# Score adjustment applied ONLY when LEADER_FILTER_MODE == "score".
+# In "moderate" mode (v3.3.2 default) leadership becomes a HARD GATE:
+# only LEADER and SOLO_MOVER are admitted; score_adjustment is skipped.
 SECTOR_LEADER_BOOST = 10
-SECTOR_SOLO_BOOST = 3
+SECTOR_SOLO_BOOST = 0
 SECTOR_LAGGARD_PENALTY = -10
+
+# v3.3.2 — Leadership as hard filter
+# 20-day backtest (Mar 23 → Apr 17, 2026) showed the +10 LEADER boost
+# was letting marginal-technical leaders through the min-score gate
+# during ELEVATED/HIGH VIX regimes, where they bled ~$16k. Switching
+# LEADER + SOLO_MOVER to a hard filter tightens that leak:
+#   20d "score" mode:    337 trades / 18.9% WR / $15,184 / PF 1.09
+#   20d "moderate" mode: 126 trades / 26.2% WR / $15,086 / PF 1.24
+# Same P&L, half the churn, much cleaner regime interaction.
+#
+# Options:
+#   "moderate"   — (default) only LEADER + SOLO_MOVER admitted
+#   "strict"     — only LEADER admitted (best quality, fewest trades)
+#   "permissive" — LEADER + SOLO + FOLLOWER (blocks LAGGARD + UNKNOWN)
+#   "score"      — legacy v3.3 behaviour: no hard gate, boosts still apply
+LEADER_FILTER_MODE = "moderate"
 
 # ── Market Regime / VIX (v3.3) ──────────────────────────────
 # When VIX is elevated, raise the min composite score floor and cut

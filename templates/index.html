@@ -546,6 +546,41 @@
         .regime-details { color: var(--text-secondary); font-family: var(--mono); }
         .regime-hint { color: var(--text-muted); font-size: 12px; font-style: italic; }
 
+        /* ── MAE-Rule Reminder (v3.4.1) ────────────────────────── */
+        .mae-rule-banner {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 16px;
+            border: 1px solid rgba(167,139,250,0.35);
+            background: rgba(167,139,250,0.06);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .mae-rule-banner .mae-tag {
+            flex: 0 0 auto;
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            background: rgba(167,139,250,0.2);
+            color: var(--purple);
+            border: 1px solid rgba(167,139,250,0.4);
+        }
+        .mae-rule-banner strong { color: var(--text-primary); font-weight: 600; }
+        .mae-rule-banner a {
+            color: var(--purple); text-decoration: none;
+            border-bottom: 1px dotted rgba(167,139,250,0.5);
+            margin-left: 4px;
+        }
+        .mae-rule-banner a:hover { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+        @media (max-width: 768px) {
+            .mae-rule-banner { flex-wrap: wrap; font-size: 11px; padding: 10px 12px; }
+        }
+
         /* ── New v3.3 Badges ──────────────────────────────────── */
         .badge.leader {
             background: rgba(34,197,94,0.15); color: var(--green);
@@ -721,6 +756,17 @@
         </div>
         {% endif %}
 
+        <!-- 60-MIN MAE CHECK REMINDER (v3.4.1 manual rule) -->
+        <div class="mae-rule-banner" title="Manual Fidelity rule — check at 60 minutes into trade">
+            <span class="mae-tag">60-MIN MAE CHECK</span>
+            <span>
+                At <strong>60 min</strong> into a trade, if the stock has ever dropped
+                <strong>&gt; 0.75R below entry</strong> <em>and</em> is <strong>still below entry</strong> at the candle close —
+                close it flat on Fidelity. Backtest: saved $2.6K over 20 days (10 fires, 2 false-pos).
+                <a href="/logic#v3-4-1">see logic →</a>
+            </span>
+        </div>
+
         <!-- STATS BAR -->
         <div class="stats-bar">
             <div class="stat-card">
@@ -762,15 +808,16 @@
                         <span class="signal-price">${{ "%.2f"|format(signal.price) }}</span>
                     </div>
                     <div class="signal-badges">
-                        {# v3.3: Sector Leadership badge #}
+                        {# v3.3.2: Sector Leadership badge — hide "+N" when adjustment is 0 (hard-filter mode) #}
                         {% if signal.leadership and signal.leadership.label and signal.leadership.label != 'UNKNOWN' %}
                             {% set lead_label = signal.leadership.label %}
+                            {% set adj = signal.leader_adjustment|default(0) %}
                             {% if lead_label == 'LEADER' %}
-                                <span class="badge leader" title="{{ signal.leadership.reason }}">SECTOR LEADER +{{ signal.leader_adjustment }}</span>
+                                <span class="badge leader" title="{{ signal.leadership.reason }}">SECTOR LEADER{% if adj > 0 %} +{{ adj }}{% endif %}</span>
                             {% elif lead_label == 'LAGGARD' %}
-                                <span class="badge laggard" title="{{ signal.leadership.reason }}">LAGGARD {{ signal.leader_adjustment }}</span>
+                                <span class="badge laggard" title="{{ signal.leadership.reason }}">LAGGARD{% if adj != 0 %} {{ adj }}{% endif %}</span>
                             {% elif lead_label == 'SOLO_MOVER' %}
-                                <span class="badge solo" title="{{ signal.leadership.reason }}">SOLO MOVER +{{ signal.leader_adjustment }}</span>
+                                <span class="badge solo" title="{{ signal.leadership.reason }}">SOLO MOVER{% if adj > 0 %} +{{ adj }}{% endif %}</span>
                             {% endif %}
                         {% endif %}
 

@@ -75,15 +75,65 @@ SECTOR_HIGH_BETA = {
 
 
 # ═══════════════════════════════════════════════════════════════
-#  SECTOR LOOKUPS (v3.3)
+#  SECTOR LOOKUPS (v3.3 / v3.3.1)
 # ═══════════════════════════════════════════════════════════════
-# Build a ticker→sector reverse map once. A ticker can appear in multiple
-# sector lists (e.g. COIN is in both AI/Cloud and Financials); we pick the
-# first match, which in practice is the more "on-theme" sector.
+# SECTOR_HIGH_BETA above powers *sector-rotation priority scanning* —
+# it intentionally holds only high-beta names so that when Tech rotates
+# in we prioritize NVDA/AMD etc., not IBM.
+#
+# For the LEADERSHIP classifier we also need sectors for stable blue-
+# chips and the newer speculative adds, so classify_leadership() can
+# always find a sector ETF benchmark. SECTOR_ADDITIONAL_TICKERS below
+# extends the map without polluting the rotation priority list.
+
+SECTOR_ADDITIONAL_TICKERS = {
+    "Technology": [
+        "CSCO", "ACN", "IBM", "ADP",
+    ],
+    "Healthcare": [
+        "JNJ", "ABT", "DHR", "AMGN", "GILD", "MDT", "SYK",
+        "REGN", "CI", "ZTS", "BDX",
+    ],
+    "Financials": [
+        "BRK-B", "V", "MA", "MMC", "CB", "CME", "USB", "PNC",
+        "ICE", "SQ",
+    ],
+    "Consumer Staples": [
+        "PG", "PEP", "KO", "COST", "WMT", "MCD", "PM", "MDLZ",
+        "MO", "CL", "SBUX",
+    ],
+    "Industrials": [
+        "RTX", "MMM", "NOC", "WM", "OKLO", "EOSE", "MOD",
+    ],
+    "Consumer Disc": [
+        "GM", "F", "RIVN", "AEVA",
+    ],
+    "Utilities": [
+        "NEE", "SO", "DUK",
+    ],
+    "Real Estate": [
+        "PLD", "EQIX",
+    ],
+    "Materials": [
+        "APD", "SHW",
+    ],
+    "Comm Services": [
+        "TMUS", "SNAP",
+    ],
+    "AI/Cloud": [
+        "PLTR",
+    ],
+}
+
 
 def _build_ticker_to_sector_map() -> dict[str, str]:
+    """Merge SECTOR_HIGH_BETA and SECTOR_ADDITIONAL_TICKERS into a single
+    ticker → sector map. High-beta list wins on collisions (on-theme)."""
     mapping: dict[str, str] = {}
     for sector, tickers in SECTOR_HIGH_BETA.items():
+        for t in tickers:
+            mapping.setdefault(t, sector)
+    for sector, tickers in SECTOR_ADDITIONAL_TICKERS.items():
         for t in tickers:
             mapping.setdefault(t, sector)
     return mapping
