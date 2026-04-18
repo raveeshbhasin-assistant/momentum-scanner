@@ -22,6 +22,7 @@ from demo_data import generate_demo_signals
 from history import add_signals_to_daily, load_daily_finds, get_history_days, cleanup_old_files
 from sector_rotation import detect_sector_rotation, get_sector_priority_tickers
 from premarket import run_premarket_scan, reset_daily as reset_premarket, get_premarket_flags
+from daily_analysis import analyze_day
 
 # ── Logging ───────────────────────────────────────────────────
 logging.basicConfig(
@@ -88,6 +89,22 @@ def sector_rotation_job():
         )
     except Exception as e:
         logger.error(f"Sector rotation detection failed: {e}")
+
+
+def post_market_analysis_job():
+    """
+    Run daily analysis after market close (5:00 PM ET).
+    Fetches Yahoo Finance 5m bars, computes WIN/LOSS/EOD for all
+    picks from today, and appends results to scanner_trade_log.xlsx.
+    The performance page reads from this file on each page load.
+    """
+    today = datetime.now(config.ET).strftime("%Y-%m-%d")
+    logger.info(f"Running post-market analysis for {today}...")
+    try:
+        analyze_day(today)
+        logger.info(f"Post-market analysis complete for {today}")
+    except Exception as e:
+        logger.error(f"Post-market analysis failed: {e}")
 
 
 def scheduled_scan():
@@ -203,6 +220,19 @@ scheduler.add_job(
     max_instances=1,
 )
 
+# Post-market daily analysis: 5:00 PM ET (after Yahoo Finance finalizes data)
+scheduler.add_job(
+    post_market_analysis_job,
+    "cron",
+    day_of_week="mon-fri",
+    hour="17",
+    minute="0",
+    timezone=config.ET,
+    id="post_market_analysis",
+    max_instances=1,
+    misfire_grace_time=600,
+)
+
 
 @app.on_event("startup")
 async def startup():
@@ -210,8 +240,8 @@ async def startup():
     cleanup_old_files()
     logger.info(
         f"Scheduler started: v3.2 with sector rotation, pre-market scan, "
-        f"dead zone filter, and re-entry suppression. "
-        f"Mon-Fri 8:00 AM – 4:30 PM ET"
+        f"dead zone filter, re-entry suppression, and auto post-market analysis. "
+        f"Mon-Fri 8:00 AM – 5:00 PM ET"
     )
     logger.info(f"Dashboard running at http://localhost:{config.PORT}")
 
