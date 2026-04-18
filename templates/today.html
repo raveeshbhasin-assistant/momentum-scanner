@@ -262,6 +262,7 @@
             <a href="/today" class="nav-link active">Today's Finds</a>
             <a href="/history" class="nav-link">History</a>
             <a href="/performance" class="nav-link">Performance</a>
+            <a href="/backtest" class="nav-link">Backtest</a>
             <a href="/logic" class="nav-link">Algorithm Logic</a>
         </div>
     </header>
@@ -315,7 +316,20 @@
                         {% for find in finds %}
                         <tr>
                             <td class="time-cell">{{ find.found_time }}</td>
-                            <td class="ticker-cell">{{ find.ticker }}</td>
+                            <td class="ticker-cell">
+                                {{ find.ticker }}
+                                {# v3.3: inline leadership + earnings pills #}
+                                {% if find.leadership and find.leadership.label == 'LEADER' %}
+                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(34,197,94,0.18); color:var(--green); border:1px solid rgba(34,197,94,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }}">LDR</span>
+                                {% elif find.leadership and find.leadership.label == 'LAGGARD' %}
+                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(245,158,11,0.15); color:var(--amber); border:1px solid rgba(245,158,11,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }}">LAG</span>
+                                {% elif find.leadership and find.leadership.label == 'SOLO_MOVER' %}
+                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(167,139,250,0.15); color:#a78bfa; border:1px solid rgba(167,139,250,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }}">SOLO</span>
+                                {% endif %}
+                                {% if find.earnings and find.earnings.has_earnings and find.earnings.badge_level in ('today_amc','tomorrow') %}
+                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(239,68,68,0.18); color:var(--red); border:1px solid rgba(239,68,68,0.5); font-family:var(--mono);" title="{{ find.earnings.reason }}">⚡{{ find.earnings.badge_text }}</span>
+                                {% endif %}
+                            </td>
                             <td class="price-cell">${{ "%.2f"|format(find.price) }}</td>
                             <td class="score-cell">{{ "%.0f"|format(find.composite_score) }}</td>
                             <td class="rvol-cell">{{ "%.1f"|format(find.rvol) }}x</td>

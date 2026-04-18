@@ -23,8 +23,43 @@ from ta.volatility import BollingerBands, AverageTrueRange
 
 import config
 from news import get_sentiment_score, get_news_headlines
+from sector_rotation import classify_leadership, TICKER_TO_SECTOR
+from market_regime import get_regime
+from earnings import get_earnings_context
 
 logger = logging.getLogger(__name__)
+
+
+# ═══════════════════════════════════════════════════════════════
+#  INTRADAY % CHANGE HELPER (v3.3)
+# ═══════════════════════════════════════════════════════════════
+
+def _calc_ticker_intraday_pct(df: pd.DataFrame) -> Optional[float]:
+    """
+    Compute today's intraday % change (session open → latest close) for a
+    ticker's 5-min bars. Returns None if we can't isolate today's bars.
+    """
+    try:
+        if df.empty:
+            return None
+        last_ts = df.index[-1]
+        today = last_ts.date() if hasattr(last_ts, "date") else None
+        if today is None:
+            return None
+        today_mask = df.index.normalize() == pd.Timestamp(today).normalize() \
+            if hasattr(df.index, "normalize") else None
+        if today_mask is None:
+            return None
+        today_df = df[today_mask]
+        if len(today_df) < 2:
+            return None
+        open_px = float(today_df["Open"].iloc[0])
+        last_px = float(today_df["Close"].iloc[-1])
+        if open_px <= 0:
+            return None
+        return (last_px - open_px) / open_px * 100
+    except Exception:
+        return None
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -465,17 +500,37 @@ def run_scan(tickers: Optional[list[str]] = None,
     Run a full momentum scan across all tickers.
     Returns a list of signal dicts, sorted by composite score descending.
 
-    v3.2 enhancements:
+    v3.2 features:
     - Expanded universe (SP500 + high-beta extended)
     - Sector rotation boost for tickers in hot sectors
     - Pre-market catalyst boost (additive, never filters)
     - VWAP crossover detection for earlier signals
+
+    v3.3 features:
+    - Sector Leadership classification (Leader / Follower / Laggard / Solo Mover)
+    - Market Regime via VIX (dynamic min-score threshold + size multiplier)
+    - Earnings calendar context (badges + -5 pts if tomorrow; block after 2pm on AMC days)
     """
     if tickers is None:
         tickers = config.get_full_universe()
 
     logger.info(f"Starting scan of {len(tickers)} tickers...")
     start_time = time.time()
+
+    # ── Market Regime (v3.3) ──
+    regime = get_regime() if config.MARKET_REGIME_ENABLED else {
+        "label": "NORMAL",
+        "effective_min_score": config.MIN_COMPOSITE_SCORE,
+        "size_multiplier": 1.0,
+        "vix": None, "vix_change_pct": None, "color": "var(--text-muted)",
+        "spiked": False, "error": None,
+    }
+    effective_min_score = regime.get("effective_min_score", config.MIN_COMPOSITE_SCORE)
+    size_mult = regime.get("size_multiplier", 1.0)
+    logger.info(
+        f"Regime: {regime.get('label')} — min_score={effective_min_score}, "
+        f"size_mult={size_mult}"
+    )
 
     # Import pre-market module for score boost
     try:
@@ -500,6 +555,14 @@ def run_scan(tickers: Optional[list[str]] = None,
             # Check RVOL filter
             rvol = calculate_rvol(df)
             if rvol < config.MIN_RVOL:
+                continue
+
+            # ── Earnings hard filter (v3.3): block entries after 2pm on AMC days ──
+            earnings_ctx = get_earnings_context(ticker)
+            if earnings_ctx.get("hard_filter"):
+                logger.info(
+                    f"EARNINGS FILTER: skipping {ticker} — {earnings_ctx.get('reason')}"
+                )
                 continue
 
             # Score technicals
@@ -533,11 +596,34 @@ def run_scan(tickers: Optional[list[str]] = None,
             if pm_boost > 0:
                 composite += pm_boost
 
-            if composite < config.MIN_COMPOSITE_SCORE:
+            # ── ADJUST: Sector Leadership (v3.3) ────────────────
+            ticker_pct = _calc_ticker_intraday_pct(df)
+            leadership = classify_leadership(
+                ticker,
+                ticker_pct if ticker_pct is not None else 0.0,
+            )
+            leader_adj = leadership.get("score_adjustment", 0)
+            composite += leader_adj
+
+            # ── ADJUST: Earnings context (v3.3) ─────────────────
+            earnings_adj = earnings_ctx.get("score_adjustment", 0)
+            composite += earnings_adj
+
+            # Use regime-dynamic score floor
+            if composite < effective_min_score:
                 continue
 
             # Calculate trade levels
             levels = calculate_trade_levels(df)
+
+            # Apply regime-based position-size multiplier to the recommendation
+            if size_mult != 1.0:
+                levels["suggested_shares"] = int(levels.get("suggested_shares", 0) * size_mult)
+                levels["position_value"] = round(levels["suggested_shares"] * levels["entry"], 2)
+                levels["risk_dollars"] = round(
+                    levels["suggested_shares"] * levels["stop_distance"], 2
+                )
+                levels["size_multiplier"] = size_mult
 
             # Build signal
             latest = df.iloc[-1]
@@ -552,7 +638,12 @@ def run_scan(tickers: Optional[list[str]] = None,
                 "volume_score": round(vol_score, 1),
                 "sector_boost": round(sector_boost, 1),
                 "premarket_boost": round(pm_boost, 1),
+                "leader_adjustment": leader_adj,
+                "earnings_adjustment": earnings_adj,
                 "is_premarket_flagged": is_premarket_flagged(ticker),
+                "leadership": leadership,        # v3.3
+                "earnings": earnings_ctx,        # v3.3
+                "regime_label": regime.get("label"),     # v3.3
                 "tech_details": tech_details,
                 "trade": levels,
                 "news": news_items[:3],

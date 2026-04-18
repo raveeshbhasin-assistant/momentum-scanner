@@ -105,6 +105,12 @@ def add_signals_to_daily(signals: list[dict]):
             "stop_loss": signal.get("trade", {}).get("stop_loss", 0),
             "risk_reward_ratio": signal.get("trade", {}).get("risk_reward_ratio", 0),
             "rsi": signal.get("indicators", {}).get("rsi"),
+            # v3.3 context
+            "leadership": signal.get("leadership"),
+            "earnings": signal.get("earnings"),
+            "regime_label": signal.get("regime_label"),
+            "leader_adjustment": signal.get("leader_adjustment", 0),
+            "earnings_adjustment": signal.get("earnings_adjustment", 0),
         }
         existing.append(record)
 

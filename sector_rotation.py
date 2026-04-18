@@ -74,6 +74,38 @@ SECTOR_HIGH_BETA = {
 }
 
 
+# ═══════════════════════════════════════════════════════════════
+#  SECTOR LOOKUPS (v3.3)
+# ═══════════════════════════════════════════════════════════════
+# Build a ticker→sector reverse map once. A ticker can appear in multiple
+# sector lists (e.g. COIN is in both AI/Cloud and Financials); we pick the
+# first match, which in practice is the more "on-theme" sector.
+
+def _build_ticker_to_sector_map() -> dict[str, str]:
+    mapping: dict[str, str] = {}
+    for sector, tickers in SECTOR_HIGH_BETA.items():
+        for t in tickers:
+            mapping.setdefault(t, sector)
+    return mapping
+
+
+TICKER_TO_SECTOR = _build_ticker_to_sector_map()
+
+
+# ═══════════════════════════════════════════════════════════════
+#  ROTATION DETECTION
+# ═══════════════════════════════════════════════════════════════
+
+# Cache last full sector-rotation result so classify_leadership() can
+# use the same intraday change numbers without re-downloading ETF data
+# on every ticker lookup.
+_last_rotation_snapshot: dict = {
+    "ts": None,
+    "spy_change": 0.0,
+    "sector_changes": {},   # sector_name -> intraday % change
+}
+
+
 def detect_sector_rotation(top_n: int = 3) -> list[dict]:
     """
     Detect which sectors are leading today by comparing intraday
@@ -86,6 +118,10 @@ def detect_sector_rotation(top_n: int = 3) -> list[dict]:
         "rel_strength": float,   # vs SPY
         "high_beta_tickers": list[str],
     }
+
+    Also populates the module-level _last_rotation_snapshot used by
+    classify_leadership() so the leader check is self-consistent with
+    the rotation boost.
     """
     etf_tickers = list(SECTOR_ETFS.values()) + ["SPY"]
 
@@ -111,12 +147,14 @@ def detect_sector_rotation(top_n: int = 3) -> list[dict]:
         spy_change = 0.0
 
     results = []
+    sector_changes: dict[str, float] = {}
     for sector, etf in SECTOR_ETFS.items():
         change = _calc_intraday_change(df, etf)
         if change is None:
             continue
 
         rel_strength = change - spy_change
+        sector_changes[sector] = change
 
         results.append({
             "sector": sector,
@@ -125,6 +163,11 @@ def detect_sector_rotation(top_n: int = 3) -> list[dict]:
             "rel_strength": round(rel_strength, 3),
             "high_beta_tickers": SECTOR_HIGH_BETA.get(sector, []),
         })
+
+    # Update the shared snapshot for downstream consumers
+    _last_rotation_snapshot["ts"] = datetime.now()
+    _last_rotation_snapshot["spy_change"] = spy_change
+    _last_rotation_snapshot["sector_changes"] = sector_changes
 
     # Sort by relative strength (strongest first)
     results.sort(key=lambda x: x["rel_strength"], reverse=True)
@@ -135,6 +178,120 @@ def detect_sector_rotation(top_n: int = 3) -> list[dict]:
         logger.info(f"Sector rotation: top sectors = {top_info}")
 
     return results[:top_n]
+
+
+# ═══════════════════════════════════════════════════════════════
+#  LEADERSHIP CLASSIFICATION (v3.3)
+# ═══════════════════════════════════════════════════════════════
+
+def classify_leadership(
+    ticker: str,
+    ticker_pct: float,
+    min_minutes_since_open: int = 15,
+    now: Optional[datetime] = None,
+) -> dict:
+    """
+    Classify whether a ticker is leading, following, or lagging its sector.
+
+    Rule set (intraday % vs prior close):
+      • LEADER       — ticker > sector AND sector > SPY   (hot sector, on-theme leader)
+      • SOLO_MOVER   — ticker > SPY but its sector is lagging SPY (counter-trend mover)
+      • FOLLOWER     — ticker > SPY but below its sector average (participating)
+      • LAGGARD      — ticker < sector                    (sector moving without it)
+      • UNKNOWN      — no sector mapping or no rotation snapshot yet
+
+    Args:
+        ticker: symbol being classified
+        ticker_pct: ticker's intraday % change (open → latest) as a percent
+        min_minutes_since_open: skip classification early in the session when
+            intraday % figures are noisy (defaults to 15 min — return UNKNOWN)
+        now: override current time (used in backtests)
+
+    Returns:
+        {
+          "label": "LEADER" | "FOLLOWER" | "LAGGARD" | "SOLO_MOVER" | "UNKNOWN"
+          "score_adjustment": int  (+10 / 0 / -10 / +3 / 0)
+          "sector": str | None
+          "ticker_pct": float
+          "sector_pct": float | None
+          "spy_pct": float | None
+          "reason": str
+        }
+    """
+    result = {
+        "label": "UNKNOWN",
+        "score_adjustment": 0,
+        "sector": TICKER_TO_SECTOR.get(ticker),
+        "ticker_pct": round(ticker_pct, 3) if ticker_pct is not None else None,
+        "sector_pct": None,
+        "spy_pct": None,
+        "reason": "",
+    }
+
+    # Early-session guard: noisy before 9:45 AM ET
+    now = now or datetime.now(config.ET)
+    market_open = now.replace(hour=9, minute=30, second=0, microsecond=0)
+    if (now - market_open).total_seconds() / 60 < min_minutes_since_open:
+        result["reason"] = "Too early in session for reliable classification"
+        return result
+
+    sector = result["sector"]
+    if not sector:
+        result["reason"] = "Ticker not mapped to a sector"
+        return result
+
+    snap = _last_rotation_snapshot
+    if snap["ts"] is None or sector not in snap["sector_changes"]:
+        result["reason"] = "No sector rotation snapshot available"
+        return result
+
+    sector_pct = snap["sector_changes"][sector]
+    spy_pct = snap["spy_change"]
+    result["sector_pct"] = round(sector_pct, 3)
+    result["spy_pct"] = round(spy_pct, 3)
+
+    # Classification
+    if ticker_pct > sector_pct and sector_pct > spy_pct:
+        result["label"] = "LEADER"
+        result["score_adjustment"] = config.SECTOR_LEADER_BOOST
+        result["reason"] = (
+            f"{ticker_pct:+.2f}% > {sector} {sector_pct:+.2f}% > SPY {spy_pct:+.2f}% — "
+            "on-theme leader"
+        )
+    elif ticker_pct > spy_pct and sector_pct < spy_pct:
+        result["label"] = "SOLO_MOVER"
+        result["score_adjustment"] = config.SECTOR_SOLO_BOOST
+        result["reason"] = (
+            f"{ticker_pct:+.2f}% > SPY {spy_pct:+.2f}% but {sector} {sector_pct:+.2f}% "
+            "is lagging — counter-trend move"
+        )
+    elif ticker_pct < sector_pct:
+        result["label"] = "LAGGARD"
+        result["score_adjustment"] = config.SECTOR_LAGGARD_PENALTY  # negative
+        result["reason"] = (
+            f"{ticker_pct:+.2f}% < {sector} {sector_pct:+.2f}% — "
+            "sector moving without it"
+        )
+    else:
+        # ticker > SPY, ticker <= sector, sector > SPY
+        result["label"] = "FOLLOWER"
+        result["score_adjustment"] = 0
+        result["reason"] = (
+            f"{ticker_pct:+.2f}% participating in {sector} ({sector_pct:+.2f}%) "
+            f"but not leading it"
+        )
+
+    return result
+
+
+def set_rotation_snapshot(spy_change: float, sector_changes: dict[str, float]) -> None:
+    """
+    Used by the backtest engine to inject historical sector change data
+    so classify_leadership() can be called in replay mode.
+    """
+    _last_rotation_snapshot["ts"] = datetime.now()
+    _last_rotation_snapshot["spy_change"] = spy_change
+    _last_rotation_snapshot["sector_changes"] = dict(sector_changes)
 
 
 def get_sector_priority_tickers(top_sectors: list[dict]) -> list[str]:

@@ -108,6 +108,26 @@ def get_full_universe() -> list[str]:
 SECTOR_TOP_N = 3                     # How many top sectors to prioritize
 SECTOR_BOOST_POINTS = 8              # Score boost for tickers in hot sectors
 
+# ── Sector Leadership (v3.3) ────────────────────────────────
+# Classify ticker vs its sector vs SPY:
+#   LEADER:     ticker% > sector% > SPY%   → +10
+#   SOLO_MOVER: ticker% > SPY% but sector < SPY (counter-trend) → +3
+#   FOLLOWER:   ticker% > SPY% but below sector → 0
+#   LAGGARD:    ticker% < sector% → -10
+# Score adjustment, NOT a hard filter.
+SECTOR_LEADER_BOOST = 10
+SECTOR_SOLO_BOOST = 3
+SECTOR_LAGGARD_PENALTY = -10
+
+# ── Market Regime / VIX (v3.3) ──────────────────────────────
+# When VIX is elevated, raise the min composite score floor and cut
+# suggested position size. See market_regime.py for the band table.
+MARKET_REGIME_ENABLED = True
+
+# ── Earnings Calendar (v3.3) ────────────────────────────────
+EARNINGS_TOMORROW_PENALTY = -5       # Points off for earnings tomorrow BMO
+EARNINGS_HARD_FILTER_HOUR = 14       # After 2 PM ET, block entries when earnings are AMC today
+
 # ── Pre-Market Settings ─────────────────────────────────────
 PREMARKET_BOOST_CAP = 15             # Max score boost from pre-market flags
 PREMARKET_VOL_THRESHOLD = 2.0        # Min volume ratio to flag pre-market

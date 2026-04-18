@@ -23,6 +23,15 @@ from history import add_signals_to_daily, load_daily_finds, get_history_days, cl
 from sector_rotation import detect_sector_rotation, get_sector_priority_tickers
 from premarket import run_premarket_scan, reset_daily as reset_premarket, get_premarket_flags
 from daily_analysis import analyze_day
+from market_regime import get_regime
+from earnings import refresh_earnings_cache
+from backtest import (
+    run_backtest as _run_backtest,
+    Filters as _BacktestFilters,
+    save_result as _save_backtest,
+    load_result as _load_backtest,
+    list_results as _list_backtests,
+)
 
 # ── Logging ───────────────────────────────────────────────────
 logging.basicConfig(
@@ -32,7 +41,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.2")
+app = FastAPI(title="Momentum Scanner", version="3.3")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -64,7 +73,7 @@ def _reset_daily_state():
 
 
 def premarket_scan_job():
-    """Run pre-market scan at 8:00 and 9:00 AM ET."""
+    """Run pre-market scan at 8:00 and 9:00 AM ET, plus refresh earnings cache."""
     _reset_daily_state()
     logger.info("Running pre-market catalyst scan...")
     try:
@@ -73,6 +82,13 @@ def premarket_scan_job():
         logger.info(f"Pre-market scan: {len(flagged)} tickers flagged")
     except Exception as e:
         logger.error(f"Pre-market scan failed: {e}")
+
+    # ── Refresh earnings cache (v3.3) ──
+    try:
+        cache = refresh_earnings_cache(force=False)
+        logger.info(f"Earnings cache: {len(cache)} tickers with upcoming prints")
+    except Exception as e:
+        logger.error(f"Earnings refresh failed: {e}")
 
 
 def sector_rotation_job():
@@ -258,6 +274,7 @@ async def shutdown():
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
     """Serve the main dashboard."""
+    regime = get_regime() if config.MARKET_REGIME_ENABLED else None
     return templates.TemplateResponse(
         request=request,
         name="index.html",
@@ -268,6 +285,7 @@ async def dashboard(request: Request):
             "is_scanning": is_scanning,
             "has_finnhub_key": bool(config.FINNHUB_API_KEY),
             "data_source": "FMP Real-Time" if config.FMP_API_KEY else "yfinance (15m delay)",
+            "regime": regime,
         },
     )
 
@@ -324,6 +342,7 @@ async def get_config():
 async def today_page(request: Request):
     """Serve today's cumulative finds table."""
     finds = load_daily_finds()
+    regime = get_regime() if config.MARKET_REGIME_ENABLED else None
     return templates.TemplateResponse(
         request=request,
         name="today.html",
@@ -331,8 +350,15 @@ async def today_page(request: Request):
             "finds": finds,
             "find_count": len(finds),
             "unique_tickers": len(set(f["ticker"] for f in finds)),
+            "regime": regime,
         },
     )
+
+
+@app.get("/api/regime", response_class=JSONResponse)
+async def api_regime():
+    """Current market regime (VIX-based)."""
+    return get_regime() if config.MARKET_REGIME_ENABLED else {"label": "DISABLED"}
 
 
 @app.get("/history", response_class=HTMLResponse)
@@ -437,6 +463,75 @@ async def logic_page(request: Request):
         request=request,
         name="logic.html",
     )
+
+
+# ═══════════════════════════════════════════════════════════════
+#  BACKTEST (v3.3)
+# ═══════════════════════════════════════════════════════════════
+
+@app.get("/backtest", response_class=HTMLResponse)
+async def backtest_page(request: Request):
+    """Serve the backtest UI — loads the latest saved run, if any."""
+    latest = _load_backtest("latest")
+    runs = _list_backtests()
+    return templates.TemplateResponse(
+        request=request,
+        name="backtest.html",
+        context={
+            "latest": latest,
+            "runs": runs,
+        },
+    )
+
+
+@app.post("/api/backtest/run", response_class=JSONResponse)
+async def api_backtest_run(payload: dict):
+    """Kick off a backtest. Expects JSON body:
+      {
+        "start_date": "YYYY-MM-DD",   (optional — defaults to 10 days back)
+        "end_date":   "YYYY-MM-DD",   (optional — defaults to today)
+        "filters":    { ... filters ... },  (optional)
+        "max_tickers": int (optional, for quick runs)
+      }
+    Blocking call — returns the full result JSON when done.
+    """
+    from datetime import date as _d, datetime as _dt, timedelta as _td
+
+    try:
+        end_s = payload.get("end_date")
+        start_s = payload.get("start_date")
+        end_date = _dt.fromisoformat(end_s).date() if end_s else _d.today()
+        start_date = _dt.fromisoformat(start_s).date() if start_s else end_date - _td(days=10)
+
+        filters = _BacktestFilters.from_dict(payload.get("filters"))
+        max_tickers = payload.get("max_tickers")
+
+        result = _run_backtest(
+            start_date=start_date,
+            end_date=end_date,
+            filters=filters,
+            max_tickers=max_tickers,
+        )
+        _save_backtest(result, name="latest")
+        return JSONResponse(result)
+    except Exception as e:
+        logger.exception("Backtest run failed")
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.get("/api/backtest/latest", response_class=JSONResponse)
+async def api_backtest_latest():
+    """Return the most recently saved backtest result, if any."""
+    latest = _load_backtest("latest")
+    if latest is None:
+        return JSONResponse({"error": "No backtest has been run yet."}, status_code=404)
+    return JSONResponse(latest)
+
+
+@app.get("/api/backtest/runs", response_class=JSONResponse)
+async def api_backtest_runs():
+    """List all saved backtest runs."""
+    return JSONResponse({"runs": _list_backtests()})
 
 
 # ═══════════════════════════════════════════════════════════════

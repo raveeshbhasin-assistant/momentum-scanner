@@ -521,6 +521,65 @@
             color: var(--amber);
         }
 
+        /* ── Regime Banner (v3.3) ──────────────────────────────── */
+        .regime-banner {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 16px; padding: 12px 20px; border-radius: 12px;
+            margin-bottom: 16px; font-size: 13px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+        .regime-banner .regime-label {
+            font-family: var(--mono); font-size: 12px; font-weight: 700;
+            letter-spacing: 1px; padding: 4px 10px; border-radius: 6px;
+        }
+        .regime-banner.calm    { border-color: rgba(34,197,94,0.3);  }
+        .regime-banner.calm    .regime-label { background: var(--green); color: #000; }
+        .regime-banner.normal  { border-color: rgba(34,197,94,0.3);  }
+        .regime-banner.normal  .regime-label { background: var(--green); color: #000; }
+        .regime-banner.elevated{ border-color: rgba(245,158,11,0.4); }
+        .regime-banner.elevated .regime-label { background: var(--amber); color: #000; }
+        .regime-banner.high    { border-color: rgba(251,146,60,0.5); background: rgba(251,146,60,0.06); }
+        .regime-banner.high    .regime-label { background: #fb923c; color: #000; }
+        .regime-banner.extreme { border-color: rgba(239,68,68,0.6);  background: rgba(239,68,68,0.08); }
+        .regime-banner.extreme .regime-label { background: var(--red); color: white; }
+        .regime-details { color: var(--text-secondary); font-family: var(--mono); }
+        .regime-hint { color: var(--text-muted); font-size: 12px; font-style: italic; }
+
+        /* ── New v3.3 Badges ──────────────────────────────────── */
+        .badge.leader {
+            background: rgba(34,197,94,0.15); color: var(--green);
+            border: 1px solid rgba(34,197,94,0.4);
+        }
+        .badge.follower {
+            background: rgba(148,163,184,0.15); color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .badge.laggard {
+            background: rgba(245,158,11,0.15); color: var(--amber);
+            border: 1px solid rgba(245,158,11,0.4);
+        }
+        .badge.solo {
+            background: rgba(167,139,250,0.15); color: var(--purple);
+            border: 1px solid rgba(167,139,250,0.4);
+        }
+        .badge.earn-today {
+            background: rgba(239,68,68,0.18); color: var(--red);
+            border: 1px solid rgba(239,68,68,0.5);
+        }
+        .badge.earn-tomorrow {
+            background: rgba(251,146,60,0.15); color: #fb923c;
+            border: 1px solid rgba(251,146,60,0.5);
+        }
+        .badge.earn-week {
+            background: rgba(245,158,11,0.12); color: var(--amber);
+            border: 1px solid rgba(245,158,11,0.3);
+        }
+        .badge.earn-later {
+            background: var(--bg-secondary); color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
         /* ── Footer ────────────────────────────────────────────── */
         .footer {
             text-align: center;
@@ -614,6 +673,7 @@
             <a href="/today" class="nav-link">Today's Finds</a>
             <a href="/history" class="nav-link">History</a>
             <a href="/performance" class="nav-link">Performance</a>
+            <a href="/backtest" class="nav-link">Backtest</a>
             <a href="/logic" class="nav-link">Algorithm Logic</a>
             <button class="btn primary" onclick="triggerScan()" id="scanBtn">
                 Run Scan Now
@@ -631,6 +691,33 @@
                 <a href="https://finnhub.io" style="color: var(--amber); text-decoration: underline;">finnhub.io</a>
                 and set <code style="background: var(--bg-card); padding: 2px 6px; border-radius: 4px;">FINNHUB_API_KEY</code> environment variable.
             </span>
+        </div>
+        {% endif %}
+
+        <!-- MARKET REGIME BANNER (v3.3) -->
+        {% if regime and regime.label %}
+        <div class="regime-banner {{ regime.label|lower }}">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="regime-label">{{ regime.label }}</span>
+                {% if regime.vix is not none %}
+                <span class="regime-details">
+                    VIX {{ "%.2f"|format(regime.vix) }}
+                    {% if regime.vix_change_pct is not none %}
+                        <span style="color: {{ 'var(--red)' if regime.vix_change_pct >= 0 else 'var(--green)' }};">
+                            ({{ "%+.1f"|format(regime.vix_change_pct) }}%)
+                        </span>
+                    {% endif %}
+                </span>
+                {% else %}
+                <span class="regime-details">VIX unavailable</span>
+                {% endif %}
+                {% if regime.spiked %}
+                <span style="color: var(--red); font-size: 12px; font-weight: 600;">⚡ SPIKE</span>
+                {% endif %}
+            </div>
+            <div class="regime-hint">
+                Min score: {{ regime.effective_min_score }} · Size: {{ (regime.size_multiplier * 100)|int }}% of normal
+            </div>
         </div>
         {% endif %}
 
@@ -675,6 +762,32 @@
                         <span class="signal-price">${{ "%.2f"|format(signal.price) }}</span>
                     </div>
                     <div class="signal-badges">
+                        {# v3.3: Sector Leadership badge #}
+                        {% if signal.leadership and signal.leadership.label and signal.leadership.label != 'UNKNOWN' %}
+                            {% set lead_label = signal.leadership.label %}
+                            {% if lead_label == 'LEADER' %}
+                                <span class="badge leader" title="{{ signal.leadership.reason }}">SECTOR LEADER +{{ signal.leader_adjustment }}</span>
+                            {% elif lead_label == 'LAGGARD' %}
+                                <span class="badge laggard" title="{{ signal.leadership.reason }}">LAGGARD {{ signal.leader_adjustment }}</span>
+                            {% elif lead_label == 'SOLO_MOVER' %}
+                                <span class="badge solo" title="{{ signal.leadership.reason }}">SOLO MOVER +{{ signal.leader_adjustment }}</span>
+                            {% endif %}
+                        {% endif %}
+
+                        {# v3.3: Earnings badge #}
+                        {% if signal.earnings and signal.earnings.has_earnings and signal.earnings.badge_text %}
+                            {% set lvl = signal.earnings.badge_level %}
+                            {% if lvl == 'today_amc' %}
+                                <span class="badge earn-today" title="{{ signal.earnings.reason }}">⚡ {{ signal.earnings.badge_text }}</span>
+                            {% elif lvl == 'tomorrow' %}
+                                <span class="badge earn-tomorrow" title="{{ signal.earnings.reason }}">⚡ {{ signal.earnings.badge_text }}</span>
+                            {% elif lvl == 'this_week' %}
+                                <span class="badge earn-week" title="{{ signal.earnings.reason }}">⚡ {{ signal.earnings.badge_text }}</span>
+                            {% else %}
+                                <span class="badge earn-later" title="{{ signal.earnings.reason }}">⚡ {{ signal.earnings.badge_text }}</span>
+                            {% endif %}
+                        {% endif %}
+
                         {% if signal.sentiment_score > 0.15 %}
                         <span class="badge sentiment-pos">Sentiment +{{ "%.0f"|format(signal.sentiment_score * 100) }}%</span>
                         {% elif signal.sentiment_score < -0.15 %}
@@ -816,7 +929,7 @@
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.0 &mdash; For educational and informational purposes only. Not financial advice. Always do your own research.
+        Momentum Scanner v3.3 &mdash; For educational and informational purposes only. Not financial advice. Always do your own research.
     </footer>
 
     <!-- ═══════════════════════════════════════════════════════

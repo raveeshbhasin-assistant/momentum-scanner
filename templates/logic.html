@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.2</title>
+    <title>Algorithm Logic — Momentum Scanner v3.3</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -94,6 +94,7 @@
         .step-6 .step-num { background: var(--cyan); color: #000; }
         .step-7 .step-num { background: var(--red); color: white; }
         .step-8 .step-num { background: #64748b; color: white; }
+        .step-9 .step-num { background: #14b8a6; color: white; }
 
         .step-content h4 { font-size: 16px; margin-bottom: 6px; }
         .step-content p { font-size: 14px; color: var(--text-secondary); margin: 0; }
@@ -158,6 +159,88 @@
             text-align: center; padding: 24px; color: var(--text-muted);
             font-size: 12px; border-top: 1px solid var(--border); margin-top: 48px;
         }
+
+        /* ═══ RELEASE NOTES ═══ */
+        .release-toc {
+            display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 24px;
+        }
+        .release-toc a {
+            font-family: var(--mono); font-size: 12px; text-decoration: none;
+            color: var(--text-secondary); background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: 999px;
+            padding: 4px 12px; transition: all 0.2s;
+        }
+        .release-toc a:hover {
+            color: var(--cyan); border-color: var(--cyan);
+        }
+        .release-toc a.current {
+            color: #000; background: var(--green); border-color: var(--green);
+            font-weight: 700;
+        }
+
+        .release {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px 24px; margin: 16px 0;
+            position: relative;
+        }
+        .release.current { border-color: var(--green); box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.25); }
+
+        .release-header {
+            display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+        .release-version {
+            font-size: 22px; font-weight: 700; font-family: var(--mono);
+            color: var(--text-primary); letter-spacing: -0.5px;
+        }
+        .release-date {
+            color: var(--text-muted); font-size: 13px; font-family: var(--mono);
+        }
+        .release-pill {
+            font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+            padding: 2px 8px; border-radius: 4px; text-transform: uppercase;
+        }
+        .pill-current { background: var(--green); color: #000; }
+        .pill-previous { background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border); }
+
+        .release-title {
+            font-size: 15px; color: var(--text-secondary); margin-bottom: 14px;
+            font-style: italic;
+        }
+
+        .change-group { margin: 12px 0; }
+        .change-tag {
+            display: inline-block; font-family: var(--mono);
+            font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+            padding: 2px 8px; border-radius: 4px; margin-right: 8px;
+            vertical-align: middle;
+        }
+        .tag-added    { background: rgba(34, 197, 94, 0.15);  color: var(--green); border: 1px solid rgba(34, 197, 94, 0.4); }
+        .tag-changed  { background: rgba(59, 130, 246, 0.15); color: var(--blue);  border: 1px solid rgba(59, 130, 246, 0.4); }
+        .tag-fixed    { background: rgba(245, 158, 11, 0.15); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.4); }
+        .tag-removed  { background: rgba(239, 68, 68, 0.15);  color: var(--red);   border: 1px solid rgba(239, 68, 68, 0.4); }
+
+        .release ul {
+            list-style: none; padding-left: 0; margin: 6px 0 0;
+        }
+        .release li {
+            position: relative; padding: 4px 0 4px 18px;
+            color: var(--text-secondary); font-size: 14px;
+        }
+        .release li::before {
+            content: "›"; position: absolute; left: 0;
+            color: var(--text-muted); font-family: var(--mono);
+        }
+        .release li code {
+            font-family: var(--mono); font-size: 12px; color: var(--cyan);
+            background: var(--bg-secondary); padding: 1px 6px; border-radius: 3px;
+        }
+        .release-rationale {
+            margin-top: 14px; padding: 10px 14px;
+            background: var(--bg-secondary); border-left: 3px solid var(--cyan);
+            border-radius: 4px; font-size: 13px; color: var(--text-secondary);
+        }
+        .release-rationale strong { color: var(--cyan); }
     </style>
 </head>
 <body>
@@ -167,11 +250,173 @@
         <a href="/today" class="nav-link">Today's Finds</a>
         <a href="/history" class="nav-link">History</a>
         <a href="/performance" class="nav-link">Performance</a>
+        <a href="/backtest" class="nav-link">Backtest</a>
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.2</span></h1>
-        <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box.</p>
+        <h1>Algorithm Logic <span class="version-tag">v3.3</span></h1>
+        <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  RELEASE NOTES                                         -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2 id="release-notes">Release Notes</h2>
+        <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
+
+        <div class="release-toc">
+            <a href="#v3-3" class="current">v3.3 (current)</a>
+            <a href="#v3-2">v3.2</a>
+            <a href="#v3-1">v3.1</a>
+            <a href="#v3-0">v3.0</a>
+        </div>
+
+        <!-- ───── v3.3 ───── -->
+        <div class="release current" id="v3-3">
+            <div class="release-header">
+                <span class="release-version">v3.3</span>
+                <span class="release-date">Released 2026-04-18</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Context awareness" — sector leadership, market regime via VIX, earnings calendar, and a standalone backtest page.</div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>Sector Leadership classification.</strong> Each candidate is compared against its sector ETF and SPY. <code>ticker% &gt; sector% &gt; SPY%</code> → <strong>LEADER</strong> (+10 pts). Sector moving without the ticker → <strong>LAGGARD</strong> (−10). Counter-trend mover (ticker up, sector down, ticker beats SPY) → <strong>SOLO MOVER</strong> (+3). Scoring adjustment, not a hard filter — strong technicals still get through but at a downgrade.</li>
+                    <li><strong>Market Regime filter via VIX.</strong> The scanner now checks <code>^VIX</code> each scan and dynamically tightens: CALM/NORMAL = min score 60, ELEVATED = 65, HIGH = 70, EXTREME = 80. Position-size recommendation is scaled 100%→25% across bands. Intraday VIX pop &gt;10% bumps the regime up one band even from a low base.</li>
+                    <li><strong>Earnings calendar context.</strong> Daily-refreshed upcoming-earnings cache (FMP primary, yfinance fallback). Pills show <em>EARN TODAY AMC</em> / <em>EARN TOMORROW</em> / <em>EARN THU</em>. Hard filter: after 2:00 PM ET on days with a post-close print, entries are blocked. Soft filter: −5 pts for earnings tomorrow BMO.</li>
+                    <li><strong>Backtest page</strong> at <code>/backtest</code> — replays the current algorithm against historical 5-min bars (technicals only, news excluded by design). Date range picker, per-filter A/B toggles, equity curve, hour/sector heatmaps, trade blotter. Limitations disclosed on the page.</li>
+                    <li>Market regime banner on the dashboard and Today's Finds pages.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li>Minimum composite score is now <strong>dynamic</strong> — the <code>config.MIN_COMPOSITE_SCORE = 60</code> constant is the CALM-regime floor, bumped by regime (see above).</li>
+                    <li>Position sizing recommendation multiplied by the regime size factor (1.0 / 0.75 / 0.5 / 0.25).</li>
+                    <li>Daily finds schema: now persists <code>leadership</code>, <code>earnings</code>, and <code>regime_label</code> per signal for downstream use.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-removed">Removed</span>
+                <ul>
+                    <li>Nothing — all v3.2 filters (lunch dead zone, re-entry block, RVOL exhaustion penalty) are still in force.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Three manual checks the user was doing before every trade — "is this the leader in its sector?", "is the VIX spiking?", and "is earnings coming up?" — are now automated. Leadership and earnings ride as score adjustments so a strong pure-technical setup can still signal; market regime raises the bar globally so a 30-VIX day doesn't dump 10 signals on the table. The backtest page sits separately from Performance so live results and hypothetical replays don't get conflated.
+            </div>
+        </div>
+
+        <!-- ───── v3.2 ───── -->
+        <div class="release" id="v3-2">
+            <div class="release-header">
+                <span class="release-version">v3.2</span>
+                <span class="release-date">Released 2026-04-18</span>
+                <span class="release-pill pill-previous">Superseded</span>
+            </div>
+            <div class="release-title">"Data-Driven Filters" — lunch dead zone, re-entry block, pre-market catalysts, sector rotation, expanded universe.</div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li>Pre-Market Catalyst Scan at <code>8:00</code> &amp; <code>9:00 AM ET</code> — up to +15 pt boost for pre-market volume + bullish news (purely additive, never blocks).</li>
+                    <li>Sector Rotation Detection — hourly relative-strength check across 15 sector ETFs vs SPY; top-3 sector components get <code>+8 pts</code>.</li>
+                    <li>Post-Market Analysis job at <code>5:00 PM ET</code> — auto-evaluates every pick (WIN / LOSS / EOD) and appends to <code>scanner_trade_log.xlsx</code>.</li>
+                    <li>Extended high-beta universe — ~30 mid/small-caps across fiber optics, AI infra, crypto/fintech, and high-momentum names.</li>
+                    <li>VWAP crossover detection — full 20 pts for the exact bar that breaks above VWAP from below.</li>
+                    <li>Pivot-point Resistance Target — nearest R1/R2/R3 from prior-day OHLC shown as the purple line on charts.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li>RVOL gate tightened to <code>≥ 1.33×</code> (from 1.0×).</li>
+                    <li>Minimum composite score raised to <code>60</code> (from 50).</li>
+                    <li>Stock universe expanded from ~100 to ~130 tickers, deduplicated at runtime.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li>During market hours, demo data is never shown — if both FMP and yfinance fail, the scan returns empty rather than stale prices.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-removed">Removed</span>
+                <ul>
+                    <li>Scans at <code>11:30 AM</code> and <code>12:00 PM ET</code> (Lunch Dead Zone) — skipped entirely.</li>
+                    <li>Re-entries — each ticker can only generate one signal per day; repeats are logged but filtered.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Based on a 3-day backtest (159 trades, Apr 15–17, 2026). Lunch-hour produced 0 wins in 21 trades (p &lt; 0.001); re-entries produced 1 win in 32 trades (3.1% WR). Filtering both lifts the overall win rate from ~30% to ~36% and concentrates signals in the 1:00–3:00 PM ET window (~67% WR).
+            </div>
+        </div>
+
+        <!-- ───── v3.1 ───── -->
+        <div class="release" id="v3-1">
+            <div class="release-header">
+                <span class="release-version">v3.1</span>
+                <span class="release-date">Previous release</span>
+                <span class="release-pill pill-previous">Superseded</span>
+            </div>
+            <div class="release-title">"FMP primary data source" — moved real-time quotes and 5-min candles to Financial Modeling Prep, with yfinance as fallback.</div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li>FMP Stable API as the primary real-time data source ($29/mo Starter).</li>
+                    <li>Automatic failover to yfinance (15-min delayed) if FMP returns errors.</li>
+                    <li>Rate-limited quote fetching (4 calls/sec) to stay within FMP Starter limits.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li>Scan cadence normalized to every <code>:00</code> and <code>:30</code>, 9:00 AM – 4:30 PM ET.</li>
+                    <li>History page persists signals as JSON files per day.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> yfinance alone had inconsistent intraday data and 15-min lag during active market hours. FMP gives us real-time quotes reliable enough for intraday signal generation while keeping yfinance as a free safety net.
+            </div>
+        </div>
+
+        <!-- ───── v3.0 ───── -->
+        <div class="release" id="v3-0">
+            <div class="release-header">
+                <span class="release-version">v3.0</span>
+                <span class="release-date">Baseline</span>
+                <span class="release-pill pill-previous">Superseded</span>
+            </div>
+            <div class="release-title">"Momentum Scanner" — initial public build with technical + sentiment + volume composite scoring.</div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li>Composite score: Technical <code>65%</code> + Sentiment <code>25%</code> + Volume <code>10%</code>.</li>
+                    <li>Technical indicators: EMA (9/21/50), RSI(14), MACD(12/26/9), VWAP, Bollinger Bands(20, 2σ), ATR(14).</li>
+                    <li>News sentiment via Finnhub + VADER with recency decay.</li>
+                    <li>Time-of-day-adjusted Relative Volume (RVOL) across 20 sessions.</li>
+                    <li>ATR-based risk management: <code>stop = Entry − 2×ATR</code>, <code>target = Entry + 2.5×stop</code>, 1% account risk per trade, hard close at 3:55 PM ET.</li>
+                    <li>Dashboard, Today's Finds, History, and Performance pages.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Establish a transparent, rules-based baseline for intraday momentum scanning on the S&amp;P 500 — every signal reproducible from public data, every score component visible to the user.
+            </div>
+        </div>
 
         <!-- ═══════════════════════════════════════════════════════ -->
         <!--  DAILY SCHEDULE                                        -->
@@ -188,9 +433,19 @@
                     <td>Checks ~50 tickers for unusual pre-market volume and news sentiment. Flags tickers for a score boost (up to +15 pts) but never blocks anything.</td>
                 </tr>
                 <tr>
+                    <td><code>8:00 AM</code></td>
+                    <td>Earnings Cache Refresh <span class="new-badge">v3.3</span></td>
+                    <td>Pulls the next 14 days of earnings dates from FMP (yfinance fallback) and caches them locally. Drives the EARN TODAY / TOMORROW / THIS WEEK pills and the 2:00 PM hard-block.</td>
+                </tr>
+                <tr>
                     <td><code>9:30 AM, then every hour</code></td>
                     <td>Sector Rotation Detection</td>
-                    <td>Compares 15 sector ETFs against SPY to find which sectors are leading. Tickers in hot sectors get a +8 pt score boost.</td>
+                    <td>Compares 15 sector ETFs against SPY to find which sectors are leading. Tickers in hot sectors get a +8 pt score boost. Also snapshots sector/SPY intraday % for the Sector Leadership check.</td>
+                </tr>
+                <tr>
+                    <td><code>Every scan tick</code></td>
+                    <td>VIX Regime Read <span class="new-badge">v3.3</span></td>
+                    <td>Pulls <code>^VIX</code> (5-min cached). Classifies into CALM/NORMAL/ELEVATED/HIGH/EXTREME, sets the effective min-score and position-size multiplier used by that scan.</td>
                 </tr>
                 <tr>
                     <td><code>Every :00 and :30, 9 AM – 4:30 PM</code></td>
@@ -248,22 +503,29 @@
             <div class="flow-step step-6">
                 <div class="step-num">6</div>
                 <div class="step-content">
-                    <h4>Composite Score, Boosts &amp; Filters</h4>
-                    <p>Base composite = (Technical × 0.65) + (Sentiment × 0.25) + (Volume × 0.10). Then apply: sector rotation boost (+8 pts if in top 3 sectors), pre-market catalyst boost (up to +15 pts), and RVOL &gt;5× exhaustion penalty (−30%). Stocks scoring below 60 are dropped. Top 10 signals are kept.</p>
+                    <h4>Composite Score &amp; Legacy Boosts</h4>
+                    <p>Base composite = (Technical × 0.65) + (Sentiment × 0.25) + (Volume × 0.10). Then apply: sector rotation boost (+8 pts if in top 3 sectors), pre-market catalyst boost (up to +15 pts), and RVOL &gt;5× exhaustion penalty (−30%).</p>
                 </div>
             </div>
             <div class="flow-step step-7">
                 <div class="step-num">7</div>
                 <div class="step-content">
-                    <h4>Dead Zone &amp; Re-Entry Filters <span class="new-badge">NEW</span></h4>
-                    <p><strong>Dead Zone:</strong> Scans at 11:30 AM and 12:00 PM ET are skipped entirely — across 3 days of data, lunch-hour batches produced 0 wins in 21 decided trades (p &lt; 0.001). <strong>Re-Entry Suppression:</strong> Each ticker can only signal once per day. Re-entries (same ticker appearing in a later scan) are logged but filtered out — they produced only 1 win in 32 decided trades (3.1% win rate).</p>
+                    <h4>v3.3 Context Adjustments <span class="new-badge">NEW</span></h4>
+                    <p><strong>Sector Leadership:</strong> Compare the ticker's intraday % move against its sector ETF and SPY. LEADER (ticker &gt; sector &gt; SPY) → +10; SOLO MOVER (ticker &gt; SPY but sector lagging) → +3; FOLLOWER → 0; LAGGARD (ticker weaker than its sector) → −10. <strong>Market Regime (VIX):</strong> The effective minimum score is bumped by regime: CALM/NORMAL 60, ELEVATED 65, HIGH 70, EXTREME 80. Position-size recommendation is scaled 100 → 25 % across bands. <strong>Earnings:</strong> Hard-block entries after 2:00 PM ET on a post-close print day; soft −5 pts if earnings are tomorrow. Pills on the dashboard surface all three.</p>
                 </div>
             </div>
             <div class="flow-step step-8">
                 <div class="step-num">8</div>
                 <div class="step-content">
+                    <h4>Dead Zone &amp; Re-Entry Filters</h4>
+                    <p><strong>Dead Zone:</strong> Scans at 11:30 AM and 12:00 PM ET are skipped entirely — across 3 days of data, lunch-hour batches produced 0 wins in 21 decided trades (p &lt; 0.001). <strong>Re-Entry Suppression:</strong> Each ticker can only signal once per day. Re-entries (same ticker appearing in a later scan) are logged but filtered out — they produced only 1 win in 32 decided trades (3.1% win rate). Remaining stocks scoring below the effective min-score are dropped; top 10 are kept.</p>
+                </div>
+            </div>
+            <div class="flow-step step-9">
+                <div class="step-num">9</div>
+                <div class="step-content">
                     <h4>Trade Levels &amp; Signal Output</h4>
-                    <p>For each signal: Entry = current price. Stop-loss = Entry − (ATR × 2.0). ATR Target = Entry + (stop distance × 2.5). <strong>Resistance Target</strong> = nearest pivot-point resistance (R1/R2/R3) above entry, calculated from prior day's H/L/C using the Standard Floor Pivot formula. Position size = 1% account risk / stop distance. Hard close by 3:55 PM ET.</p>
+                    <p>For each signal: Entry = current price. Stop-loss = Entry − (ATR × 2.0). ATR Target = Entry + (stop distance × 2.5). <strong>Resistance Target</strong> = nearest pivot-point resistance (R1/R2/R3) above entry, calculated from prior day's H/L/C using the Standard Floor Pivot formula. Position size = 1% account risk / stop distance, scaled by the regime size multiplier. Hard close by 3:55 PM ET.</p>
                 </div>
             </div>
         </div>
@@ -272,7 +534,7 @@
         <!--  STOCK UNIVERSE                                        -->
         <!-- ═══════════════════════════════════════════════════════ -->
         <h2>Stock Universe <span class="new-badge">EXPANDED</span></h2>
-        <p>v3.2 scans ~130 tickers across two tiers, deduplicated at runtime:</p>
+        <p>v3.3 scans ~130 tickers across two tiers, deduplicated at runtime:</p>
 
         <h3>Core: ~100 Liquid Large-Caps (S&amp;P 500 Subset)</h3>
         <p>AAPL, MSFT, AMZN, NVDA, GOOGL, META, TSLA, JPM, GS, AMD, INTC, AVGO, CRM, SNOW, MDB, CRWD, NET, PANW, PLTR, COIN, SOFI, HOOD, UBER, ABNB, DKNG, ARM, SMCI, and ~75 more. These are the most liquid, widely-held names with tight spreads and reliable price data.</p>
@@ -302,7 +564,18 @@
             + Sector Rotation Boost:   up to +8 pts (if ticker is in top 3 sectors)<br>
             + Pre-Market Catalyst:     up to +15 pts (volume + news combo)<br>
             − RVOL Exhaustion Penalty: −30% of volume score if RVOL > 5×<br><br>
-            Minimum to generate signal: 60
+            <span style="color: var(--amber);">v3.3 Context Adjustments:</span><br>
+            + Sector Leader (ticker > sector > SPY):  +10 pts<br>
+            + Solo Mover  (ticker up, sector flat):   +3 pts<br>
+            − Sector Laggard (sector up, ticker not): −10 pts<br>
+            − Earnings Tomorrow BMO:                  −5 pts<br>
+            ⛔ Earnings Today AMC + after 14:00 ET:   HARD BLOCK<br><br>
+            <span style="color: var(--cyan);">Effective Min-Score (by VIX regime):</span><br>
+            &nbsp;&nbsp;CALM  &lt; 15  → 60<br>
+            &nbsp;&nbsp;NORMAL &lt; 20 → 60<br>
+            &nbsp;&nbsp;ELEVATED &lt; 25 → 65<br>
+            &nbsp;&nbsp;HIGH &lt; 30 → 70<br>
+            &nbsp;&nbsp;EXTREME ≥ 30 → 80
         </div>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -381,6 +654,68 @@
             Semis relative strength = +1.2% → NVDA, AMD, AVGO, AMAT, etc. get +8 pts
         </div>
         <p>Each sector has a curated list of high-beta component stocks that move the most when that sector rotates in. This ensures the scanner prioritizes names in the active theme.</p>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  v3.3  SECTOR LEADERSHIP CHECK                         -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Sector Leadership Check <span class="new-badge">v3.3</span></h2>
+        <p>Sector Rotation tells us <em>which sector is hot</em>. Sector Leadership tells us <em>whether this specific ticker is leading, following, or lagging its sector</em>. The two complement each other: a stock can be in a hot sector but still be a laggard within it — and those laggards historically underperform even in favorable conditions.</p>
+
+        <h3>How It Works</h3>
+        <p>At scan time, the scanner compares three intraday % moves: the ticker's move since the open, its sector ETF's move, and SPY's move. The relative ordering produces a label and a score adjustment:</p>
+        <div class="formula">
+            LEADER      (ticker% &gt; sector% &gt; SPY%)       → +10 pts<br>
+            SOLO MOVER  (ticker &gt; SPY, sector &lt; SPY)      → +3 pts<br>
+            FOLLOWER    (ticker &gt; SPY, ≤ sector)           →  0 pts<br>
+            LAGGARD     (ticker weaker than its sector)    → −10 pts<br>
+            UNKNOWN     (sector ETF data unavailable)      →  0 pts<br><br>
+            Example: NVDA +2.1% &nbsp;|&nbsp; SMH +1.4% &nbsp;|&nbsp; SPY +0.5% → LEADER (+10)<br>
+            Example: AMD  +0.4% &nbsp;|&nbsp; SMH +1.4% &nbsp;|&nbsp; SPY +0.5% → LAGGARD (−10)
+        </div>
+        <p>This is a <strong>score adjustment, not a hard filter</strong> — a laggard with elite technicals can still signal, just at a downgrade. Classification is skipped in the first 15 minutes after the open (before 9:45 AM) because early-session % moves are noisy and misleading.</p>
+        <p>Pills on the dashboard and Today's Finds page show the label with a tooltip containing the three % numbers that drove the classification.</p>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  v3.3  MARKET REGIME FILTER                            -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Market Regime Filter (VIX) <span class="new-badge">v3.3</span></h2>
+        <p>Momentum strategies perform very differently in calm markets (VIX &lt; 15) vs. stressed markets (VIX &gt; 25). On high-VIX days, breakouts fail more often, reversals are sharper, and slippage is worse. Rather than run the same aggressive scan in every environment, v3.3 reads <code>^VIX</code> at each scan tick and tightens the bar dynamically.</p>
+
+        <h3>Regime Bands</h3>
+        <div class="formula">
+            VIX Level   Regime      Min-Score Bump   Effective Min   Size Multiplier<br>
+            &lt; 15       CALM        +0               60              1.00×<br>
+            &lt; 20       NORMAL      +0               60              1.00×<br>
+            &lt; 25       ELEVATED    +5               65              0.75×<br>
+            &lt; 30       HIGH        +10              70              0.50×<br>
+            ≥ 30        EXTREME     +20              80              0.25×<br><br>
+            Intraday VIX pop &gt; 10% → bump regime up one band (even from a low base).
+        </div>
+
+        <h3>What Gets Adjusted</h3>
+        <p>Two things change by regime: (1) the <strong>minimum composite score</strong> a candidate must clear to generate a signal, and (2) the <strong>position-size recommendation</strong>. Stop distances, targets, and all indicator calculations are unchanged — it's purely a discipline / sizing overlay.</p>
+        <p>The scanner falls back to NORMAL if the VIX fetch fails, so a broken data feed never stops scanning.</p>
+        <p>The regime banner at the top of the dashboard shows the current VIX level, its change vs. the prior close, the regime label, and the effective min-score & size multiplier being used for the current scan.</p>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  v3.3  EARNINGS CALENDAR                               -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Earnings Calendar Indicator <span class="new-badge">v3.3</span></h2>
+        <p>Earnings announcements create discontinuous price jumps that ruin intraday stops — a stock can gap 10% through your stop overnight regardless of how strong the setup looked at 3:59 PM. v3.3 consults a locally-cached earnings calendar and both flags and, in the most dangerous case, <em>blocks</em>.</p>
+
+        <h3>Data Source &amp; Cache</h3>
+        <p>At 8:00 AM ET each trading day, the scanner pulls the next 14 days of confirmed earnings dates from Financial Modeling Prep. Any ticker in the universe without an FMP hit falls back to <code>yfinance</code>. The combined result is cached locally (6-hour TTL) so scan ticks don't hit the network for every candidate.</p>
+
+        <h3>Badges &amp; Behavior</h3>
+        <div class="formula">
+            Badge             When                                    Behavior<br>
+            EARN TODAY AMC    Earnings today, reporting after close    HARD BLOCK after 14:00 ET<br>
+            EARN TOMORROW     Earnings next session (BMO or AMC)       −5 pts soft penalty<br>
+            EARN &lt;DAY&gt;         Earnings this week                       Pill only, no score change<br>
+            EARN NEXT WK      Earnings within 14 days                  Pill only, no score change<br>
+            (no pill)         No earnings within 14 days               No change
+        </div>
+        <p>The hard block exists because holding a position into an AMC print is a binary event, not a trade. The soft penalty acknowledges that the market often front-runs earnings with elevated volatility, so a setup that's barely clearing score thresholds shouldn't get priority the day before.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
         <!--  PRE-MARKET                                            -->
@@ -562,7 +897,7 @@
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.2 &mdash; Algorithm documentation. For educational purposes only.
+        Momentum Scanner v3.3 &mdash; Algorithm documentation. For educational purposes only.
     </footer>
 </body>
 </html>
