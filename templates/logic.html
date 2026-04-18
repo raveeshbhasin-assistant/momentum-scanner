@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner</title>
+    <title>Algorithm Logic — Momentum Scanner v3.2</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -20,6 +20,7 @@
             --amber: #f59e0b;
             --cyan: #22d3ee;
             --purple: #a78bfa;
+            --orange: #fb923c;
             --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
             --mono: 'SF Mono', 'Fira Code', monospace;
         }
@@ -44,14 +45,25 @@
         }
         .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
 
-        .content { max-width: 900px; margin: 0 auto; padding: 48px 32px; }
+        .content { max-width: 920px; margin: 0 auto; padding: 48px 32px; }
         h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+        .version-tag {
+            display: inline-block; background: var(--green); color: #000; font-size: 12px;
+            font-weight: 700; padding: 2px 10px; border-radius: 4px; margin-left: 10px;
+            vertical-align: middle; font-family: var(--mono);
+        }
         h2 {
             font-size: 20px; font-weight: 600; margin: 40px 0 16px;
             color: var(--cyan); padding-bottom: 8px; border-bottom: 1px solid var(--border);
         }
         h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; color: var(--text-primary); }
         p { color: var(--text-secondary); margin-bottom: 16px; font-size: 15px; }
+
+        .new-badge {
+            display: inline-block; background: var(--amber); color: #000; font-size: 10px;
+            font-weight: 700; padding: 1px 6px; border-radius: 3px; margin-left: 8px;
+            vertical-align: middle; letter-spacing: 0.5px;
+        }
 
         .flow {
             display: flex; flex-direction: column; gap: 0;
@@ -74,12 +86,14 @@
             font-weight: 700; font-size: 14px; flex-shrink: 0;
             font-family: var(--mono);
         }
-        .step-1 .step-num { background: var(--blue); color: white; }
-        .step-2 .step-num { background: var(--purple); color: white; }
-        .step-3 .step-num { background: var(--amber); color: #000; }
-        .step-4 .step-num { background: var(--green); color: #000; }
-        .step-5 .step-num { background: var(--cyan); color: #000; }
-        .step-6 .step-num { background: var(--red); color: white; }
+        .step-1 .step-num { background: var(--orange); color: #000; }
+        .step-2 .step-num { background: var(--blue); color: white; }
+        .step-3 .step-num { background: var(--purple); color: white; }
+        .step-4 .step-num { background: var(--amber); color: #000; }
+        .step-5 .step-num { background: var(--green); color: #000; }
+        .step-6 .step-num { background: var(--cyan); color: #000; }
+        .step-7 .step-num { background: var(--red); color: white; }
+        .step-8 .step-num { background: #64748b; color: white; }
 
         .step-content h4 { font-size: 16px; margin-bottom: 6px; }
         .step-content p { font-size: 14px; color: var(--text-secondary); margin: 0; }
@@ -129,6 +143,17 @@
         .risk-table code { font-family: var(--mono); color: var(--cyan);
             background: var(--bg-card); padding: 2px 6px; border-radius: 4px; }
 
+        .schedule-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        .schedule-table th, .schedule-table td {
+            padding: 10px 16px; text-align: left;
+            border-bottom: 1px solid var(--border); font-size: 14px;
+        }
+        .schedule-table th { color: var(--text-muted); font-size: 12px;
+            text-transform: uppercase; letter-spacing: 1px; }
+        .schedule-table td { color: var(--text-secondary); }
+        .schedule-table code { font-family: var(--mono); color: var(--cyan);
+            background: var(--bg-card); padding: 2px 6px; border-radius: 4px; }
+
         .footer {
             text-align: center; padding: 24px; color: var(--text-muted);
             font-size: 12px; border-top: 1px solid var(--border); margin-top: 48px;
@@ -141,90 +166,173 @@
         <a href="/" class="nav-link">&larr; Dashboard</a>
         <a href="/today" class="nav-link">Today's Finds</a>
         <a href="/history" class="nav-link">History</a>
+        <a href="/performance" class="nav-link">Performance</a>
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic</h1>
-        <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, and the risk management rules. Nothing is a black box.</p>
+        <h1>Algorithm Logic <span class="version-tag">v3.2</span></h1>
+        <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box.</p>
 
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  DAILY SCHEDULE                                        -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Daily Schedule (Mon–Fri, Eastern Time)</h2>
+        <table class="schedule-table">
+            <thead>
+                <tr><th>Time (ET)</th><th>Job</th><th>What It Does</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>8:00 &amp; 9:00 AM</code></td>
+                    <td>Pre-Market Catalyst Scan</td>
+                    <td>Checks ~50 tickers for unusual pre-market volume and news sentiment. Flags tickers for a score boost (up to +15 pts) but never blocks anything.</td>
+                </tr>
+                <tr>
+                    <td><code>9:30 AM, then every hour</code></td>
+                    <td>Sector Rotation Detection</td>
+                    <td>Compares 15 sector ETFs against SPY to find which sectors are leading. Tickers in hot sectors get a +8 pt score boost.</td>
+                </tr>
+                <tr>
+                    <td><code>Every :00 and :30, 9 AM – 4:30 PM</code></td>
+                    <td>Momentum Scan</td>
+                    <td>The main scan. Fetches 5-min candles, scores technicals + sentiment + volume, applies filters and boosts, returns top 10 signals.</td>
+                </tr>
+                <tr>
+                    <td><code>5:00 PM</code></td>
+                    <td>Post-Market Analysis</td>
+                    <td>Fetches Yahoo Finance 5-min bars for all of today's picks. Computes WIN/LOSS/EOD outcome for each trade. Appends results to the performance log.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  SIGNAL PIPELINE                                       -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <h2>Signal Generation Pipeline</h2>
         <div class="flow">
             <div class="flow-step step-1">
                 <div class="step-num">1</div>
                 <div class="step-content">
-                    <h4>Volume Filter (Gate)</h4>
-                    <p>Fetch 5-minute candles for ~100 liquid S&P 500 stocks via FMP real-time API (with yfinance fallback). Calculate time-of-day-adjusted Relative Volume (RVOL). Stocks with RVOL &lt; 1.33x are immediately discarded — insufficient institutional interest.</p>
+                    <h4>Pre-Market Catalyst Scan <span class="new-badge">NEW</span></h4>
+                    <p>At 8:00 and 9:00 AM ET, the scanner checks up to 50 tickers for unusual pre-market volume (>2× prior day) and bullish news sentiment. Flagged tickers receive a score boost (up to +15 points) during the main scan, but <strong>no ticker is ever filtered out</strong> by this step — stocks that only start moving after the open are still scanned normally.</p>
                 </div>
             </div>
             <div class="flow-step step-2">
                 <div class="step-num">2</div>
                 <div class="step-content">
-                    <h4>Technical Scoring (65% weight)</h4>
-                    <p>Score each surviving stock on 5 technical dimensions: EMA alignment, RSI momentum zone, MACD trend, VWAP position, and Bollinger Band position. Each dimension gets 15-25 points, normalized to 0-100.</p>
+                    <h4>Sector Rotation Detection <span class="new-badge">NEW</span></h4>
+                    <p>Starting at 9:30 AM and every hour after, 15 sector ETFs (XLK, SMH, IGV, CLOU, XLF, XLV, XLE, XLY, XLI, XLB, XLU, XLRE, XLC, XLP, BITO) are compared against SPY. The top 3 sectors by relative strength are identified, and their high-beta component stocks receive a +8 point score boost during the main scan.</p>
                 </div>
             </div>
             <div class="flow-step step-3">
                 <div class="step-num">3</div>
                 <div class="step-content">
-                    <h4>News Sentiment Scoring (25% weight)</h4>
-                    <p>Pull recent news headlines from Finnhub. Score each headline with VADER (finance-tuned NLP). Apply recency decay: news &lt;15 min old gets full weight, &gt;1 hour old gets 30% weight. Aggregate into -1.0 to +1.0 sentiment score.</p>
+                    <h4>Volume Filter (Gate)</h4>
+                    <p>Fetch 5-minute candles for ~130 stocks (100 liquid S&amp;P 500 large-caps + ~30 high-beta mid/small-caps) via FMP real-time API (with yfinance fallback). Calculate time-of-day-adjusted Relative Volume (RVOL). Stocks with RVOL &lt; 1.33× are immediately discarded — insufficient institutional interest.</p>
                 </div>
             </div>
             <div class="flow-step step-4">
                 <div class="step-num">4</div>
                 <div class="step-content">
-                    <h4>Composite Score &amp; Ranking</h4>
-                    <p>Composite = (Technical × 0.65) + (Sentiment × 0.25) + (Volume × 0.10). Stocks scoring below 60 are dropped. Top 10 are displayed, ranked by score.</p>
+                    <h4>Technical Scoring (65% weight)</h4>
+                    <p>Score each surviving stock on 5 technical dimensions: EMA alignment (25 pts), RSI momentum zone (20 pts), MACD trend (20 pts), VWAP position with crossover detection (20 pts), and Bollinger Band position (20 pts). Total is normalized to 0–100.</p>
                 </div>
             </div>
             <div class="flow-step step-5">
                 <div class="step-num">5</div>
                 <div class="step-content">
-                    <h4>Trade Level Calculation</h4>
-                    <p>For each signal: Entry = current price. Stop-loss = Entry − (ATR × 2.0). ATR Target = Entry + (stop distance × 2.5). <strong>Resistance Target</strong> = nearest pivot-point resistance (R1/R2/R3) above entry, calculated from prior day's High/Low/Close using the Standard Floor Pivot formula. Position size = 1% account risk / stop distance. Hard close by 3:55 PM ET.</p>
+                    <h4>News Sentiment Scoring (25% weight)</h4>
+                    <p>Pull recent news headlines from Finnhub. Score each headline with VADER (finance-tuned NLP). Apply recency decay: news &lt;15 min old gets full weight, &gt;1 hour old gets 30% weight. Aggregate into −1.0 to +1.0 sentiment score.</p>
                 </div>
             </div>
             <div class="flow-step step-6">
                 <div class="step-num">6</div>
                 <div class="step-content">
-                    <h4>Signal Persistence &amp; History</h4>
-                    <p>Every signal is saved to a cumulative daily log (Today's Finds). Signals accumulate across all scans throughout the day, giving a complete picture of what triggered. A 3-day rolling history is maintained so you can review patterns and compare across sessions. Files older than 3 days are automatically cleaned up.</p>
+                    <h4>Composite Score, Boosts &amp; Filters</h4>
+                    <p>Base composite = (Technical × 0.65) + (Sentiment × 0.25) + (Volume × 0.10). Then apply: sector rotation boost (+8 pts if in top 3 sectors), pre-market catalyst boost (up to +15 pts), and RVOL &gt;5× exhaustion penalty (−30%). Stocks scoring below 60 are dropped. Top 10 signals are kept.</p>
+                </div>
+            </div>
+            <div class="flow-step step-7">
+                <div class="step-num">7</div>
+                <div class="step-content">
+                    <h4>Dead Zone &amp; Re-Entry Filters <span class="new-badge">NEW</span></h4>
+                    <p><strong>Dead Zone:</strong> Scans at 11:30 AM and 12:00 PM ET are skipped entirely — across 3 days of data, lunch-hour batches produced 0 wins in 21 decided trades (p &lt; 0.001). <strong>Re-Entry Suppression:</strong> Each ticker can only signal once per day. Re-entries (same ticker appearing in a later scan) are logged but filtered out — they produced only 1 win in 32 decided trades (3.1% win rate).</p>
+                </div>
+            </div>
+            <div class="flow-step step-8">
+                <div class="step-num">8</div>
+                <div class="step-content">
+                    <h4>Trade Levels &amp; Signal Output</h4>
+                    <p>For each signal: Entry = current price. Stop-loss = Entry − (ATR × 2.0). ATR Target = Entry + (stop distance × 2.5). <strong>Resistance Target</strong> = nearest pivot-point resistance (R1/R2/R3) above entry, calculated from prior day's H/L/C using the Standard Floor Pivot formula. Position size = 1% account risk / stop distance. Hard close by 3:55 PM ET.</p>
                 </div>
             </div>
         </div>
 
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  STOCK UNIVERSE                                        -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Stock Universe <span class="new-badge">EXPANDED</span></h2>
+        <p>v3.2 scans ~130 tickers across two tiers, deduplicated at runtime:</p>
+
+        <h3>Core: ~100 Liquid Large-Caps (S&amp;P 500 Subset)</h3>
+        <p>AAPL, MSFT, AMZN, NVDA, GOOGL, META, TSLA, JPM, GS, AMD, INTC, AVGO, CRM, SNOW, MDB, CRWD, NET, PANW, PLTR, COIN, SOFI, HOOD, UBER, ABNB, DKNG, ARM, SMCI, and ~75 more. These are the most liquid, widely-held names with tight spreads and reliable price data.</p>
+
+        <h3>Extended: ~30 High-Beta Mid/Small-Caps <span class="new-badge">NEW</span></h3>
+        <p>Added based on analysis of group-chat picks that outperformed the scanner's original universe:</p>
+        <div class="formula">
+            Fiber Optics / Photonics: AAOI, LITE, COHR, SNDK, CRDO, GLW<br>
+            AI Infrastructure / Data Center: ORCL, DELL, ANET, MU, MRVL<br>
+            Crypto / Fintech: MSTR, IREN, APLD, CRML<br>
+            High-Momentum Mid-Caps: APP, HIMS, PATH, FSLY, MOD, NBIS,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;DDOG, NOW, OKLO, AEVA, EOSE
+        </div>
+        <p>These names move 3–10%+ intraday on sector rotation and can produce the highest-conviction signals when a sector theme is in play.</p>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  COMPOSITE SCORE                                       -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <h2>Composite Score Weights</h2>
         <div class="weight-bar">
             <div class="weight-segment w-tech">Technical 65%</div>
             <div class="weight-segment w-sent">Sentiment 25%</div>
             <div class="weight-segment w-vol">Vol 10%</div>
         </div>
+        <div class="formula">
+            Base = (Technical × 0.65) + (Sentiment × 0.25) + (Volume × 0.10)<br><br>
+            + Sector Rotation Boost:   up to +8 pts (if ticker is in top 3 sectors)<br>
+            + Pre-Market Catalyst:     up to +15 pts (volume + news combo)<br>
+            − RVOL Exhaustion Penalty: −30% of volume score if RVOL > 5×<br><br>
+            Minimum to generate signal: 60
+        </div>
 
-        <h2>Technical Indicators</h2>
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  TECHNICAL INDICATORS                                  -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Technical Indicators (65% of score)</h2>
         <div class="indicator-grid">
             <div class="indicator-card">
-                <h5>EMA Alignment</h5>
-                <p>Bullish when 9-EMA &gt; 21-EMA &gt; 50-EMA. This confirms a multi-timeframe uptrend. Full points (25) for triple alignment, partial for 9 &gt; 21 only.</p>
+                <h5>EMA Alignment (25 pts)</h5>
+                <p>Bullish when 9-EMA &gt; 21-EMA &gt; 50-EMA. Full 25 points for triple alignment. 15 points for partial (9 &gt; 21 only). 8 points if price is above fast EMA.</p>
                 <div class="params">Periods: 9, 21, 50</div>
             </div>
             <div class="indicator-card">
-                <h5>RSI Momentum</h5>
-                <p>Sweet spot is 55–75: strong momentum without being overbought. Below 50 is bearish. Above 75 is overbought — reduced conviction.</p>
+                <h5>RSI Momentum (20 pts)</h5>
+                <p>Sweet spot is 55–75: strong momentum without being overbought. 50–55 gets 12 pts (building). Above 75 gets 5 pts (overbought caution). Below 50 gets 0.</p>
                 <div class="params">Period: 14 | Zone: 55–75</div>
             </div>
             <div class="indicator-card">
-                <h5>MACD</h5>
-                <p>Histogram positive AND growing = bullish acceleration. Just positive = bullish but decelerating. Negative but improving = early reversal signal.</p>
+                <h5>MACD (20 pts)</h5>
+                <p>Histogram positive AND growing = 20 pts (bullish acceleration). Just positive = 14 pts (bullish but decelerating). Negative but improving = 8 pts (early reversal).</p>
                 <div class="params">Fast: 12 | Slow: 26 | Signal: 9</div>
             </div>
             <div class="indicator-card">
-                <h5>VWAP</h5>
-                <p>Volume-Weighted Average Price — the institutional benchmark. Price above VWAP = net buyers dominating. &gt;0.5% above = strong conviction.</p>
-                <div class="params">Intraday calculation</div>
+                <h5>VWAP + Crossover (20 pts) <span class="new-badge">UPGRADED</span></h5>
+                <p><strong>Crossover detection:</strong> If price was below VWAP on the prior bar and just broke above → full 20 pts. This catches the exact moment of breakout. Already above by &gt;0.5% → 15 pts. Slightly above → 10 pts. Below → 0.</p>
+                <div class="params">Intraday | Crossover = bar-over-bar</div>
             </div>
             <div class="indicator-card">
-                <h5>Bollinger Bands</h5>
-                <p>Position within bands indicates momentum. Upper half with room to run = bullish. Near upper band = possible breakout or exhaustion. Width indicates volatility regime.</p>
+                <h5>Bollinger Bands (20 pts)</h5>
+                <p>Upper half with room to run (position 0.5–0.85) = 20 pts. Near upper band (&ge;0.85) = 8 pts (possible breakout or exhaustion). Middle = 10 pts. Lower half = 0.</p>
                 <div class="params">Period: 20 | Std Dev: 2.0</div>
             </div>
             <div class="indicator-card">
@@ -234,18 +342,66 @@
             </div>
         </div>
 
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  RVOL                                                  -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <h2>Relative Volume (RVOL)</h2>
         <p>RVOL compares current volume to the average volume at the same time of day over the past 20 sessions. This matters because volume naturally spikes at open (9:30–10:00 AM) and close (3:30–4:00 PM), and dips at midday. A simple daily average would show false positives in the morning and false negatives at noon.</p>
         <div class="formula">
             RVOL(now) = Volume(now) / Avg Volume(same time of day, past 20 days)<br><br>
             Thresholds:<br>
             &nbsp;&nbsp;&lt; 1.0x  → Below average (SKIP)<br>
-            &nbsp;&nbsp;1.33x  → Minimum for entry consideration (v3.1 — lowered from 1.5x for wider coverage)<br>
+            &nbsp;&nbsp;1.33x  → Minimum for entry consideration<br>
             &nbsp;&nbsp;2.0x+  → Strong institutional interest<br>
-            &nbsp;&nbsp;3.0x+  → Catalyst event likely
+            &nbsp;&nbsp;3.0x+  → Catalyst event likely<br>
+            &nbsp;&nbsp;5.0x+  → EXHAUSTION PENALTY: volume score reduced 30%
+        </div>
+        <p>The RVOL &gt;5× penalty is new in v3.2 — extremely high volume can signal exhaustion or blow-off tops rather than opportunity. The volume score is still positive, just dampened.</p>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  SECTOR ROTATION                                       -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Sector Rotation Detection <span class="new-badge">NEW</span></h2>
+        <p>Every hour from 9:30 AM – 3:30 PM ET, the scanner downloads intraday data for 15 sector ETFs and compares each sector's performance against SPY (the S&amp;P 500 benchmark).</p>
+
+        <h3>Sector ETFs Tracked</h3>
+        <div class="formula">
+            Technology: XLK &nbsp;|&nbsp; Semiconductors: SMH &nbsp;|&nbsp; Software: IGV<br>
+            AI/Cloud: CLOU &nbsp;|&nbsp; Financials: XLF &nbsp;|&nbsp; Healthcare: XLV<br>
+            Energy: XLE &nbsp;|&nbsp; Consumer Disc: XLY &nbsp;|&nbsp; Industrials: XLI<br>
+            Materials: XLB &nbsp;|&nbsp; Utilities: XLU &nbsp;|&nbsp; Real Estate: XLRE<br>
+            Comm Services: XLC &nbsp;|&nbsp; Consumer Staples: XLP &nbsp;|&nbsp; Crypto: BITO
         </div>
 
-        <h2>News Sentiment Scoring</h2>
+        <h3>How It Works</h3>
+        <div class="formula">
+            Relative Strength = Sector ETF Intraday % Change − SPY Intraday % Change<br><br>
+            Top 3 sectors by relative strength → their high-beta stocks get +8 pts<br><br>
+            Example: If SMH (semis) is up 1.5% while SPY is up 0.3%,<br>
+            Semis relative strength = +1.2% → NVDA, AMD, AVGO, AMAT, etc. get +8 pts
+        </div>
+        <p>Each sector has a curated list of high-beta component stocks that move the most when that sector rotates in. This ensures the scanner prioritizes names in the active theme.</p>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  PRE-MARKET                                            -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Pre-Market Catalyst Scan <span class="new-badge">NEW</span></h2>
+        <p>Runs at 8:00 AM and 9:00 AM ET, before the market opens. Checks up to 50 tickers for two signals:</p>
+
+        <div class="formula">
+            1. Volume Ratio = Today's pre-market volume / Yesterday's full-day volume<br>
+            &nbsp;&nbsp;If > 2.0× → boost up to +10 pts (capped at 5× volume)<br><br>
+            2. News Sentiment (via Finnhub + VADER)<br>
+            &nbsp;&nbsp;If sentiment > 0.3 → boost up to +10 pts<br><br>
+            Combined boost capped at +15 pts per ticker.<br>
+            Negative sentiment = no penalty, just no boost.
+        </div>
+        <p><strong>Critical design principle:</strong> This scan is purely additive. It boosts scores for pre-market movers but never prevents a stock from signaling if it only starts moving after the 9:30 AM open. A stock with no pre-market activity can still score 90+ on technicals alone.</p>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  NEWS SENTIMENT                                        -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>News Sentiment Scoring (25% of score)</h2>
         <p>Headlines are scored using VADER (Valence Aware Dictionary for Sentiment Reasoning), enhanced with a finance-specific lexicon. Words like "bullish", "beat", "upgrade" get strong positive scores; "crash", "downgrade", "miss" get negative scores.</p>
 
         <h3>Recency Decay</h3>
@@ -263,6 +419,33 @@
         <p><strong>First-order:</strong> Direct effect on the company in the headline. Apple beats earnings → Apple stock moves. This is scored directly from the headline.</p>
         <p><strong>Second-order:</strong> Spillover to related companies. Apple beats earnings → semiconductor suppliers (AVGO, QCOM) benefit from implied demand strength. The scanner tracks sector peer mappings and can flag when a peer has strong recent sentiment.</p>
 
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  STATISTICAL FILTERS                                   -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Data-Driven Filters <span class="new-badge">NEW</span></h2>
+        <p>These filters were derived from a 3-day backtest (159 trades, April 15–17, 2026). They remove statistically confirmed losing patterns:</p>
+
+        <h3>Lunch Dead Zone (11:30 AM – 12:00 PM ET)</h3>
+        <p>Scans scheduled at 11:30 and 12:00 are skipped entirely. In 3 days of data, lunch-hour batches produced <strong>0 wins in 21 decided trades</strong>. The probability of this happening by chance (given the overall ~30% base win rate) is p &lt; 0.001. Lunch-hour volume dries up and price moves during this window are unreliable.</p>
+
+        <h3>Re-Entry Suppression</h3>
+        <p>Each ticker can only generate one signal per day (its first appearance). Subsequent scans may detect the same ticker again, but these re-entries are logged and filtered out. In 3 days of data, re-entries produced <strong>1 win in 32 decided trades</strong> (3.1% win rate). The pattern: by the time a stock appears a second time, the move has already happened — you're buying the top of a move that's running out of steam.</p>
+
+        <h3>RVOL Exhaustion Penalty</h3>
+        <p>When RVOL exceeds 5×, the volume component of the composite score is reduced by 30%. Extremely high volume — while attention-grabbing — often signals a climactic move or blow-off top rather than sustainable momentum. The penalty dampens (not eliminates) the signal.</p>
+
+        <h3>Impact of Filters (3-day results)</h3>
+        <div class="formula">
+            Before filters:  159 trades, ~30% win rate<br>
+            After filters:   85 trades, ~36% win rate<br><br>
+            Dead zone removed:   21 trades (0 wins)<br>
+            Re-entries removed:  32 trades (1 win)<br>
+            Best time window:    1:00–3:00 PM ET (~67% win rate)
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  PIVOT RESISTANCE                                      -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <h2>Pivot Point Resistance Levels</h2>
         <p>In addition to ATR-based targets, each signal includes the nearest <strong>Standard Floor Pivot</strong> resistance level above the entry price. This gives a Barchart-style overhead resistance estimate based on the prior day's price action.</p>
         <div class="formula">
@@ -276,6 +459,9 @@
         </div>
         <p>The scanner finds the nearest R1, R2, or R3 above the current entry price and displays it as the <strong style="color: var(--purple);">Resistance Target</strong> (purple line on the chart). This helps you gauge how much room a trade has before hitting a natural ceiling.</p>
 
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  RISK MANAGEMENT                                       -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <h2>Risk Management Rules</h2>
         <table class="risk-table">
             <thead>
@@ -305,16 +491,45 @@
                 <tr>
                     <td>RVOL Gate</td>
                     <td><code>≥ 1.33×</code></td>
-                    <td>Low-volume moves are unreliable. RVOL filter ensures institutional participation. Lowered from 1.5× in v3.1 to capture more setups while still filtering noise.</td>
+                    <td>Low-volume moves are unreliable. RVOL filter ensures institutional participation.</td>
                 </tr>
                 <tr>
                     <td>Min Score</td>
                     <td><code>≥ 60/100</code></td>
                     <td>Only trade high-conviction setups where technicals, sentiment, and volume align.</td>
                 </tr>
+                <tr>
+                    <td>Dead Zone Skip</td>
+                    <td><code>11:30 &amp; 12:00 ET</code></td>
+                    <td>0 wins in 21 trades. Lunch-hour volume dries up and signals are unreliable. Statistically confirmed (p &lt; 0.001).</td>
+                </tr>
+                <tr>
+                    <td>Re-Entry Block</td>
+                    <td><code>1 signal/ticker/day</code></td>
+                    <td>Re-entries were 1W/31L (3.1% WR). By the second signal, the move is already exhausted.</td>
+                </tr>
             </tbody>
         </table>
 
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  POST-MARKET ANALYSIS                                  -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <h2>Post-Market Performance Tracking <span class="new-badge">NEW</span></h2>
+        <p>Every weekday at 5:00 PM ET, the scanner automatically evaluates all of the day's picks:</p>
+        <div class="formula">
+            For each signal from today:<br>
+            &nbsp;&nbsp;1. Fetch Yahoo Finance 5-min bars from signal time → 4:00 PM<br>
+            &nbsp;&nbsp;2. Check: did price hit the ATR target? → WIN<br>
+            &nbsp;&nbsp;3. Check: did price hit the stop-loss? → LOSS<br>
+            &nbsp;&nbsp;4. Neither hit → EOD (end-of-day close used as exit)<br><br>
+            Results are appended to scanner_trade_log.xlsx (cumulative).<br>
+            The <a href="/performance" style="color: var(--cyan);">Performance page</a> reads from this file on every page load.
+        </div>
+        <p>Duplicate protection is built in — if a day's data is already in the log, it won't be double-counted. The log tracks: date, batch time, ticker, entry price, target, stop, RVOL, RSI, composite score, result (WIN/LOSS/EOD), exit price, P&amp;L in dollars and percent, and whether the signal was a first appearance or re-entry.</p>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  DATA SOURCES                                          -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <h2>Data Sources</h2>
         <table class="risk-table">
             <thead>
@@ -323,24 +538,31 @@
             <tbody>
                 <tr><td>Price &amp; Quotes (real-time)</td><td>Financial Modeling Prep (FMP) — Stable API</td><td>$29/mo (Starter)</td></tr>
                 <tr><td>Price Candles (fallback)</td><td>yfinance (Yahoo Finance) — 15 min delay</td><td>Free</td></tr>
+                <tr><td>Sector ETF Data</td><td>yfinance — intraday 5-min bars</td><td>Free</td></tr>
                 <tr><td>News Headlines</td><td>Finnhub API</td><td>Free (60 calls/min)</td></tr>
                 <tr><td>Sentiment Scoring</td><td>VADER NLP (local)</td><td>Free</td></tr>
                 <tr><td>Technical Indicators</td><td>pandas-ta / ta (local)</td><td>Free</td></tr>
                 <tr><td>Pivot Resistance</td><td>Calculated locally from prior day OHLC</td><td>Free</td></tr>
+                <tr><td>Post-Market Bars (analysis)</td><td>Yahoo Finance 5-min bars</td><td>Free</td></tr>
             </tbody>
         </table>
 
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!--  KNOWN LIMITATIONS                                     -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <h2>Known Limitations</h2>
         <p><strong>Data source failover:</strong> FMP is the primary data source for real-time quotes and 5-minute candles. If the FMP API is unreachable or returns errors, the scanner automatically falls back to yfinance (15-minute delayed data). During market hours, demo data is never shown — if both sources fail, the scan returns empty rather than stale prices.</p>
-        <p><strong>FMP Starter plan limits:</strong> The Starter plan does not support batch-quote endpoints, so quotes are fetched one ticker at a time with rate limiting (4 calls/sec). A full S&P 100 scan takes ~25 seconds for quotes alone.</p>
-        <p><strong>Pivot accuracy:</strong> Pivot resistance levels require at least 2 days of intraday data to calculate (prior day's H/L/C). On the first day of scanning a new ticker or after extended market closures, pivots may be unavailable.</p>
-        <p><strong>History persistence:</strong> Daily finds are stored as JSON files on disk. On Railway (ephemeral filesystem), history is lost on redeploy. For persistent storage, a Railway volume mount is needed.</p>
+        <p><strong>FMP Starter plan limits:</strong> The Starter plan does not support batch-quote endpoints, so quotes are fetched one ticker at a time with rate limiting (4 calls/sec). A full scan of ~130 tickers takes ~30 seconds for quotes alone.</p>
+        <p><strong>Filter sample size:</strong> Dead zone and re-entry filters are based on 3 days of data (159 trades). While statistically significant (p &lt; 0.001 for dead zone), continued monitoring is important. The post-market analysis pipeline will accumulate more data to validate or refine these rules over time.</p>
+        <p><strong>Sector rotation latency:</strong> Sector detection runs hourly (at :30 past each hour). A sudden sector rotation that happens at :45 won't be reflected until the next check at :30. The boost persists until the next detection run.</p>
+        <p><strong>Pre-market data quality:</strong> Pre-market volume data from yfinance can be spotty for smaller-cap names. The scan limits to 50 tickers and uses the prepost=True flag, but coverage may vary.</p>
+        <p><strong>History persistence:</strong> Daily finds are stored as JSON files on disk. On Railway (ephemeral filesystem), history is lost on redeploy. The trade log (scanner_trade_log.xlsx) is committed to the repo to survive redeployments.</p>
         <p><strong>News coverage:</strong> Finnhub free tier covers major headlines but may miss niche or breaking news. Sentiment scoring is keyword-based (VADER), not deep-learning. It catches obvious sentiment but may miss sarcasm or complex narratives.</p>
         <p><strong>Not financial advice:</strong> This scanner is an educational tool. Past technical patterns don't guarantee future results. Always do your own research and consider consulting a financial advisor.</p>
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.1 &mdash; Algorithm documentation. For educational purposes only.
+        Momentum Scanner v3.2 &mdash; Algorithm documentation. For educational purposes only.
     </footer>
 </body>
 </html>
