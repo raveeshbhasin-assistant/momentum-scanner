@@ -657,8 +657,8 @@
             <div class="flow-step step-7">
                 <div class="step-num">7</div>
                 <div class="step-content">
-                    <h4>v3.3 Context Adjustments <span class="new-badge">NEW</span></h4>
-                    <p><strong>Sector Leadership:</strong> Compare the ticker's intraday % move against its sector ETF and SPY. LEADER (ticker &gt; sector &gt; SPY) → +10; SOLO MOVER (ticker &gt; SPY but sector lagging) → +3; FOLLOWER → 0; LAGGARD (ticker weaker than its sector) → −10. <strong>Market Regime (VIX):</strong> The effective minimum score is bumped by regime: CALM/NORMAL 60, ELEVATED 65, HIGH 70, EXTREME 80. Position-size recommendation is scaled 100 → 25 % across bands. <strong>Earnings:</strong> Hard-block entries after 2:00 PM ET on a post-close print day; soft −5 pts if earnings are tomorrow. Pills on the dashboard surface all three.</p>
+                    <h4>Context Gates — Leadership / Regime / Earnings <span class="new-badge">v3.3.2</span></h4>
+                    <p><strong>Sector Leadership (HARD GATE in v3.3.2):</strong> Compare the ticker's intraday % move against its sector ETF and SPY, classify as LEADER (ticker &gt; sector &gt; SPY), SOLO_MOVER (ticker &gt; SPY but sector lagging SPY), FOLLOWER (ticker &gt; SPY but lags its sector) or LAGGARD (ticker &lt; sector). In <code>LEADER_FILTER_MODE="moderate"</code> (the default) only LEADER + SOLO_MOVER pass; FOLLOWER, LAGGARD and UNKNOWN are <strong>dropped entirely</strong> — no score penalty, no signal. See the v3.3.2 release notes below for the backtest rationale and alternate modes (<code>strict</code>, <code>permissive</code>, legacy <code>score</code>). <strong>Market Regime (VIX):</strong> effective minimum score is bumped by regime — CALM/NORMAL 60, ELEVATED 65, HIGH 70, EXTREME 80. Position-size recommendation scales 100 → 25 % across bands. <strong>Earnings:</strong> hard-block entries after 2:00 PM ET on a post-close print day; soft −5 pts if earnings are tomorrow. Pills on the dashboard surface leadership, regime and earnings status.</p>
                 </div>
             </div>
             <div class="flow-step step-8">

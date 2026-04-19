@@ -18,10 +18,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 import config
 from scanner import run_scan
-from demo_data import generate_demo_signals
 from history import add_signals_to_daily, load_daily_finds, get_history_days, cleanup_old_files
 from sector_rotation import detect_sector_rotation, get_sector_priority_tickers
-from premarket import run_premarket_scan, reset_daily as reset_premarket, get_premarket_flags
+from premarket import run_premarket_scan, reset_daily as reset_premarket
 from daily_analysis import analyze_day
 from market_regime import get_regime
 from earnings import refresh_earnings_cache
@@ -41,7 +40,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.3")
+app = FastAPI(title="Momentum Scanner", version="3.4.1")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -255,9 +254,9 @@ async def startup():
     scheduler.start()
     cleanup_old_files()
     logger.info(
-        f"Scheduler started: v3.2 with sector rotation, pre-market scan, "
-        f"dead zone filter, re-entry suppression, and auto post-market analysis. "
-        f"Mon-Fri 8:00 AM – 5:00 PM ET"
+        f"Scheduler started: v3.4.1 — sector rotation, VIX regime gating, "
+        f"LEADER+SOLO hard-filter (v3.3.2), MFE/MAE exit research, "
+        f"60-min MAE manual rule. Mon-Fri 8:00 AM – 5:00 PM ET"
     )
     logger.info(f"Dashboard running at http://localhost:{config.PORT}")
 
@@ -434,17 +433,23 @@ def _load_trade_log() -> tuple[list[dict], list[dict]]:
         daily_summary = []
         for day in sorted(by_day.keys()):
             day_trades = by_day[day]
-            w = sum(1 for t in day_trades if t["result"] == "WIN")
-            l = sum(1 for t in day_trades if t["result"] == "LOSS")
+            # v3.4 — win is any trade with pnl > 0 (not just target hits)
+            w = sum(1 for t in day_trades if t["result"] == "WIN")       # legacy target-hit
+            l = sum(1 for t in day_trades if t["result"] == "LOSS")      # legacy stop-hit
             e = sum(1 for t in day_trades if t["result"] == "EOD")
-            dec = w + l
+            pw = sum(1 for t in day_trades if t["pnl_dollar"] > 0)       # P&L positive
+            pl = sum(1 for t in day_trades if t["pnl_dollar"] < 0)
+            completed = pw + pl
             daily_summary.append({
                 "date": day,
                 "total": len(day_trades),
-                "wins": w,
-                "losses": l,
+                "wins": w,          # legacy target hits
+                "losses": l,        # legacy stop hits
                 "eods": e,
-                "win_rate": round(w / dec * 100, 1) if dec > 0 else 0,
+                "pnl_wins": pw,
+                "pnl_losses": pl,
+                "win_rate": round(pw / completed * 100, 1) if completed > 0 else 0,  # v3.4 def
+                "target_hit_rate": round(w / (w + l) * 100, 1) if (w + l) > 0 else 0,  # legacy def
                 "net_pnl": round(sum(t["pnl_dollar"] for t in day_trades), 2),
             })
 
@@ -466,7 +471,7 @@ async def logic_page(request: Request):
 
 
 # ═══════════════════════════════════════════════════════════════
-#  BACKTEST (v3.3)
+#  BACKTEST (v3.4.1)
 # ═══════════════════════════════════════════════════════════════
 
 @app.get("/backtest", response_class=HTMLResponse)

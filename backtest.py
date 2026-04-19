@@ -1,9 +1,12 @@
 """
 Backtest Engine (Technicals-Only Historical Replay)
 ───────────────────────────────────────────────────
-Replays the v3.3 scanner algorithm against historical 5-minute bars
+Replays the v3.4.1 scanner algorithm against historical 5-minute bars
 and simulates each trade forward to compute win rate, P&L, equity
-curve, and per-filter impact.
+curve, and per-filter impact. Runs seven parallel exit strategies
+(flat / tiered / abandon / combo / mfe_kill / tight_abandon / mae_exit)
+so exit rules can be compared on the same trade universe. Headline
+strategy is selected via Filters.exit_strategy (default: "mae_exit").
 
 Scope & Limitations — read before trusting numbers:
   • TECHNICALS ONLY. News sentiment and pre-market catalysts are
@@ -29,7 +32,9 @@ Scope & Limitations — read before trusting numbers:
 
 All caveats are surfaced on the /backtest page.
 
-Added in v3.3.
+Added in v3.3. Extended in v3.4 (MFE/MAE + tiered/abandon/combo exits
++ win redefined as pnl_dollars > 0) and v3.4.1 (MFE_KILL /
+TIGHT_ABANDON / MAE_EXIT + exit_strategy router).
 """
 
 import json

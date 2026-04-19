@@ -88,6 +88,41 @@
 
         .main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
 
+        /* ── MAE-Rule Reminder (v3.4.1) ────────────────────────── */
+        .mae-rule-banner {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 16px;
+            border: 1px solid rgba(167,139,250,0.35);
+            background: rgba(167,139,250,0.06);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: var(--text-secondary, #94a3b8);
+            line-height: 1.5;
+        }
+        .mae-rule-banner .mae-tag {
+            flex: 0 0 auto;
+            font-family: var(--mono, monospace);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            background: rgba(167,139,250,0.2);
+            color: var(--purple, #a78bfa);
+            border: 1px solid rgba(167,139,250,0.4);
+        }
+        .mae-rule-banner strong { color: var(--text-primary, #e2e8f0); font-weight: 600; }
+        .mae-rule-banner a {
+            color: var(--purple, #a78bfa); text-decoration: none;
+            border-bottom: 1px dotted rgba(167,139,250,0.5);
+            margin-left: 4px;
+        }
+        .mae-rule-banner a:hover { color: var(--text-primary, #e2e8f0); border-bottom-color: var(--text-primary, #e2e8f0); }
+        @media (max-width: 768px) {
+            .mae-rule-banner { flex-wrap: wrap; font-size: 11px; padding: 10px 12px; }
+        }
+
         /* ── KPI Cards ─────────────────────────────────────────── */
         .kpi-grid {
             display: grid;
@@ -270,6 +305,16 @@
 
     <main class="main">
 
+        <!-- 60-MIN MAE CHECK REMINDER (v3.4.1 manual rule) -->
+        <div class="mae-rule-banner" title="Manual Fidelity rule — the same 60-min MAE check that powers the MAE_EXIT backtest headline">
+            <span class="mae-tag">60-MIN MAE CHECK</span>
+            <span>
+                Headline Win Rate uses <strong>P&amp;L &gt; 0</strong> (v3.4 definition). Target-hit rate is shown as a sub-metric.
+                Numbers here reconcile with <a href="/backtest">/backtest</a> when the MAE_EXIT rule is applied live.
+                <a href="/logic#v3-4-1">see logic →</a>
+            </span>
+        </div>
+
         <!-- KPI Cards -->
         <div class="kpi-grid">
             <div class="kpi-card">
@@ -281,8 +326,8 @@
                 <div class="kpi-label">Net P&L</div>
                 <div class="kpi-value" id="kpiPnl">—</div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Win Rate (Decided)</div>
+            <div class="kpi-card" title="Any trade with positive P&amp;L counts as a win (v3.4 definition). Matches the /backtest headline.">
+                <div class="kpi-label">Win Rate (P&amp;L &gt; 0)</div>
                 <div class="kpi-value" id="kpiWinRate">—</div>
                 <div class="kpi-sub" id="kpiWinSub"></div>
             </div>
@@ -356,7 +401,7 @@
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.0 &mdash; Performance Tracker. Not financial advice.
+        Momentum Scanner v3.4.1 &mdash; Performance Tracker. Not financial advice.
     </footer>
 
     <script>
@@ -370,14 +415,22 @@
         Chart.defaults.font.family = "'SF Mono', 'Fira Code', monospace";
 
         // ── Compute KPIs ───────────────────────────────────────
-        const wins = trades.filter(t => t.result === 'WIN');
-        const losses = trades.filter(t => t.result === 'LOSS');
-        const eods = trades.filter(t => t.result === 'EOD');
-        const decided = wins.length + losses.length;
-        const winRate = decided > 0 ? (wins.length / decided * 100) : 0;
+        // v3.4 redefined WIN as "any trade with pnl_dollar > 0" (not just target hits).
+        // We keep the legacy target-hit bucket visible as a sub-line so the old
+        // semantic isn't lost, but the headline Win Rate is now pnl-based and
+        // reconciles with the /backtest page.
+        const targetHits   = trades.filter(t => t.result === 'WIN');      // legacy bucket — target hit
+        const stopHits     = trades.filter(t => t.result === 'LOSS');     // legacy bucket — stop hit
+        const eods         = trades.filter(t => t.result === 'EOD');      // closed end-of-day
+        const pnlWins      = trades.filter(t => (t.pnl_dollar || 0) > 0);
+        const pnlLosses    = trades.filter(t => (t.pnl_dollar || 0) < 0);
+        const completed    = pnlWins.length + pnlLosses.length;            // breakeven trades drop out
+        const winRate      = completed > 0 ? (pnlWins.length / completed * 100) : 0;
+        const targetHitRate= (targetHits.length + stopHits.length) > 0
+            ? (targetHits.length / (targetHits.length + stopHits.length) * 100) : 0;
         const totalPnl = trades.reduce((s, t) => s + (t.pnl_dollar || 0), 0);
-        const avgWin = wins.length > 0 ? wins.reduce((s, t) => s + t.pnl_dollar, 0) / wins.length : 0;
-        const avgLoss = losses.length > 0 ? Math.abs(losses.reduce((s, t) => s + t.pnl_dollar, 0) / losses.length) : 0;
+        const avgWin   = pnlWins.length   > 0 ? pnlWins.reduce((s, t) => s + t.pnl_dollar, 0) / pnlWins.length : 0;
+        const avgLoss  = pnlLosses.length > 0 ? Math.abs(pnlLosses.reduce((s, t) => s + t.pnl_dollar, 0) / pnlLosses.length) : 0;
         const actualRR = avgLoss > 0 ? (avgWin / avgLoss) : 0;
         const uniqueDays = [...new Set(trades.map(t => t.date))];
 
@@ -387,7 +440,10 @@
         document.getElementById('kpiPnl').style.color = totalPnl >= 0 ? '#22c55e' : '#ef4444';
         document.getElementById('kpiWinRate').textContent = `${winRate.toFixed(1)}%`;
         document.getElementById('kpiWinRate').style.color = winRate >= 40 ? '#22c55e' : winRate >= 30 ? '#f59e0b' : '#ef4444';
-        document.getElementById('kpiWinSub').textContent = `${wins.length}W / ${losses.length}L / ${eods.length}EOD`;
+        document.getElementById('kpiWinSub').innerHTML =
+            `${pnlWins.length}P / ${pnlLosses.length}N · ` +
+            `<span title="Target-hit-only rate (legacy)">tgt ${targetHitRate.toFixed(0)}%</span> ` +
+            `(${targetHits.length}W / ${stopHits.length}L / ${eods.length}EOD)`;
         document.getElementById('kpiRR').textContent = `${actualRR.toFixed(2)}:1`;
         document.getElementById('kpiAvgWin').textContent = `$${avgWin.toFixed(2)}`;
         document.getElementById('kpiAvgLoss').textContent = `$${avgLoss.toFixed(2)}`;

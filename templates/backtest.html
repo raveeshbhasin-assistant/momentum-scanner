@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backtest — Momentum Scanner v3.3</title>
+    <title>Backtest — Momentum Scanner v3.4.1</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -212,7 +212,7 @@
 
 <main class="main">
     <h1>Backtest <span class="status idle" id="status">idle</span></h1>
-    <p class="subtitle">Replay the v3.3 algorithm against historical 5-minute bars. Technicals-only.</p>
+    <p class="subtitle">Replay the v3.4.1 algorithm against historical 5-minute bars. Technicals-only entries, MAE-aware exits (see <a href="/logic#v3-4-1" style="color: inherit; text-decoration: underline;">logic</a>).</p>
 
     <div class="callout">
         <strong>Read before trusting numbers.</strong> This backtest has known limitations:
@@ -240,6 +240,18 @@
             <label for="maxTickers">Max Tickers (empty = all)</label>
             <input type="number" id="maxTickers" min="1" max="200" placeholder="all (~130)" />
         </div>
+        <div class="control-group">
+            <label for="exitStrategy" title="Which exit rule drives the headline P&L. All seven are always simulated in parallel — this just picks which one displays as the headline.">Exit Strategy</label>
+            <select id="exitStrategy">
+                <option value="mae_exit" selected>MAE_EXIT — bar-12 MAE&lt;-0.75R rule (v3.4.1 default)</option>
+                <option value="flat">FLAT — stop / target / EOD only (baseline)</option>
+                <option value="tiered">TIERED — 33/33/33 scale-out at +1R / +2R / +3R</option>
+                <option value="abandon">ABANDON — close at bar 12 if stuck in ±0.5R chop</option>
+                <option value="combo">COMBO — tiered + abandon stacked</option>
+                <option value="mfe_kill">MFE_KILL — close at bar 8 if MFE&lt;0.3R (v3.4.1 failed hypothesis)</option>
+                <option value="tight_abandon">TIGHT_ABANDON — bar-12 chop + MAE&lt;-0.5R</option>
+            </select>
+        </div>
 
         <div class="toggle-row">
             <label class="toggle on" data-filter="leadership_enabled"><input type="checkbox" checked> Leadership</label>
@@ -261,7 +273,7 @@
 </main>
 
 <footer class="footer">
-    Momentum Scanner v3.3 &mdash; Backtest engine. For educational analysis only; past performance does not predict future results.
+    Momentum Scanner v3.4.1 &mdash; Backtest engine. For educational analysis only; past performance does not predict future results.
 </footer>
 
 <script>
@@ -292,6 +304,8 @@ function collectFilters() {
     document.querySelectorAll('.toggle').forEach(t => {
         f[t.dataset.filter] = t.querySelector('input').checked;
     });
+    const exitSel = document.getElementById('exitStrategy');
+    if (exitSel) f.exit_strategy = exitSel.value;
     return f;
 }
 
@@ -373,7 +387,22 @@ function render(data) {
     const fmtMoney = v => (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
     const cls = v => v > 0 ? 'pos' : v < 0 ? 'neg' : '';
 
-    root.innerHTML = `
+    // v3.4.1 — surface which exit rule produced the headline numbers, plus quick FLAT comparison
+    const exitStrat = (data.filters && data.filters.exit_strategy) || 'mae_exit';
+    const flatSum = s.flat_summary || null;
+    let stratLine = `<div style="margin: -8px 0 16px; padding: 10px 14px; border:1px solid rgba(167,139,250,0.35); background: rgba(167,139,250,0.06); border-radius: 8px; font-size: 13px; color: var(--muted);">
+        <strong style="color: var(--text);">Headline strategy:</strong>
+        <code style="color: var(--purple); font-weight: 600;">${exitStrat.toUpperCase()}</code>`;
+    if (flatSum && exitStrat !== 'flat') {
+        const delta = (s.total_pnl || 0) - (flatSum.total_pnl || 0);
+        const sign = delta >= 0 ? '+' : '';
+        const colour = delta >= 0 ? 'var(--green)' : 'var(--red)';
+        stratLine += ` &middot; vs FLAT baseline: <span style="color:${colour}; font-weight:600;">${sign}$${delta.toLocaleString(undefined,{maximumFractionDigits:0})}</span>
+            (FLAT was ${flatSum.win_rate}% WR / $${(flatSum.total_pnl||0).toLocaleString(undefined,{maximumFractionDigits:0})})`;
+    }
+    stratLine += ` &middot; <a href="/logic#v3-4-1" style="color: var(--purple);">see logic →</a></div>`;
+
+    root.innerHTML = stratLine + `
         <div class="kpi-grid">
             <div class="kpi-card"><div class="kpi-label">Trades</div>
                 <div class="kpi-value" style="color:var(--blue)">${s.trade_count}</div>

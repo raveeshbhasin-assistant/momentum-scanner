@@ -86,6 +86,41 @@
 
         .main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
 
+        /* ── MAE-Rule Reminder (v3.4.1) ────────────────────────── */
+        .mae-rule-banner {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 16px;
+            border: 1px solid rgba(167,139,250,0.35);
+            background: rgba(167,139,250,0.06);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .mae-rule-banner .mae-tag {
+            flex: 0 0 auto;
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            background: rgba(167,139,250,0.2);
+            color: var(--purple);
+            border: 1px solid rgba(167,139,250,0.4);
+        }
+        .mae-rule-banner strong { color: var(--text-primary); font-weight: 600; }
+        .mae-rule-banner a {
+            color: var(--purple); text-decoration: none;
+            border-bottom: 1px dotted rgba(167,139,250,0.5);
+            margin-left: 4px;
+        }
+        .mae-rule-banner a:hover { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+        @media (max-width: 768px) {
+            .mae-rule-banner { flex-wrap: wrap; font-size: 11px; padding: 10px 12px; }
+        }
+
         .stats-bar {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -268,6 +303,18 @@
     </header>
 
     <main class="main">
+
+        <!-- 60-MIN MAE CHECK REMINDER (v3.4.1 manual rule) -->
+        <div class="mae-rule-banner" title="Manual Fidelity rule — check at 60 minutes into each open trade">
+            <span class="mae-tag">60-MIN MAE CHECK</span>
+            <span>
+                For every open trade at the <strong>60-min mark</strong>: if the stock has ever dropped
+                <strong>&gt; 0.75R below entry</strong> <em>and</em> is <strong>still below entry</strong> at the candle close —
+                close flat on Fidelity. 20-day backtest: saved $2.6K across 10 fires (2 false-pos).
+                <a href="/logic#v3-4-1">see logic →</a>
+            </span>
+        </div>
+
         <div class="stats-bar">
             <div class="stat-card">
                 <div class="stat-label">Signals Today</div>
@@ -360,7 +407,7 @@
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.0 &mdash; For educational and informational purposes only. Not financial advice.
+        Momentum Scanner v3.4.1 &mdash; For educational and informational purposes only. Not financial advice.
     </footer>
 
     <script>

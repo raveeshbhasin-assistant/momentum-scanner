@@ -260,7 +260,12 @@ def classify_leadership(
     Returns:
         {
           "label": "LEADER" | "FOLLOWER" | "LAGGARD" | "SOLO_MOVER" | "UNKNOWN"
-          "score_adjustment": int  (+10 / 0 / -10 / +3 / 0)
+          "score_adjustment": int  (LEADER +10 / FOLLOWER 0 / LAGGARD -10 /
+                                     SOLO_MOVER 0 since v3.3.1 / UNKNOWN 0).
+                                     Only consumed when LEADER_FILTER_MODE
+                                     == "score"; in moderate/strict/permissive
+                                     modes the label is a hard gate and this
+                                     adjustment is ignored — see scanner.py.
           "sector": str | None
           "ticker_pct": float
           "sector_pct": float | None

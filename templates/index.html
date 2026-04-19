@@ -907,7 +907,7 @@
                                 <div class="level-row stop">
                                     <div>
                                         <div class="level-label">Stop Loss</div>
-                                        <div class="level-detail">-{{ "%.1f"|format(signal.trade.risk_pct) }}% ({{ signal.trade.atr_stop_multiplier if signal.trade.atr_stop_multiplier is defined else '2.0' }}x ATR)</div>
+                                        <div class="level-detail">-{{ "%.1f"|format(signal.trade.risk_pct) }}% (2.0x ATR)</div>
                                     </div>
                                     <div class="level-value">${{ "%.2f"|format(signal.trade.stop_loss) }}</div>
                                 </div>
@@ -976,7 +976,7 @@
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.3 &mdash; For educational and informational purposes only. Not financial advice. Always do your own research.
+        Momentum Scanner v3.4.1 &mdash; For educational and informational purposes only. Not financial advice. Always do your own research.
     </footer>
 
     <!-- ═══════════════════════════════════════════════════════

@@ -22,7 +22,7 @@ from ta.momentum import RSIIndicator
 from ta.volatility import BollingerBands, AverageTrueRange
 
 import config
-from news import get_sentiment_score, get_news_headlines
+from news import get_sentiment_score
 from sector_rotation import classify_leadership, TICKER_TO_SECTOR
 from market_regime import get_regime
 from earnings import get_earnings_context
