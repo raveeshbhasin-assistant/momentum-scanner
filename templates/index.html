@@ -598,6 +598,31 @@
             background: rgba(167,139,250,0.15); color: var(--purple);
             border: 1px solid rgba(167,139,250,0.4);
         }
+        /* v3.4.2: display-tier + weak-signal styling */
+        .badge.weak-signal {
+            background: rgba(148,163,184,0.12); color: var(--text-secondary);
+            border: 1px dashed var(--border); font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .signal-card.weak {
+            opacity: 0.72;
+            background: linear-gradient(180deg, var(--bg-card) 0%, rgba(26,31,46,0.75) 100%);
+            border-left: 3px solid var(--text-muted);
+        }
+        .signal-card.weak:hover { opacity: 1; }
+        .signals-section-divider {
+            grid-column: 1 / -1;
+            margin: 18px 0 6px; padding: 10px 14px;
+            color: var(--text-secondary);
+            font-family: var(--mono); font-size: 11px;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            border-top: 1px dashed var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .signals-section-divider .divider-note {
+            color: var(--text-muted); font-size: 10px;
+            text-transform: none; letter-spacing: normal;
+        }
         .badge.earn-today {
             background: rgba(239,68,68,0.18); color: var(--red);
             border: 1px solid rgba(239,68,68,0.5);
@@ -799,17 +824,29 @@
 
         <!-- SIGNALS -->
         {% if signals %}
+        {# v3.4.2: split into strong (composite >= effective_min_score) and weak (>= WEAK_SIGNAL_FLOOR) #}
+        {% set strong_signals = signals | selectattr('signal_strength', 'equalto', 'strong') | list %}
+        {% set weak_signals   = signals | selectattr('signal_strength', 'equalto', 'weak') | list %}
+        {# Backwards compat: if signals pre-date v3.4.2 (no signal_strength), treat all as strong. #}
+        {% if not strong_signals and not weak_signals %}{% set strong_signals = signals %}{% endif %}
+        {% set strong_count = strong_signals|length %}
         <div class="signals-grid" id="signalsGrid">
             {% for signal in signals %}
-            <div class="signal-card" id="card-{{ signal.ticker }}">
+            {% if signal.signal_strength == 'weak' and loop.index0 == strong_count %}
+                <div class="signals-section-divider">
+                    <span>Weak Signals &mdash; below 60 composite</span>
+                    <span class="divider-note">Borderline setups. Confirm with price action before entering.</span>
+                </div>
+            {% endif %}
+            <div class="signal-card{% if signal.signal_strength == 'weak' %} weak{% endif %}" id="card-{{ signal.ticker }}">
                 <div class="signal-header" onclick="toggleCard('{{ signal.ticker }}')">
                     <div class="signal-ticker-group">
                         <span class="signal-ticker">{{ signal.ticker }}</span>
                         <span class="signal-price">${{ "%.2f"|format(signal.price) }}</span>
                     </div>
                     <div class="signal-badges">
-                        {# v3.3.2: Sector Leadership badge — hide "+N" when adjustment is 0 (hard-filter mode) #}
-                        {% if signal.leadership and signal.leadership.label and signal.leadership.label != 'UNKNOWN' %}
+                        {# v3.4.2: Sector Leadership — render every label incl. FOLLOWER / UNKNOWN #}
+                        {% if signal.leadership and signal.leadership.label %}
                             {% set lead_label = signal.leadership.label %}
                             {% set adj = signal.leader_adjustment|default(0) %}
                             {% if lead_label == 'LEADER' %}
@@ -818,7 +855,16 @@
                                 <span class="badge laggard" title="{{ signal.leadership.reason }}">LAGGARD{% if adj != 0 %} {{ adj }}{% endif %}</span>
                             {% elif lead_label == 'SOLO_MOVER' %}
                                 <span class="badge solo" title="{{ signal.leadership.reason }}">SOLO MOVER{% if adj > 0 %} +{{ adj }}{% endif %}</span>
+                            {% elif lead_label == 'FOLLOWER' %}
+                                <span class="badge follower" title="{{ signal.leadership.reason }}">FOLLOWER</span>
+                            {% elif lead_label == 'UNKNOWN' %}
+                                <span class="badge follower" title="{{ signal.leadership.reason or 'No sector classification available' }}">UNCLASSIFIED</span>
                             {% endif %}
+                        {% endif %}
+
+                        {# v3.4.2: Weak-signal badge #}
+                        {% if signal.signal_strength == 'weak' %}
+                            <span class="badge weak-signal" title="Composite below strong threshold (60). Shown because it cleared the weak floor.">WEAK</span>
                         {% endif %}
 
                         {# v3.3: Earnings badge #}
@@ -976,7 +1022,7 @@
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.4.1 &mdash; For educational and informational purposes only. Not financial advice. Always do your own research.
+        Momentum Scanner v3.4.2 &mdash; For educational and informational purposes only. Not financial advice. Always do your own research.
     </footer>
 
     <!-- ═══════════════════════════════════════════════════════

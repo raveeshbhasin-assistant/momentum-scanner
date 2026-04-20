@@ -38,18 +38,21 @@ def _calc_ticker_intraday_pct(df: pd.DataFrame) -> Optional[float]:
     """
     Compute today's intraday % change (session open → latest close) for a
     ticker's 5-min bars. Returns None if we can't isolate today's bars.
+
+    v3.4.2: Replaced the previous normalize()-based today_mask, which could
+    raise on tz-aware vs tz-naive comparisons and silently fall back to
+    None for every ticker. We now compare dates directly via the index's
+    per-element .date() accessor, which is tz-safe.
     """
     try:
         if df.empty:
             return None
         last_ts = df.index[-1]
-        today = last_ts.date() if hasattr(last_ts, "date") else None
-        if today is None:
+        if not hasattr(last_ts, "date"):
             return None
-        today_mask = df.index.normalize() == pd.Timestamp(today).normalize() \
-            if hasattr(df.index, "normalize") else None
-        if today_mask is None:
-            return None
+        today = last_ts.date()
+        # Tz-safe: compare each index entry's calendar date.
+        today_mask = pd.Index([ts.date() == today for ts in df.index])
         today_df = df[today_mask]
         if len(today_df) < 2:
             return None
@@ -202,30 +205,55 @@ def calculate_rvol(df: pd.DataFrame) -> float:
     """
     Calculate Relative Volume (RVOL) adjusted for time of day.
     Compares current volume to average volume at the same time over past sessions.
+
+    v3.4.2: If the most recent bar is still accumulating (i.e., "now" falls
+    inside that bar's 5-minute window), we use the second-to-last bar — the
+    most recent COMPLETE bar — as the reference. Comparing a 20-second
+    partial bar to a full 5-min historical bar was deflating RVOL by ~15×
+    and killing the whole scan whenever it coincided with the first seconds
+    of a new candle.
     """
-    if df.empty or "Volume" not in df.columns:
+    if df.empty or "Volume" not in df.columns or len(df) < 2:
         return 0.0
 
     try:
-        now = df.index[-1]
-        current_hour = now.hour
-        current_minute = now.minute
+        # Pick the latest COMPLETE bar as the reference.
+        last_ts = df.index[-1]
+        try:
+            if hasattr(last_ts, "tz") and last_ts.tz is not None:
+                now_ref = pd.Timestamp.now(tz=last_ts.tz)
+            else:
+                now_ref = pd.Timestamp.utcnow().tz_localize(None)
+        except Exception:
+            now_ref = pd.Timestamp.now()
+        bar_end = last_ts + pd.Timedelta(minutes=5)
+        is_partial = now_ref < bar_end
+
+        if is_partial and len(df) >= 2:
+            ref_idx = df.index[-2]
+            current_vol = df["Volume"].iloc[-2]
+        else:
+            ref_idx = df.index[-1]
+            current_vol = df["Volume"].iloc[-1]
+
+        current_hour = ref_idx.hour
+        current_minute = ref_idx.minute
 
         # Get volume bars from similar times on previous days
         historical_vols = []
         for idx, row in df.iterrows():
+            if idx == ref_idx:
+                continue
             if idx.hour == current_hour and abs(idx.minute - current_minute) <= 10:
-                if idx.date() != now.date():
+                if idx.date() != ref_idx.date():
                     historical_vols.append(row["Volume"])
 
         if not historical_vols:
-            # Fallback: compare to overall average
-            avg_vol = df["Volume"].mean()
-            current_vol = df["Volume"].iloc[-1]
+            # Fallback: compare to overall average (ignore the partial bar)
+            avg_vol = df["Volume"].iloc[:-1].mean() if is_partial else df["Volume"].mean()
             return current_vol / avg_vol if avg_vol > 0 else 0.0
 
         avg_vol = np.mean(historical_vols)
-        current_vol = df["Volume"].iloc[-1]
         return current_vol / avg_vol if avg_vol > 0 else 0.0
 
     except Exception:
@@ -596,35 +624,52 @@ def run_scan(tickers: Optional[list[str]] = None,
             if pm_boost > 0:
                 composite += pm_boost
 
-            # ── FILTER / ADJUST: Sector Leadership (v3.3.2) ─────
-            # In "moderate" (default) / "strict" / "permissive" modes
-            # leadership is a HARD GATE: non-admitted labels are dropped
-            # entirely. In legacy "score" mode it only tweaks composite.
+            # ── TIER / ADJUST: Sector Leadership (v3.4.2) ───────
+            # v3.4.2 change: leadership is a DISPLAY TIER hint in the live
+            # scanner, not a hard filter. Every label reaches the signal
+            # output; the UI groups by tier and user decides which to act
+            # on. Backtest still supports hard-gate modes via Filters.
+            # Modes retained for backwards compat on configured deploys:
+            #   "display" (v3.4.2 default) — no hard gate, no score adj
+            #   "moderate"/"strict"/"permissive"/"score" — legacy behaviour
             ticker_pct = _calc_ticker_intraday_pct(df)
             leadership = classify_leadership(
                 ticker,
                 ticker_pct if ticker_pct is not None else 0.0,
             )
             _LEADER_ALLOWED = {
+                "display":    {"LEADER", "SOLO_MOVER", "FOLLOWER", "LAGGARD", "UNKNOWN"},
                 "score":      {"LEADER", "SOLO_MOVER", "FOLLOWER", "LAGGARD", "UNKNOWN"},
                 "strict":     {"LEADER"},
                 "moderate":   {"LEADER", "SOLO_MOVER"},
                 "permissive": {"LEADER", "SOLO_MOVER", "FOLLOWER"},
             }
-            _mode = getattr(config, "LEADER_FILTER_MODE", "moderate")
-            if leadership.get("label") not in _LEADER_ALLOWED.get(_mode, _LEADER_ALLOWED["moderate"]):
-                continue  # hard-filter drop
+            _mode = getattr(config, "LEADER_FILTER_MODE", "display")
+            if leadership.get("label") not in _LEADER_ALLOWED.get(_mode, _LEADER_ALLOWED["display"]):
+                continue  # legacy hard-filter drop
             # Score adjustment applies only in legacy "score" mode
             leader_adj = leadership.get("score_adjustment", 0) if _mode == "score" else 0
             composite += leader_adj
+            # Display tier: primary / secondary / unclassified (v3.4.2)
+            _lbl = leadership.get("label", "UNKNOWN")
+            if _lbl in ("LEADER", "SOLO_MOVER"):
+                leader_tier = "primary"
+            elif _lbl == "FOLLOWER":
+                leader_tier = "secondary"
+            else:
+                leader_tier = "unclassified"  # LAGGARD / UNKNOWN
 
             # ── ADJUST: Earnings context (v3.3) ─────────────────
             earnings_adj = earnings_ctx.get("score_adjustment", 0)
             composite += earnings_adj
 
-            # Use regime-dynamic score floor
-            if composite < effective_min_score:
+            # ── SCORE GATE (v3.4.2 soft) ───────────────────────
+            # Show anything at or above WEAK_SIGNAL_FLOOR; tag it as
+            # strong (>= effective_min_score) or weak (in between).
+            weak_floor = getattr(config, "WEAK_SIGNAL_FLOOR", 40)
+            if composite < weak_floor:
                 continue
+            signal_strength = "strong" if composite >= effective_min_score else "weak"
 
             # Calculate trade levels
             levels = calculate_trade_levels(df)
@@ -652,6 +697,8 @@ def run_scan(tickers: Optional[list[str]] = None,
                 "sector_boost": round(sector_boost, 1),
                 "premarket_boost": round(pm_boost, 1),
                 "leader_adjustment": leader_adj,
+                "leader_tier": leader_tier,      # v3.4.2: primary/secondary/unclassified
+                "signal_strength": signal_strength,   # v3.4.2: strong/weak
                 "earnings_adjustment": earnings_adj,
                 "is_premarket_flagged": is_premarket_flagged(ticker),
                 "leadership": leadership,        # v3.3

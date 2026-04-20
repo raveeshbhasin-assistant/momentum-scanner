@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.4.1</title>
+    <title>Algorithm Logic — Momentum Scanner v3.4.2</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -254,7 +254,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.4.1</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.4.2</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -264,7 +264,8 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-4-1" class="current">v3.4.1 (current)</a>
+            <a href="#v3-4-2" class="current">v3.4.2 (current)</a>
+            <a href="#v3-4-1">v3.4.1</a>
             <a href="#v3-4">v3.4</a>
             <a href="#v3-3-2">v3.3.2</a>
             <a href="#v3-3">v3.3</a>
@@ -273,12 +274,65 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.4.2 ───── -->
+        <div class="release current" id="v3-4-2">
+            <div class="release-header">
+                <span class="release-version">v3.4.2</span>
+                <span class="release-date">Released 2026-04-20</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Unblock the dashboard" — two scanner bugs fixed, leader gate softened to tiered display, weak signal floor added at score 40.</div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong>Partial-bar RVOL bug.</strong> <code>calculate_rvol</code> was reading <code>df["Volume"].iloc[-1]</code> — which on yfinance's live feed is the <em>currently accumulating</em> 5-min bar. Mid-bar that's ~20 seconds of volume being compared against full historical 5-min bars, collapsing RVOL below 0.5 for nearly every ticker and killing almost all signals. The fix detects partial bars via <code>now &lt; bar_end</code> and falls back to <code>iloc[-2]</code> (the most recent <em>complete</em> bar) when the last bar hasn't closed yet. Validation on 2026-04-20 live data: RVOL distribution went from "127 of 135 below 0.5" to a realistic spread with 8 above 2.0 and 25 in 1.0–1.33.</li>
+                    <li><strong>Timezone mismatch in intraday % change.</strong> <code>_calc_ticker_intraday_pct</code> compared a tz-aware <code>df.index.normalize()</code> against a tz-naive <code>pd.Timestamp(today).normalize()</code>, silently raising and falling back to <code>None</code> for every ticker — which is why the UI showed "0.00%" on every row all day. Fix rewrites the comparison as per-element <code>.date()</code> on tz-aware timestamps, which is tz-safe. After fix, 23 of 135 tickers on the live scan had non-zero ticker_pct values.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Leader gate is now a display tier, not a hard filter.</strong> The v3.3.2 <code>LEADER+SOLO-only</code> hard-filter was blocking legitimate signals on days when the sector-leader computation disagreed with the scanner's technicals (most commonly in rotation / chop regimes). v3.4.2 introduces <code>LEADER_FILTER_MODE = "display"</code> — all candidates above the composite threshold are emitted; the leader tier is shown as a visual pill:
+                        <ul style="margin-top: 4px;">
+                            <li><span style="color: var(--green);">LEADER / SOLO</span> → <strong>Primary picks</strong> (top of list)</li>
+                            <li><span style="color: var(--amber);">FOLLOWER</span> → <strong>Secondary</strong> (sector moving but ticker isn't the leader — still tradeable, clearly labeled)</li>
+                            <li><span style="color: var(--muted);">LAGGARD / UNKNOWN</span> → <strong>Unclassified</strong> (shown but visually de-emphasized)</li>
+                        </ul>
+                        The old <code>"moderate"</code> and <code>"aggressive"</code> modes remain available in <code>config.py</code> for backtest comparability; backtest.py Filters logic is untouched so historical comparisons still work.</li>
+                    <li><strong>Weak-signal floor added at score 40.</strong> <code>MIN_COMPOSITE_SCORE</code> stays at 60 as the <em>strong</em> threshold; new <code>WEAK_SIGNAL_FLOOR = 40</code> surfaces candidates in the 40–59 band as a clearly-labeled <strong>"weak signal"</strong> section below the strong list, with a divider and a "not recommended for entry, but the setup is forming" note. Intent: when the strong list is empty, give the user <em>situational awareness</em> of what the scanner is tracking rather than a blank page.</li>
+                    <li><strong>MAX_SIGNALS_PER_SCAN</strong> raised from 10 → 20 to accommodate the combined strong+weak display.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>New CSS tier pills</strong> on index.html, today.html, history.html: <code>.badge.follower</code> (amber), <code>.badge.unclassified</code> (muted), <code>.badge.weak-signal</code> (dashed border). Strong signals and weak signals are visually separated by a <code>.signals-section-divider</code> with a caption.</li>
+                    <li><strong>New signal fields</strong> on every emitted signal: <code>leader_tier</code> (<code>"leader"</code> | <code>"solo"</code> | <code>"follower"</code> | <code>"laggard"</code> | <code>"unknown"</code>) and <code>signal_strength</code> (<code>"strong"</code> | <code>"weak"</code>). Both are persisted to the Excel trade log for downstream analysis.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Unchanged (important)</span>
+                <ul>
+                    <li><strong>Composite scoring weights unchanged</strong> — still 65% technical + 25% sentiment + 10% volume. The v3.4.2 changes are entirely in the <em>emission</em> and <em>display</em> stages.</li>
+                    <li><strong>Backtest default still FLAT</strong> (v3.4.1 flipped it to MAE_EXIT briefly during research; FLAT with the 60-min manual MAE rule remains the recommended live workflow).</li>
+                    <li><strong>60-minute MAE manual rule from v3.4.1</strong> is unchanged and remains the primary exit discipline.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>Why it matters:</strong> At 10:30 AM ET on 2026-04-20 the dashboard was showing zero signals despite a normal-VIX tape with plenty of stocks up 0.6–1.2% intraday. A per-stage diagnostic traced the drop-off to the RVOL filter (127 of 135 tickers below 1.33), and the RVOL distribution itself looked impossibly skewed — which surfaced the partial-bar bug. The leader-gate softening + weak-floor are the UX-layer response to "when the strong list is empty, what should the user see?" — it's better to show clearly-labeled weaker setups than a blank dashboard, because situational awareness matters even when no trade is warranted.
+            </div>
+        </div>
+
         <!-- ───── v3.4.1 ───── -->
-        <div class="release current" id="v3-4-1">
+        <div class="release" id="v3-4-1">
             <div class="release-header">
                 <span class="release-version">v3.4.1</span>
                 <span class="release-date">Released 2026-04-18</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title">"60-minute MAE check" — backtest-validated optional manual exit rule. No live scanner changes.</div>
 
@@ -1050,7 +1104,7 @@
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.4.1 &mdash; Algorithm documentation. For educational purposes only.
+        Momentum Scanner v3.4.2 &mdash; Algorithm documentation. For educational purposes only.
     </footer>
 </body>
 </html>

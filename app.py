@@ -40,7 +40,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.4.1")
+app = FastAPI(title="Momentum Scanner", version="3.4.2")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -254,9 +254,9 @@ async def startup():
     scheduler.start()
     cleanup_old_files()
     logger.info(
-        f"Scheduler started: v3.4.1 — sector rotation, VIX regime gating, "
-        f"LEADER+SOLO hard-filter (v3.3.2), MFE/MAE exit research, "
-        f"60-min MAE manual rule. Mon-Fri 8:00 AM – 5:00 PM ET"
+        f"Scheduler started: v3.4.2 — sector rotation, VIX regime gating, "
+        f"leader-as-tier display, weak-signal floor 40, partial-bar RVOL fix, "
+        f"MFE/MAE exit research, 60-min MAE manual rule. Mon-Fri 8:00 AM – 5:00 PM ET"
     )
     logger.info(f"Dashboard running at http://localhost:{config.PORT}")
 
@@ -471,7 +471,7 @@ async def logic_page(request: Request):
 
 
 # ═══════════════════════════════════════════════════════════════
-#  BACKTEST (v3.4.1)
+#  BACKTEST (v3.4.2)
 # ═══════════════════════════════════════════════════════════════
 
 @app.get("/backtest", response_class=HTMLResponse)

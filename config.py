@@ -25,8 +25,9 @@ RVOL_LOOKBACK_DAYS = 20             # Days for avg volume baseline
 MIN_RVOL = 1.33                     # Minimum relative volume (30%+ above avg)
 RSI_MOMENTUM_LOW = 55               # RSI lower bound for bullish momentum
 RSI_MOMENTUM_HIGH = 75              # RSI upper bound (avoid overbought)
-MIN_COMPOSITE_SCORE = 60            # Minimum score (0-100) to generate signal
-MAX_SIGNALS_PER_SCAN = 10           # Top N signals to display
+MIN_COMPOSITE_SCORE = 60            # Strong signal threshold (0-100)
+WEAK_SIGNAL_FLOOR = 40              # v3.4.2: show down to this, label <MIN as weak
+MAX_SIGNALS_PER_SCAN = 20           # v3.4.2: bumped from 10 to show weak tier too
 
 # ── Risk Parameters (Aggressive Profile) ─────────────────────
 ATR_STOP_MULTIPLIER = 2.0           # Stop-loss = Entry - (ATR × this)
@@ -131,11 +132,16 @@ SECTOR_LAGGARD_PENALTY = -10
 # Same P&L, half the churn, much cleaner regime interaction.
 #
 # Options:
-#   "moderate"   — (default) only LEADER + SOLO_MOVER admitted
+#   "display"    — (v3.4.2 default) no hard gate; all labels emit as signals,
+#                   UI groups by leader_tier (primary/secondary/weak).
+#                   Rationale: 0-signal days were too common because the
+#                   gate assumed backtest-quality data; user prefers to
+#                   see everything and decide manually on Fidelity.
+#   "moderate"   — v3.3.2 default: only LEADER + SOLO_MOVER admitted
 #   "strict"     — only LEADER admitted (best quality, fewest trades)
 #   "permissive" — LEADER + SOLO + FOLLOWER (blocks LAGGARD + UNKNOWN)
 #   "score"      — legacy v3.3 behaviour: no hard gate, boosts still apply
-LEADER_FILTER_MODE = "moderate"
+LEADER_FILTER_MODE = "display"
 
 # ── Market Regime / VIX (v3.3) ──────────────────────────────
 # When VIX is elevated, raise the min composite score floor and cut

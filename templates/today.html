@@ -365,13 +365,20 @@
                             <td class="time-cell">{{ find.found_time }}</td>
                             <td class="ticker-cell">
                                 {{ find.ticker }}
-                                {# v3.3: inline leadership + earnings pills #}
+                                {# v3.3 leadership pills (v3.4.2: shown as display tier, not filter gate) #}
                                 {% if find.leadership and find.leadership.label == 'LEADER' %}
                                     <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(34,197,94,0.18); color:var(--green); border:1px solid rgba(34,197,94,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }}">LDR</span>
-                                {% elif find.leadership and find.leadership.label == 'LAGGARD' %}
-                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(245,158,11,0.15); color:var(--amber); border:1px solid rgba(245,158,11,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }}">LAG</span>
                                 {% elif find.leadership and find.leadership.label == 'SOLO_MOVER' %}
                                     <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(167,139,250,0.15); color:#a78bfa; border:1px solid rgba(167,139,250,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }}">SOLO</span>
+                                {% elif find.leadership and find.leadership.label == 'FOLLOWER' %}
+                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(245,158,11,0.15); color:var(--amber); border:1px solid rgba(245,158,11,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }} — secondary pick in v3.4.2 display mode">FLW</span>
+                                {% elif find.leadership and find.leadership.label == 'LAGGARD' %}
+                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(148,163,184,0.15); color:#94a3b8; border:1px solid #2a3148; font-family:var(--mono);" title="{{ find.leadership.reason }} — unclassified tier in v3.4.2 display mode">LAG</span>
+                                {% elif find.leadership and find.leadership.label == 'UNKNOWN' %}
+                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px dashed #2a3148; font-family:var(--mono);" title="Sector/peer leadership could not be computed">UNC</span>
+                                {% endif %}
+                                {% if find.signal_strength == 'weak' %}
+                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(245,158,11,0.10); color:var(--amber); border:1px dashed rgba(245,158,11,0.4); font-family:var(--mono);" title="Composite score 40–59 (weak signal floor in v3.4.2)">WEAK</span>
                                 {% endif %}
                                 {% if find.earnings and find.earnings.has_earnings and find.earnings.badge_level in ('today_amc','tomorrow') %}
                                     <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(239,68,68,0.18); color:var(--red); border:1px solid rgba(239,68,68,0.5); font-family:var(--mono);" title="{{ find.earnings.reason }}">⚡{{ find.earnings.badge_text }}</span>
@@ -407,7 +414,7 @@
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.4.1 &mdash; For educational and informational purposes only. Not financial advice.
+        Momentum Scanner v3.4.2 &mdash; For educational and informational purposes only. Not financial advice.
     </footer>
 
     <script>
