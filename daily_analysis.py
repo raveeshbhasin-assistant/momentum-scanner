@@ -554,17 +554,10 @@ def analyze_day(date_str: str, json_path: str = None):
     except Exception as e:
         logger.error(f"Failed to write performance_log.json: {e}")
 
-    # Step 7: Mirror the critical data files to GitHub (belt-and-suspenders
-    # backup of the Railway volume). No-ops cleanly if env vars aren't set.
-    try:
-        from data_backup import backup_data_files
-        backup_data_files(
-            files=[DATA_DIR / "performance_log.json",
-                   DATA_DIR / f"{date_str}.json"],
-            tag=f"EOD {date_str}",
-        )
-    except Exception as e:
-        logger.warning(f"Data backup step failed (non-fatal): {e}")
+    # Note (v3.5.6): the GitHub backup step used to live here, but was skipped
+    # whenever analyze_day() returned early (no picks to analyze). Backup is
+    # now driven from post_market_analysis_job in app.py so it runs daily
+    # regardless of whether analysis produced any picks.
 
     # Print summary
     print(f"\n{'='*50}")

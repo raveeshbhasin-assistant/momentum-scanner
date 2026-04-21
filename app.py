@@ -27,6 +27,7 @@ from sector_rotation import (
 )
 from premarket import run_premarket_scan, reset_daily as reset_premarket
 from daily_analysis import analyze_day
+from data_backup import backup_data_files
 from performance_engine import get_view as _get_performance_view
 from market_regime import get_regime
 from earnings import refresh_earnings_cache
@@ -56,7 +57,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.5.2")
+app = FastAPI(title="Momentum Scanner", version="3.5.6")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -198,12 +199,39 @@ def _ensure_fresh_sector_snapshot():
         sector_rotation_job()
 
 
+def _backup_volume_files(today: str, tag_prefix: str = "EOD") -> dict:
+    """
+    Back up the persistent volume files to the data-backups branch.
+
+    Always attempts backup regardless of how analyze_day() terminated —
+    on a no-picks day analyze_day() early-returns, but we still want the
+    current performance_log.json preserved on GitHub. Safe no-op if
+    GITHUB_BACKUP_* env vars are unset.
+    """
+    # performance_log.json drives /performance; <date>.json is the
+    # per-day scanner-finds file written by history.save_daily_finds().
+    files = [
+        _DATA_DIR / "performance_log.json",
+        _DATA_DIR / f"{today}.json",
+    ]
+
+    try:
+        return backup_data_files(files=files, tag=f"{tag_prefix} {today}")
+    except Exception as e:
+        logger.error(f"Data backup raised unexpectedly: {e}")
+        return {}
+
+
 def post_market_analysis_job():
     """
     Run daily analysis after market close (5:00 PM ET).
     Fetches Yahoo Finance 5m bars, computes WIN/LOSS/EOD for all
     picks from today, and appends results to scanner_trade_log.xlsx.
     The performance page reads from this file on each page load.
+
+    v3.5.6: backup of the data volume now lives here (not in analyze_day)
+    so it runs every weekday — even on no-picks days when analyze_day
+    returns early before reaching its own backup step.
     """
     today = datetime.now(config.ET).strftime("%Y-%m-%d")
     logger.info(f"Running post-market analysis for {today}...")
@@ -212,6 +240,16 @@ def post_market_analysis_job():
         logger.info(f"Post-market analysis complete for {today}")
     except Exception as e:
         logger.error(f"Post-market analysis failed: {e}")
+
+    # Belt-and-suspenders: back up the volume regardless of analyze_day's
+    # outcome. A failed / empty analysis should never block backup of
+    # whatever's already on disk.
+    try:
+        summary = _backup_volume_files(today, tag_prefix="EOD")
+        if summary:
+            logger.info(f"Post-market backup: {summary}")
+    except Exception as e:
+        logger.error(f"Post-market backup failed: {e}")
 
 
 def scheduled_scan():
@@ -485,6 +523,23 @@ async def today_page(request: Request):
 async def api_regime():
     """Current market regime (VIX-based)."""
     return get_regime() if config.MARKET_REGIME_ENABLED else {"label": "DISABLED"}
+
+
+@app.post("/api/backup/trigger", response_class=JSONResponse)
+async def api_trigger_backup():
+    """
+    Manually trigger a backup of the persistent data volume to GitHub.
+
+    Same files as the 5 PM EOD job, useful when:
+      • The EOD job was skipped because there were no picks
+      • You want to snapshot the current state before a deploy
+      • You need to recover after the volume was accidentally cleared
+
+    Idempotent. No-op if GITHUB_BACKUP_TOKEN / GITHUB_BACKUP_REPO are unset.
+    """
+    today = datetime.now(config.ET).strftime("%Y-%m-%d")
+    summary = _backup_volume_files(today, tag_prefix="manual")
+    return {"today": today, "summary": summary}
 
 
 @app.get("/history", response_class=HTMLResponse)
