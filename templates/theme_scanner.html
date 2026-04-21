@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThemeHunter · Scanner</title>
+    <style>
+        /* Reset + base (mirrors main dashboard so tokens stay consistent) */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-card-hover: #1f2640;
+            --bg-elev: #242b44;
+            --border: #2a3148;
+            --border-strong: #3a4468;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --green: #22c55e;
+            --green-dim: #16a34a;
+            --green-bg: #22c55e15;
+            --red: #ef4444;
+            --red-dim: #dc2626;
+            --red-bg: #ef444415;
+            --blue: #3b82f6;
+            --blue-bg: #3b82f615;
+            --amber: #f59e0b;
+            --amber-bg: #f59e0b15;
+            --purple: #a78bfa;
+            --purple-bg: #a78bfa15;
+            --cyan: #22d3ee;
+            --cyan-bg: #22d3ee15;
+            --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── Header (same structure as dashboard) ─── */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        .pill-proto {
+            background: var(--purple-bg);
+            color: var(--purple);
+            border: 1px solid var(--purple);
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-family: var(--mono);
+        }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-link.active {
+            color: var(--purple);
+            background: var(--purple-bg);
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:hover { background: var(--bg-card-hover); border-color: var(--purple); }
+        .btn.primary { background: var(--purple); border-color: var(--purple); color: #fff; }
+        .btn.primary:hover { background: #8b5cf6; }
+
+        /* ── Layout ────────────────────────────────── */
+        .main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
+
+        /* ── Hero intro ────────────────────────────── */
+        .hero {
+            background:
+                radial-gradient(800px 200px at 10% -20%, rgba(167,139,250,0.15), transparent),
+                radial-gradient(600px 200px at 90% 120%, rgba(34,211,238,0.10), transparent),
+                var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+        }
+        .hero-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .hero h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+        .hero h1 .suffix { color: var(--purple); font-size: 16px; font-weight: 500; }
+        .hero .sub {
+            color: var(--text-secondary);
+            font-size: 14px;
+            max-width: 680px;
+        }
+        .hero .sub b { color: var(--text-primary); }
+        .hero-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .mode-tabs {
+            display: inline-flex;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 3px;
+        }
+        .mode-tab {
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            background: transparent;
+            border: none;
+            font-family: var(--font);
+        }
+        .mode-tab:hover { color: var(--text-primary); }
+        .mode-tab.active {
+            background: var(--bg-card);
+            color: var(--purple);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .meta-chip {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-family: var(--mono);
+        }
+        .meta-chip b { color: var(--text-primary); }
+
+        /* ── Theme Heat Strip ──────────────────────── */
+        .section-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .theme-heat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+        .heat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .heat-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .heat-row.top { border-color: var(--green-dim); background: var(--green-bg); }
+        .heat-row.mid { border-color: var(--amber-bg); }
+        .heat-row.bot { opacity: 0.5; }
+        .heat-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: var(--mono);
+        }
+        .heat-label .theme-name { color: var(--text-primary); }
+        .heat-label .theme-etf {
+            color: var(--text-muted);
+            font-size: 10px;
+            background: var(--bg-primary);
+            padding: 1px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        .heat-bar {
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+        }
+        .heat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-dim), var(--green));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        .heat-bar-fill.red {
+            background: linear-gradient(90deg, var(--red-dim), var(--red));
+        }
+        .heat-ret {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: var(--mono);
+        }
+        .heat-ret .pct.green { color: var(--green); }
+        .heat-ret .pct.red { color: var(--red); }
+
+        /* ── Bucket Columns ─────────────────────────── */
+        .bucket-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 1100px) { .bucket-row { grid-template-columns: 1fr; } }
+
+        .bucket {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .bucket-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .bucket-name {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        .bucket-name .tag {
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        .bucket.A .tag { color: var(--cyan); border-color: var(--cyan); background: var(--cyan-bg); }
+        .bucket.B .tag { color: var(--amber); border-color: var(--amber); background: var(--amber-bg); }
+        .bucket.C .tag { color: var(--purple); border-color: var(--purple); background: var(--purple-bg); }
+
+        .bucket-count {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .bucket-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* ── Signal Cards ──────────────────────────── */
+        .signal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .signal:hover {
+            border-color: var(--purple);
+            background: var(--bg-elev);
+        }
+        .signal.primary { border-left: 3px solid var(--green); }
+        .signal.secondary { border-left: 3px solid var(--amber); }
+        .signal.watch { border-left: 3px solid var(--text-muted); opacity: 0.75; }
+
+        .signal-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .signal-tk {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .signal-ticker {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: var(--mono);
+            letter-spacing: -0.3px;
+        }
+        .signal-theme {
+            font-size: 10px;
+            font-family: var(--mono);
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .signal-score {
+            font-family: var(--mono);
+            font-size: 20px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            min-width: 50px;
+            text-align: center;
+            line-height: 1.1;
+        }
+        .signal-score.primary { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-dim); }
+        .signal-score.secondary { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber); }
+        .signal-score.watch { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); }
+
+        .signal-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            font-family: var(--mono);
+            font-size: 11px;
+            margin-bottom: 10px;
+        }
+        .metric { display: flex; flex-direction: column; }
+        .metric .label {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-size: 9px;
+        }
+        .metric .value { color: var(--text-primary); font-weight: 600; }
+        .metric .value.green { color: var(--green); }
+        .metric .value.red { color: var(--red); }
+
+        /* Score breakdown bar */
+        .score-bar {
+            display: flex;
+            height: 5px;
+            border-radius: 3px;
+            overflow: hidden;
+            background: var(--bg-primary);
+            margin-bottom: 8px;
+        }
+        .score-seg { transition: all 0.3s; }
+        .score-seg.s-cat { background: var(--purple); }
+        .score-seg.s-theme { background: var(--cyan); }
+        .score-seg.s-rvol { background: var(--blue); }
+        .score-seg.s-struct { background: var(--green); }
+        .score-seg.s-tape { background: var(--amber); }
+        .score-seg.s-so { background: #ec4899; }
+
+        .score-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 10px;
+            font-family: var(--mono);
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .score-legend .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .score-legend .chip::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+        .lg-cat::before { background: var(--purple); }
+        .lg-theme::before { background: var(--cyan); }
+        .lg-rvol::before { background: var(--blue); }
+        .lg-struct::before { background: var(--green); }
+        .lg-tape::before { background: var(--amber); }
+        .lg-so::before { background: #ec4899; }
+
+        .signal-trigger {
+            font-size: 12px;
+            padding: 6px 10px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            font-family: var(--mono);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+        .signal-trigger b { color: var(--text-primary); }
+
+        .signal-catalyst {
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 8px 10px;
+            background: var(--purple-bg);
+            border-left: 2px solid var(--purple);
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+        .signal-catalyst .cat-tag {
+            color: var(--purple);
+            font-family: var(--mono);
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        .signal-so {
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 6px 10px;
+            background: var(--cyan-bg);
+            border-left: 2px solid var(--cyan);
+            border-radius: 4px;
+            margin-top: 6px;
+            line-height: 1.3;
+        }
+        .signal-so .so-tag {
+            color: var(--cyan);
+            font-family: var(--mono);
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        .signal-sizing {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-family: var(--mono);
+            color: var(--text-muted);
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border);
+        }
+        .signal-sizing b { color: var(--text-primary); }
+
+        .empty-bucket {
+            padding: 24px 12px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+        }
+
+        /* ── Algo Summary ──────────────────────────── */
+        .algo {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+        }
+        .algo h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+        .algo p { color: var(--text-secondary); font-size: 14px; margin-bottom: 8px; }
+        .algo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .algo-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+        .algo-box h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--purple);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .algo-box .kv {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-family: var(--mono);
+            color: var(--text-secondary);
+            padding: 2px 0;
+        }
+        .algo-box .kv b { color: var(--text-primary); font-weight: 600; }
+
+        /* ── Spinner ───────────────────────────────── */
+        .spinner {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border: 2px solid var(--purple);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state {
+            background: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .empty-state h3 {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <a href="/theme-scanner" class="logo">ThemeHunter</a>
+            <span class="pill-proto">Prototype · v0.1</span>
+        </div>
+        <div class="header-right">
+            <a href="/" class="nav-link">Momentum</a>
+            <a href="/theme-scanner" class="nav-link active">ThemeHunter</a>
+            <a href="/theme-backtest" class="nav-link">Backtest</a>
+            <a href="/today" class="nav-link">Today's Finds</a>
+            <a href="/performance" class="nav-link">Performance</a>
+            <a href="/logic" class="nav-link">Logic</a>
+            <button class="btn primary" id="scanBtn" onclick="triggerScan()">Rescan Now</button>
+        </div>
+    </header>
+
+    <main class="main">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-row">
+                <div>
+                    <h1>Theme-Driven Scanner <span class="suffix">· what the group-chat edge actually looks like</span></h1>
+                    <p class="sub">
+                        Designed from the 115-pick log analysis. Three parallel universes —
+                        <b>A: theme leaders</b>, <b>B: gap+news</b>, <b>C: low-float runners</b> —
+                        scored on catalyst freshness, theme RS, RVOL, opening structure, tape quality,
+                        and second-order linkage. Built to catch the USAR/MVRL/AVEX class of runners
+                        the momentum scanner filters out.
+                    </p>
+                </div>
+                <div class="hero-controls">
+                    <div class="mode-tabs" role="tablist">
+                        <button class="mode-tab {{ 'active' if mode == 'live' else '' }}" onclick="setMode('live')">Live</button>
+                        <button class="mode-tab {{ 'active' if mode == 'rewind' else '' }}" onclick="setMode('rewind')">Rewind 09:45</button>
+                    </div>
+                    <div class="meta-chip">
+                        {% if result.get('as_of') %}
+                            As of <b>{{ result.as_of.split('T')[1][:5] }} ET</b>
+                        {% else %}
+                            Generated <b>{{ result.generated_at.split('T')[1][:8] if result.get('generated_at') else '—' }} ET</b>
+                        {% endif %}
+                    </div>
+                    <div class="meta-chip">
+                        Universe <b>A:{{ result.universe_sizes.A }} · B:{{ result.universe_sizes.B }} · C:{{ result.universe_sizes.C }}</b>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- THEME HEAT STRIP -->
+        <section class="theme-heat">
+            <div class="section-title">Theme Basket Heat — 1-day ETF return · percentile</div>
+            <div class="heat-grid">
+                {% for theme, meta in themes_sorted %}
+                    {% set ret = meta.return_pct or 0 %}
+                    {% set pct = meta.percentile or 0 %}
+                    {% set tier = 'top' if pct >= 75 else ('mid' if pct >= 50 else 'bot') %}
+                    <div class="heat-row {{ tier }}">
+                        <div class="heat-label">
+                            <span class="theme-name">{{ theme }}</span>
+                            <span class="theme-etf">{{ meta.etf }}</span>
+                        </div>
+                        <div class="heat-bar">
+                            <div class="heat-bar-fill {{ 'red' if ret < 0 else '' }}" style="width: {{ pct }}%;"></div>
+                        </div>
+                        <div class="heat-ret">
+                            <span>pctile <b>{{ "%.0f"|format(pct) }}</b></span>
+                            <span class="pct {{ 'green' if ret >= 0 else 'red' }}">{{ "%+.2f"|format(ret) }}%</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- BUCKET COLUMNS -->
+        <section class="bucket-row">
+            {% for bucket_key, bucket_name, bucket_sub, bucket_signals in buckets %}
+                <div class="bucket {{ bucket_key }}">
+                    <div class="bucket-header">
+                        <div class="bucket-name">
+                            <span class="tag">{{ bucket_key }}</span>{{ bucket_name }}
+                        </div>
+                        <div class="bucket-count">{{ bucket_signals|length }} picks</div>
+                    </div>
+                    <p class="bucket-sub">{{ bucket_sub }}</p>
+
+                    {% if bucket_signals|length == 0 %}
+                        <div class="empty-bucket">No signals in this bucket right now</div>
+                    {% endif %}
+
+                    {% for s in bucket_signals %}
+                        {% set tier = 'primary' if s.score >= 70 else ('secondary' if s.score >= 60 else 'watch') %}
+                        <div class="signal {{ tier }}">
+                            <div class="signal-top">
+                                <div class="signal-tk">
+                                    <div class="signal-ticker">{{ s.ticker }}</div>
+                                    {% if s.theme %}
+                                        <div class="signal-theme">{{ s.theme }}{% if s.theme_pct %} · pctile {{ "%.0f"|format(s.theme_pct) }}{% endif %}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="signal-score {{ tier }}">{{ "%.1f"|format(s.score) }}</div>
+                            </div>
+
+                            <div class="signal-metrics">
+                                <div class="metric">
+                                    <span class="label">Price</span>
+                                    <span class="value">${{ "%.2f"|format(s.price) }}</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="label">Day %</span>
+                                    <span class="value {{ 'green' if s.pct >= 0 else 'red' }}">{{ "%+.2f"|format(s.pct) }}%</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="label">RVOL</span>
+                                    <span class="value">{{ "%.1f"|format(s.rvol) }}x</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="label">Size</span>
+                                    <span class="value">{{ "%.2f"|format(s.size_R_pct) }}%R</span>
+                                </div>
+                            </div>
+
+                            <!-- Score breakdown bar -->
+                            {% set sb = s.score_breakdown %}
+                            {% set total = (sb.catalyst_freshness + sb.theme_rs + sb.rvol + sb.opening_structure + sb.tape_quality + sb.second_order) or 1 %}
+                            <div class="score-bar">
+                                <div class="score-seg s-cat" style="width: {{ (sb.catalyst_freshness / total * 100) }}%;" title="catalyst {{ sb.catalyst_freshness }}"></div>
+                                <div class="score-seg s-theme" style="width: {{ (sb.theme_rs / total * 100) }}%;" title="theme RS {{ sb.theme_rs }}"></div>
+                                <div class="score-seg s-rvol" style="width: {{ (sb.rvol / total * 100) }}%;" title="RVOL {{ sb.rvol }}"></div>
+                                <div class="score-seg s-struct" style="width: {{ (sb.opening_structure / total * 100) }}%;" title="struct {{ sb.opening_structure }}"></div>
+                                <div class="score-seg s-tape" style="width: {{ (sb.tape_quality / total * 100) }}%;" title="tape {{ sb.tape_quality }}"></div>
+                                <div class="score-seg s-so" style="width: {{ (sb.second_order / total * 100) }}%;" title="2nd-order {{ sb.second_order }}"></div>
+                            </div>
+                            <div class="score-legend">
+                                <span class="chip lg-cat">cat {{ sb.catalyst_freshness }}</span>
+                                <span class="chip lg-theme">theme {{ sb.theme_rs }}</span>
+                                <span class="chip lg-rvol">rvol {{ sb.rvol }}</span>
+                                <span class="chip lg-struct">struct {{ sb.opening_structure }}</span>
+                                <span class="chip lg-tape">tape {{ sb.tape_quality }}</span>
+                                <span class="chip lg-so">2°{{ sb.second_order }}</span>
+                            </div>
+
+                            <div class="signal-trigger">
+                                <b>Trigger:</b> {{ s.entry_trigger }}
+                            </div>
+
+                            {% if s.catalyst %}
+                                <div class="signal-catalyst">
+                                    <span class="cat-tag">Catalyst · {{ "%.1f"|format(s.catalyst.hours_ago) }}h ago</span>
+                                    {{ s.catalyst.headline }}
+                                </div>
+                            {% endif %}
+
+                            {% if s.second_order %}
+                                <div class="signal-so">
+                                    <span class="so-tag">2nd-order</span>{{ s.second_order }}
+                                </div>
+                            {% endif %}
+
+                            <div class="signal-sizing">
+                                <span>Stop <b>{{ "%.1f"|format(s.stop_distance_pct) }}%</b> · Tgt <b>+{{ "%.1f"|format(s.target_R_pct) }}%</b></span>
+                                <span>Tier: <b>{{ s.size_tier }}</b></span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </section>
+
+        {% if not buckets or (buckets[0][3]|length + buckets[1][3]|length + buckets[2][3]|length) == 0 %}
+            <div class="empty-state">
+                <h3>No qualifying signals right now</h3>
+                <p>Try switching to Rewind mode, or hit Rescan if the market just opened.</p>
+            </div>
+        {% endif %}
+
+        <!-- ALGO SUMMARY -->
+        <section class="algo">
+            <h2>How this scanner thinks</h2>
+            <p>
+                This is a prototype scanner designed to catch the <b>group-chat class of winners</b>
+                that our v3.4.2 momentum scanner filters out by design — low-float runners, theme-rotation
+                plays, and second-order beneficiaries of peer news. It does <b>not</b> replace the main scanner.
+                It runs in parallel on a disjoint universe.
+            </p>
+            <div class="algo-grid">
+                <div class="algo-box">
+                    <h3>Score stack · 100 pts</h3>
+                    <div class="kv"><span>Catalyst freshness</span><b>0–25</b></div>
+                    <div class="kv"><span>Theme RS percentile</span><b>0–20</b></div>
+                    <div class="kv"><span>RVOL (log-scaled)</span><b>0–20</b></div>
+                    <div class="kv"><span>Opening structure</span><b>0–15</b></div>
+                    <div class="kv"><span>Tape quality</span><b>0–10</b></div>
+                    <div class="kv"><span>Second-order linkage</span><b>0–10</b></div>
+                </div>
+                <div class="algo-box">
+                    <h3>Tiers</h3>
+                    <div class="kv"><span>Primary</span><b>≥ 70</b></div>
+                    <div class="kv"><span>Secondary</span><b>60–69</b></div>
+                    <div class="kv"><span>Watch</span><b>50–59</b></div>
+                </div>
+                <div class="algo-box">
+                    <h3>Sizing</h3>
+                    <div class="kv"><span>Theme leader</span><b>0.50% R</b></div>
+                    <div class="kv"><span>Gap + news</span><b>0.35% R</b></div>
+                    <div class="kv"><span>Low-float</span><b>0.20% R</b></div>
+                </div>
+                <div class="algo-box">
+                    <h3>Kill switches</h3>
+                    <div class="kv"><span>Lunch zone</span><b>12:00–13:30</b></div>
+                    <div class="kv"><span>Re-entry same day</span><b>blocked</b></div>
+                    <div class="kv"><span>SPY red + theme red</span><b>blocked</b></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        async function setMode(mode) {
+            const url = new URL(window.location);
+            url.searchParams.set('mode', mode);
+            window.location.href = url.toString();
+        }
+        async function triggerScan() {
+            const btn = document.getElementById('scanBtn');
+            btn.innerHTML = '<span class="spinner"></span> Scanning...';
+            btn.disabled = true;
+            try {
+                const url = new URL(window.location);
+                const mode = url.searchParams.get('mode') || 'live';
+                await fetch(`/api/theme-scan?mode=${mode}&force=1`, { method: 'POST' });
+                window.location.reload();
+            } catch (e) {
+                btn.innerHTML = 'Rescan Now';
+                btn.disabled = false;
+                alert('Scan failed — check logs.');
+            }
+        }
+    </script>
+</body>
+</html>

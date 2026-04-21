@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThemeHunter · Backtest</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-card-hover: #1f2640;
+            --bg-elev: #242b44;
+            --border: #2a3148;
+            --border-strong: #3a4468;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --green: #22c55e;
+            --green-dim: #16a34a;
+            --green-bg: #22c55e15;
+            --red: #ef4444;
+            --red-dim: #dc2626;
+            --red-bg: #ef444415;
+            --blue: #3b82f6;
+            --blue-bg: #3b82f615;
+            --amber: #f59e0b;
+            --amber-bg: #f59e0b15;
+            --purple: #a78bfa;
+            --purple-bg: #a78bfa15;
+            --cyan: #22d3ee;
+            --cyan-bg: #22d3ee15;
+            --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+        }
+        body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font); line-height: 1.6; min-height: 100vh; }
+
+        .header {
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+            padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px);
+        }
+        .header-left, .header-right { display: flex; align-items: center; gap: 16px; }
+        .logo {
+            font-size: 18px; font-weight: 700; color: var(--text-primary); text-decoration: none;
+            letter-spacing: -0.4px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--cyan) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .pill-proto {
+            font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 4px; border: 1px solid var(--purple);
+            color: var(--purple); letter-spacing: 1px;
+        }
+        .nav-link {
+            color: var(--text-secondary); text-decoration: none; font-size: 14px;
+            padding: 6px 12px; border-radius: 6px; transition: all .15s ease;
+        }
+        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
+        .nav-link.active { color: var(--purple); background: var(--purple-bg); }
+        .btn {
+            background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border);
+            padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all .15s ease;
+        }
+        .btn:hover { background: var(--bg-card-hover); border-color: var(--border-strong); }
+        .btn.primary { background: var(--purple); border-color: var(--purple); color: #0a0e17; font-weight: 600; }
+        .btn.primary:hover { background: #c4b3ff; }
+
+        .main { max-width: 1400px; margin: 0 auto; padding: 28px 32px 48px; }
+
+        /* ── Hero ─── */
+        .hero { padding: 24px 0 12px; }
+        .hero h1 {
+            font-size: 28px; font-weight: 700; letter-spacing: -0.6px;
+            color: var(--text-primary); margin-bottom: 6px;
+        }
+        .hero h1 .suffix { color: var(--text-muted); font-weight: 400; font-size: 18px; letter-spacing: 0; }
+        .hero .sub { color: var(--text-secondary); font-size: 14px; max-width: 900px; margin-bottom: 12px; }
+        .meta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+        .meta-chip {
+            font-family: var(--mono); font-size: 12px;
+            padding: 5px 10px; border-radius: 5px; background: var(--bg-card); border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .meta-chip b { color: var(--text-primary); }
+
+        /* ── Stat cards ─── */
+        .stat-grid {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px;
+            margin: 24px 0 32px;
+        }
+        .stat-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 16px 18px;
+        }
+        .stat-label {
+            font-size: 11px; font-family: var(--mono); text-transform: uppercase;
+            letter-spacing: 1.3px; color: var(--text-muted); margin-bottom: 6px;
+        }
+        .stat-val {
+            font-size: 26px; font-weight: 700; letter-spacing: -0.6px;
+            color: var(--text-primary); font-family: var(--mono); line-height: 1.1;
+        }
+        .stat-val.green { color: var(--green); }
+        .stat-val.red { color: var(--red); }
+        .stat-val.cyan { color: var(--cyan); }
+        .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-family: var(--mono); }
+
+        /* ── Section title ─── */
+        .section-title {
+            font-size: 13px; font-weight: 600; color: var(--text-secondary);
+            margin: 22px 0 12px; text-transform: uppercase; letter-spacing: 1.5px;
+        }
+
+        /* ── Timeline ─── */
+        .timeline {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+            padding: 20px 24px;
+        }
+        .timeline-bars {
+            display: grid; grid-template-columns: repeat(13, 1fr); gap: 6px;
+            align-items: end; height: 140px; margin-top: 8px;
+        }
+        .tb-col { display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; position: relative; }
+        .tb-stack {
+            width: 100%; display: flex; flex-direction: column-reverse; justify-content: flex-start;
+            height: 100%; border-radius: 4px; overflow: hidden;
+        }
+        .tb-seg { width: 100%; min-height: 0; transition: all .2s ease; }
+        .tb-seg.win { background: var(--green); }
+        .tb-seg.loss { background: var(--red); }
+        .tb-seg.eod { background: var(--text-muted); }
+        .tb-empty { background: var(--bg-elev); height: 2px; width: 100%; border-radius: 1px; opacity: .4; }
+        .tb-count {
+            font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--text-primary);
+            position: absolute; top: -18px;
+        }
+        .tb-label {
+            font-family: var(--mono); font-size: 10px; color: var(--text-muted);
+            writing-mode: vertical-rl; transform: rotate(180deg); margin-top: 4px;
+        }
+        .tb-tickers {
+            position: absolute; bottom: -28px; font-family: var(--mono); font-size: 9px;
+            color: var(--text-secondary); white-space: nowrap; max-width: 100%;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .timeline-legend {
+            display: flex; gap: 16px; margin-top: 38px; padding-top: 16px;
+            border-top: 1px solid var(--border); font-size: 12px; color: var(--text-secondary);
+        }
+        .leg-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 6px; vertical-align: middle; }
+        .leg-dot.win { background: var(--green); }
+        .leg-dot.loss { background: var(--red); }
+        .leg-dot.eod { background: var(--text-muted); }
+
+        /* ── Trade table ─── */
+        .table-wrap {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+            overflow: hidden;
+        }
+        table.trades { width: 100%; border-collapse: collapse; }
+        table.trades th {
+            font-family: var(--mono); font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted);
+            text-align: left; padding: 12px 14px; background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        table.trades td {
+            padding: 14px; font-size: 13px; color: var(--text-primary);
+            border-bottom: 1px solid var(--border);
+            font-family: var(--mono);
+        }
+        table.trades tr:last-child td { border-bottom: none; }
+        table.trades tr:hover td { background: var(--bg-card-hover); }
+        td.ticker { font-weight: 700; color: var(--text-primary); }
+        td.green { color: var(--green); }
+        td.red { color: var(--red); }
+        .tag {
+            display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
+            font-family: var(--mono);
+        }
+        .tag.a { background: var(--cyan-bg); color: var(--cyan); border: 1px solid var(--cyan); }
+        .tag.b { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber); }
+        .tag.c { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple); }
+        .tag.win { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+        .tag.loss { background: var(--red-bg); color: var(--red); border: 1px solid var(--red); }
+        .tag.eod { background: var(--bg-elev); color: var(--text-secondary); border: 1px solid var(--border-strong); }
+        .tag.primary { background: var(--green-bg); color: var(--green); }
+        .tag.secondary { background: var(--amber-bg); color: var(--amber); }
+        .tag.watch { background: var(--bg-elev); color: var(--text-muted); }
+        .theme-pill {
+            display: inline-block; padding: 2px 7px; border-radius: 3px;
+            background: var(--purple-bg); color: var(--purple);
+            font-size: 10px; font-family: var(--mono); letter-spacing: .3px;
+        }
+
+        /* ── Excursion bar ─── */
+        .exc-bar {
+            position: relative; height: 6px; background: var(--bg-elev); border-radius: 3px;
+            width: 100%; min-width: 90px; overflow: visible;
+        }
+        .exc-mfe { position: absolute; left: 50%; height: 100%; background: var(--green); border-radius: 3px; }
+        .exc-mae { position: absolute; right: 50%; height: 100%; background: var(--red); border-radius: 3px; }
+        .exc-zero { position: absolute; left: 50%; top: -2px; width: 1px; height: 10px; background: var(--text-muted); }
+
+        /* ── Breakdown grid ─── */
+        .breakdown-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+        .breakdown-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+            padding: 18px 20px;
+        }
+        .breakdown-title {
+            font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--text-secondary); margin-bottom: 12px;
+        }
+        .breakdown-table { width: 100%; font-family: var(--mono); font-size: 12px; }
+        .breakdown-table td { padding: 6px 0; border-bottom: 1px solid var(--border); }
+        .breakdown-table td:first-child { color: var(--text-primary); font-weight: 600; }
+        .breakdown-table td.num { text-align: right; color: var(--text-secondary); }
+        .breakdown-table td.num.green { color: var(--green); }
+        .breakdown-table td.num.red { color: var(--red); }
+
+        /* ── Snapshots row ─── */
+        .snaps {
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; margin-top: 16px;
+        }
+        .snap-cell {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+            padding: 10px 8px; text-align: center;
+        }
+        .snap-label { font-family: var(--mono); font-size: 10px; color: var(--text-muted); }
+        .snap-count { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .snap-count.zero { color: var(--text-muted); }
+
+        /* ── Empty / algo / footer ─── */
+        .empty-state {
+            text-align: center; padding: 48px 24px; background: var(--bg-card);
+            border: 1px dashed var(--border-strong); border-radius: 10px; margin: 24px 0;
+        }
+        .empty-state h3 { font-size: 18px; color: var(--text-primary); margin-bottom: 8px; }
+        .empty-state p { color: var(--text-muted); font-size: 14px; }
+
+        .algo-note {
+            background: var(--bg-card); border: 1px solid var(--border);
+            padding: 18px 22px; border-radius: 10px; margin-top: 24px;
+            color: var(--text-secondary); font-size: 13px; line-height: 1.7;
+        }
+        .algo-note b { color: var(--text-primary); }
+        .algo-note code {
+            font-family: var(--mono); font-size: 12px; padding: 2px 6px;
+            background: var(--bg-elev); border-radius: 3px; color: var(--cyan);
+        }
+
+        /* spinner */
+        .spinner {
+            display: inline-block; width: 12px; height: 12px;
+            border: 2px solid var(--text-muted); border-top-color: var(--text-primary);
+            border-radius: 50%; animation: spin .6s linear infinite;
+            vertical-align: -2px; margin-right: 6px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <a href="/theme-scanner" class="logo">ThemeHunter</a>
+            <span class="pill-proto">Backtest · v0.1</span>
+        </div>
+        <div class="header-right">
+            <a href="/" class="nav-link">Momentum</a>
+            <a href="/theme-scanner" class="nav-link">Scanner</a>
+            <a href="/theme-backtest" class="nav-link active">Backtest</a>
+            <a href="/backtest" class="nav-link">v3.4.2 Backtest</a>
+            <a href="/logic" class="nav-link">Logic</a>
+            <button class="btn primary" id="runBtn" onclick="runBacktest()">Run Today's Backtest</button>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="hero">
+            <h1>Intraday Replay <span class="suffix">· how would today's picks have played out?</span></h1>
+            <p class="sub">
+                Steps ThemeHunter through {{ result.snapshots_used|length if result.snapshots_used else 10 }} snapshot times
+                across the session. Records the earliest time each ticker scored ≥ {{ result.min_score or 60 }}, then
+                replays 5-min bars forward to resolve WIN (target hit) / LOSS (stop hit) / EOD (mark-to-market).
+                Each signal uses its own bucket-specific stop and target.
+            </p>
+            <div class="meta-row">
+                {% if result.trade_date %}<span class="meta-chip">Trade date <b>{{ result.trade_date }}</b></span>{% endif %}
+                {% if result.generated_at %}<span class="meta-chip">Generated <b>{{ result.generated_at.split('T')[1][:8] if 'T' in result.generated_at else result.generated_at }} ET</b></span>{% endif %}
+                <span class="meta-chip">Min score <b>{{ result.min_score or 60 }}</b></span>
+                <span class="meta-chip">Qualifiers today <b>{{ result.qualified_count or 0 }}</b></span>
+            </div>
+        </section>
+
+        {% set s = result.summary or {} %}
+
+        <!-- KPI CARDS -->
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-label">Trades</div>
+                <div class="stat-val">{{ s.trades or 0 }}</div>
+                <div class="stat-sub">{{ s.winners or 0 }}W · {{ s.losers or 0 }}L · {{ s.eod or 0 }}EOD</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Win rate</div>
+                <div class="stat-val {{ 'green' if (s.win_rate_pct or 0) >= 50 else ('red' if (s.win_rate_pct or 0) < 40 else '') }}">{{ s.win_rate_pct or 0 }}%</div>
+                <div class="stat-sub">WIN = target hit</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total R</div>
+                <div class="stat-val {{ 'green' if (s.total_R or 0) > 0 else 'red' }}">{{ "%+.2f"|format(s.total_R or 0) }}</div>
+                <div class="stat-sub">sum of R multiples</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg R</div>
+                <div class="stat-val {{ 'green' if (s.avg_R or 0) > 0 else 'red' }}">{{ "%+.2f"|format(s.avg_R or 0) }}</div>
+                <div class="stat-sub">per trade</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Best / Worst</div>
+                <div class="stat-val cyan">{{ "%+.2f"|format(s.best_R or 0) }}</div>
+                <div class="stat-sub">worst {{ "%+.2f"|format(s.worst_R or 0) }} R</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg hold</div>
+                <div class="stat-val">{{ s.avg_minutes_held or 0 }}<span style="font-size:16px; color:var(--text-muted);">m</span></div>
+                <div class="stat-sub">avg pnl {{ "%+.2f"|format(s.avg_pnl_pct or 0) }}%</div>
+            </div>
+        </div>
+
+        {% if (s.trades or 0) == 0 %}
+            <div class="empty-state">
+                <h3>No trades resolved for this day</h3>
+                <p>Either no tickers crossed the {{ result.min_score or 60 }} score bar at any snapshot, or intraday bars weren't available for replay.
+                   Click <b>Run Today's Backtest</b> above after the close.</p>
+            </div>
+        {% else %}
+
+        <!-- ENTRY TIMELINE -->
+        <div class="section-title">Entry distribution across the session</div>
+        <div class="timeline">
+            <div class="timeline-bars">
+                {% set tl = result.timeline or [] %}
+                {% set max_count = 1 %}
+                {% for b in tl %}
+                    {% if b.count > max_count %}{% set _ = max_count %}{% endif %}
+                {% endfor %}
+                {# actual max pass #}
+                {% set max_count = (tl|map(attribute='count')|list + [1])|max %}
+                {% for b in tl %}
+                    <div class="tb-col">
+                        {% if b.count > 0 %}
+                            <span class="tb-count">{{ b.count }}</span>
+                            <div class="tb-stack" style="flex: {{ b.count / max_count }};">
+                                {% if b.winners > 0 %}<div class="tb-seg win" style="flex: {{ b.winners }};"></div>{% endif %}
+                                {% if b.losers > 0 %}<div class="tb-seg loss" style="flex: {{ b.losers }};"></div>{% endif %}
+                                {% if b.eod > 0 %}<div class="tb-seg eod" style="flex: {{ b.eod }};"></div>{% endif %}
+                            </div>
+                            <span class="tb-tickers">{{ b.tickers|join(',') }}</span>
+                        {% else %}
+                            <div class="tb-stack" style="flex: 0.1;"></div>
+                            <div class="tb-empty"></div>
+                        {% endif %}
+                        <span class="tb-label">{{ b.label }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="timeline-legend">
+                <span><span class="leg-dot win"></span>WIN · target hit</span>
+                <span><span class="leg-dot loss"></span>LOSS · stop hit</span>
+                <span><span class="leg-dot eod"></span>EOD · held to close</span>
+                <span style="margin-left:auto; color:var(--text-muted);">Bar height proportional to trade count per 30-min bin</span>
+            </div>
+        </div>
+
+        <!-- SNAPSHOT COUNTS -->
+        <div class="section-title">Signals-qualifying count per snapshot</div>
+        <div class="snaps">
+            {% set psc = result.per_snap_counts or {} %}
+            {% for snap, count in psc.items() %}
+                <div class="snap-cell">
+                    <div class="snap-label">{{ snap }}</div>
+                    <div class="snap-count {{ 'zero' if count == 0 else '' }}">{{ count }}</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- TRADES TABLE -->
+        <div class="section-title">All trades · entry → exit</div>
+        <div class="table-wrap">
+            <table class="trades">
+                <thead>
+                    <tr>
+                        <th>First qualified</th>
+                        <th>Entry</th>
+                        <th>Exit</th>
+                        <th>Hold</th>
+                        <th>Ticker</th>
+                        <th>Bucket</th>
+                        <th>Tier</th>
+                        <th>Score</th>
+                        <th>Theme</th>
+                        <th>Entry $</th>
+                        <th>Exit $</th>
+                        <th>Stop%</th>
+                        <th>Tgt%</th>
+                        <th>Outcome</th>
+                        <th>P&amp;L</th>
+                        <th>R</th>
+                        <th>MFE / MAE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in result.trades %}
+                    <tr>
+                        <td>{{ t.entry_snapshot }}</td>
+                        <td>{{ t.entry_time }}</td>
+                        <td>{{ t.exit_time }}</td>
+                        <td>{{ t.minutes_held }}m</td>
+                        <td class="ticker">{{ t.ticker }}</td>
+                        <td><span class="tag {{ t.bucket|lower }}">{{ t.bucket }}</span></td>
+                        <td><span class="tag {{ t.tier }}">{{ t.tier }}</span></td>
+                        <td>{{ "%.1f"|format(t.score_at_entry) }}</td>
+                        <td>{% if t.theme %}<span class="theme-pill">{{ t.theme }}</span>{% else %}—{% endif %}</td>
+                        <td>${{ "%.2f"|format(t.entry_price) }}</td>
+                        <td>${{ "%.2f"|format(t.exit_price) }}</td>
+                        <td>{{ "%.1f"|format(t.stop_distance_pct) }}%</td>
+                        <td>+{{ "%.1f"|format(t.target_R_pct) }}%</td>
+                        <td><span class="tag {{ t.exit_reason|lower }}">{{ t.exit_reason }}</span></td>
+                        <td class="{{ 'green' if t.pnl_pct > 0 else 'red' }}">{{ "%+.2f"|format(t.pnl_pct) }}%</td>
+                        <td class="{{ 'green' if t.r_multiple > 0 else 'red' }}">{{ "%+.2f"|format(t.r_multiple) }}R</td>
+                        <td>
+                            {% set mfe = t.max_favorable_pct|default(0) %}
+                            {% set mae_abs = (t.max_adverse_pct|default(0))|abs %}
+                            {% set span = [mfe, mae_abs, 0.1]|max %}
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span class="green" style="font-size:10px;">{{ "%+.2f"|format(mfe) }}%</span>
+                                <div class="exc-bar">
+                                    <div class="exc-mfe" style="width: {{ (mfe / span * 50)|round(1) }}%;"></div>
+                                    <div class="exc-mae" style="width: {{ (mae_abs / span * 50)|round(1) }}%;"></div>
+                                    <div class="exc-zero"></div>
+                                </div>
+                                <span class="red" style="font-size:10px;">{{ "%+.2f"|format(t.max_adverse_pct|default(0)) }}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- BREAKDOWNS -->
+        <div class="breakdown-row">
+            <div class="breakdown-card">
+                <div class="breakdown-title">By bucket</div>
+                <table class="breakdown-table">
+                    <tr><td></td><td class="num">Trades</td><td class="num">Win%</td><td class="num">Total R</td><td class="num">Avg R</td></tr>
+                    {% for k, v in (result.by_bucket or {}).items() %}
+                    <tr>
+                        <td>{{ k }}</td>
+                        <td class="num">{{ v.trades }}</td>
+                        <td class="num">{{ v.win_rate_pct }}%</td>
+                        <td class="num {{ 'green' if v.total_R > 0 else 'red' }}">{{ "%+.2f"|format(v.total_R) }}</td>
+                        <td class="num {{ 'green' if v.avg_R > 0 else 'red' }}">{{ "%+.2f"|format(v.avg_R) }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-title">By theme</div>
+                <table class="breakdown-table">
+                    <tr><td></td><td class="num">Trades</td><td class="num">Win%</td><td class="num">Total R</td><td class="num">Avg R</td></tr>
+                    {% for k, v in (result.by_theme or {}).items() %}
+                    <tr>
+                        <td>{{ k }}</td>
+                        <td class="num">{{ v.trades }}</td>
+                        <td class="num">{{ v.win_rate_pct }}%</td>
+                        <td class="num {{ 'green' if v.total_R > 0 else 'red' }}">{{ "%+.2f"|format(v.total_R) }}</td>
+                        <td class="num {{ 'green' if v.avg_R > 0 else 'red' }}">{{ "%+.2f"|format(v.avg_R) }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!-- ALGO NOTE -->
+        <section class="algo-note">
+            <b>Method notes.</b><br>
+            <b>Snapshot cadence</b> — <code>09:45, 10:15, 10:45, 11:15, 11:45, 13:30, 14:00, 14:30, 15:00, 15:30</code>.
+            Every 30 min outside the 12:00-13:30 lunch dead-zone. This models how a trader checks the scanner,
+            not tick-level omniscience.<br>
+            <b>Entry</b> — at the close of the first 5-min bar ≥ the earliest qualifying snapshot.<br>
+            <b>Stop / target</b> — bucket-specific from the signal itself:
+            theme leader <code>2.0% stop / +5.0% target</code>,
+            gap+news <code>2.5% / +6.25%</code>,
+            low-float <code>3.5% / +8.75%</code>.
+            Target is always 2.5× stop, so an R-multiple of <code>+2.5</code> = target hit exactly.<br>
+            <b>Exit</b> — walk 5m bars forward. If <code>bar.low ≤ stop</code> → <b>LOSS</b> at stop.
+            If <code>bar.high ≥ target</code> → <b>WIN</b> at target. Else <b>EOD</b> mark-to-market at 15:55.
+            On a bar that touches both, LOSS wins (conservative).<br>
+            <b>What's different from v3.4.2 backtest</b> — v3.4.2 tests the momentum scanner's fire-now-at-scan-time
+            trigger on the S&amp;P 500 universe; this tests the ThemeHunter's theme-RS/low-float scoring on a
+            superset universe with a snapshot cadence.
+        </section>
+
+    </main>
+
+    <script>
+        async function runBacktest() {
+            const btn = document.getElementById('runBtn');
+            btn.innerHTML = '<span class="spinner"></span> Running…';
+            btn.disabled = true;
+            try {
+                const res = await fetch('/api/theme-backtest/run', { method: 'POST' });
+                const data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Backtest failed');
+                window.location.reload();
+            } catch (e) {
+                btn.innerHTML = 'Run Today\'s Backtest';
+                btn.disabled = false;
+                alert('Backtest failed: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
