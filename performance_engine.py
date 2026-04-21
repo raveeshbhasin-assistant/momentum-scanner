@@ -161,6 +161,17 @@ def normalize_entry(raw: dict) -> dict:
         label = raw["leadership"].get("label")
     cat = raw.get("category") or assign_category(score, label)
     bt = raw.get("batch_time") or raw.get("time_et") or ""
+    result = raw.get("result", raw.get("status", ""))
+    pnl = _f(raw.get("pnl_dollar", raw.get("pnl_per_share")))
+    # P&L-adjusted ("effective") reclassification:
+    # If a pick is sold at EOD (close-only exit), upgrade to WIN if it ended
+    # above entry, downgrade to LOSS if it ended below entry. Pure ties stay EOD.
+    effective_result = result
+    if result == "EOD" and pnl is not None:
+        if pnl > 0:
+            effective_result = "WIN"
+        elif pnl < 0:
+            effective_result = "LOSS"
     return {
         "date": raw.get("date", ""),
         "batch_time": bt,
@@ -174,10 +185,11 @@ def normalize_entry(raw: dict) -> dict:
         "leadership_label": label,
         "category": cat,
         "time_bucket": time_bucket(bt),
-        "result": raw.get("result", raw.get("status", "")),
+        "result": result,
+        "effective_result": effective_result,
         "resolve_time": raw.get("resolve_time", ""),
         "resolve_price": _f(raw.get("resolve_price")),
-        "pnl_dollar": _f(raw.get("pnl_dollar", raw.get("pnl_per_share"))),
+        "pnl_dollar": pnl,
         "r_realized": _f(raw.get("r_realized")),
         "appearance": raw.get("appearance", 1),
         "post_close": bool(raw.get("post_close", False)),
@@ -206,17 +218,24 @@ def _f(x):
 #  AGGREGATION
 # ═══════════════════════════════════════════════════════════════
 
-def _rollup(group: list[dict]) -> dict:
-    """Compute headline stats for a group of entries."""
+def _rollup(group: list[dict], result_key: str = "result") -> dict:
+    """
+    Compute headline stats for a group of entries.
+
+    `result_key` selects which field drives WIN/LOSS/EOD counts:
+      - "result"           : original close-out reason (raw)
+      - "effective_result" : EOD upgraded/downgraded by sign of pnl (P&L-adjusted)
+    P&L and R totals are independent of the key — they are always real numbers.
+    """
     if not group:
         return {
             "n": 0, "wins": 0, "losses": 0, "eods": 0,
             "win_rate": None, "total_r": 0.0, "avg_r": 0.0,
             "total_pnl": 0.0, "avg_pnl": 0.0,
         }
-    w = sum(1 for e in group if e["result"] == "WIN")
-    l = sum(1 for e in group if e["result"] == "LOSS")
-    eod = sum(1 for e in group if e["result"] == "EOD")
+    w = sum(1 for e in group if e.get(result_key) == "WIN")
+    l = sum(1 for e in group if e.get(result_key) == "LOSS")
+    eod = sum(1 for e in group if e.get(result_key) == "EOD")
     rs = [e["r_realized"] for e in group if _is_num(e.get("r_realized"))]
     pnls = [e["pnl_dollar"] for e in group if _is_num(e.get("pnl_dollar"))]
     total_r = sum(rs) if rs else 0.0
@@ -246,32 +265,30 @@ def build_view(entries: list[dict], date_str: Optional[str] = None) -> dict:
           "dates": ["2026-04-20", ...],
           "selected_date": "2026-04-20",
           "cumulative": {
-            "overall": {...rollup},
-            "by_category": {"A": {...}, "B": {...}, ...},
-            "by_category_time": {"A": {"14:00-15:00": {...}, ...}, ...}
+            "raw":       {"overall": {...}, "by_category": {...}, "by_category_time": {...}},
+            "effective": {"overall": {...}, "by_category": {...}, "by_category_time": {...}},
           },
           "single_day": {
             "date": "2026-04-20",
-            "overall": {...},
-            "by_category": {...},
-            "by_category_time": {...},
+            "raw":       {...},
+            "effective": {...},
             "picks": [<entry dicts>...]
           },
-          "diagnostics": {
-            "post_close_count": int,
-            "stale_tickers": [...],
-            "unclassified_count": int,
-            "last_updated": "..."
-          }
+          "diagnostics": {...}
         }
+
+    `raw` uses each pick's original exit reason (WIN/LOSS/EOD). `effective`
+    reclassifies EOD picks by the sign of their P&L (EOD + gain → WIN,
+    EOD + loss → LOSS, exact-zero stays EOD). The UI toggles between the two.
     """
     normalized = [normalize_entry(e) for e in entries]
     dates = sorted({e["date"] for e in normalized if e.get("date")})
     if not dates:
+        empty = _bucketed_rollup([])
         return {
             "dates": [],
             "selected_date": None,
-            "cumulative": {"overall": _rollup([]), "by_category": {}, "by_category_time": {}},
+            "cumulative": empty,
             "single_day": None,
             "diagnostics": {
                 "post_close_count": 0, "stale_tickers": [],
@@ -304,15 +321,29 @@ def build_view(entries: list[dict], date_str: Optional[str] = None) -> dict:
 
 
 def _bucketed_rollup(entries: list[dict]) -> dict:
-    """Overall + by_category + by_category_time rollups for a slice of entries."""
+    """
+    Overall + by_category + by_category_time rollups for a slice of entries.
+
+    Returns both `raw` and `effective` sub-dicts so the UI can toggle between
+    them without a round-trip. Same P&L / R totals either way — only the
+    WIN/LOSS/EOD counts (and the derived win rate) differ.
+    """
+    return {
+        "raw":       _rollup_variants(entries, result_key="result"),
+        "effective": _rollup_variants(entries, result_key="effective_result"),
+    }
+
+
+def _rollup_variants(entries: list[dict], result_key: str) -> dict:
+    """Compute overall + by_category + by_category_time for one result_key."""
     by_cat: dict[str, list[dict]] = defaultdict(list)
     for e in entries:
         by_cat[e["category"]].append(e)
 
-    by_category = {c: _rollup(g) for c, g in by_cat.items()}
+    by_category = {c: _rollup(g, result_key) for c, g in by_cat.items()}
     # Ensure all four categories present even if empty
     for c in ("A", "B", "C", "D"):
-        by_category.setdefault(c, _rollup([]))
+        by_category.setdefault(c, _rollup([], result_key))
 
     by_category_time: dict[str, dict[str, dict]] = {}
     for c, g in by_cat.items():
@@ -320,11 +351,11 @@ def _bucketed_rollup(entries: list[dict]) -> dict:
         for e in g:
             buckets[e["time_bucket"]].append(e)
         by_category_time[c] = {
-            t: _rollup(grp) for t, grp in sorted(buckets.items())
+            t: _rollup(grp, result_key) for t, grp in sorted(buckets.items())
         }
 
     return {
-        "overall": _rollup(entries),
+        "overall": _rollup(entries, result_key),
         "by_category": by_category,
         "by_category_time": by_category_time,
     }

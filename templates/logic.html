@@ -318,6 +318,21 @@
             </div>
 
             <div class="change-group">
+                <span class="change-tag tag-added">Added (v3.5.1)</span>
+                <ul>
+                    <li><strong>Result-mode toggle in the controls bar — <em>Raw</em> vs. <em>P&amp;L-adjusted</em>.</strong> An EOD pick is one we held into the close because neither the target nor the stop was hit. Under <em>P&amp;L-adjusted</em>, those picks reclassify by the sign of the close: EOD with positive P&amp;L counts as a WIN, EOD with negative P&amp;L counts as a LOSS, and an exact-zero close stays EOD. The toggle is retroactive across the whole log and is the default view (because the raw EOD bucket is structurally undecided — most close-only exits ended directionally and should be credited).
+                        <ul style="margin-top: 4px;">
+                            <li><code>normalize_entry()</code> now stamps an <code>effective_result</code> field alongside <code>result</code>.</li>
+                            <li><code>_rollup()</code> takes a <code>result_key</code> param so the same machinery produces both rollups; <code>build_view()</code> ships <code>{raw, effective}</code> sub-dicts for every cumulative and single-day slice.</li>
+                            <li>P&amp;L and R totals are <strong>identical</strong> across modes — only WIN/LOSS/EOD counts and the derived win rate change.</li>
+                            <li>In the picks table, an upgraded badge is annotated with a faint <code>*</code> and a tooltip ("Reclassified from EOD by P&amp;L sign") so reclassifications are visible at a glance.</li>
+                        </ul>
+                        First day's effect (2026-04-20, 65 entries): WR moves from <code>19.5%</code> → <code>41.5%</code>, Cat A from <code>20%</code> → <code>60%</code>, Cat B from <code>60%</code> → <code>67%</code> — 24 of 24 EOD picks reclassified (19 WIN, 5 LOSS).
+                    </li>
+                </ul>
+            </div>
+
+            <div class="change-group">
                 <span class="change-tag tag-fixed">Fixed</span>
                 <ul>
                     <li><strong>Category D bloat (upstream fix).</strong> 29 of today's 65 picks landed in <code>D (Unclassified)</code> because the scanner fired during windows when <code>_last_rotation_snapshot</code> was empty or stale. Two changes in <code>app.py</code>:

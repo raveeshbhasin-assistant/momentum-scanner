@@ -313,6 +313,11 @@
                 <span class="chip active" data-res="LOSS">L</span>
                 <span class="chip active" data-res="EOD">EOD</span>
             </div>
+            <div class="ctrl-group" title="Raw = exit reason only. P&L-adjusted = EOD picks count as WIN/LOSS based on the sign of their P&L.">
+                <span class="ctrl-label">Result mode</span>
+                <span class="chip" data-resmode="raw">Raw</span>
+                <span class="chip active" data-resmode="effective">P&amp;L-adjusted</span>
+            </div>
         </div>
 
         <!-- Diagnostics banner -->
@@ -369,12 +374,15 @@
         const sign   = (x) => x > 0 ? "pos" : (x < 0 ? "neg" : "neu");
 
         const state = {
-            mode: "single",   // "single" or "cum"
+            mode: "single",          // "single" or "cum"
+            resultMode: "effective", // "raw" or "effective" — selects which rollup + per-pick result field
             date: VIEW.selected_date,
             cats: new Set(["A","B","C","D"]),
             results: new Set(["WIN","LOSS","EOD"]),
             sort: { key: "batch_time", dir: 1 },
         };
+        // Which per-pick field represents the pick's classified result in the active mode.
+        const resultField = () => state.resultMode === "effective" ? "effective_result" : "result";
 
         // ── Setup controls ─────────────────────────────────────
         const dateSel = document.getElementById("dateSel");
@@ -410,23 +418,36 @@
                 render();
             });
         });
+        document.querySelectorAll("[data-resmode]").forEach(chip => {
+            chip.classList.toggle("active", chip.dataset.resmode === state.resultMode);
+            chip.addEventListener("click", () => {
+                state.resultMode = chip.dataset.resmode;
+                document.querySelectorAll("[data-resmode]").forEach(c => c.classList.toggle("active", c.dataset.resmode === state.resultMode));
+                render();
+            });
+        });
 
         // ── Render ─────────────────────────────────────────────
         function render() {
-            const view = state.mode === "single"
-                ? { label: "single day", stats: VIEW.single_day, picks: (VIEW.single_day && VIEW.single_day.picks) || [] }
-                : { label: "cumulative",  stats: VIEW.cumulative,  picks: null };
+            // Pick the right container, then dive into the active rollup mode.
+            const bucket = state.mode === "single" ? VIEW.single_day : VIEW.cumulative;
+            const stats  = bucket ? bucket[state.resultMode] : null;
 
-            if (!view.stats) {
+            if (!stats) {
                 document.querySelector(".main").innerHTML = '<div class="empty">No performance data yet. Run a scan day and the end-of-day resolver will populate this page.</div>';
                 return;
             }
+            const view = {
+                label: state.mode === "single" ? "single day" : "cumulative",
+                stats: stats,
+                picks: state.mode === "single" ? (VIEW.single_day && VIEW.single_day.picks) || [] : null,
+            };
 
-            // Filter picks by chip state
-            const cats = state.cats, results = state.results;
-            const passCat  = (c) => cats.has(c);
-            const passRes  = (r) => results.has(r);
-            const filter   = (e) => passCat(e.category) && passRes(e.result);
+            // Filter picks by chip state — use the active result field
+            const rk = resultField();
+            const passCat  = (e) => state.cats.has(e.category);
+            const passRes  = (e) => state.results.has(e[rk]);
+            const filter   = (e) => passCat(e) && passRes(e);
 
             // Headline (always compute from whatever slice is visible)
             const picks = view.picks ? view.picks.filter(filter) : allFilteredEntries(view.stats, filter);
@@ -443,25 +464,29 @@
 
         // When mode=cum, we don't have per-pick rows; recompute headline from by_category bucket sums.
         function allFilteredEntries(stats, filter) {
-            // Fallback: aggregate at category-only level (since we don't have per-row cumulative data)
+            // Fallback: aggregate at category-only level (since we don't have per-row cumulative data).
+            // Synthesized rows only need to carry the currently-active result field.
+            const rk = resultField();
+            const synth = (c, r) => { const e = {category:c, r_realized: null, pnl_dollar: null}; e[rk] = r; return e; };
             const agg = [];
             Object.entries(stats.by_category || {}).forEach(([c, s]) => {
                 if (!state.cats.has(c)) return;
-                // Synthesize n "entries" so headline counts work; wins/losses/eods only.
-                for (let i=0; i<s.wins; i++)   if (state.results.has("WIN"))  agg.push({category:c, result:"WIN",  r_realized: null, pnl_dollar: null});
-                for (let i=0; i<s.losses; i++) if (state.results.has("LOSS")) agg.push({category:c, result:"LOSS", r_realized: null, pnl_dollar: null});
-                for (let i=0; i<s.eods; i++)   if (state.results.has("EOD"))  agg.push({category:c, result:"EOD",  r_realized: null, pnl_dollar: null});
+                for (let i=0; i<s.wins; i++)   if (state.results.has("WIN"))  agg.push(synth(c, "WIN"));
+                for (let i=0; i<s.losses; i++) if (state.results.has("LOSS")) agg.push(synth(c, "LOSS"));
+                for (let i=0; i<s.eods; i++)   if (state.results.has("EOD"))  agg.push(synth(c, "EOD"));
             });
             return agg;
         }
 
         function renderOverall(picks, label) {
-            document.getElementById("overallTitle").textContent = label === "single day"
-                ? `Day of ${state.date}` : `Cumulative (${VIEW.dates.length} day${VIEW.dates.length===1?"":"s"})`;
+            const modeTag = state.resultMode === "effective" ? " · P&L-adjusted" : " · Raw exits";
+            document.getElementById("overallTitle").textContent = (label === "single day"
+                ? `Day of ${state.date}` : `Cumulative (${VIEW.dates.length} day${VIEW.dates.length===1?"":"s"})`) + modeTag;
 
-            const w = picks.filter(p=>p.result==="WIN").length;
-            const l = picks.filter(p=>p.result==="LOSS").length;
-            const eod = picks.filter(p=>p.result==="EOD").length;
+            const rk = resultField();
+            const w = picks.filter(p=>p[rk]==="WIN").length;
+            const l = picks.filter(p=>p[rk]==="LOSS").length;
+            const eod = picks.filter(p=>p[rk]==="EOD").length;
             const n = picks.length;
             const wr = (w+l) ? (w/(w+l)*100) : null;
             // Only sum R/$ if they're real (single-day mode); cumulative fallback has nulls.
@@ -612,9 +637,14 @@
                 html += `<th data-sort="${c.k}">${c.label}<span class="sort-hint">${hint}</span></th>`;
             });
             html += '</tr></thead><tbody>';
+            const rk = resultField();
             picks.forEach(p => {
-                const rowCls = p.result === "WIN" ? "row-win" : (p.result === "LOSS" ? "row-loss" : "row-eod");
+                const disp = p[rk];
+                const rowCls = disp === "WIN" ? "row-win" : (disp === "LOSS" ? "row-loss" : "row-eod");
                 const rCls = p.r_realized == null ? "" : (p.r_realized > 0 ? "pos" : (p.r_realized < 0 ? "neg" : ""));
+                // When P&L-adjusted is on and a pick was upgraded/downgraded, annotate the badge (e.g. "WIN*")
+                const upgraded = state.resultMode === "effective" && p.result === "EOD" && disp !== "EOD";
+                const badge = upgraded ? `${disp}<span style="opacity:0.55;margin-left:2px" title="Reclassified from EOD by P&L sign">*</span>` : disp;
                 html += `<tr class="${rowCls}">
                     <td>${p.batch_time}</td>
                     <td><span class="ticker">${p.ticker}</span></td>
@@ -626,7 +656,7 @@
                     <td>${p.entry ?? "—"}</td>
                     <td>${p.stop ?? "—"}</td>
                     <td>${p.target ?? "—"}</td>
-                    <td><span class="result-badge">${p.result}</span></td>
+                    <td><span class="result-badge">${badge}</span></td>
                     <td>${p.resolve_time || "—"}</td>
                     <td>${p.resolve_price ?? "—"}</td>
                     <td class="${rCls}">${fmtR(p.r_realized)}</td>
