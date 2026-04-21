@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.4.2</title>
+    <title>Algorithm Logic — Momentum Scanner v3.5.2</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -255,7 +255,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.4.2</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.5.2</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -265,7 +265,8 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-5" class="current">v3.5 — Performance Categories</a>
+            <a href="#v3-5-2" class="current">v3.5.2 — Email Notifier</a>
+            <a href="#v3-5">v3.5 — Performance Categories</a>
             <a href="#themehunter-v0-1">ThemeHunter v0.1 (prototype)</a>
             <a href="#v3-4-2">v3.4.2</a>
             <a href="#v3-4-1">v3.4.1</a>
@@ -277,12 +278,61 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.5.2 ───── -->
+        <div class="release current" id="v3-5-2">
+            <div class="release-header">
+                <span class="release-version">v3.5.2</span>
+                <span class="release-date">Released 2026-04-20</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Email notifier" — strong-signal scans now push an HTML email to your inbox with full entry / stop / target / R:R details, tier pills, and a dashboard link. Weak-only and empty scans stay silent.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Intraday is faster than the dashboard refresh loop. Pulling up the site on every 30-minute scheduler tick is both tedious and prone to missing a strong setup when you're away from the screen. An email push is effectively free (Gmail SMTP + app password) and fits the existing "manual execution at Fidelity" workflow — you still decide whether to enter; the scanner just tells you <em>when there is something worth looking at</em>.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>New module <code>notifier.py</code></strong> — pure stdlib (<code>smtplib</code>, <code>email.mime</code>, <code>ssl</code>, <code>threading</code>), no new dependencies. Sends via Gmail SMTP on port 587 with STARTTLS. All SMTP work runs on a daemon thread so the scheduler is never blocked waiting for mail.</li>
+                    <li><strong>Hook in <code>app.py::scheduled_scan()</code></strong> immediately after <code>add_signals_to_daily()</code>. Fully wrapped in <code>try/except</code> — a mail failure logs an error but never breaks a scan cycle.</li>
+                    <li><strong>HTML email layout</strong> mirrors the dashboard's dark theme: regime banner at top (color-coded by VIX tier), a compact table of strong signals with tier-colored tickers, and a blue "View dashboard" CTA.</li>
+                    <li><strong>Plain-text fallback</strong> auto-attached so clients without HTML render (and any email-to-SMS bridges) still see the signals cleanly.</li>
+                    <li><strong><code>.env.example</code></strong> documenting the five new environment variables (see below).</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Configuration</span>
+                <ul>
+                    <li><code>GMAIL_USER</code> — the sending Gmail address. <strong>Required</strong> for notifications to fire.</li>
+                    <li><code>GMAIL_APP_PASSWORD</code> — a 16-character Gmail app password (not your account password). <strong>Required</strong>. Generate at <code>myaccount.google.com/apppasswords</code>. 2FA must be enabled on the account.</li>
+                    <li><code>NOTIFY_EMAIL</code> — comma-separated recipient list. Defaults to <code>GMAIL_USER</code> if unset. You can send to yourself; no need for a separate account.</li>
+                    <li><code>NOTIFY_ENABLED</code> — kill switch. Set to <code>false</code> to silence the notifier without removing creds. Default <code>true</code>.</li>
+                    <li><code>NOTIFY_MIN_SIGNALS</code> — minimum strong signal count to trigger a send. Default <code>1</code>. Raise to <code>2</code> or <code>3</code> if you find the volume too high.</li>
+                    <li><code>DASHBOARD_URL</code> — base URL of the Railway deployment, used to link "View dashboard" in the email.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Unchanged (important)</span>
+                <ul>
+                    <li><strong>Scanner scoring and filter logic are untouched.</strong> v3.5.2 is a pure addition — no change to thresholds, tier logic, weak-signal floor, or the performance categorization.</li>
+                    <li><strong>Silent when no strong signals fire.</strong> Weak-only (40–59) and empty scans do <em>not</em> send email. With the scheduler running ~17 scans/day (15 market-hours ticks + 2 pre-market), expect 3–8 emails on a typical day.</li>
+                    <li><strong>Never blocks.</strong> Mail send is on a background thread; SMTP errors are logged, not raised.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale" style="margin-top: 12px;">
+                <strong>Operational notes:</strong> The first email after deployment confirms Railway's outbound SMTP is open (Gmail on 587 is allowed by default). If no email arrives on a scan that should have fired, check Railway logs for <code>notifier:</code> lines — the module logs every decision (disabled / below threshold / missing creds / sent). App passwords expire if 2FA is disabled on the Gmail account — keep 2FA on. The app password itself does not expire automatically.
+            </div>
+        </div>
+
         <!-- ───── v3.5 ───── -->
-        <div class="release current" id="v3-5">
+        <div class="release" id="v3-5">
             <div class="release-header">
                 <span class="release-version">v3.5</span>
                 <span class="release-date">Released 2026-04-20</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title">"Performance Categories" — <code>/performance</code> rebuilt around a 4-category split: score ≥60 + Leader vs. score ≥60 + non-Leader vs. low-score vs. unclassified. Data store reset to start fresh from today.</div>
 

@@ -18,6 +18,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 import config
 from scanner import run_scan
+from notifier import send_scan_email
 from history import add_signals_to_daily, load_daily_finds, get_history_days, cleanup_old_files
 from sector_rotation import (
     detect_sector_rotation,
@@ -55,7 +56,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.5")
+app = FastAPI(title="Momentum Scanner", version="3.5.2")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -219,6 +220,18 @@ def scheduled_scan():
         # Persist to daily cumulative finds (for /today and /history pages)
         if results:
             add_signals_to_daily(results)
+
+        # ── Email notifier (v3.4.3) ─────────────────────────────────
+        # Sends a strong-signals-only email after each scan. Fully
+        # protected — never blocks or crashes the scheduler.
+        try:
+            send_scan_email(
+                signals=results,
+                regime=get_regime() if config.MARKET_REGIME_ENABLED else None,
+                scan_time=last_scan_time,
+            )
+        except Exception as notif_err:
+            logger.error(f"Notifier dispatch error: {notif_err}")
 
         # Store in history
         scan_history.append({
