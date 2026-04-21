@@ -525,6 +525,80 @@ async def api_regime():
     return get_regime() if config.MARKET_REGIME_ENABLED else {"label": "DISABLED"}
 
 
+@app.get("/api/diagnose/egress", response_class=JSONResponse)
+async def api_diagnose_egress():
+    """
+    Probe outbound network egress from the Railway container.
+
+    Tests raw TCP connects (IPv4 only — matches the notifier's A-record
+    path) to a fixed set of (host, port) targets and reports success,
+    timeout, refusal, or other errors per target. No data is sent beyond
+    the TCP handshake; on success the socket is closed immediately.
+
+    Purpose: definitively confirm whether Railway's egress is dropping
+    SMTP ports (25 / 465 / 587) while allowing HTTPS (443). If so, the
+    notifier must move off smtplib onto an HTTPS-based email API.
+    """
+    import socket as _socket
+    import time as _time
+
+    targets = [
+        ("smtp.gmail.com", 465, "SMTPS (implicit TLS — v3.5.6 email path)"),
+        ("smtp.gmail.com", 587, "SMTP+STARTTLS (v3.5.5 email path)"),
+        ("smtp.gmail.com", 25,  "SMTP plain (baseline — usually blocked)"),
+        ("api.resend.com", 443, "HTTPS (Resend API — proposed v3.5.7 path)"),
+        ("api.github.com", 443, "HTTPS (GitHub API — proves 443 works, since backup succeeded)"),
+    ]
+
+    results = []
+    for host, port, note in targets:
+        entry = {"host": host, "port": port, "note": note}
+        # Resolve IPv4 only so we match the _IPv4SMTPS / backup code path.
+        try:
+            infos = _socket.getaddrinfo(
+                host, port, _socket.AF_INET, _socket.SOCK_STREAM
+            )
+            entry["resolved_ip"] = infos[0][4][0] if infos else None
+        except _socket.gaierror as e:
+            entry["result"] = "dns_error"
+            entry["error"] = str(e)
+            results.append(entry)
+            continue
+
+        sock = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
+        sock.settimeout(5.0)
+        t0 = _time.monotonic()
+        try:
+            sock.connect((entry["resolved_ip"], port))
+            entry["result"] = "ok"
+            entry["connect_ms"] = round((_time.monotonic() - t0) * 1000, 1)
+        except _socket.timeout:
+            entry["result"] = "timeout"
+            entry["connect_ms"] = round((_time.monotonic() - t0) * 1000, 1)
+        except ConnectionRefusedError as e:
+            entry["result"] = "refused"
+            entry["error"] = str(e)
+        except OSError as e:
+            entry["result"] = "error"
+            entry["error"] = f"{type(e).__name__}: {e}"
+        finally:
+            try:
+                sock.close()
+            except OSError:
+                pass
+        results.append(entry)
+
+    summary = {
+        "smtp_blocked": all(
+            r["result"] != "ok" for r in results if r["port"] in (25, 465, 587)
+        ),
+        "https_works": any(
+            r["result"] == "ok" for r in results if r["port"] == 443
+        ),
+    }
+    return {"summary": summary, "targets": results}
+
+
 @app.post("/api/backup/trigger", response_class=JSONResponse)
 async def api_trigger_backup():
     """
