@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Performance — Momentum Scanner</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,16 +17,19 @@
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
             --green: #22c55e;
-            --green-dim: #16a34a;
             --green-bg: #22c55e15;
             --red: #ef4444;
             --red-bg: #ef444415;
             --blue: #3b82f6;
-            --blue-bg: #3b82f615;
             --amber: #f59e0b;
-            --amber-bg: #f59e0b15;
             --purple: #a78bfa;
             --cyan: #22d3ee;
+
+            --cat-a: #22d3ee;   /* High-Score Leader */
+            --cat-b: #a78bfa;   /* High-Score Non-Leader */
+            --cat-c: #94a3b8;   /* Low-Score */
+            --cat-d: #f59e0b;   /* Unclassified */
+
             --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
             --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
         }
@@ -36,253 +38,238 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             font-family: var(--font);
-            line-height: 1.6;
+            line-height: 1.5;
             min-height: 100vh;
         }
 
         .header {
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
-            padding: 16px 32px;
+            padding: 14px 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 50;
             backdrop-filter: blur(12px);
         }
-
-        .header-left { display: flex; align-items: center; gap: 16px; }
-
+        .header-left { display: flex; align-items: center; gap: 14px; }
         .logo {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-size: 21px; font-weight: 700; letter-spacing: -0.5px;
             background: linear-gradient(135deg, var(--green), var(--cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             text-decoration: none;
         }
-
-        .page-title {
-            font-size: 15px;
-            color: var(--text-secondary);
-            padding-left: 16px;
-            border-left: 1px solid var(--border);
-        }
-
-        .header-right { display: flex; align-items: center; gap: 12px; }
-
+        .page-title { font-size: 14px; color: var(--text-secondary); padding-left: 14px; border-left: 1px solid var(--border); }
+        .header-right { display: flex; align-items: center; gap: 8px; }
         .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 8px 12px;
-            border-radius: 6px;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 13px; font-weight: 500; padding: 7px 11px; border-radius: 6px;
             transition: all 0.2s;
         }
         .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
         .nav-link.active { color: var(--cyan); background: var(--bg-card); }
 
-        .main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
+        .main { padding: 22px 28px 48px; max-width: 1600px; margin: 0 auto; }
 
-        /* ── MAE-Rule Reminder (v3.4.1) ────────────────────────── */
-        .mae-rule-banner {
-            display: flex; align-items: center; gap: 12px;
-            padding: 10px 16px;
-            border: 1px solid rgba(167,139,250,0.35);
-            background: rgba(167,139,250,0.06);
-            border-radius: 10px;
-            margin-bottom: 16px;
-            font-size: 12px;
-            color: var(--text-secondary, #94a3b8);
-            line-height: 1.5;
+        /* ── Controls bar ──────────────────────────────────────── */
+        .controls {
+            display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+            padding: 14px 18px; background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: 12px;
+            margin-bottom: 18px;
         }
-        .mae-rule-banner .mae-tag {
-            flex: 0 0 auto;
-            font-family: var(--mono, monospace);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.6px;
-            padding: 3px 8px;
-            border-radius: 5px;
-            background: rgba(167,139,250,0.2);
-            color: var(--purple, #a78bfa);
-            border: 1px solid rgba(167,139,250,0.4);
+        .ctrl-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .ctrl-label {
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-muted); font-weight: 600;
         }
-        .mae-rule-banner strong { color: var(--text-primary, #e2e8f0); font-weight: 600; }
-        .mae-rule-banner a {
-            color: var(--purple, #a78bfa); text-decoration: none;
-            border-bottom: 1px dotted rgba(167,139,250,0.5);
-            margin-left: 4px;
+        select, input[type="date"] {
+            background: var(--bg-primary); color: var(--text-primary);
+            border: 1px solid var(--border); border-radius: 6px;
+            padding: 7px 10px; font-family: var(--font); font-size: 13px;
+            cursor: pointer; outline: none;
         }
-        .mae-rule-banner a:hover { color: var(--text-primary, #e2e8f0); border-bottom-color: var(--text-primary, #e2e8f0); }
-        @media (max-width: 768px) {
-            .mae-rule-banner { flex-wrap: wrap; font-size: 11px; padding: 10px 12px; }
+        select:focus, input:focus { border-color: var(--cyan); }
+        .chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 10px; border-radius: 14px; cursor: pointer;
+            font-size: 12px; font-weight: 500;
+            background: var(--bg-primary); border: 1px solid var(--border);
+            color: var(--text-secondary); transition: all 0.15s;
+            user-select: none;
         }
+        .chip:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+        .chip.active { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--cyan); }
+        .chip.cat-A.active { border-color: var(--cat-a); color: var(--cat-a); }
+        .chip.cat-B.active { border-color: var(--cat-b); color: var(--cat-b); }
+        .chip.cat-C.active { border-color: var(--cat-c); color: var(--cat-c); }
+        .chip.cat-D.active { border-color: var(--cat-d); color: var(--cat-d); }
 
-        /* ── KPI Cards ─────────────────────────────────────────── */
+        /* ── Diagnostics banner ────────────────────────────────── */
+        .diag {
+            display: flex; flex-wrap: wrap; gap: 14px; padding: 10px 14px;
+            background: rgba(245, 158, 11, 0.06);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-left: 3px solid var(--amber);
+            border-radius: 8px; margin-bottom: 18px;
+            font-size: 12px; color: var(--text-secondary);
+        }
+        .diag strong { color: var(--amber); font-weight: 600; }
+        .diag .diag-item { display: inline-flex; align-items: center; gap: 6px; }
+        .diag .diag-item + .diag-item { padding-left: 14px; border-left: 1px solid rgba(245, 158, 11, 0.2); }
+        .diag.hidden { display: none; }
+
+        /* ── Section headings ──────────────────────────────────── */
+        .section-head {
+            display: flex; align-items: baseline; gap: 14px;
+            margin: 26px 0 12px; padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-head h2 { font-size: 15px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.3px; }
+        .section-head .sub { font-size: 12px; color: var(--text-muted); font-family: var(--mono); }
+
+        /* ── KPI cards ─────────────────────────────────────────── */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-bottom: 28px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px; margin-bottom: 14px;
         }
-
         .kpi-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 18px 20px;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 16px;
         }
-
         .kpi-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1.1px;
+            color: var(--text-muted); margin-bottom: 3px;
         }
+        .kpi-value { font-size: 22px; font-weight: 700; font-family: var(--mono); }
+        .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: var(--mono); }
+        .pos { color: var(--green); }
+        .neg { color: var(--red); }
+        .neu { color: var(--amber); }
 
-        .kpi-value {
-            font-size: 26px;
-            font-weight: 700;
-            font-family: var(--mono);
-        }
-
-        .kpi-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        /* ── Chart Panels ──────────────────────────────────────── */
-        .charts-grid {
+        /* ── Category panels ───────────────────────────────────── */
+        .cat-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 28px;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 12px; margin-bottom: 18px;
         }
-
-        .chart-panel {
+        .cat-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px 24px;
+            border-left: 3px solid var(--border);
+            border-radius: 10px; padding: 14px 16px;
         }
-
-        .chart-panel.full-width {
-            grid-column: 1 / -1;
+        .cat-card.A { border-left-color: var(--cat-a); }
+        .cat-card.B { border-left-color: var(--cat-b); }
+        .cat-card.C { border-left-color: var(--cat-c); }
+        .cat-card.D { border-left-color: var(--cat-d); }
+        .cat-card .cat-header {
+            display: flex; align-items: baseline; justify-content: space-between;
+            margin-bottom: 10px;
         }
-
-        .chart-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 16px;
+        .cat-card .cat-name {
+            font-size: 13px; font-weight: 600; color: var(--text-primary);
         }
-
-        .chart-wrapper {
-            position: relative;
-            height: 280px;
+        .cat-card .cat-name .tag {
+            display: inline-block; padding: 2px 6px; border-radius: 4px;
+            font-size: 10px; font-family: var(--mono); font-weight: 700;
+            margin-right: 6px; letter-spacing: 0.5px;
         }
-
-        /* ── Batch Heatmap ─────────────────────────────────────── */
-        .heatmap-grid {
-            display: grid;
-            grid-template-columns: 80px repeat(var(--num-days), 1fr);
-            gap: 4px;
+        .cat-card.A .tag { background: rgba(34,211,238,0.15); color: var(--cat-a); }
+        .cat-card.B .tag { background: rgba(167,139,250,0.15); color: var(--cat-b); }
+        .cat-card.C .tag { background: rgba(148,163,184,0.15); color: var(--cat-c); }
+        .cat-card.D .tag { background: rgba(245,158,11,0.15); color: var(--cat-d); }
+        .cat-card .cat-n { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
+        .cat-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+        .cat-stat { text-align: left; }
+        .cat-stat .v { font-size: 17px; font-weight: 700; font-family: var(--mono); }
+        .cat-stat .l { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+        .cat-time-mini {
+            margin-top: 8px; padding-top: 8px;
+            border-top: 1px dashed var(--border);
         }
-
-        .heatmap-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            font-family: var(--mono);
+        .cat-time-mini .mini-row {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 11px; font-family: var(--mono); padding: 2px 0;
+            color: var(--text-secondary);
         }
+        .cat-time-mini .mini-row .t { color: var(--text-muted); min-width: 90px; }
+        .cat-time-mini .mini-row .n { min-width: 28px; text-align: right; color: var(--text-muted); }
+        .cat-time-mini .mini-row .wr { min-width: 46px; text-align: right; }
+        .cat-time-mini .mini-row .r  { min-width: 54px; text-align: right; font-weight: 600; }
 
-        .heatmap-header {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-align: center;
-            font-weight: 600;
+        /* ── Tables ────────────────────────────────────────────── */
+        table {
+            width: 100%; border-collapse: collapse;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden; font-size: 13px;
         }
-
-        .heatmap-cell {
-            border-radius: 6px;
-            padding: 8px 4px;
-            text-align: center;
-            font-size: 12px;
-            font-family: var(--mono);
-            font-weight: 600;
-            min-height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        th {
+            padding: 10px 12px; text-align: left;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-muted); font-weight: 600;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+            cursor: pointer; user-select: none;
         }
-
-        /* ── Filter Impact Table ───────────────────────────────── */
-        .filter-table {
-            width: 100%;
-            border-collapse: collapse;
+        th:hover { color: var(--text-primary); }
+        th .sort-hint { font-size: 9px; margin-left: 4px; color: var(--text-muted); }
+        td {
+            padding: 8px 12px; border-top: 1px solid var(--border);
+            font-family: var(--mono); font-size: 12px; color: var(--text-secondary);
         }
-
-        .filter-table th {
-            padding: 10px 14px;
-            text-align: left;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg-secondary);
+        tr:hover td { background: var(--bg-card-hover); color: var(--text-primary); }
+        .row-win td .result-badge { background: rgba(34,197,94,0.15); color: var(--green); }
+        .row-loss td .result-badge { background: rgba(239,68,68,0.15); color: var(--red); }
+        .row-eod td .result-badge { background: rgba(245,158,11,0.15); color: var(--amber); }
+        .result-badge {
+            display: inline-block; padding: 2px 7px; border-radius: 4px;
+            font-size: 10px; font-weight: 700; letter-spacing: 0.5px; font-family: var(--mono);
         }
-
-        .filter-table td {
-            padding: 10px 14px;
-            font-size: 13px;
-            border-bottom: 1px solid var(--border);
-            font-family: var(--mono);
+        .cat-badge {
+            display: inline-block; padding: 2px 6px; border-radius: 4px;
+            font-size: 10px; font-weight: 700; font-family: var(--mono); letter-spacing: 0.5px;
         }
+        .cat-badge.A { background: rgba(34,211,238,0.15); color: var(--cat-a); }
+        .cat-badge.B { background: rgba(167,139,250,0.15); color: var(--cat-b); }
+        .cat-badge.C { background: rgba(148,163,184,0.15); color: var(--cat-c); }
+        .cat-badge.D { background: rgba(245,158,11,0.15); color: var(--cat-d); }
 
-        .filter-table tr:hover td { background: var(--bg-card-hover); }
+        .ticker { font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; }
 
-        .tag-good { color: var(--green); }
-        .tag-bad { color: var(--red); }
-        .tag-neutral { color: var(--text-muted); }
+        /* ── Time-bucket detail grid ───────────────────────────── */
+        .time-grid-wrap { overflow-x: auto; }
+        table.time-grid th, table.time-grid td { font-family: var(--mono); font-size: 11px; padding: 7px 9px; }
+        table.time-grid td.cat-label { color: var(--text-primary); font-weight: 600; }
 
+        /* ── Empty states & footer ─────────────────────────────── */
+        .empty {
+            padding: 28px; text-align: center;
+            color: var(--text-muted); font-size: 13px;
+            background: var(--bg-card); border: 1px dashed var(--border);
+            border-radius: 10px; margin-bottom: 18px;
+        }
         .footer {
-            text-align: center;
-            padding: 24px;
-            color: var(--text-muted);
-            font-size: 12px;
-            border-top: 1px solid var(--border);
-            margin-top: 48px;
+            text-align: center; padding: 22px;
+            color: var(--text-muted); font-size: 11px; font-family: var(--mono);
+            border-top: 1px solid var(--border); margin-top: 36px;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-        /* ── Mobile Responsive ─────────────────────────────────── */
         @media (max-width: 768px) {
-            .header { flex-wrap: wrap; padding: 12px 16px; gap: 10px; }
+            .header { flex-wrap: wrap; padding: 12px 14px; gap: 8px; }
             .header-left { width: 100%; }
-            .header-right { width: 100%; flex-wrap: wrap; gap: 6px; justify-content: center; }
-            .nav-link { font-size: 12px; padding: 6px 8px; }
-            .logo { font-size: 18px; }
-            .page-title { font-size: 13px; padding-left: 10px; }
-            .main { padding: 16px 12px; }
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-            .kpi-card { padding: 12px 14px; }
-            .kpi-value { font-size: 20px; }
-            .charts-grid { grid-template-columns: 1fr; }
-            .chart-panel { padding: 14px 16px; }
-            .chart-wrapper { height: 220px; }
+            .header-right { width: 100%; justify-content: center; flex-wrap: wrap; }
+            .main { padding: 14px 10px; }
+            .controls { padding: 12px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .kpi-value { font-size: 18px; }
+            .cat-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -291,427 +278,393 @@
     <header class="header">
         <div class="header-left">
             <a href="/" class="logo">Momentum Scanner</a>
-            <span class="page-title">Performance Tracker</span>
+            <span class="page-title">Performance — v3.5 Categories</span>
         </div>
         <div class="header-right">
             <a href="/" class="nav-link">Dashboard</a>
-            <a href="/today" class="nav-link">Today's Finds</a>
+            <a href="/today" class="nav-link">Today</a>
             <a href="/history" class="nav-link">History</a>
             <a href="/performance" class="nav-link active">Performance</a>
             <a href="/backtest" class="nav-link">Backtest</a>
-            <a href="/logic" class="nav-link">Algorithm Logic</a>
+            <a href="/logic" class="nav-link">Logic</a>
         </div>
     </header>
 
     <main class="main">
 
-        <!-- 60-MIN MAE CHECK REMINDER (v3.4.1 manual rule) -->
-        <div class="mae-rule-banner" title="Manual Fidelity rule — the same 60-min MAE check that powers the MAE_EXIT backtest headline">
-            <span class="mae-tag">60-MIN MAE CHECK</span>
-            <span>
-                Headline Win Rate uses <strong>P&amp;L &gt; 0</strong> (v3.4 definition). Target-hit rate is shown as a sub-metric.
-                Numbers here reconcile with <a href="/backtest">/backtest</a> when the MAE_EXIT rule is applied live.
-                <a href="/logic#v3-4-1">see logic →</a>
-            </span>
-        </div>
-
-        <!-- KPI Cards -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-label">Total Trades</div>
-                <div class="kpi-value" style="color: var(--blue);" id="kpiTrades">—</div>
-                <div class="kpi-sub" id="kpiDays"></div>
+        <!-- Controls -->
+        <div class="controls">
+            <div class="ctrl-group">
+                <span class="ctrl-label">Date</span>
+                <select id="dateSel"></select>
+                <span class="chip" id="modeToday" data-mode="single">Single day</span>
+                <span class="chip" id="modeCum" data-mode="cum">Cumulative</span>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Net P&L</div>
-                <div class="kpi-value" id="kpiPnl">—</div>
+            <div class="ctrl-group" style="margin-left:auto">
+                <span class="ctrl-label">Categories</span>
+                <span class="chip cat-A active" data-cat="A"><b>A</b> High-Score Leader</span>
+                <span class="chip cat-B active" data-cat="B"><b>B</b> High-Score Non-Leader</span>
+                <span class="chip cat-C active" data-cat="C"><b>C</b> Low-Score</span>
+                <span class="chip cat-D active" data-cat="D"><b>D</b> Unclassified</span>
             </div>
-            <div class="kpi-card" title="Any trade with positive P&amp;L counts as a win (v3.4 definition). Matches the /backtest headline.">
-                <div class="kpi-label">Win Rate (P&amp;L &gt; 0)</div>
-                <div class="kpi-value" id="kpiWinRate">—</div>
-                <div class="kpi-sub" id="kpiWinSub"></div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Actual R:R</div>
-                <div class="kpi-value" style="color: var(--purple);" id="kpiRR">—</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Avg Win</div>
-                <div class="kpi-value" style="color: var(--green);" id="kpiAvgWin">—</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Avg Loss</div>
-                <div class="kpi-value" style="color: var(--red);" id="kpiAvgLoss">—</div>
+            <div class="ctrl-group">
+                <span class="ctrl-label">Result</span>
+                <span class="chip active" data-res="WIN">W</span>
+                <span class="chip active" data-res="LOSS">L</span>
+                <span class="chip active" data-res="EOD">EOD</span>
             </div>
         </div>
 
-        <!-- Charts Row 1 -->
-        <div class="charts-grid">
-            <div class="chart-panel">
-                <div class="chart-title">Cumulative P&L ($)</div>
-                <div class="chart-wrapper"><canvas id="chartPnl"></canvas></div>
-            </div>
-            <div class="chart-panel">
-                <div class="chart-title">Daily Win Rate (%)</div>
-                <div class="chart-wrapper"><canvas id="chartWinRate"></canvas></div>
-            </div>
+        <!-- Diagnostics banner -->
+        <div id="diagBanner" class="diag hidden"></div>
+
+        <!-- Overall KPIs -->
+        <div class="section-head">
+            <h2 id="overallTitle">Today's headline</h2>
+            <span class="sub" id="overallSub"></span>
+        </div>
+        <div class="kpi-grid" id="overallKpis"></div>
+
+        <!-- Category breakdown -->
+        <div class="section-head">
+            <h2>By category</h2>
+            <span class="sub">Each card shows counts, WR, R, and a time-of-day mini-roll</span>
+        </div>
+        <div class="cat-grid" id="catGrid"></div>
+
+        <!-- Time-bucket cross-tab -->
+        <div class="section-head">
+            <h2>Time-of-day within categories</h2>
+            <span class="sub">Rows = time bucket · Columns = category · Cells = n / WR / R</span>
+        </div>
+        <div class="time-grid-wrap">
+            <table class="time-grid" id="timeGrid"></table>
         </div>
 
-        <!-- Charts Row 2 -->
-        <div class="charts-grid">
-            <div class="chart-panel">
-                <div class="chart-title">Win/Loss/EOD by Day</div>
-                <div class="chart-wrapper"><canvas id="chartDaily"></canvas></div>
-            </div>
-            <div class="chart-panel">
-                <div class="chart-title">P&L Distribution</div>
-                <div class="chart-wrapper"><canvas id="chartDist"></canvas></div>
-            </div>
+        <!-- Picks table (single-day view only) -->
+        <div class="section-head" id="picksSectionHead">
+            <h2>Picks</h2>
+            <span class="sub" id="picksSub"></span>
         </div>
-
-        <!-- Batch Heatmap -->
-        <div class="charts-grid">
-            <div class="chart-panel full-width">
-                <div class="chart-title">Batch Time Win Rate Heatmap</div>
-                <div id="heatmapContainer" style="overflow-x: auto;"></div>
-            </div>
-        </div>
-
-        <!-- Filter Impact -->
-        <div class="charts-grid">
-            <div class="chart-panel full-width">
-                <div class="chart-title">Filter Impact Analysis</div>
-                <table class="filter-table" id="filterTable">
-                    <thead>
-                        <tr>
-                            <th>Filter</th>
-                            <th>Trades Removed</th>
-                            <th>Wins Lost</th>
-                            <th>Losses Saved</th>
-                            <th>New Win Rate</th>
-                            <th>P&L Impact</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="filterBody"></tbody>
-                </table>
-            </div>
+        <div id="picksTableWrap">
+            <table id="picksTable"></table>
         </div>
 
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.4.2 &mdash; Performance Tracker. Not financial advice.
+        Momentum Scanner v3.5 — Performance (category tracking started 2026-04-20). Not financial advice.
+        <div style="margin-top:4px" id="lastUpdated"></div>
     </footer>
 
     <script>
-        // Trade data from backend
-        const trades = {{ trades | tojson | safe }};
-        const dailySummary = {{ daily_summary | tojson | safe }};
+        // ── Data injected from backend ─────────────────────────
+        const VIEW = {{ view | tojson | safe }};
 
-        // ── Chart.js defaults ──────────────────────────────────
-        Chart.defaults.color = '#94a3b8';
-        Chart.defaults.borderColor = '#2a314830';
-        Chart.defaults.font.family = "'SF Mono', 'Fira Code', monospace";
+        // ── Helpers ────────────────────────────────────────────
+        const fmtR   = (r) => r === null || r === undefined ? "—" : (r >= 0 ? "+" : "") + r.toFixed(2) + "R";
+        const fmtPnl = (p) => p === null || p === undefined ? "—" : (p >= 0 ? "+$" : "-$") + Math.abs(p).toFixed(2);
+        const fmtWR  = (w) => (w === null || w === undefined) ? "n/a" : w.toFixed(1) + "%";
+        const fmtN   = (n) => n === null || n === undefined ? "—" : n;
+        const sign   = (x) => x > 0 ? "pos" : (x < 0 ? "neg" : "neu");
 
-        // ── Compute KPIs ───────────────────────────────────────
-        // v3.4 redefined WIN as "any trade with pnl_dollar > 0" (not just target hits).
-        // We keep the legacy target-hit bucket visible as a sub-line so the old
-        // semantic isn't lost, but the headline Win Rate is now pnl-based and
-        // reconciles with the /backtest page.
-        const targetHits   = trades.filter(t => t.result === 'WIN');      // legacy bucket — target hit
-        const stopHits     = trades.filter(t => t.result === 'LOSS');     // legacy bucket — stop hit
-        const eods         = trades.filter(t => t.result === 'EOD');      // closed end-of-day
-        const pnlWins      = trades.filter(t => (t.pnl_dollar || 0) > 0);
-        const pnlLosses    = trades.filter(t => (t.pnl_dollar || 0) < 0);
-        const completed    = pnlWins.length + pnlLosses.length;            // breakeven trades drop out
-        const winRate      = completed > 0 ? (pnlWins.length / completed * 100) : 0;
-        const targetHitRate= (targetHits.length + stopHits.length) > 0
-            ? (targetHits.length / (targetHits.length + stopHits.length) * 100) : 0;
-        const totalPnl = trades.reduce((s, t) => s + (t.pnl_dollar || 0), 0);
-        const avgWin   = pnlWins.length   > 0 ? pnlWins.reduce((s, t) => s + t.pnl_dollar, 0) / pnlWins.length : 0;
-        const avgLoss  = pnlLosses.length > 0 ? Math.abs(pnlLosses.reduce((s, t) => s + t.pnl_dollar, 0) / pnlLosses.length) : 0;
-        const actualRR = avgLoss > 0 ? (avgWin / avgLoss) : 0;
-        const uniqueDays = [...new Set(trades.map(t => t.date))];
+        const state = {
+            mode: "single",   // "single" or "cum"
+            date: VIEW.selected_date,
+            cats: new Set(["A","B","C","D"]),
+            results: new Set(["WIN","LOSS","EOD"]),
+            sort: { key: "batch_time", dir: 1 },
+        };
 
-        document.getElementById('kpiTrades').textContent = trades.length;
-        document.getElementById('kpiDays').textContent = `across ${uniqueDays.length} days`;
-        document.getElementById('kpiPnl').textContent = `$${totalPnl >= 0 ? '+' : ''}${totalPnl.toFixed(2)}`;
-        document.getElementById('kpiPnl').style.color = totalPnl >= 0 ? '#22c55e' : '#ef4444';
-        document.getElementById('kpiWinRate').textContent = `${winRate.toFixed(1)}%`;
-        document.getElementById('kpiWinRate').style.color = winRate >= 40 ? '#22c55e' : winRate >= 30 ? '#f59e0b' : '#ef4444';
-        document.getElementById('kpiWinSub').innerHTML =
-            `${pnlWins.length}P / ${pnlLosses.length}N · ` +
-            `<span title="Target-hit-only rate (legacy)">tgt ${targetHitRate.toFixed(0)}%</span> ` +
-            `(${targetHits.length}W / ${stopHits.length}L / ${eods.length}EOD)`;
-        document.getElementById('kpiRR').textContent = `${actualRR.toFixed(2)}:1`;
-        document.getElementById('kpiAvgWin').textContent = `$${avgWin.toFixed(2)}`;
-        document.getElementById('kpiAvgLoss').textContent = `$${avgLoss.toFixed(2)}`;
+        // ── Setup controls ─────────────────────────────────────
+        const dateSel = document.getElementById("dateSel");
+        (VIEW.dates || []).forEach(d => {
+            const o = document.createElement("option"); o.value = d; o.textContent = d;
+            if (d === state.date) o.selected = true;
+            dateSel.appendChild(o);
+        });
+        dateSel.addEventListener("change", e => { state.date = e.target.value; render(); });
 
-        // ── Cumulative P&L Chart ───────────────────────────────
-        (() => {
-            let cumulative = 0;
-            const points = trades.map((t, i) => {
-                cumulative += (t.pnl_dollar || 0);
-                return { x: i + 1, y: cumulative };
+        document.querySelectorAll("[data-mode]").forEach(chip => {
+            chip.classList.toggle("active", chip.dataset.mode === state.mode);
+            chip.addEventListener("click", () => {
+                state.mode = chip.dataset.mode;
+                document.querySelectorAll("[data-mode]").forEach(c => c.classList.toggle("active", c.dataset.mode === state.mode));
+                render();
             });
+        });
 
-            new Chart(document.getElementById('chartPnl'), {
-                type: 'line',
-                data: {
-                    labels: points.map(p => p.x),
-                    datasets: [{
-                        data: points.map(p => p.y),
-                        borderColor: '#22c55e',
-                        backgroundColor: '#22c55e15',
-                        fill: true,
-                        tension: 0.3,
-                        pointRadius: 2,
-                        pointHoverRadius: 5,
-                        borderWidth: 2,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: {
-                            title: { display: true, text: 'Trade #' },
-                            grid: { display: false },
-                        },
-                        y: {
-                            title: { display: true, text: 'Cumulative P&L ($)' },
-                            grid: { color: '#2a314830' },
-                        },
-                    },
-                },
+        document.querySelectorAll("[data-cat]").forEach(chip => {
+            chip.addEventListener("click", () => {
+                const c = chip.dataset.cat;
+                if (state.cats.has(c)) state.cats.delete(c); else state.cats.add(c);
+                chip.classList.toggle("active");
+                render();
             });
-        })();
-
-        // ── Daily Win Rate Chart ───────────────────────────────
-        (() => {
-            new Chart(document.getElementById('chartWinRate'), {
-                type: 'bar',
-                data: {
-                    labels: dailySummary.map(d => d.date),
-                    datasets: [{
-                        label: 'Win Rate %',
-                        data: dailySummary.map(d => d.win_rate),
-                        backgroundColor: dailySummary.map(d => d.win_rate >= 40 ? '#22c55e80' : d.win_rate >= 30 ? '#f59e0b80' : '#ef444480'),
-                        borderColor: dailySummary.map(d => d.win_rate >= 40 ? '#22c55e' : d.win_rate >= 30 ? '#f59e0b' : '#ef4444'),
-                        borderWidth: 1,
-                        borderRadius: 6,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            min: 0, max: 100,
-                            title: { display: true, text: 'Win Rate %' },
-                            grid: { color: '#2a314830' },
-                        },
-                        x: { grid: { display: false } },
-                    },
-                },
+        });
+        document.querySelectorAll("[data-res]").forEach(chip => {
+            chip.addEventListener("click", () => {
+                const r = chip.dataset.res;
+                if (state.results.has(r)) state.results.delete(r); else state.results.add(r);
+                chip.classList.toggle("active");
+                render();
             });
-        })();
+        });
 
-        // ── Daily W/L/EOD Stacked Bar ──────────────────────────
-        (() => {
-            new Chart(document.getElementById('chartDaily'), {
-                type: 'bar',
-                data: {
-                    labels: dailySummary.map(d => d.date),
-                    datasets: [
-                        { label: 'Wins', data: dailySummary.map(d => d.wins), backgroundColor: '#22c55e80', borderRadius: 4 },
-                        { label: 'Losses', data: dailySummary.map(d => d.losses), backgroundColor: '#ef444480', borderRadius: 4 },
-                        { label: 'EOD', data: dailySummary.map(d => d.eods), backgroundColor: '#64748b60', borderRadius: 4 },
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } } },
-                    scales: {
-                        x: { stacked: true, grid: { display: false } },
-                        y: { stacked: true, title: { display: true, text: 'Trades' }, grid: { color: '#2a314830' } },
-                    },
-                },
-            });
-        })();
+        // ── Render ─────────────────────────────────────────────
+        function render() {
+            const view = state.mode === "single"
+                ? { label: "single day", stats: VIEW.single_day, picks: (VIEW.single_day && VIEW.single_day.picks) || [] }
+                : { label: "cumulative",  stats: VIEW.cumulative,  picks: null };
 
-        // ── P&L Distribution Histogram ─────────────────────────
-        (() => {
-            const pnls = trades.map(t => t.pnl_dollar || 0).filter(p => p !== 0);
-            const min = Math.floor(Math.min(...pnls));
-            const max = Math.ceil(Math.max(...pnls));
-            const binSize = 0.5;
-            const bins = [];
-            for (let b = min; b <= max; b += binSize) {
-                bins.push({ label: `${b.toFixed(1)}`, count: 0, lower: b, upper: b + binSize });
+            if (!view.stats) {
+                document.querySelector(".main").innerHTML = '<div class="empty">No performance data yet. Run a scan day and the end-of-day resolver will populate this page.</div>';
+                return;
             }
-            pnls.forEach(p => {
-                const bin = bins.find(b => p >= b.lower && p < b.upper);
-                if (bin) bin.count++;
+
+            // Filter picks by chip state
+            const cats = state.cats, results = state.results;
+            const passCat  = (c) => cats.has(c);
+            const passRes  = (r) => results.has(r);
+            const filter   = (e) => passCat(e.category) && passRes(e.result);
+
+            // Headline (always compute from whatever slice is visible)
+            const picks = view.picks ? view.picks.filter(filter) : allFilteredEntries(view.stats, filter);
+            renderOverall(picks, view.label);
+            renderCategories(view.stats, picks);
+            renderTimeGrid(view.stats);
+            renderPicksTable(view.picks ? picks : null);
+
+            renderDiagnostics();
+            document.getElementById("lastUpdated").textContent =
+                VIEW.diagnostics && VIEW.diagnostics.last_updated
+                    ? `Last resolver run: ${VIEW.diagnostics.last_updated}` : "";
+        }
+
+        // When mode=cum, we don't have per-pick rows; recompute headline from by_category bucket sums.
+        function allFilteredEntries(stats, filter) {
+            // Fallback: aggregate at category-only level (since we don't have per-row cumulative data)
+            const agg = [];
+            Object.entries(stats.by_category || {}).forEach(([c, s]) => {
+                if (!state.cats.has(c)) return;
+                // Synthesize n "entries" so headline counts work; wins/losses/eods only.
+                for (let i=0; i<s.wins; i++)   if (state.results.has("WIN"))  agg.push({category:c, result:"WIN",  r_realized: null, pnl_dollar: null});
+                for (let i=0; i<s.losses; i++) if (state.results.has("LOSS")) agg.push({category:c, result:"LOSS", r_realized: null, pnl_dollar: null});
+                for (let i=0; i<s.eods; i++)   if (state.results.has("EOD"))  agg.push({category:c, result:"EOD",  r_realized: null, pnl_dollar: null});
             });
+            return agg;
+        }
 
-            new Chart(document.getElementById('chartDist'), {
-                type: 'bar',
-                data: {
-                    labels: bins.map(b => b.label),
-                    datasets: [{
-                        data: bins.map(b => b.count),
-                        backgroundColor: bins.map(b => b.lower >= 0 ? '#22c55e60' : '#ef444460'),
-                        borderColor: bins.map(b => b.lower >= 0 ? '#22c55e' : '#ef4444'),
-                        borderWidth: 1,
-                        borderRadius: 3,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { title: { display: true, text: 'P&L ($)' }, grid: { display: false } },
-                        y: { title: { display: true, text: 'Count' }, grid: { color: '#2a314830' } },
-                    },
-                },
-            });
-        })();
+        function renderOverall(picks, label) {
+            document.getElementById("overallTitle").textContent = label === "single day"
+                ? `Day of ${state.date}` : `Cumulative (${VIEW.dates.length} day${VIEW.dates.length===1?"":"s"})`;
 
-        // ── Batch Time Heatmap ─────────────────────────────────
-        (() => {
-            const container = document.getElementById('heatmapContainer');
-            const batchTimes = [...new Set(trades.map(t => t.batch_time))].sort();
-            const days = uniqueDays.sort();
+            const w = picks.filter(p=>p.result==="WIN").length;
+            const l = picks.filter(p=>p.result==="LOSS").length;
+            const eod = picks.filter(p=>p.result==="EOD").length;
+            const n = picks.length;
+            const wr = (w+l) ? (w/(w+l)*100) : null;
+            // Only sum R/$ if they're real (single-day mode); cumulative fallback has nulls.
+            const rs = picks.map(p => p.r_realized).filter(v => v !== null && v !== undefined);
+            const totalR = rs.reduce((a,b)=>a+b, 0);
+            const avgR = rs.length ? totalR / rs.length : null;
+            const ps = picks.map(p => p.pnl_dollar).filter(v => v !== null && v !== undefined);
+            const totalPnl = ps.reduce((a,b)=>a+b,0);
 
-            // Build data grid
-            const grid = {};
-            batchTimes.forEach(bt => {
-                grid[bt] = {};
-                days.forEach(d => {
-                    const dayBatch = trades.filter(t => t.date === d && t.batch_time === bt);
-                    const w = dayBatch.filter(t => t.result === 'WIN').length;
-                    const l = dayBatch.filter(t => t.result === 'LOSS').length;
-                    const dec = w + l;
-                    grid[bt][d] = { wins: w, losses: l, total: dayBatch.length, wr: dec > 0 ? (w / dec * 100) : null };
-                });
-            });
+            document.getElementById("overallSub").textContent =
+                state.cats.size < 4 || state.results.size < 3
+                    ? `filtered · ${n} picks`
+                    : `${n} picks`;
 
-            container.style.setProperty('--num-days', days.length);
-
-            let html = '<div class="heatmap-grid">';
-            // Header row
-            html += '<div class="heatmap-label"></div>';
-            days.forEach(d => { html += `<div class="heatmap-header">${d.slice(5)}</div>`; });
-
-            // Data rows
-            batchTimes.forEach(bt => {
-                html += `<div class="heatmap-label">${bt}</div>`;
-                days.forEach(d => {
-                    const cell = grid[bt][d];
-                    if (cell.total === 0) {
-                        html += '<div class="heatmap-cell" style="background:var(--bg-secondary);color:var(--text-muted);">—</div>';
-                    } else if (cell.wr === null) {
-                        html += `<div class="heatmap-cell" style="background:#64748b30;color:var(--text-muted);">${cell.total}EOD</div>`;
-                    } else {
-                        const wr = cell.wr;
-                        let bg, fg;
-                        if (wr >= 50) { bg = '#22c55e30'; fg = '#22c55e'; }
-                        else if (wr >= 30) { bg = '#f59e0b25'; fg = '#f59e0b'; }
-                        else if (wr > 0) { bg = '#ef444425'; fg = '#ef4444'; }
-                        else { bg = '#ef444440'; fg = '#ef4444'; }
-                        html += `<div class="heatmap-cell" style="background:${bg};color:${fg};" title="${bt} on ${d}: ${cell.wins}W/${cell.losses}L">${wr.toFixed(0)}%</div>`;
-                    }
-                });
-            });
-
-            html += '</div>';
-            container.innerHTML = html;
-        })();
-
-        // ── Filter Impact Analysis ─────────────────────────────
-        (() => {
-            const tbody = document.getElementById('filterBody');
-
-            // Filter 1: Skip 11:31 and 12:01 batches
-            const lunchTrades = trades.filter(t => t.batch_time === '11:31' || t.batch_time === '12:01');
-            const lunchWins = lunchTrades.filter(t => t.result === 'WIN').length;
-            const lunchLosses = lunchTrades.filter(t => t.result === 'LOSS').length;
-            const afterF1Wins = wins.length - lunchWins;
-            const afterF1Decided = decided - lunchWins - lunchLosses;
-            const afterF1WR = afterF1Decided > 0 ? (afterF1Wins / afterF1Decided * 100) : 0;
-            const lunchPnlImpact = -lunchTrades.reduce((s, t) => s + (t.pnl_dollar || 0), 0);
-
-            // Filter 2: No re-entries (appearance > 1)
-            const reentries = trades.filter(t => t.appearance > 1);
-            const reentryWins = reentries.filter(t => t.result === 'WIN').length;
-            const reentryLosses = reentries.filter(t => t.result === 'LOSS').length;
-            const afterF2Wins = wins.length - reentryWins;
-            const afterF2Decided = decided - reentryWins - reentryLosses;
-            const afterF2WR = afterF2Decided > 0 ? (afterF2Wins / afterF2Decided * 100) : 0;
-            const reentryPnlImpact = -reentries.reduce((s, t) => s + (t.pnl_dollar || 0), 0);
-
-            // Combined
-            const removedBoth = trades.filter(t => (t.batch_time === '11:31' || t.batch_time === '12:01') || t.appearance > 1);
-            const removedBothUnique = [...new Map(removedBoth.map(t => [`${t.date}_${t.ticker}_${t.batch_time}`, t])).values()];
-            const bothWins = removedBothUnique.filter(t => t.result === 'WIN').length;
-            const bothLosses = removedBothUnique.filter(t => t.result === 'LOSS').length;
-            const afterBothWins = wins.length - bothWins;
-            const afterBothDecided = decided - bothWins - bothLosses;
-            const afterBothWR = afterBothDecided > 0 ? (afterBothWins / afterBothDecided * 100) : 0;
-            const bothPnlImpact = -removedBothUnique.reduce((s, t) => s + (t.pnl_dollar || 0), 0);
-
-            const rows = [
-                {
-                    name: 'Skip 11:31 & 12:01 batches',
-                    removed: lunchTrades.length,
-                    winsLost: lunchWins,
-                    lossesSaved: lunchLosses,
-                    newWR: afterF1WR,
-                    pnlImpact: lunchPnlImpact,
-                    status: lunchWins === 0 ? 'IMPLEMENT' : 'MONITOR',
-                },
-                {
-                    name: 'Suppress re-entries',
-                    removed: reentries.length,
-                    winsLost: reentryWins,
-                    lossesSaved: reentryLosses,
-                    newWR: afterF2WR,
-                    pnlImpact: reentryPnlImpact,
-                    status: reentryWins === 0 ? 'IMPLEMENT' : 'MONITOR',
-                },
-                {
-                    name: 'Both filters combined',
-                    removed: removedBothUnique.length,
-                    winsLost: bothWins,
-                    lossesSaved: bothLosses,
-                    newWR: afterBothWR,
-                    pnlImpact: bothPnlImpact,
-                    status: bothWins === 0 ? 'IMPLEMENT' : 'MONITOR',
-                },
+            const kpis = [
+                {label: "Picks", value: n, sub: `${w}W · ${l}L · ${eod}EOD`, cls: "neu"},
+                {label: "Win Rate (W/(W+L))", value: fmtWR(wr), sub: `${w}/${w+l}`, cls: wr==null?"neu":(wr>=40?"pos":(wr<25?"neg":"neu"))},
+                {label: "Total R", value: rs.length ? fmtR(totalR) : "—", sub: avgR==null?"":`avg ${fmtR(avgR)}`, cls: totalR>=0?"pos":"neg"},
+                {label: "Net $ / share", value: ps.length ? fmtPnl(totalPnl) : "—", sub: "", cls: totalPnl>=0?"pos":"neg"},
             ];
+            const host = document.getElementById("overallKpis");
+            host.innerHTML = kpis.map(k => `
+                <div class="kpi-card">
+                    <div class="kpi-label">${k.label}</div>
+                    <div class="kpi-value ${k.cls}">${k.value}</div>
+                    <div class="kpi-sub">${k.sub}</div>
+                </div>
+            `).join("");
+        }
 
-            rows.forEach(r => {
-                const statusClass = r.status === 'IMPLEMENT' ? 'tag-good' : 'tag-neutral';
-                const pnlClass = r.pnlImpact >= 0 ? 'tag-good' : 'tag-bad';
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-family: var(--font); font-weight: 500;">${r.name}</td>
-                        <td>${r.removed}</td>
-                        <td class="${r.winsLost > 0 ? 'tag-bad' : 'tag-good'}">${r.winsLost}</td>
-                        <td class="tag-good">${r.lossesSaved}</td>
-                        <td>${r.newWR.toFixed(1)}%</td>
-                        <td class="${pnlClass}">${r.pnlImpact >= 0 ? '+' : ''}$${r.pnlImpact.toFixed(2)}</td>
-                        <td class="${statusClass}" style="font-weight: 700;">${r.status}</td>
-                    </tr>
-                `;
+        function renderCategories(stats, filteredPicks) {
+            const cats = ["A","B","C","D"];
+            const byCat = stats.by_category || {};
+            const byCatTime = stats.by_category_time || {};
+            const names = VIEW.categories || {A:"A",B:"B",C:"C",D:"D"};
+            const host = document.getElementById("catGrid");
+
+            host.innerHTML = cats.map(c => {
+                const s = byCat[c] || {n:0,wins:0,losses:0,eods:0,win_rate:null,total_r:0,avg_r:0};
+                const tb = byCatTime[c] || {};
+                const active = state.cats.has(c);
+                const faded = active ? "" : "opacity:0.35";
+                const rCls = s.total_r > 0 ? "pos" : (s.total_r < 0 ? "neg" : "neu");
+                const wrCls = s.win_rate == null ? "neu" : (s.win_rate >= 40 ? "pos" : (s.win_rate < 25 ? "neg" : "neu"));
+                const miniRows = Object.entries(tb).map(([t, ts]) => {
+                    const tcls = ts.total_r > 0 ? "pos" : (ts.total_r < 0 ? "neg" : "neu");
+                    return `<div class="mini-row">
+                        <span class="t">${t}</span>
+                        <span class="n">n=${ts.n}</span>
+                        <span class="wr">${fmtWR(ts.win_rate)}</span>
+                        <span class="r ${tcls}">${fmtR(ts.total_r)}</span>
+                    </div>`;
+                }).join("");
+                return `
+                    <div class="cat-card ${c}" style="${faded}">
+                        <div class="cat-header">
+                            <div class="cat-name"><span class="tag">${c}</span>${names[c]}</div>
+                            <div class="cat-n">${s.n} picks</div>
+                        </div>
+                        <div class="cat-stats">
+                            <div class="cat-stat"><div class="v ${wrCls}">${fmtWR(s.win_rate)}</div><div class="l">Win rate</div></div>
+                            <div class="cat-stat"><div class="v ${rCls}">${fmtR(s.total_r)}</div><div class="l">Total R</div></div>
+                            <div class="cat-stat"><div class="v">${s.wins}·${s.losses}·${s.eods}</div><div class="l">W·L·EOD</div></div>
+                        </div>
+                        <div class="cat-time-mini">
+                            ${miniRows || '<div class="mini-row" style="color:var(--text-muted)">No time-bucket data.</div>'}
+                        </div>
+                    </div>`;
+            }).join("");
+        }
+
+        function renderTimeGrid(stats) {
+            const cats = ["A","B","C","D"];
+            const byCatTime = stats.by_category_time || {};
+            // Collect all time buckets appearing in any category
+            const allTimes = new Set();
+            cats.forEach(c => Object.keys(byCatTime[c]||{}).forEach(t => allTimes.add(t)));
+            const times = Array.from(allTimes).sort();
+            const host = document.getElementById("timeGrid");
+            if (!times.length) {
+                host.innerHTML = '<tr><td class="cat-label">No data.</td></tr>';
+                return;
+            }
+            let html = '<thead><tr><th>Time</th>';
+            cats.forEach(c => { html += `<th>Cat ${c}</th>`; });
+            html += '<th>Row total</th></tr></thead><tbody>';
+
+            times.forEach(t => {
+                html += `<tr><td class="cat-label">${t}</td>`;
+                let rowN=0, rowW=0, rowL=0, rowEOD=0, rowR=0;
+                cats.forEach(c => {
+                    const s = (byCatTime[c]||{})[t];
+                    if (!s || !s.n) { html += '<td style="color:var(--text-muted)">—</td>'; return; }
+                    rowN+=s.n; rowW+=s.wins; rowL+=s.losses; rowEOD+=s.eods; rowR+=s.total_r;
+                    const rCls = s.total_r > 0 ? "pos" : (s.total_r < 0 ? "neg" : "neu");
+                    html += `<td>
+                        <div>n=${s.n} · WR ${fmtWR(s.win_rate)}</div>
+                        <div class="${rCls}">${fmtR(s.total_r)} (${s.wins}W·${s.losses}L·${s.eods}E)</div>
+                    </td>`;
+                });
+                const rwr = (rowW+rowL) ? rowW/(rowW+rowL)*100 : null;
+                const rCls = rowR > 0 ? "pos" : (rowR < 0 ? "neg" : "neu");
+                html += `<td><div>n=${rowN} · WR ${fmtWR(rwr)}</div><div class="${rCls}">${fmtR(rowR)}</div></td></tr>`;
             });
-        })();
+            html += '</tbody>';
+            host.innerHTML = html;
+        }
+
+        function renderPicksTable(picks) {
+            const head = document.getElementById("picksSectionHead");
+            const wrap = document.getElementById("picksTableWrap");
+            if (picks === null) {
+                head.style.display = "none"; wrap.style.display = "none";
+                return;
+            }
+            head.style.display = ""; wrap.style.display = "";
+            document.getElementById("picksSub").textContent = `${picks.length} picks on ${state.date} · click headers to sort`;
+            const host = document.getElementById("picksTable");
+            const cols = [
+                {k:"batch_time", label:"Time"},
+                {k:"ticker", label:"Ticker"},
+                {k:"category", label:"Cat"},
+                {k:"leadership_label", label:"Leader"},
+                {k:"score", label:"Score"},
+                {k:"rsi", label:"RSI"},
+                {k:"rvol", label:"RVOL"},
+                {k:"entry", label:"Entry"},
+                {k:"stop", label:"Stop"},
+                {k:"target", label:"Target"},
+                {k:"result", label:"Result"},
+                {k:"resolve_time", label:"Hit"},
+                {k:"resolve_price", label:"Exit"},
+                {k:"r_realized", label:"R"},
+                {k:"pnl_dollar", label:"P&L $"},
+            ];
+            picks = picks.slice().sort((a,b) => {
+                const k = state.sort.key, d = state.sort.dir;
+                const av = a[k], bv = b[k];
+                if (av === null || av === undefined) return 1;
+                if (bv === null || bv === undefined) return -1;
+                if (typeof av === "number") return (av-bv)*d;
+                return String(av).localeCompare(String(bv))*d;
+            });
+            let html = '<thead><tr>';
+            cols.forEach(c => {
+                const active = state.sort.key === c.k;
+                const hint = active ? (state.sort.dir > 0 ? " ▲" : " ▼") : "";
+                html += `<th data-sort="${c.k}">${c.label}<span class="sort-hint">${hint}</span></th>`;
+            });
+            html += '</tr></thead><tbody>';
+            picks.forEach(p => {
+                const rowCls = p.result === "WIN" ? "row-win" : (p.result === "LOSS" ? "row-loss" : "row-eod");
+                const rCls = p.r_realized == null ? "" : (p.r_realized > 0 ? "pos" : (p.r_realized < 0 ? "neg" : ""));
+                html += `<tr class="${rowCls}">
+                    <td>${p.batch_time}</td>
+                    <td><span class="ticker">${p.ticker}</span></td>
+                    <td><span class="cat-badge ${p.category}">${p.category}</span></td>
+                    <td>${p.leadership_label || "—"}</td>
+                    <td>${p.score}</td>
+                    <td>${p.rsi ?? "—"}</td>
+                    <td>${p.rvol ?? "—"}</td>
+                    <td>${p.entry ?? "—"}</td>
+                    <td>${p.stop ?? "—"}</td>
+                    <td>${p.target ?? "—"}</td>
+                    <td><span class="result-badge">${p.result}</span></td>
+                    <td>${p.resolve_time || "—"}</td>
+                    <td>${p.resolve_price ?? "—"}</td>
+                    <td class="${rCls}">${fmtR(p.r_realized)}</td>
+                    <td class="${rCls}">${fmtPnl(p.pnl_dollar)}</td>
+                </tr>`;
+            });
+            html += '</tbody>';
+            host.innerHTML = html;
+
+            host.querySelectorAll("th[data-sort]").forEach(th => {
+                th.addEventListener("click", () => {
+                    const k = th.dataset.sort;
+                    if (state.sort.key === k) state.sort.dir *= -1;
+                    else { state.sort.key = k; state.sort.dir = 1; }
+                    render();
+                });
+            });
+        }
+
+        function renderDiagnostics() {
+            const d = VIEW.diagnostics || {};
+            const bits = [];
+            if (d.stale_tickers && d.stale_tickers.length) {
+                bits.push(`<span class="diag-item"><strong>Stale ticker:</strong> ${d.stale_tickers.join(", ")} — scanner universe needs updating.</span>`);
+            }
+            if (d.unclassified_count) {
+                bits.push(`<span class="diag-item"><strong>${d.unclassified_count} unclassified</strong> picks on the log (early-session, before sector rotation settled).</span>`);
+            }
+            if (d.post_close_count) {
+                bits.push(`<span class="diag-item"><strong>${d.post_close_count} post-close</strong> signals excluded from stats.</span>`);
+            }
+            const el = document.getElementById("diagBanner");
+            if (bits.length === 0) { el.classList.add("hidden"); return; }
+            el.classList.remove("hidden");
+            el.innerHTML = bits.join("");
+        }
+
+        render();
     </script>
 </body>
 </html>

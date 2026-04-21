@@ -19,9 +19,14 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import config
 from scanner import run_scan
 from history import add_signals_to_daily, load_daily_finds, get_history_days, cleanup_old_files
-from sector_rotation import detect_sector_rotation, get_sector_priority_tickers
+from sector_rotation import (
+    detect_sector_rotation,
+    get_sector_priority_tickers,
+    _last_rotation_snapshot,
+)
 from premarket import run_premarket_scan, reset_daily as reset_premarket
 from daily_analysis import analyze_day
+from performance_engine import get_view as _get_performance_view
 from market_regime import get_regime
 from earnings import refresh_earnings_cache
 from backtest import (
@@ -30,6 +35,16 @@ from backtest import (
     save_result as _save_backtest,
     load_result as _load_backtest,
     list_results as _list_backtests,
+)
+from theme_scanner import (
+    run_theme_scan as _run_theme_scan,
+    save_scan as _save_theme_scan,
+    load_scan as _load_theme_scan,
+)
+from theme_backtest import (
+    run_backtest as _run_theme_backtest,
+    save_backtest as _save_theme_backtest,
+    load_backtest as _load_theme_backtest,
 )
 
 # ── Logging ───────────────────────────────────────────────────
@@ -40,7 +55,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.4.2")
+app = FastAPI(title="Momentum Scanner", version="3.5")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -90,6 +105,9 @@ def premarket_scan_job():
         logger.error(f"Earnings refresh failed: {e}")
 
 
+SECTOR_SNAPSHOT_MAX_AGE_SEC = 20 * 60  # Refresh if older than 20 min
+
+
 def sector_rotation_job():
     """Detect sector rotation at 9:30 and periodically during the day."""
     global _sector_priority
@@ -104,6 +122,25 @@ def sector_rotation_job():
         )
     except Exception as e:
         logger.error(f"Sector rotation detection failed: {e}")
+
+
+def _ensure_fresh_sector_snapshot():
+    """
+    Self-heal guard so leadership classification always has a snapshot.
+
+    Fixes a v3.4 bug where 45% of 2026-04-20 picks landed in Category D
+    (Unclassified) because the scanner fired before sector_rotation_job
+    had populated _last_rotation_snapshot, or after a snapshot went stale.
+    Runs sector_rotation_job synchronously when the cached snapshot is
+    missing or older than SECTOR_SNAPSHOT_MAX_AGE_SEC.
+    """
+    ts = _last_rotation_snapshot.get("ts")
+    now = datetime.now()
+    stale = ts is None or (now - ts).total_seconds() > SECTOR_SNAPSHOT_MAX_AGE_SEC
+    if stale:
+        age = "missing" if ts is None else f"{(now - ts).total_seconds()/60:.1f} min old"
+        logger.info(f"Sector snapshot {age} — refreshing inline before scan")
+        sector_rotation_job()
 
 
 def post_market_analysis_job():
@@ -139,6 +176,12 @@ def scheduled_scan():
 
     logger.info("Running scheduled scan...")
     is_scanning = True
+
+    # Ensure a sector-rotation snapshot exists before the scan runs —
+    # otherwise leadership_label comes back UNKNOWN and picks land in
+    # Category D on the /performance page. Cheap no-op when the
+    # snapshot is fresh.
+    _ensure_fresh_sector_snapshot()
 
     try:
         try:
@@ -253,10 +296,23 @@ scheduler.add_job(
 async def startup():
     scheduler.start()
     cleanup_old_files()
+
+    # Warm the sector-rotation snapshot so the first scan after a restart
+    # already has leadership context — avoids a Category D spike on deploys
+    # that land mid-session. Failure here is non-fatal: the inline guard in
+    # scheduled_scan will retry on the next batch.
+    now_et = datetime.now(config.ET)
+    in_session = now_et.weekday() < 5 and 9 <= now_et.hour < 16
+    if in_session:
+        try:
+            sector_rotation_job()
+        except Exception as e:
+            logger.warning(f"Startup sector-rotation warm-up failed: {e}")
+
     logger.info(
-        f"Scheduler started: v3.4.2 — sector rotation, VIX regime gating, "
-        f"leader-as-tier display, weak-signal floor 40, partial-bar RVOL fix, "
-        f"MFE/MAE exit research, 60-min MAE manual rule. Mon-Fri 8:00 AM – 5:00 PM ET"
+        f"Scheduler started: v3.5 — performance categories, sector-snapshot self-heal, "
+        f"VIX regime gating, leader-as-tier display, weak-signal floor 40, "
+        f"partial-bar RVOL fix, 60-min MAE manual rule. Mon-Fri 8:00 AM – 5:00 PM ET"
     )
     logger.info(f"Dashboard running at http://localhost:{config.PORT}")
 
@@ -379,17 +435,28 @@ async def api_today():
 
 
 @app.get("/performance", response_class=HTMLResponse)
-async def performance_page(request: Request):
-    """Serve the performance tracker dashboard."""
-    trades, daily_summary = _load_trade_log()
+async def performance_page(request: Request, date: str | None = None):
+    """
+    Serve the performance tracker dashboard (v3.5).
+
+    Reads the categorized log at data/performance_log.json via
+    performance_engine. Single-day slice defaults to the latest date
+    present in the log, but ?date=YYYY-MM-DD overrides.
+    """
+    view = _get_performance_view(date)
     return templates.TemplateResponse(
         request=request,
         name="performance.html",
         context={
-            "trades": trades,
-            "daily_summary": daily_summary,
+            "view": view,
         },
     )
+
+
+@app.get("/api/performance", response_class=JSONResponse)
+async def api_performance(date: str | None = None):
+    """JSON API for the performance dashboard (same view dict the template receives)."""
+    return _get_performance_view(date)
 
 
 def _load_trade_log() -> tuple[list[dict], list[dict]]:
@@ -468,6 +535,154 @@ async def logic_page(request: Request):
         request=request,
         name="logic.html",
     )
+
+
+# ═══════════════════════════════════════════════════════════════
+#  THEMEHUNTER (parallel prototype scanner, v0.1)
+# ═══════════════════════════════════════════════════════════════
+
+def _theme_buckets_from_result(result: dict) -> list[tuple[str, str, str, list[dict]]]:
+    """Split the flat signals list into A/B/C buckets for the template."""
+    all_sigs = (result.get("signals") or []) + (result.get("watchlist") or [])
+    by_bucket = {"A": [], "B": [], "C": []}
+    for s in all_sigs:
+        b = s.get("bucket", "A")
+        if b in by_bucket:
+            by_bucket[b].append(s)
+    return [
+        ("A", "Theme Leaders",
+         "Top stocks in the top 3 theme baskets today. Ride the group's dominant rotation.",
+         by_bucket["A"]),
+        ("B", "Gap + News",
+         "Tickers gapping ≥3% on above-average volume with an identifiable catalyst.",
+         by_bucket["B"]),
+        ("C", "Low-Float Runners",
+         "Sub-$5B cap, RVOL ≥1.5x, theme-tagged. The USAR/MVRL/AVEX bucket.",
+         by_bucket["C"]),
+    ]
+
+
+def _theme_rs_sorted(theme_rs: dict) -> list[tuple[str, dict]]:
+    """Theme list sorted by percentile desc (exclude SPY/QQQ bookkeeping)."""
+    items = [(k, v) for k, v in theme_rs.items() if not k.startswith("_")]
+    return sorted(items, key=lambda x: -x[1].get("percentile", 0))
+
+
+@app.get("/theme-scanner", response_class=HTMLResponse)
+async def theme_scanner_page(request: Request, mode: str = "live"):
+    """
+    ThemeHunter parallel scanner — serves last-cached scan for the
+    requested mode. If no cache exists, renders empty shell. Rescans
+    happen via POST /api/theme-scan.
+    """
+    cache_name = "rewind_0945" if mode == "rewind" else "latest"
+    result = _load_theme_scan(cache_name) or {
+        "generated_at": "",
+        "universe_sizes": {"A": 0, "B": 0, "C": 0},
+        "theme_rs": {},
+        "signals": [],
+        "watchlist": [],
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name="theme_scanner.html",
+        context={
+            "result": result,
+            "mode": mode,
+            "buckets": _theme_buckets_from_result(result),
+            "themes_sorted": _theme_rs_sorted(result.get("theme_rs") or {}),
+        },
+    )
+
+
+@app.get("/api/theme-scan", response_class=JSONResponse)
+async def api_theme_scan(mode: str = "live"):
+    """JSON API for current cached theme scan."""
+    cache_name = "rewind_0945" if mode == "rewind" else "latest"
+    result = _load_theme_scan(cache_name)
+    if result is None:
+        return JSONResponse({"error": "No cached theme scan for this mode. POST to rerun."},
+                            status_code=404)
+    return JSONResponse(result)
+
+
+@app.post("/api/theme-scan", response_class=JSONResponse)
+async def api_theme_scan_run(mode: str = "live", force: int = 0):
+    """Trigger a fresh ThemeHunter scan. Blocking — returns the result JSON."""
+    try:
+        if mode == "rewind":
+            result = _run_theme_scan(min_score=60.0, max_intraday=120, as_of_hhmm="09:45")
+            _save_theme_scan(result, name="rewind_0945")
+        else:
+            result = _run_theme_scan(min_score=60.0, max_intraday=120)
+            _save_theme_scan(result, name="live")
+            _save_theme_scan(result, name="latest")
+        return JSONResponse({"ok": True, "signal_count": len(result.get("signals", []))})
+    except Exception as e:
+        logger.exception("Theme scan failed")
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+# ═══════════════════════════════════════════════════════════════
+#  THEMEHUNTER BACKTEST (parallel, separate from v3.4.2)
+# ═══════════════════════════════════════════════════════════════
+
+@app.get("/theme-backtest", response_class=HTMLResponse)
+async def theme_backtest_page(request: Request):
+    """ThemeHunter intraday replay backtest — shows last-cached run."""
+    result = _load_theme_backtest("latest") or {
+        "generated_at": "",
+        "trade_date": "",
+        "summary": {},
+        "timeline": [],
+        "trades": [],
+        "by_bucket": {},
+        "by_theme": {},
+        "by_tier": {},
+        "per_snap_counts": {},
+        "qualified_count": 0,
+        "min_score": 60.0,
+        "snapshots_used": [],
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name="theme_backtest.html",
+        context={"result": result},
+    )
+
+
+@app.get("/api/theme-backtest", response_class=JSONResponse)
+async def api_theme_backtest_get():
+    """JSON of last-cached ThemeHunter backtest."""
+    result = _load_theme_backtest("latest")
+    if result is None:
+        return JSONResponse({"error": "No backtest cached. POST to /api/theme-backtest/run."},
+                            status_code=404)
+    return JSONResponse(result)
+
+
+@app.post("/api/theme-backtest/run", response_class=JSONResponse)
+async def api_theme_backtest_run(min_score: float = 60.0):
+    """
+    Trigger a fresh ThemeHunter backtest for today. Blocking — takes ~5 min
+    because it runs 10 scanner snapshots sequentially.
+    """
+    try:
+        result = _run_theme_backtest(min_score=min_score)
+        _save_theme_backtest(result, name="latest")
+        # Also snapshot by trade_date for history
+        td = result.get("trade_date")
+        if td:
+            _save_theme_backtest(result, name=td)
+        return JSONResponse({
+            "ok": True,
+            "trades": result.get("summary", {}).get("trades", 0),
+            "total_R": result.get("summary", {}).get("total_R", 0),
+            "win_rate_pct": result.get("summary", {}).get("win_rate_pct", 0),
+        })
+    except Exception as e:
+        logger.exception("Theme backtest failed")
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 
 # ═══════════════════════════════════════════════════════════════

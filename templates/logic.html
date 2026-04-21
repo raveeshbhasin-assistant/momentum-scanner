@@ -251,6 +251,7 @@
         <a href="/history" class="nav-link">History</a>
         <a href="/performance" class="nav-link">Performance</a>
         <a href="/backtest" class="nav-link">Backtest</a>
+        <a href="/theme-scanner" class="nav-link">ThemeHunter</a>
     </header>
 
     <main class="content">
@@ -264,7 +265,9 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-4-2" class="current">v3.4.2 (current)</a>
+            <a href="#v3-5" class="current">v3.5 — Performance Categories</a>
+            <a href="#themehunter-v0-1">ThemeHunter v0.1 (prototype)</a>
+            <a href="#v3-4-2">v3.4.2</a>
             <a href="#v3-4-1">v3.4.1</a>
             <a href="#v3-4">v3.4</a>
             <a href="#v3-3-2">v3.3.2</a>
@@ -274,8 +277,119 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.5 ───── -->
+        <div class="release current" id="v3-5">
+            <div class="release-header">
+                <span class="release-version">v3.5</span>
+                <span class="release-date">Released 2026-04-20</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Performance Categories" — <code>/performance</code> rebuilt around a 4-category split: score ≥60 + Leader vs. score ≥60 + non-Leader vs. low-score vs. unclassified. Data store reset to start fresh from today.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> The old performance page rolled every trade into one bucket, which hid the fact that high-score Leaders and high-score non-Leaders behave very differently. Separating them makes the P&amp;L narrative legible and lets us tune the scanner around the bucket that's actually making money.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>New categorization schema</strong> stored per-entry at ingest time:
+                        <ul style="margin-top: 4px;">
+                            <li><code>A — High-Score Leader</code>: score ≥ 60 AND leadership_label = <code>LEADER</code></li>
+                            <li><code>B — High-Score Non-Leader</code>: score ≥ 60 AND leadership_label in <code>{FOLLOWER, LAGGARD, SOLO_MOVER}</code></li>
+                            <li><code>C — Low-Score</code>: score &lt; 60 AND classified leadership label</li>
+                            <li><code>D — Unclassified</code>: no leadership label (early-session picks before sector rotation has settled)</li>
+                        </ul>
+                    </li>
+                    <li><strong>New read-side module <code>performance_engine.py</code></strong> (pure stdlib, no new deps) with <code>assign_category</code>, <code>normalize_entry</code>, <code>upsert_day</code>, and <code>build_view</code>. The view dict feeds the template directly.</li>
+                    <li><strong>New store <code>data/performance_log.json</code></strong> (versioned wrapper, seeded from today). Day-level upserts are idempotent — re-running the EOD job for the same date replaces that day's rows rather than duplicating.</li>
+                    <li><strong>New JSON API <code>GET /api/performance?date=YYYY-MM-DD</code></strong> — returns the same dict the template receives.</li>
+                    <li><strong>Dashboard rewrite:</strong> single-page dark-theme layout with a mode toggle (Cumulative / Single day), category chips, result chips, four category panels with mini time-bucket tables, a full category × time-of-day cross-tab, and a sortable picks table (single-day only).</li>
+                    <li><strong>Diagnostics banner</strong> surfaces the two known scanner data-quality bugs: stale ticker remap <code>SQ → XYZ</code> (Block, Inc. rebranded Jan 2025) and post-close picks that should be gated at 15:55 ET in the scheduler.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>EOD job (<code>daily_analysis.py::analyze_day</code>)</strong> now filters picks to <code>[09:30, 16:00) ET</code> (pre-open and post-close dropped), remaps <code>SQ → XYZ</code> before Yahoo fetch, enriches each resolved pick with its leadership label, and writes to <code>performance_log.json</code> via <code>upsert_day</code>.</li>
+                    <li><strong><code>/performance</code> route</strong> now reads from <code>performance_log.json</code> via <code>performance_engine.get_view()</code> instead of <code>scanner_trade_log.xlsx</code>. The Excel log is still written for archival continuity but is no longer the dashboard source.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong>Category D bloat (upstream fix).</strong> 29 of today's 65 picks landed in <code>D (Unclassified)</code> because the scanner fired during windows when <code>_last_rotation_snapshot</code> was empty or stale. Two changes in <code>app.py</code>:
+                        <ul style="margin-top: 4px;">
+                            <li><strong>Startup warm-up:</strong> <code>sector_rotation_job()</code> runs once at FastAPI startup (if market hours), so the first scan after a restart already has context — no more Category D spike on mid-session deploys.</li>
+                            <li><strong>Self-heal guard:</strong> new <code>_ensure_fresh_sector_snapshot()</code> runs inline at the top of every <code>scheduled_scan</code>. If the snapshot is missing or older than 20 minutes, it re-runs <code>sector_rotation_job</code> synchronously before the scan. Race between the two APScheduler jobs at <code>:30</code> can no longer leave picks label-less.</li>
+                        </ul>
+                        Net effect: Categories A/B/C should absorb the picks that used to land in D. Measure on the next trading day.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-removed">Removed</span>
+                <ul>
+                    <li><strong>Legacy aggregate-only dashboard.</strong> The old page's "pooled trades, one WR number" view is gone — every roll-up on the new page is scoped to a specific category, so a global headline number that blends A/B/C/D is intentionally not displayed.</li>
+                    <li><strong>Pre-v3.5 performance history is not migrated.</strong> The new store starts fresh from 2026-04-20. Historical trades remain in the Excel log for audit, but the dashboard only tracks the new categorized era.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>First day's split (2026-04-20, 65 entries):</strong> A=10, B=9, C=17, D=29. The size of bucket D is an early-session artefact — the scanner fires before the sector-rotation job completes, so those picks never get a leadership label. The fix lives upstream in the scanner, not here. The Unclassified bucket is exposed on the page so we can watch it shrink as the scheduler tightens.
+            </div>
+        </div>
+
+        <!-- ───── ThemeHunter v0.1 ───── -->
+        <div class="release" id="themehunter-v0-1">
+            <div class="release-header">
+                <span class="release-version">ThemeHunter v0.1</span>
+                <span class="release-date">Released 2026-04-20</span>
+                <span class="release-pill pill-current">Prototype</span>
+            </div>
+            <div class="release-title">"Parallel scanner from the group-chat-log analysis" — new <code>/theme-scanner</code> page runs alongside the v3.4.2 momentum scanner on a disjoint universe: theme leaders, gap+news, and low-float runners.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Analysis of the 115-pick group-chat log showed ~55% of winners were theme re-rides, ~25% were second-order peer-news plays, and ~15% were low-float runners (USAR / MVRL / AVEX class). The existing S&amp;P-500 scanner filters these out by design. Rather than change v3.4.2, ThemeHunter runs in parallel as a prototype we can A/B compare over time.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>Three parallel universes.</strong> <code>A: Theme Leaders</code> — top-K tickers in the top-3 theme baskets by 1-day ETF RS percentile. <code>B: Gap + News</code> — tickers gapping ≥3% with daily RVOL ≥2×. <code>C: Low-Float Runners</code> — sub-$5B cap, RVOL ≥1.5×, theme-tagged (seed list includes USAR, MVRL, AVEX, CRML, AAOI, WOOF, NAK and similar).</li>
+                    <li><strong>Six-component score (0–100).</strong> <code>catalyst_freshness (0–25)</code> decays linearly over 24h from the top weighted-sentiment headline. <code>theme_rs (0–20)</code> = ticker's best theme basket percentile × theme bonus. <code>rvol (0–20)</code> = log-scaled current 5m RVOL, saturates at 10×. <code>opening_structure (0–15)</code> = ORB-5 break+volume (15) / ORB-5 break (12) / VWAP reclaim (10) / inside-bar-above-VWAP (7). <code>tape_quality (0–10)</code> = RVOL/price/mcap proxy. <code>second_order (0–10)</code> fires when a linked leader has fresh positive news.</li>
+                    <li><strong>Tiered signals.</strong> Primary ≥70, Secondary 60–69, Watch 50–59.</li>
+                    <li><strong>Sizing tiers.</strong> Theme leader = 0.50% R · Gap + news = 0.35% R · Low-float = 0.20% R (slippage tax).</li>
+                    <li><strong>Kill switches.</strong> Inherits lunch dead-zone (12:00–13:30) and re-entry suppression from v3.4. Adds regime filter: skip if SPY ≤-0.5% AND best theme basket is red.</li>
+                    <li><strong>Rewind mode.</strong> The UI has a Live / Rewind-09:45 toggle. Rewind re-scores every candidate with 5m bars truncated to 9:45 AM ET — lets us sanity-check "what would ThemeHunter have said at the open?" against the day's actual moves.</li>
+                    <li><strong>Theme baskets defined.</strong> AI_INFRA, OPTICAL, MEMORY, SOFTWARE, CRYPTO_MINERS, NUCLEAR, RARE_EARTH, DEFENSE, OIL_SERVICES, PRECIOUS_METAL, EV_AUTO, BATTERY — each mapped to a sector ETF (SMH, IGV, URA, REMX, ITA, XOP, BITO, LIT, GLD) for RS computation.</li>
+                    <li><strong>New UI page <code>/theme-scanner</code>.</strong> Purple-accented design separate from the green/cyan main dashboard. Theme Heat strip at the top (horizontal bars per basket), 3-column bucket layout (A/B/C), per-signal score-breakdown bar showing which components drove the score.</li>
+                    <li><strong>Shared data path.</strong> Reuses <code>scanner.fetch_intraday_data</code> (FMP → yfinance fallback) and <code>news.get_sentiment_score</code> (Finnhub). No new API keys required.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Nav link added</strong> on dashboard and logic pages. Purple-highlighted to flag its prototype status.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale">
+                <strong>First live output (2026-04-20):</strong>
+                Theme heat ordered RARE_EARTH (100th %ile, +1.6%) › SOFTWARE (88.9, +1.5%) › OIL_SERVICES (77.8, +0.9%). Live qualifying picks: CRWD (70.8, SOFTWARE, +2.2%), PANW (66.4, SOFTWARE, +1.0%), NET (65.0, SOFTWARE, +1.9%), MP (62.4, RARE_EARTH, +8.6%), SNOW (60.9, SOFTWARE, +4.5%). Watch list caught USAR (47.6 at close, +13.2%) — would have scored higher in the 9:40–10:10 window when structure was cleaner. Rewind-09:45 flagged SNOW, CRWD, PANW on watch; the scanner did not capture MVRL or AVEX because those tickers did not resolve on yfinance's daily history (fixable with an FMP-based quote pack in v0.2).
+            </div>
+
+            <div class="release-rationale">
+                <strong>Not replacing v3.4.2.</strong> ThemeHunter runs independently. No changes to the momentum scanner, its exits, or the 60-min MAE rule. Promote or retire based on A/B performance over the next 10 sessions.
+            </div>
+        </div>
+
         <!-- ───── v3.4.2 ───── -->
-        <div class="release current" id="v3-4-2">
+        <div class="release" id="v3-4-2">
             <div class="release-header">
                 <span class="release-version">v3.4.2</span>
                 <span class="release-date">Released 2026-04-20</span>

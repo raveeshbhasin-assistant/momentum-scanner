@@ -26,6 +26,12 @@ import httpx
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, numbers
 
+from performance_engine import (
+    assign_category,
+    normalize_entry,
+    upsert_day,
+)
+
 # ── Config ──────────────────────────────────────────────────────
 ET = ZoneInfo("America/New_York")
 SCANNER_URL = "https://momentum-scanner-production-20b1.up.railway.app"
@@ -35,6 +41,12 @@ DATA_DIR = Path(__file__).parent / "data"
 
 MARKET_OPEN_HOUR, MARKET_OPEN_MIN = 9, 30
 MARKET_CLOSE_HOUR, MARKET_CLOSE_MIN = 16, 0
+
+# Known stale-ticker remaps applied before Yahoo fetch.
+# SQ (Block, Inc.) rebranded to XYZ in Jan 2025 — Yahoo returns 404 for SQ.
+STALE_TICKER_MAP = {
+    "SQ": "XYZ",
+}
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -119,23 +131,67 @@ def deduplicate_picks(picks: list[dict]) -> list[dict]:
 
 
 def filter_market_hours(picks: list[dict]) -> list[dict]:
-    """Only keep picks at 9:30 AM ET or later."""
-    filtered = []
+    """
+    Keep picks with found_time ∈ [09:30, 16:00) ET.
+
+    Picks before 9:30 are pre-market noise. Picks at/after 16:00 are post-close
+    scanner emissions (a known data-quality bug — APScheduler should gate at
+    15:55 ET) and are not actionable as intraday trades, so we drop them.
+    """
+    kept = []
+    dropped_pre = 0
+    dropped_post = 0
     for pick in picks:
         time_str = pick.get("found_time", "")
-        # Parse time like "09:31 AM ET" or "10:01 AM ET"
         try:
             t = datetime.strptime(time_str.replace(" ET", "").strip(), "%I:%M %p")
             total_min = t.hour * 60 + t.minute
             market_open_min = MARKET_OPEN_HOUR * 60 + MARKET_OPEN_MIN
-            if total_min >= market_open_min:
-                filtered.append(pick)
+            market_close_min = MARKET_CLOSE_HOUR * 60 + MARKET_CLOSE_MIN
+            if total_min < market_open_min:
+                dropped_pre += 1
+                continue
+            if total_min >= market_close_min:
+                dropped_post += 1
+                continue
+            kept.append(pick)
         except (ValueError, AttributeError):
-            # If time can't be parsed, include it (conservative)
-            filtered.append(pick)
+            # Can't parse time — include it (conservative)
+            kept.append(pick)
 
-    logger.info(f"Market hours filter: {len(picks)} → {len(filtered)} picks")
-    return filtered
+    logger.info(
+        f"Market hours filter: {len(picks)} → {len(kept)} picks "
+        f"(dropped {dropped_pre} pre-open, {dropped_post} post-close)"
+    )
+    return kept
+
+
+def _extract_leadership_label(pick: dict) -> str | None:
+    """
+    Pull the leadership label (LEADER / FOLLOWER / LAGGARD / SOLO_MOVER / UNKNOWN)
+    off a raw pick. Scanner stores it under 'leadership' as a dict or sometimes
+    directly on the signal.
+    """
+    lead = pick.get("leadership")
+    if isinstance(lead, dict):
+        lbl = lead.get("label")
+        if lbl:
+            return str(lbl).upper()
+    if isinstance(lead, str) and lead:
+        return lead.upper()
+    lbl = pick.get("leadership_label")
+    if lbl:
+        return str(lbl).upper()
+    return None
+
+
+def _batch_time_24h(found_time: str) -> str:
+    """'09:31 AM ET' → '09:31'. Falls back to the raw string if it can't parse."""
+    try:
+        t = datetime.strptime(found_time.replace(" ET", "").strip(), "%I:%M %p")
+        return t.strftime("%H:%M")
+    except (ValueError, AttributeError):
+        return found_time or ""
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -148,7 +204,9 @@ def fetch_yahoo_intraday(ticker: str, client: httpx.Client) -> list[dict]:
     Returns list of {timestamp, open, high, low, close, volume} dicts.
     """
     # Handle BRK-B → BRK-B (Yahoo uses hyphens)
-    yahoo_ticker = ticker
+    yahoo_ticker = STALE_TICKER_MAP.get(ticker, ticker)
+    if yahoo_ticker != ticker:
+        logger.info(f"Remapping stale ticker {ticker} → {yahoo_ticker} for Yahoo fetch")
 
     try:
         resp = client.get(
@@ -490,6 +548,12 @@ def analyze_day(date_str: str, json_path: str = None):
     # Step 5: Write to Excel
     append_to_excel(picks, date_str)
 
+    # Step 6: Write to the v3.5 performance log (drives /performance)
+    try:
+        _write_performance_log(picks, date_str)
+    except Exception as e:
+        logger.error(f"Failed to write performance_log.json: {e}")
+
     # Print summary
     print(f"\n{'='*50}")
     print(f"  {date_str} — {len(picks)} trades analyzed")
@@ -498,6 +562,64 @@ def analyze_day(date_str: str, json_path: str = None):
     print(f"  Net P&L: ${total_pnl:+.2f}")
     print(f"  → Appended to {XLSX_PATH.name}")
     print(f"{'='*50}\n")
+
+
+def _write_performance_log(picks: list[dict], date_str: str):
+    """
+    Project resolved picks into the v3.5 performance log schema and upsert
+    the day. Idempotent — re-runs for the same date replace that day's rows.
+    """
+    entries = []
+    cat_counts = {"A": 0, "B": 0, "C": 0, "D": 0}
+    for p in picks:
+        res = p.get("resolution") or {}
+        label = _extract_leadership_label(p)
+        score = p.get("composite_score", p.get("score", 0)) or 0
+        entry_price = p.get("entry_price") or p.get("entry") or p.get("price") or 0
+        stop = p.get("stop_loss", p.get("stop", 0)) or 0
+        target = p.get("atr_target", p.get("target", 0)) or 0
+        risk = entry_price - stop if (entry_price and stop) else 0
+        pnl_share = res.get("pnl_dollar")
+        r_realized = None
+        if pnl_share is not None and risk and risk > 0:
+            try:
+                r_realized = round(float(pnl_share) / float(risk), 4)
+            except (TypeError, ValueError, ZeroDivisionError):
+                r_realized = None
+
+        bt = _batch_time_24h(p.get("found_time", ""))
+        cat = assign_category(score, label)
+        cat_counts[cat] = cat_counts.get(cat, 0) + 1
+
+        entries.append(normalize_entry({
+            "date": date_str,
+            "batch_time": bt,
+            "ticker": p.get("ticker", ""),
+            "entry": entry_price,
+            "stop": stop,
+            "target": target,
+            "score": score,
+            "rsi": p.get("rsi") if isinstance(p.get("rsi"), (int, float)) else (
+                (p.get("indicators") or {}).get("rsi") if isinstance(p.get("indicators"), dict) else None
+            ),
+            "rvol": p.get("rvol", 0),
+            "leadership_label": label,
+            "category": cat,
+            "result": res.get("result", ""),
+            "resolve_time": res.get("resolve_time", ""),
+            "resolve_price": res.get("exit_price"),
+            "pnl_dollar": pnl_share,
+            "r_realized": r_realized,
+            "appearance": p.get("appearance_num", 1),
+            "post_close": False,  # POSTCLOSE picks are already filtered upstream
+            "note": p.get("note", ""),
+        }))
+
+    upsert_day(date_str, entries)
+    logger.info(
+        f"Performance log upserted for {date_str}: {len(entries)} entries "
+        f"(A={cat_counts['A']} B={cat_counts['B']} C={cat_counts['C']} D={cat_counts['D']})"
+    )
 
 
 if __name__ == "__main__":
