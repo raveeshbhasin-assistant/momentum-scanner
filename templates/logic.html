@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.5.4</title>
+    <title>Algorithm Logic — Momentum Scanner v3.5.5</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -255,7 +255,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.5.4</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.5.5</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -265,7 +265,8 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-5-4" class="current">v3.5.4 — GitHub Auto-Backup</a>
+            <a href="#v3-5-5" class="current">v3.5.5 — Email IPv4 Fix</a>
+            <a href="#v3-5-4">v3.5.4 — GitHub Auto-Backup</a>
             <a href="#v3-5-3">v3.5.3 — Persistent Data Volume</a>
             <a href="#v3-5-2">v3.5.2 — Email Notifier</a>
             <a href="#v3-5">v3.5 — Performance Categories</a>
@@ -280,12 +281,44 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.5.5 ───── -->
+        <div class="release current" id="v3-5-5">
+            <div class="release-header">
+                <span class="release-version">v3.5.5</span>
+                <span class="release-date">Released 2026-04-21</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Email IPv4 Fix" — notifier emails were silently failing in production with <code>[Errno 101] Network is unreachable</code> because Railway's container advertises IPv6 but has no IPv6 egress. Restricting SMTP resolution to A records restores delivery.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> <code>smtp.gmail.com</code> has both A and AAAA records. Python's default <code>socket.create_connection</code> calls <code>getaddrinfo</code> with <code>family=0</code>, and on dual-stack hosts without IPv6 routing the kernel returns <code>ENETUNREACH</code> on the IPv6 attempt before Python falls back to IPv4. Every scheduled scan today that found a strong signal hit this error — the notifier logged the failure and swallowed it, so no emails went out despite 20+ strong signals during the session.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>_IPv4SMTP</code> subclass in <code>notifier.py</code></strong> — overrides <code>_get_socket()</code> to resolve the host via <code>getaddrinfo(..., AF_INET, ...)</code> before connecting. Cert validation and SNI still target <code>smtp.gmail.com</code> (the hostname is preserved for TLS wrap). No external dependency.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong>Notifier silently no-op on Railway.</strong> Every scan with a strong signal since the v3.4.3 launch would log <code>notifier: failed to send email: [Errno 101] Network is unreachable</code> and continue. Now the socket is created from an A-record address only, so the send path exercises the routable IPv4 egress.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale" style="margin-top:12px">
+                <strong>Verification:</strong> end-to-end TLS handshake to <code>smtp.gmail.com:587</code> through the subclass succeeds (TLSv1.3, cert SANs match). The change is a drop-in replacement; no call-site changes beyond swapping <code>smtplib.SMTP(...)</code> for <code>_IPv4SMTP(...)</code>.
+            </div>
+        </div>
+
         <!-- ───── v3.5.4 ───── -->
-        <div class="release current" id="v3-5-4">
+        <div class="release" id="v3-5-4">
             <div class="release-header">
                 <span class="release-version">v3.5.4</span>
                 <span class="release-date">Released 2026-04-21</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill">Shipped</span>
             </div>
             <div class="release-title">"GitHub Auto-Backup" — daily belt-and-suspenders snapshot of the persistent data files to a dedicated <code>data-backups</code> branch of this repo, so a wiped volume is always recoverable.</div>
 

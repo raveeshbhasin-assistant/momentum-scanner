@@ -1,9 +1,15 @@
 """
 Email notifier for scan results.
 
-v3.4.3 — sends an HTML email with full strong-signal details after each
+v3.5.5 — sends an HTML email with full strong-signal details after each
 scheduled scan, but only when one or more strong (composite >= 60) signals
 fire. Weak-only and empty scans stay silent.
+
+v3.5.5 change: force IPv4 resolution (_IPv4SMTP subclass). Railway's
+containers advertise IPv6 addressing but have no IPv6 egress route, so
+Python's default dual-stack `create_connection` hit `[Errno 101] Network
+is unreachable` on every Gmail send. Restricting resolution to A records
+works around this without any external dependency.
 
 Configured via environment variables (Railway):
     GMAIL_USER          — sending Gmail address (e.g. scanner@yourdomain.com
@@ -33,6 +39,7 @@ from __future__ import annotations
 import logging
 import os
 import smtplib
+import socket
 import ssl
 import threading
 from datetime import datetime
@@ -46,6 +53,45 @@ logger = logging.getLogger(__name__)
 # ── SMTP config ──────────────────────────────────────────────────────
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 587  # STARTTLS
+
+
+# ── IPv4-only SMTP subclass (v3.5.5) ─────────────────────────────────
+class _IPv4SMTP(smtplib.SMTP):
+    """SMTP client that restricts DNS resolution to A records.
+
+    Railway (and some Docker networks) advertise IPv6 addressing on the
+    container but have no IPv6 egress route. Python's default
+    ``socket.create_connection`` goes through ``getaddrinfo`` with
+    family=0, which on these hosts returns AAAA answers first — the
+    kernel then returns ``[Errno 101] Network is unreachable`` before
+    Python tries the IPv4 fallback. Forcing AF_INET sidesteps this.
+
+    Hostname is preserved for TLS cert verification and SNI — we only
+    change which address family is used for the underlying connect.
+    """
+
+    def _get_socket(self, host, port, timeout):
+        if self.debuglevel > 0:
+            self._print_debug("connect: to", (host, port), self.source_address)
+        # Resolve A-records only.
+        infos = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
+        last_exc: Optional[OSError] = None
+        for af, sktype, proto, _, sa in infos:
+            sock: Optional[socket.socket] = None
+            try:
+                sock = socket.socket(af, sktype, proto)
+                sock.settimeout(timeout)
+                if self.source_address:
+                    sock.bind(self.source_address)
+                sock.connect(sa)
+                return sock
+            except OSError as exc:
+                last_exc = exc
+                if sock is not None:
+                    sock.close()
+        if last_exc is not None:
+            raise last_exc
+        raise OSError(f"Could not resolve {host!r} to any IPv4 address")
 
 
 # ── Env helpers (read at call time so Railway updates take effect) ──
@@ -269,7 +315,8 @@ def _send_smtp(subject: str, html_body: str, text_body: str, recipients: List[st
     msg.attach(MIMEText(html_body, "html", "utf-8"))
 
     ctx = ssl.create_default_context()
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=20) as smtp:
+    # v3.5.5: _IPv4SMTP forces AF_INET; see class docstring for rationale.
+    with _IPv4SMTP(SMTP_HOST, SMTP_PORT, timeout=20) as smtp:
         smtp.ehlo()
         smtp.starttls(context=ctx)
         smtp.ehlo()
