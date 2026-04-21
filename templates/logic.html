@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.5.2</title>
+    <title>Algorithm Logic — Momentum Scanner v3.5.3</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -255,7 +255,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.5.2</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.5.3</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -265,7 +265,8 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-5-2" class="current">v3.5.2 — Email Notifier</a>
+            <a href="#v3-5-3" class="current">v3.5.3 — Persistent Data Volume</a>
+            <a href="#v3-5-2">v3.5.2 — Email Notifier</a>
             <a href="#v3-5">v3.5 — Performance Categories</a>
             <a href="#themehunter-v0-1">ThemeHunter v0.1 (prototype)</a>
             <a href="#v3-4-2">v3.4.2</a>
@@ -278,12 +279,49 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.5.3 ───── -->
+        <div class="release current" id="v3-5-3">
+            <div class="release-header">
+                <span class="release-version">v3.5.3</span>
+                <span class="release-date">Released 2026-04-21</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Persistent Data Volume" — performance history and daily finds now survive Railway redeploys. Mount a volume at <code>/app/data</code> and the app seeds itself on first boot from <code>data_seed/</code>.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Railway's container filesystem is ephemeral. Every push wiped <code>data/performance_log.json</code> (performance page) and <code>data/2026-MM-DD.json</code> (daily finds / history page) back to whatever was in git. Since <code>data/</code> is gitignored, that meant both pages reverted to stale/empty state on every deploy. A mounted volume keeps live writes on durable storage; a tiny seed helper keeps the bootstrap dataset discoverable in git.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>data_seed/</code> directory (tracked in git)</strong> holds pristine bootstrap copies of any JSON we want available on a fresh volume. Currently contains the Apr 20 <code>performance_log.json</code>.</li>
+                    <li><strong><code>_seed_data_volume()</code> startup helper in <code>app.py</code></strong> runs before the scheduler starts. For each file in <code>data_seed/</code>, if the corresponding file does not exist under <code>data/</code>, it's copied in. Idempotent — on a populated volume every file is skipped, and the function logs the per-file counts.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Deployment model.</strong> Railway service now has a volume mounted at <code>/app/data</code>. All writes under that path (<code>performance_log.json</code>, daily <code>YYYY-MM-DD.json</code> files, backtest caches, theme-scan snapshots) persist across redeploys.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong>History page vanishing on every push.</strong> The Home/History dashboards read <code>data/YYYY-MM-DD.json</code> for that day's finds. Before the volume, every Railway redeploy truncated that file back to whatever was in git (usually empty), so the history panel reset to zero on every push. Now the file lives on the volume and simply accumulates.</li>
+                    <li><strong>Performance page losing cumulative days.</strong> Same root cause — <code>performance_log.json</code> was being reset on redeploy. The EOD job's <code>upsert_day()</code> pattern was already idempotent across days, but the container's writes never survived to accumulate.</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- ───── v3.5.2 ───── -->
-        <div class="release current" id="v3-5-2">
+        <div class="release" id="v3-5-2">
             <div class="release-header">
                 <span class="release-version">v3.5.2</span>
                 <span class="release-date">Released 2026-04-20</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill">Shipped</span>
             </div>
             <div class="release-title">"Email notifier" — strong-signal scans now push an HTML email to your inbox with full entry / stop / target / R:R details, tier pills, and a dashboard link. Weak-only and empty scans stay silent.</div>
 

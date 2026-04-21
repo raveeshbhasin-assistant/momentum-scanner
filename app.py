@@ -109,6 +109,60 @@ def premarket_scan_job():
 SECTOR_SNAPSHOT_MAX_AGE_SEC = 20 * 60  # Refresh if older than 20 min
 
 
+# ═══════════════════════════════════════════════════════════════
+#  DATA VOLUME SEED
+# ═══════════════════════════════════════════════════════════════
+#
+#  Railway's filesystem is ephemeral. To persist performance data across
+#  deploys we mount a volume at /app/data. A freshly mounted volume is
+#  empty, which would wipe the bootstrap performance_log.json that ships
+#  in the repo. To keep the initial dataset we commit a pristine copy
+#  into data_seed/ (not gitignored) and copy it into the live data/
+#  directory on first boot after the volume is empty.
+#
+#  Idempotent: once the volume has files, subsequent boots no-op.
+#  Safe locally: on dev machines without a volume, data/ already exists
+#  and the helper just skips.
+#
+_APP_ROOT = Path(__file__).parent
+_DATA_DIR = _APP_ROOT / "data"
+_DATA_SEED_DIR = _APP_ROOT / "data_seed"
+
+
+def _seed_data_volume():
+    """Copy bootstrap files from data_seed/ to data/ when the volume is empty."""
+    try:
+        _DATA_DIR.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        logger.warning(f"Data volume seed: could not mkdir {_DATA_DIR}: {e}")
+        return
+
+    if not _DATA_SEED_DIR.exists():
+        # No seed files bundled — nothing to do.
+        return
+
+    seeded = 0
+    skipped = 0
+    for src in _DATA_SEED_DIR.iterdir():
+        if not src.is_file():
+            continue
+        dst = _DATA_DIR / src.name
+        if dst.exists():
+            skipped += 1
+            continue
+        try:
+            dst.write_bytes(src.read_bytes())
+            seeded += 1
+        except OSError as e:
+            logger.warning(f"Data volume seed: failed to copy {src.name}: {e}")
+
+    if seeded or skipped:
+        logger.info(
+            f"Data volume seed: copied {seeded}, skipped {skipped} "
+            f"(from {_DATA_SEED_DIR} → {_DATA_DIR})"
+        )
+
+
 def sector_rotation_job():
     """Detect sector rotation at 9:30 and periodically during the day."""
     global _sector_priority
@@ -307,6 +361,10 @@ scheduler.add_job(
 
 @app.on_event("startup")
 async def startup():
+    # Seed data/ from data_seed/ if the mounted volume is empty.
+    # Must run before anything else touches data/ (cleanup, reads, writes).
+    _seed_data_volume()
+
     scheduler.start()
     cleanup_old_files()
 
