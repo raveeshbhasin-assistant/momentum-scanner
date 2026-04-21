@@ -3,6 +3,15 @@ __pycache__/
 .env
 *.egg-info/
 data/
-"scanner_trade_log.xlsx" 
-"April15_Scanner_Analysis.md" 
-"Momentum_Scanner_v3.1_Summary.pdf" 
+"scanner_trade_log.xlsx"
+"April15_Scanner_Analysis.md"
+"Momentum_Scanner_v3.1_Summary.pdf"
+
+# Local artifacts — snapshots, previews, backups (never commit)
+*_snapshot.html
+*_preview.html
+performance_*.html
+ThemeHunter_*.html
+*.backup_*.xlsx
+notifier_preview.html
+
