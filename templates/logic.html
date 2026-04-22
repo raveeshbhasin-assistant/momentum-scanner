@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.5.6</title>
+    <title>Algorithm Logic — Momentum Scanner v3.5.6.2</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -255,7 +255,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.5.6</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.5.6.2</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -265,7 +265,8 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-5-6" class="current">v3.5.6 — SMTPS + EOD Backup Reliability</a>
+            <a href="#v3-5-6-2" class="current">v3.5.6.2 — Earlier EOD + Manual Trigger</a>
+            <a href="#v3-5-6">v3.5.6 — SMTPS + EOD Backup Reliability</a>
             <a href="#v3-5-5">v3.5.5 — Email IPv4 Fix</a>
             <a href="#v3-5-4">v3.5.4 — GitHub Auto-Backup</a>
             <a href="#v3-5-3">v3.5.3 — Persistent Data Volume</a>
@@ -282,12 +283,52 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.5.6.2 ───── -->
+        <div class="release current" id="v3-5-6-2">
+            <div class="release-header">
+                <span class="release-version">v3.5.6.2</span>
+                <span class="release-date">Released 2026-04-22</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Earlier EOD + Manual Trigger" — the post-market analysis job now runs at 4:15 PM ET instead of 5:00 PM, and a new <code>POST /api/analyze/trigger</code> endpoint lets the same job be kicked off on demand for any date.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Waiting until 5 PM for results delayed the daily review by 45 minutes for no good reason — Yahoo Finance finalizes the 15:55→16:00 5-minute bar within 10–15 minutes of the close, so 16:15 is the earliest safe slot. Separately, when the analysis needs to be re-run (missed cron, data fix, late-added picks), the only option used to be redeploying or waiting for tomorrow's cron. The new endpoint removes that friction while staying idempotent-per-date.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>EOD scheduler: 17:00 → 16:15 ET.</strong> The <code>post_market_analysis</code> cron in <code>app.py</code> is now <code>hour="16", minute="15"</code> (Mon–Fri, America/New_York). <code>misfire_grace_time=600</code> is kept so a brief restart near 16:15 doesn't silently skip the day. Docstring and inline comments updated to reflect the new time.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>POST /api/analyze/trigger</code> endpoint</strong> — query param <code>date=YYYY-MM-DD</code> (defaults to today ET). Runs <code>analyze_day(date)</code> then <code>_backup_volume_files(date)</code> in the same order as the scheduled job. Returns <code>{ "date", "analysis": "ok" | "failed: &lt;err&gt;", "backup": { ... } }</code>. Validates the date format up-front, never raises to the HTTP layer, and logs analysis failures so the endpoint always returns a usable JSON payload.</li>
+                    <li><strong>Idempotency guarantee documented.</strong> <code>analyze_day</code> writes via <code>performance_log.upsert_day(date, entries)</code>, which replaces only that date's rows. Re-running a past day never affects other days — so Apr 20's rows survive an Apr 22 trigger, and vice versa.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong>Unable to recover a skipped EOD run.</strong> If the 5 PM cron missed (deploy, region swap, container cold-start past 17:00 + grace), the only way to get that day's data was to wait for the next day's job. <code>/api/analyze/trigger?date=YYYY-MM-DD</code> now handles it directly.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale" style="margin-top:12px">
+                <strong>Verification:</strong> (1) APScheduler's <code>CronTrigger(day_of_week="mon-fri", hour="16", minute="15", timezone=America/New_York)</code> is a standard tested pattern — same library, same call site as the prior 17:00 cron. (2) The new endpoint calls the exact same functions the cron does (<code>analyze_day</code> + <code>_backup_volume_files</code>), so its behavior is byte-identical to a scheduled run. (3) The per-date upsert in <code>_write_performance_log()</code> was already in place from v3.5 and is unchanged here — so prior days' data is untouched when re-running any date.
+            </div>
+        </div>
+
         <!-- ───── v3.5.6 ───── -->
-        <div class="release current" id="v3-5-6">
+        <div class="release" id="v3-5-6">
             <div class="release-header">
                 <span class="release-version">v3.5.6</span>
                 <span class="release-date">Released 2026-04-21</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill">Shipped</span>
             </div>
             <div class="release-title">"SMTPS + EOD Backup Reliability" — two production hardening fixes in one release. Email now sends via implicit-TLS on port 465 (port 587 is blocked on Railway's egress). EOD data backup is moved out of <code>analyze_day()</code> so it runs even on days with no picks.</div>
 

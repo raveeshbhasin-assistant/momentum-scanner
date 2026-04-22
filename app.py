@@ -57,7 +57,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.5.6")
+app = FastAPI(title="Momentum Scanner", version="3.5.6.2")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -224,7 +224,7 @@ def _backup_volume_files(today: str, tag_prefix: str = "EOD") -> dict:
 
 def post_market_analysis_job():
     """
-    Run daily analysis after market close (5:00 PM ET).
+    Run daily analysis after market close (4:15 PM ET as of v3.5.6.2).
     Fetches Yahoo Finance 5m bars, computes WIN/LOSS/EOD for all
     picks from today, and appends results to scanner_trade_log.xlsx.
     The performance page reads from this file on each page load.
@@ -383,13 +383,16 @@ scheduler.add_job(
     max_instances=1,
 )
 
-# Post-market daily analysis: 5:00 PM ET (after Yahoo Finance finalizes data)
+# Post-market daily analysis: 4:15 PM ET.
+# Moved from 17:00 → 16:15 in v3.5.6.2 so results are ready an hour earlier.
+# Yahoo's 5m bar for 15:55→16:00 is usually finalized within 10–15 min of the
+# close, so 16:15 gives it just enough slack without waiting another 45 min.
 scheduler.add_job(
     post_market_analysis_job,
     "cron",
     day_of_week="mon-fri",
-    hour="17",
-    minute="0",
+    hour="16",
+    minute="15",
     timezone=config.ET,
     id="post_market_analysis",
     max_instances=1,
@@ -604,7 +607,7 @@ async def api_trigger_backup():
     """
     Manually trigger a backup of the persistent data volume to GitHub.
 
-    Same files as the 5 PM EOD job, useful when:
+    Same files as the 4:15 PM EOD job, useful when:
       • The EOD job was skipped because there were no picks
       • You want to snapshot the current state before a deploy
       • You need to recover after the volume was accidentally cleared
@@ -614,6 +617,58 @@ async def api_trigger_backup():
     today = datetime.now(config.ET).strftime("%Y-%m-%d")
     summary = _backup_volume_files(today, tag_prefix="manual")
     return {"today": today, "summary": summary}
+
+
+@app.post("/api/analyze/trigger", response_class=JSONResponse)
+async def api_trigger_analyze(date: str | None = None):
+    """
+    Manually run the post-market analysis for a given date (default: today ET).
+
+    Wraps post_market_analysis_job so it can be kicked off outside the 4:15 PM
+    cron window — useful for:
+      • Running today's analysis immediately after a deploy
+      • Re-analyzing a past day after a data fix
+      • Verifying the pipeline end-to-end without waiting for 16:15 ET
+
+    The underlying analyze_day() is idempotent at the per-date level:
+    performance_log.upsert_day(date) replaces that date's rows only, so
+    prior days (e.g. Apr 20) are never touched by a rerun of a later date.
+
+    Query params:
+        date: YYYY-MM-DD (defaults to today in ET)
+
+    Returns:
+        {
+            "date": "2026-04-22",
+            "analysis": "ok" | "failed: <err>",
+            "backup": { "<path>": "created|updated|unchanged|missing|error", ... }
+        }
+    """
+    target = date or datetime.now(config.ET).strftime("%Y-%m-%d")
+
+    # Validate date format early — fail fast with a useful error.
+    try:
+        datetime.strptime(target, "%Y-%m-%d")
+    except ValueError:
+        return {
+            "error": f"invalid date '{target}' — expected YYYY-MM-DD",
+            "date": target,
+        }
+
+    analysis_status = "ok"
+    try:
+        analyze_day(target)
+    except Exception as e:
+        analysis_status = f"failed: {e}"
+        logger.error(f"Manual analyze_day({target}) failed: {e}")
+
+    try:
+        summary = _backup_volume_files(target, tag_prefix="manual-analyze")
+    except Exception as e:
+        logger.error(f"Manual analyze trigger: backup raised: {e}")
+        summary = {}
+
+    return {"date": target, "analysis": analysis_status, "backup": summary}
 
 
 @app.get("/history", response_class=HTMLResponse)
