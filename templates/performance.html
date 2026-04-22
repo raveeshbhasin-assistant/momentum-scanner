@@ -400,7 +400,35 @@
             if (d === state.date) o.selected = true;
             dateSel.appendChild(o);
         });
-        dateSel.addEventListener("change", e => { state.date = e.target.value; render(); });
+
+        // Cache of single-day views, keyed by date. Seeded with the SSR-injected
+        // view for the initially-selected date; other dates are fetched lazily
+        // from /api/performance?date=... when the dropdown changes. Without this
+        // the dropdown silently re-rendered the same data (pre-v3.5.7 behavior).
+        const singleDayCache = {};
+        if (VIEW.selected_date && VIEW.single_day) {
+            singleDayCache[VIEW.selected_date] = VIEW.single_day;
+        }
+
+        async function loadSingleDay(date) {
+            if (singleDayCache[date]) return singleDayCache[date];
+            try {
+                const r = await fetch(`/api/performance?date=${encodeURIComponent(date)}`);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const data = await r.json();
+                singleDayCache[date] = data.single_day;
+                return singleDayCache[date];
+            } catch (e) {
+                console.warn("Single-day fetch failed:", e);
+                return null;
+            }
+        }
+
+        dateSel.addEventListener("change", async e => {
+            state.date = e.target.value;
+            if (!singleDayCache[state.date]) await loadSingleDay(state.date);
+            render();
+        });
 
         // Range date inputs (hidden until Range mode is active)
         const rangeStartEl = document.getElementById("rangeStart");
@@ -445,6 +473,8 @@
                 applyModeUI();
                 if (state.mode === "range" && !state.rangeView) {
                     await loadRange();
+                } else if (state.mode === "single" && !singleDayCache[state.date]) {
+                    await loadSingleDay(state.date);
                 }
                 render();
             });
@@ -495,7 +525,7 @@
             // use the SSR-injected VIEW.
             let bucket = null, label = "";
             if (state.mode === "single") {
-                bucket = VIEW.single_day;
+                bucket = singleDayCache[state.date] || null;
                 label = "single day";
             } else if (state.mode === "cum") {
                 bucket = VIEW.cumulative;
