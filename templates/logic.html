@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.5.7</title>
+    <title>Algorithm Logic — Momentum Scanner v3.5.8</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -255,7 +255,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.5.7</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.5.8</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -265,7 +265,8 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-5-7" class="current">v3.5.7 — Range View + Cumulative R Fix</a>
+            <a href="#v3-5-8" class="current">v3.5.8 — Market-Hours + Category Filters + Test Hook</a>
+            <a href="#v3-5-7">v3.5.7 — Range View + Cumulative R Fix</a>
             <a href="#v3-5-6-2">v3.5.6.2 — Earlier EOD + Manual Trigger</a>
             <a href="#v3-5-6">v3.5.6 — SMTPS + EOD Backup Reliability</a>
             <a href="#v3-5-5">v3.5.5 — Email IPv4 Fix</a>
@@ -284,12 +285,55 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.5.8 ───── -->
+        <div class="release current" id="v3-5-8">
+            <div class="release-header">
+                <span class="release-version">v3.5.8</span>
+                <span class="release-date">Released 2026-04-22</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Market-Hours + Category Filters + Test Hook" — the Resend notifier now only fires during the US equity regular session (Mon–Fri 09:30–16:00 ET) and only when at least one strong signal lands in Category A or B. A new <code>POST /api/notify/test</code> endpoint sends a filter-bypassing round-trip email so Railway env vars can be verified anytime, not just during a live Cat A/B hit.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Two complaints shaped this release. First, the notifier was waking the phone on pre-market and after-hours scans — signals Raveesh can't act on from Fidelity anyway. Second, Category C/D signals (sub-60 composite scores or unclassified leadership) were mixed into the same alert stream as high-conviction Cat A/B picks, so the email stopped being a trigger and started being noise. The fix is two independent gates at the notifier boundary: a clock-based one (<code>NOTIFY_MARKET_HOURS_ONLY</code>, default on) and a quality-based one (<code>NOTIFY_CATEGORIES</code>, default "A,B"). Both use the same category rule the Performance page uses (composite_score ≥ 60 + leadership label in {LEADER, FOLLOWER, LAGGARD, SOLO_MOVER}), so what you see in the email matches what you see on the dashboard. The test-email endpoint was added because the only way to verify a Resend setup used to be waiting for a real Cat A/B signal during market hours — impractical for anyone setting this up on a weekend.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>Market-hours gate on <code>send_scan_email()</code>.</strong> Skips mail delivery when the scheduler fires outside Mon–Fri 09:30–16:00 ET. Honors DST automatically via <code>config.ET</code> (<code>ZoneInfo("America/New_York")</code>). Controlled by <code>NOTIFY_MARKET_HOURS_ONLY</code> (default <code>true</code>); set to <code>false</code> to keep the pre-v3.5.8 behavior of emailing on every scan. The scan itself still runs outside market hours — only the email is suppressed, so the dashboard and performance log remain complete.</li>
+                    <li><strong>Category gate on <code>send_scan_email()</code>.</strong> After the existing strong-signal filter (<code>composite_score ≥ 60</code>), surviving signals are further filtered by <code>NOTIFY_CATEGORIES</code> (default <code>"A,B"</code>). Categories A and B are the high-score tiers; C is low-score classified, D is unclassified. Drops invalid tokens silently and falls back to <code>{A,B}</code> if the env var is empty or entirely unrecognized so a typo never produces a permanent silence. The Performance page still shows every category — this is a notifier-only filter.</li>
+                    <li><strong><code>POST /api/notify/test</code>.</strong> Fires a canned single-signal email to <code>NOTIFY_EMAIL</code> via Resend, bypassing both the market-hours gate and the category filter. Returns a JSON dict with <code>ok</code>, the resolved <code>from</code>/<code>to</code>, <code>subject</code>, <code>sent_at</code>, the currently-effective filter settings, and — on failure — the Resend error body. Never raises. Use it the moment you flip the env vars in Railway to confirm round-trip before waiting on a real signal.</li>
+                    <li><strong>Helpers in <code>notifier.py</code>:</strong> <code>_allowed_categories()</code>, <code>_market_hours_only()</code>, <code>_in_market_hours(now_et=None)</code>, <code>_signal_category(s)</code>. The category helper delegates to <code>performance_engine.assign_category</code> so there is exactly one definition of Cat A/B/C/D in the codebase.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong><code>send_scan_email()</code> gating order.</strong> New sequence: <code>NOTIFY_ENABLED</code> → market-hours → strong-signal → category → <code>NOTIFY_MIN_SIGNALS</code> → <code>_is_configured()</code>. Each step logs at INFO when it suppresses mail so the Railway logs make it obvious why a scan was silent. The only material behavior change is that Cat C/D-only strong scans, and pre-market/after-hours scans, no longer send mail when defaults are in effect.</li>
+                    <li><strong>Email-body version stamp bumped to v3.5.8.</strong> Header line on every outgoing email now reads "Scanned at … · v3.5.8". Test emails use the same renderer and inherit the stamp.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-docs">Docs</span>
+                <ul>
+                    <li><strong>Notifier module docstring rewritten</strong> to list all current env vars in one place: <code>RESEND_API_KEY</code>, <code>NOTIFY_FROM</code>, <code>NOTIFY_EMAIL</code>, <code>NOTIFY_ENABLED</code>, <code>NOTIFY_MIN_SIGNALS</code>, <code>NOTIFY_CATEGORIES</code>, <code>NOTIFY_MARKET_HOURS_ONLY</code>, <code>DASHBOARD_URL</code>. Legacy <code>GMAIL_*</code> vars are explicitly called out as safe to delete from Railway.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale" style="margin-top:12px">
+                <strong>Verification:</strong> (1) <code>_in_market_hours()</code> unit-tested against boundaries — Mon 09:29 ET → False, 09:30 → True, 16:00 → True, 16:01 → False, Sat/Sun → False regardless of hour. DST handled via <code>ZoneInfo</code>. (2) <code>_allowed_categories()</code> fuzz-checked: empty, "A", "a,b", "X,Y", "A,B,C,D" all return a valid subset of {A,B,C,D}, never <code>∅</code>. (3) Replay test — a fabricated scan with one Cat A (score 72, LEADER), one Cat B (score 64, FOLLOWER), one Cat C (score 58, LEADER), and one Cat D (score 70, no label) passed through <code>send_scan_email()</code> with default env: exactly the A+B pair reaches <code>_dispatch</code>. (4) Module imports cleanly against <code>performance_engine</code> + <code>config</code>. (5) <code>POST /api/notify/test</code> returns <code>{"ok": false, "error": "missing env vars: RESEND_API_KEY, NOTIFY_EMAIL", …}</code> when unconfigured — no stack trace, no mail attempt.
+            </div>
+        </div>
+
         <!-- ───── v3.5.7 ───── -->
-        <div class="release current" id="v3-5-7">
+        <div class="release" id="v3-5-7">
             <div class="release-header">
                 <span class="release-version">v3.5.7</span>
                 <span class="release-date">Released 2026-04-22</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill">Shipped</span>
             </div>
             <div class="release-title">"Range View + Cumulative R Fix" — the Performance page now has a third mode alongside Single day and Cumulative: a <strong>Range</strong> picker that rolls up any arbitrary start/end window. At the same time, the Total R and Net $ headline cards finally show real numbers in Cumulative mode instead of "—".</div>
 

@@ -1,127 +1,85 @@
 """
 Email notifier for scan results.
 
-v3.5.6 — sends an HTML email with full strong-signal details after each
-scheduled scan, but only when one or more strong (composite >= 60) signals
-fire. Weak-only and empty scans stay silent.
+v3.5.8 — sends an HTML email with full strong-signal details after each
+scheduled scan, but only when:
+  • the scan fired during the US equity regular session (09:30–16:00 ET,
+    Mon–Fri) — controlled by NOTIFY_MARKET_HOURS_ONLY, default on
+  • at least NOTIFY_MIN_SIGNALS strong signals survive the category filter
+  • those signals land in NOTIFY_CATEGORIES (default "A,B" — high-score
+    leader + high-score non-leader). Cat C (low-score) and Cat D
+    (unclassified) are dropped from the email but stay in the dashboard.
 
-v3.5.5 change: force IPv4 resolution (_IPv4SMTPS subclass). Railway's
-containers advertise IPv6 addressing but have no IPv6 egress route, so
-Python's default dual-stack `create_connection` hit `[Errno 101] Network
-is unreachable` on every Gmail send. Restricting resolution to A records
-works around this without any external dependency.
+Release history of this file:
 
-v3.5.6 change: switch from STARTTLS on port 587 to implicit TLS on port
-465 (``smtplib.SMTP_SSL``). Port 587 was silently dropped by Railway's
-egress — after the IPv4 fix the connect succeeded but the TLS upgrade
-stalled until the socket timed out. Port 465 (SMTPS, wrapped in TLS from
-the first byte) goes through cleanly. The IPv4-only override is preserved
-by subclassing ``SMTP_SSL`` instead of ``SMTP``.
+    v3.5.2  Introduced smtplib-based notifier (Gmail SMTP on port 587).
+    v3.5.5  Forced IPv4 DNS resolution to work around Railway's absent
+            IPv6 egress (`[Errno 101] Network is unreachable`).
+    v3.5.6  Switched STARTTLS:587 → SMTPS:465 because Railway's egress
+            silently dropped 587.
+    v3.5.7  Gave up on SMTP entirely — a GET /api/diagnose/egress probe
+            confirmed Railway drops outbound 25/465/587 (all 5 s timeouts,
+            same IP) while leaving 443 fully open. The notifier now POSTs
+            to Resend's HTTPS API on 443. Zero smtplib code remains.
+    v3.5.8  (this file) Added market-hours filter and category filter so
+            pre-market / after-hours scans and low-quality (Cat C / D)
+            signals don't trigger mail. Added send_test_email() for a
+            no-filter round-trip check via POST /api/notify/test.
 
-Configured via environment variables (Railway):
-    GMAIL_USER          — sending Gmail address (e.g. scanner@yourdomain.com
-                          or a dedicated personal Gmail). Required.
-    GMAIL_APP_PASSWORD  — 16-char Gmail app password (not the account
-                          password). Required. See
-                          https://myaccount.google.com/apppasswords.
-    NOTIFY_EMAIL        — comma-separated recipient list. Defaults to
-                          GMAIL_USER if unset.
-    NOTIFY_ENABLED      — "true"/"false". Defaults to "true". Set to
-                          "false" to hard-disable notifications.
-    NOTIFY_MIN_SIGNALS  — int, minimum strong-signal count to trigger an
-                          email. Defaults to 1.
-    DASHBOARD_URL       — base URL of the live dashboard. Used to embed
-                          a "View dashboard" link in the email.
+Configuration (env vars):
+    RESEND_API_KEY          — API key from https://resend.com/api-keys.
+                              Required. Without it the notifier logs and no-ops.
+    NOTIFY_FROM             — "From" address or "Name <addr>" form. Defaults
+                              to "Momentum Scanner <onboarding@resend.dev>",
+                              the Resend sandbox sender. For multi-recipient
+                              delivery, this must be on a verified custom domain.
+    NOTIFY_EMAIL            — comma-separated recipient list. Required.
+    NOTIFY_ENABLED          — "true"/"false". Defaults to "true".
+    NOTIFY_MIN_SIGNALS      — int, minimum matching-signal count to trigger
+                              an email. Defaults to 1.
+    NOTIFY_CATEGORIES       — comma-separated subset of {A,B,C,D}. Defaults
+                              to "A,B". Categories are computed per-signal
+                              from composite_score + leadership.label using
+                              the same rule the Performance page uses.
+    NOTIFY_MARKET_HOURS_ONLY — "true"/"false". Defaults to "true". When on,
+                              mails are suppressed outside 09:30–16:00 ET
+                              Mon–Fri (US equity regular session).
+    DASHBOARD_URL           — base URL of the live dashboard. Used to embed
+                              a "View dashboard" link in the email.
+
+Legacy vars GMAIL_USER / GMAIL_APP_PASSWORD are no longer read. They can
+be safely removed from Railway, though leaving them set causes no harm.
 
 Design guarantees:
     • Never raises out of send_scan_email(). All failures are logged and
       swallowed — the scanner must not be blocked by mail issues.
-    • Sends in a background thread so SMTP latency does not delay the
+    • Sends in a background thread so the HTTP call does not delay the
       next scan.
-    • No external dependencies beyond Python stdlib (smtplib, email,
-      ssl, threading).
+    • Only stdlib + httpx (already a dep via data_backup.py).
 """
 from __future__ import annotations
 
 import logging
 import os
-import smtplib
-import socket
-import ssl
 import threading
 from datetime import datetime
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.utils import formataddr, formatdate
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional, Set
+
+import httpx
+
+import config
+from performance_engine import assign_category
 
 logger = logging.getLogger(__name__)
 
-# ── SMTP config ──────────────────────────────────────────────────────
-SMTP_HOST = "smtp.gmail.com"
-SMTP_PORT = 465  # implicit TLS (SMTPS) — 587/STARTTLS is blocked on Railway
+# ── Resend config ────────────────────────────────────────────────────
+RESEND_API_URL = "https://api.resend.com/emails"
+DEFAULT_FROM = "Momentum Scanner <onboarding@resend.dev>"
+USER_AGENT = "MomentumScanner-Notifier/3.5.8"
 
-
-def _ipv4_get_socket(smtp_self, host, port, timeout):
-    """_get_socket override used by the IPv4-only SMTP[_SSL] subclasses.
-
-    Railway (and some Docker networks) advertise IPv6 addressing on the
-    container but have no IPv6 egress route. Python's default
-    ``socket.create_connection`` goes through ``getaddrinfo`` with
-    family=0, which on these hosts returns AAAA answers first — the
-    kernel then returns ``[Errno 101] Network is unreachable`` before
-    Python tries the IPv4 fallback. Forcing AF_INET sidesteps this.
-
-    Hostname is preserved for TLS cert verification and SNI — we only
-    change which address family is used for the underlying connect.
-    """
-    if smtp_self.debuglevel > 0:
-        smtp_self._print_debug("connect: to", (host, port), smtp_self.source_address)
-    infos = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
-    last_exc: Optional[OSError] = None
-    for af, sktype, proto, _, sa in infos:
-        sock: Optional[socket.socket] = None
-        try:
-            sock = socket.socket(af, sktype, proto)
-            sock.settimeout(timeout)
-            if smtp_self.source_address:
-                sock.bind(smtp_self.source_address)
-            sock.connect(sa)
-            return sock
-        except OSError as exc:
-            last_exc = exc
-            if sock is not None:
-                sock.close()
-    if last_exc is not None:
-        raise last_exc
-    raise OSError(f"Could not resolve {host!r} to any IPv4 address")
-
-
-class _IPv4SMTP(smtplib.SMTP):
-    """SMTP client (port 587 / STARTTLS) with IPv4-only DNS resolution.
-
-    Kept for completeness in case STARTTLS ever needs to be used again —
-    v3.5.6 sends via ``_IPv4SMTPS`` on port 465 by default.
-    """
-
-    def _get_socket(self, host, port, timeout):
-        return _ipv4_get_socket(self, host, port, timeout)
-
-
-class _IPv4SMTPS(smtplib.SMTP_SSL):
-    """SMTP_SSL client (port 465 / implicit TLS) with IPv4-only DNS
-    resolution. See ``_ipv4_get_socket`` for the rationale.
-
-    SMTP_SSL wraps the socket in TLS from the first byte, which bypasses
-    the blocked port 587 / STARTTLS path on Railway.
-    """
-
-    def _get_socket(self, host, port, timeout):
-        # Create the raw IPv4 socket first, then let SMTP_SSL upgrade it
-        # to TLS. SMTP_SSL's _get_socket expects to receive an SSL-wrapped
-        # socket back, so we delegate the wrapping to its base logic.
-        raw = _ipv4_get_socket(self, host, port, timeout)
-        return self.context.wrap_socket(raw, server_hostname=self._host)
+# US equity regular-session boundaries (ET). Used by _in_market_hours.
+MARKET_OPEN_HM = (9, 30)   # 09:30 ET
+MARKET_CLOSE_HM = (16, 0)  # 16:00 ET
 
 
 # ── Env helpers (read at call time so Railway updates take effect) ──
@@ -134,12 +92,16 @@ def _enabled() -> bool:
 
 
 def _is_configured() -> bool:
-    return bool(_env("GMAIL_USER")) and bool(_env("GMAIL_APP_PASSWORD"))
+    return bool(_env("RESEND_API_KEY")) and bool(_recipients())
 
 
 def _recipients() -> List[str]:
-    raw = _env("NOTIFY_EMAIL") or _env("GMAIL_USER")
+    raw = _env("NOTIFY_EMAIL")
     return [addr.strip() for addr in raw.split(",") if addr.strip()]
+
+
+def _from_address() -> str:
+    return _env("NOTIFY_FROM", DEFAULT_FROM)
 
 
 def _min_signals() -> int:
@@ -150,7 +112,56 @@ def _min_signals() -> int:
 
 
 def _dashboard_url() -> str:
-    return _env("DASHBOARD_URL", "https://trader-v3-production.up.railway.app").rstrip("/")
+    return _env(
+        "DASHBOARD_URL",
+        "https://momentum-scanner-production-20b1.up.railway.app",
+    ).rstrip("/")
+
+
+# ── v3.5.8 filters: market hours + category gate ─────────────────────
+def _allowed_categories() -> Set[str]:
+    """
+    Parse NOTIFY_CATEGORIES (default "A,B"). Silently drops unknown
+    tokens. Falls back to {"A","B"} if the env var is empty or invalid
+    so a typo never results in zero emails ever being sent.
+    """
+    raw = _env("NOTIFY_CATEGORIES", "A,B").upper()
+    allowed = {c.strip() for c in raw.split(",") if c.strip() in ("A", "B", "C", "D")}
+    return allowed or {"A", "B"}
+
+
+def _market_hours_only() -> bool:
+    return _env("NOTIFY_MARKET_HOURS_ONLY", "true").lower() in ("1", "true", "yes", "on")
+
+
+def _in_market_hours(now_et: Optional[datetime] = None) -> bool:
+    """
+    True iff `now_et` is Mon–Fri and within 09:30–16:00 ET (inclusive
+    on open, inclusive on close). If `now_et` is None, reads the
+    current time in America/New_York.
+    """
+    if now_et is None:
+        now_et = datetime.now(config.ET)
+    elif now_et.tzinfo is None:
+        now_et = now_et.replace(tzinfo=config.ET)
+    else:
+        now_et = now_et.astimezone(config.ET)
+    if now_et.weekday() >= 5:  # 5=Sat, 6=Sun
+        return False
+    oh, om = MARKET_OPEN_HM
+    ch, cm = MARKET_CLOSE_HM
+    open_t = now_et.replace(hour=oh, minute=om, second=0, microsecond=0)
+    close_t = now_et.replace(hour=ch, minute=cm, second=0, microsecond=0)
+    return open_t <= now_et <= close_t
+
+
+def _signal_category(s: Dict) -> str:
+    """
+    Compute the Performance-page category for a single signal dict.
+    Mirrors the rule in performance_engine.assign_category.
+    """
+    lbl = (s.get("leadership") or {}).get("label")
+    return assign_category(s.get("composite_score"), lbl)
 
 
 # ── Rendering ────────────────────────────────────────────────────────
@@ -262,7 +273,7 @@ def _render_html(
         <div style="max-width:720px; margin:0 auto;">
             <div style="border-bottom:2px solid #2a3148; padding-bottom:14px; margin-bottom:18px;">
                 <div style="font-size:22px; font-weight:700; color:#e2e8f0;">Momentum Scanner — {len(signals)} strong signal{"s" if len(signals) != 1 else ""}</div>
-                <div style="color:#94a3b8; font-size:13px; margin-top:4px;">Scanned at {scan_time} · v3.4.3</div>
+                <div style="color:#94a3b8; font-size:13px; margin-top:4px;">Scanned at {scan_time} · v3.5.8</div>
             </div>
 
             {regime_banner}
@@ -330,27 +341,33 @@ def _build_subject(signals: List[Dict], scan_time: str) -> str:
     return f"[MScan] {n} strong signal{'s' if n != 1 else ''} @ {scan_time} — {top}"
 
 
-# ── SMTP send ────────────────────────────────────────────────────────
-def _send_smtp(subject: str, html_body: str, text_body: str, recipients: List[str]) -> None:
-    """Send via Gmail SMTP. Raises on failure; callers should catch."""
-    user = _env("GMAIL_USER")
-    app_pw = _env("GMAIL_APP_PASSWORD")
-
-    msg = MIMEMultipart("alternative")
-    msg["From"] = formataddr(("Momentum Scanner", user))
-    msg["To"] = ", ".join(recipients)
-    msg["Subject"] = subject
-    msg["Date"] = formatdate(localtime=True)
-    msg.attach(MIMEText(text_body, "plain", "utf-8"))
-    msg.attach(MIMEText(html_body, "html", "utf-8"))
-
-    ctx = ssl.create_default_context()
-    # v3.5.6: implicit-TLS SMTPS on port 465, IPv4-only. See _IPv4SMTPS /
-    # _ipv4_get_socket docstrings for the Railway-specific rationale.
-    with _IPv4SMTPS(SMTP_HOST, SMTP_PORT, context=ctx, timeout=20) as smtp:
-        smtp.ehlo()
-        smtp.login(user, app_pw)
-        smtp.sendmail(user, recipients, msg.as_string())
+# ── Resend HTTP send ─────────────────────────────────────────────────
+def _send_via_resend(
+    subject: str, html_body: str, text_body: str, recipients: List[str]
+) -> None:
+    """POST to Resend's /emails endpoint. Raises on non-2xx; callers catch."""
+    api_key = _env("RESEND_API_KEY")
+    payload = {
+        "from": _from_address(),
+        "to": recipients,
+        "subject": subject,
+        "html": html_body,
+        "text": text_body,
+    }
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "User-Agent": USER_AGENT,
+    }
+    with httpx.Client(timeout=15.0) as client:
+        r = client.post(RESEND_API_URL, json=payload, headers=headers)
+    if r.status_code >= 300:
+        # Pull the Resend error message if JSON, else raw text.
+        try:
+            err = r.json()
+        except ValueError:
+            err = r.text
+        raise RuntimeError(f"Resend HTTP {r.status_code}: {err}")
 
 
 def _dispatch(signals: List[Dict], regime: Optional[Dict], scan_time: str) -> None:
@@ -364,13 +381,13 @@ def _dispatch(signals: List[Dict], regime: Optional[Dict], scan_time: str) -> No
         subject = _build_subject(signals, scan_time)
         html = _render_html(signals, regime, scan_time, dashboard_url)
         text = _render_plaintext(signals, scan_time, dashboard_url)
-        _send_smtp(subject, html, text, recipients)
+        _send_via_resend(subject, html, text, recipients)
         logger.info(
-            f"notifier: email sent to {len(recipients)} recipient(s) "
+            f"notifier: email sent via Resend to {len(recipients)} recipient(s) "
             f"— {len(signals)} strong signal(s)"
         )
     except Exception as exc:
-        # Never let SMTP break the scanner.
+        # Never let a mail failure break the scanner.
         logger.error(f"notifier: failed to send email: {exc}")
 
 
@@ -381,38 +398,136 @@ def send_scan_email(
     scan_time: Optional[str] = None,
 ) -> None:
     """
-    Send a scan-result email if:
+    Send a scan-result email if ALL of the following hold:
       - NOTIFY_ENABLED is truthy
-      - SMTP creds are present
-      - at least NOTIFY_MIN_SIGNALS strong signals exist
+      - the scan fired during US equity regular session (Mon–Fri 09:30–
+        16:00 ET) — skipped by setting NOTIFY_MARKET_HOURS_ONLY=false
+      - RESEND_API_KEY is set and at least one recipient is configured
+      - at least one strong signal (composite_score ≥ 60) is in an
+        allowed category (NOTIFY_CATEGORIES, default "A,B")
+      - that surviving set contains ≥ NOTIFY_MIN_SIGNALS entries
 
-    This function returns immediately; the SMTP call runs on a daemon
+    This function returns immediately; the HTTP call runs on a daemon
     thread so it can never block the scheduler.
     """
     if not _enabled():
         logger.debug("notifier: NOTIFY_ENABLED=false, skipping")
         return
 
+    # Market-hours gate ─────────────────────────────────────────────
+    if _market_hours_only() and not _in_market_hours():
+        now_et = datetime.now(config.ET)
+        logger.info(
+            "notifier: outside market hours "
+            f"({now_et.strftime('%Y-%m-%d %a %H:%M ET')}) — skipping"
+        )
+        return
+
+    # Strong filter (composite ≥ 60) — same as before
     strong = [s for s in signals if s.get("signal_strength") == "strong"]
-    if len(strong) < _min_signals():
-        logger.debug(
-            f"notifier: {len(strong)} strong signal(s) "
-            f"< NOTIFY_MIN_SIGNALS={_min_signals()}, skipping"
+    if not strong:
+        logger.debug("notifier: no strong signals, skipping")
+        return
+
+    # Category filter — drop Cat C/D (low-score / unclassified) by default
+    allowed = _allowed_categories()
+    filtered = [s for s in strong if _signal_category(s) in allowed]
+    if len(filtered) < _min_signals():
+        logger.info(
+            f"notifier: {len(strong)} strong → {len(filtered)} after category "
+            f"filter {sorted(allowed)} (< NOTIFY_MIN_SIGNALS={_min_signals()}), skipping"
         )
         return
 
     if not _is_configured():
         logger.warning(
-            "notifier: strong signals found but GMAIL_USER / GMAIL_APP_PASSWORD "
+            "notifier: matching signals found but RESEND_API_KEY / NOTIFY_EMAIL "
             "not set — email skipped. Configure these env vars on Railway to enable."
         )
         return
 
-    ts = scan_time or datetime.now().strftime("%Y-%m-%d %I:%M %p ET")
+    ts = scan_time or datetime.now(config.ET).strftime("%Y-%m-%d %I:%M %p ET")
     thread = threading.Thread(
         target=_dispatch,
-        args=(strong, regime, ts),
+        args=(filtered, regime, ts),
         daemon=True,
         name="scanner-notifier",
     )
     thread.start()
+
+
+# ── Test-email endpoint helper ───────────────────────────────────────
+def send_test_email() -> Dict:
+    """
+    Synchronous, filter-bypassing round-trip test.
+
+    Sends a single canned email to NOTIFY_EMAIL via Resend so the user
+    can verify their Railway env vars + domain verification without
+    waiting for a market-hours Cat-A/B scan to fire.
+
+    Returns a dict describing the outcome — never raises. The caller
+    (POST /api/notify/test) surfaces this as JSON.
+    """
+    if not _is_configured():
+        missing = []
+        if not _env("RESEND_API_KEY"):
+            missing.append("RESEND_API_KEY")
+        if not _recipients():
+            missing.append("NOTIFY_EMAIL")
+        return {
+            "ok": False,
+            "error": f"missing env vars: {', '.join(missing)}",
+            "hint": "Set them in Railway → Variables, then redeploy.",
+        }
+
+    recipients = _recipients()
+    dashboard_url = _dashboard_url()
+    now_et = datetime.now(config.ET)
+    scan_time = now_et.strftime("%Y-%m-%d %I:%M %p ET")
+
+    # Canned signal — illustrative only, not a real trade.
+    demo_signal: Dict = {
+        "ticker": "TEST",
+        "leader_tier": "primary",
+        "leadership": {"label": "LEADER"},
+        "composite_score": 72,
+        "rvol": 2.3,
+        "entry": 100.00,
+        "stop_loss": 98.50,
+        "atr_target": 103.00,
+        "risk_reward_ratio": 2.0,
+        "earnings": {},
+    }
+    demo_regime = {
+        "regime": "NORMAL",
+        "vix": 14.5,
+        "size_multiplier": 1.0,
+        "effective_min_score": 60,
+    }
+
+    subject = f"[MScan] Test email — round-trip OK @ {scan_time}"
+    html = _render_html([demo_signal], demo_regime, scan_time, dashboard_url)
+    text = _render_plaintext([demo_signal], scan_time, dashboard_url)
+
+    try:
+        _send_via_resend(subject, html, text, recipients)
+    except Exception as exc:
+        logger.error(f"notifier: test email failed: {exc}")
+        return {
+            "ok": False,
+            "error": str(exc),
+            "from": _from_address(),
+            "to": recipients,
+        }
+
+    logger.info(f"notifier: test email sent to {len(recipients)} recipient(s)")
+    return {
+        "ok": True,
+        "from": _from_address(),
+        "to": recipients,
+        "subject": subject,
+        "sent_at": scan_time,
+        "market_hours_only": _market_hours_only(),
+        "allowed_categories": sorted(_allowed_categories()),
+        "note": "Test email bypasses both the market-hours and category filters.",
+    }

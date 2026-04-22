@@ -18,7 +18,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 import config
 from scanner import run_scan
-from notifier import send_scan_email
+from notifier import send_scan_email, send_test_email
 from history import add_signals_to_daily, load_daily_finds, get_history_days, cleanup_old_files
 from sector_rotation import (
     detect_sector_rotation,
@@ -60,7 +60,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.5.7")
+app = FastAPI(title="Momentum Scanner", version="3.5.8")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -672,6 +672,41 @@ async def api_trigger_analyze(date: str | None = None):
         summary = {}
 
     return {"date": target, "analysis": analysis_status, "backup": summary}
+
+
+@app.post("/api/notify/test", response_class=JSONResponse)
+async def api_notify_test():
+    """
+    Fire a single round-trip test email via Resend.
+
+    Bypasses both the market-hours gate and the category filter, so you
+    can verify RESEND_API_KEY / NOTIFY_FROM / NOTIFY_EMAIL at any time —
+    not just during a Cat A/B intraday scan. Never raises: surface the
+    error dict in the response body if send fails.
+
+    Returns the dict from notifier.send_test_email(), e.g.:
+        {
+            "ok": true,
+            "from": "Momentum Scanner <scanner@yourdomain.com>",
+            "to": ["you@example.com"],
+            "subject": "[MScan] Test email — round-trip OK @ 2026-04-22 ...",
+            "sent_at": "2026-04-22 03:47 PM ET",
+            "market_hours_only": true,
+            "allowed_categories": ["A", "B"],
+            "note": "..."
+        }
+
+    On failure:
+        {"ok": false, "error": "...", "from": "...", "to": [...]}
+    """
+    try:
+        return send_test_email()
+    except Exception as exc:
+        logger.error(f"api_notify_test: unexpected failure: {exc}")
+        return JSONResponse(
+            status_code=500,
+            content={"ok": False, "error": f"unexpected: {exc}"},
+        )
 
 
 @app.get("/history", response_class=HTMLResponse)
