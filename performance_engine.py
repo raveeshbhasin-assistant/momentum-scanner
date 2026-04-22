@@ -225,13 +225,21 @@ def _rollup(group: list[dict], result_key: str = "result") -> dict:
     `result_key` selects which field drives WIN/LOSS/EOD counts:
       - "result"           : original close-out reason (raw)
       - "effective_result" : EOD upgraded/downgraded by sign of pnl (P&L-adjusted)
-    P&L and R totals are independent of the key — they are always real numbers.
+    P&L and R totals are independent of the key at the group level — they are
+    always real numbers — but the `by_outcome` block is keyed by the active
+    result_key, so WIN/LOSS/EOD splits differ between raw and effective views.
+
+    The `by_outcome` sub-dict (added in v3.5.7) lets the UI respect the
+    W/L/EOD outcome filter in cumulative/range mode, where per-pick rows
+    aren't available. Each outcome carries its own n/total_r/total_pnl so
+    the headline can be recomputed for any subset of the three outcomes.
     """
     if not group:
         return {
             "n": 0, "wins": 0, "losses": 0, "eods": 0,
             "win_rate": None, "total_r": 0.0, "avg_r": 0.0,
             "total_pnl": 0.0, "avg_pnl": 0.0,
+            "by_outcome": _empty_by_outcome(),
         }
     w = sum(1 for e in group if e.get(result_key) == "WIN")
     l = sum(1 for e in group if e.get(result_key) == "LOSS")
@@ -241,6 +249,24 @@ def _rollup(group: list[dict], result_key: str = "result") -> dict:
     total_r = sum(rs) if rs else 0.0
     total_pnl = sum(pnls) if pnls else 0.0
     wr = (w / (w + l) * 100) if (w + l) > 0 else None
+
+    # Per-outcome split for filter-respecting headlines in cum/range mode.
+    # Any outcome not in {WIN, LOSS, EOD} is dropped (engine contract).
+    by_outcome = _empty_by_outcome()
+    for e in group:
+        oc = e.get(result_key)
+        if oc not in ("WIN", "LOSS", "EOD"):
+            continue
+        b = by_outcome[oc]
+        b["n"] += 1
+        if _is_num(e.get("r_realized")):
+            b["total_r"] += float(e["r_realized"])
+        if _is_num(e.get("pnl_dollar")):
+            b["total_pnl"] += float(e["pnl_dollar"])
+    for oc in by_outcome:
+        by_outcome[oc]["total_r"] = round(by_outcome[oc]["total_r"], 3)
+        by_outcome[oc]["total_pnl"] = round(by_outcome[oc]["total_pnl"], 2)
+
     return {
         "n": len(group),
         "wins": w,
@@ -251,6 +277,16 @@ def _rollup(group: list[dict], result_key: str = "result") -> dict:
         "avg_r": round(total_r / len(group), 3) if group else 0.0,
         "total_pnl": round(total_pnl, 2),
         "avg_pnl": round(total_pnl / len(group), 3) if group else 0.0,
+        "by_outcome": by_outcome,
+    }
+
+
+def _empty_by_outcome() -> dict:
+    """Shape-stable empty split used by _rollup. Keeps keys consistent for UI."""
+    return {
+        "WIN":  {"n": 0, "total_r": 0.0, "total_pnl": 0.0},
+        "LOSS": {"n": 0, "total_r": 0.0, "total_pnl": 0.0},
+        "EOD":  {"n": 0, "total_r": 0.0, "total_pnl": 0.0},
     }
 
 
@@ -403,3 +439,62 @@ def _diagnostics(raw_entries: list[dict], normalized: list[dict]) -> dict:
 def get_view(selected_date: Optional[str] = None) -> dict:
     """Top-level function consumed by app.py's /performance route."""
     return build_view(load_entries(), selected_date)
+
+
+# ═══════════════════════════════════════════════════════════════
+#  RANGE VIEW (v3.5.7)
+# ═══════════════════════════════════════════════════════════════
+
+def build_range_view(entries: list[dict], start: str, end: str) -> dict:
+    """
+    View dict for an inclusive date range [start, end].
+
+    Uses the same `_bucketed_rollup` primitive as cumulative and single-day,
+    so filter semantics (categories, outcome split, time buckets) are
+    byte-identical to the other two modes. Concatenates per-pick rows for
+    the range so the picks table can be reused in the UI.
+
+    `start` and `end` are expected to be "YYYY-MM-DD". Callers are
+    responsible for validating format and start <= end; this function
+    trusts its inputs and returns an empty range view if no entries match.
+
+    Returns:
+        {
+          "dates": ["2026-04-20", ...],          # all dates in the log
+          "start": "2026-04-20",
+          "end":   "2026-04-22",
+          "days":  ["2026-04-20", "2026-04-22"], # dates inside the range that have data
+          "range": {
+              "raw":       {"overall": {...}, "by_category": {...}, "by_category_time": {...}},
+              "effective": {...},
+              "picks":     [<entry dicts>...]    # sorted by (date, batch_time, ticker)
+          },
+          "categories": {...},
+          "diagnostics": {...}                   # computed over full log, not just the range
+        }
+    """
+    normalized = [normalize_entry(e) for e in entries]
+    dates = sorted({e["date"] for e in normalized if e.get("date")})
+
+    in_range = [e for e in normalized if start <= e["date"] <= end]
+    days = sorted({e["date"] for e in in_range})
+    rollups = _bucketed_rollup(in_range)
+    rollups["picks"] = sorted(
+        in_range,
+        key=lambda e: (e["date"], e["batch_time"], e["ticker"]),
+    )
+
+    return {
+        "dates": dates,
+        "start": start,
+        "end": end,
+        "days": days,
+        "categories": CATEGORY_NAMES,
+        "range": rollups,
+        "diagnostics": _diagnostics(entries, normalized),
+    }
+
+
+def get_range_view(start: str, end: str) -> dict:
+    """Top-level function consumed by app.py's /api/performance/range route."""
+    return build_range_view(load_entries(), start, end)

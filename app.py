@@ -28,7 +28,10 @@ from sector_rotation import (
 from premarket import run_premarket_scan, reset_daily as reset_premarket
 from daily_analysis import analyze_day
 from data_backup import backup_data_files
-from performance_engine import get_view as _get_performance_view
+from performance_engine import (
+    get_view as _get_performance_view,
+    get_range_view as _get_performance_range_view,
+)
 from market_regime import get_regime
 from earnings import refresh_earnings_cache
 from backtest import (
@@ -712,6 +715,32 @@ async def performance_page(request: Request, date: str | None = None):
 async def api_performance(date: str | None = None):
     """JSON API for the performance dashboard (same view dict the template receives)."""
     return _get_performance_view(date)
+
+
+@app.get("/api/performance/range", response_class=JSONResponse)
+async def api_performance_range(start: str, end: str):
+    """
+    Range view for the performance dashboard (v3.5.7).
+
+    Returns the same rollup shape as single_day/cumulative but filtered to
+    entries whose date falls within [start, end] inclusive. Both parameters
+    are required and must be YYYY-MM-DD. This is a read-only projection over
+    the existing performance_log.json — it never mutates state.
+    """
+    for label, value in (("start", start), ("end", end)):
+        try:
+            datetime.strptime(value, "%Y-%m-%d")
+        except ValueError:
+            return JSONResponse(
+                status_code=400,
+                content={"error": f"invalid {label}='{value}' — expected YYYY-MM-DD"},
+            )
+    if start > end:
+        return JSONResponse(
+            status_code=400,
+            content={"error": f"start '{start}' must be <= end '{end}'"},
+        )
+    return _get_performance_range_view(start, end)
 
 
 def _load_trade_log() -> tuple[list[dict], list[dict]]:
