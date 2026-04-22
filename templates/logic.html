@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.5.6.2</title>
+    <title>Algorithm Logic — Momentum Scanner v3.5.7</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -255,7 +255,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.5.6.2</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.5.7</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -265,7 +265,8 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-5-6-2" class="current">v3.5.6.2 — Earlier EOD + Manual Trigger</a>
+            <a href="#v3-5-7" class="current">v3.5.7 — Range View + Cumulative R Fix</a>
+            <a href="#v3-5-6-2">v3.5.6.2 — Earlier EOD + Manual Trigger</a>
             <a href="#v3-5-6">v3.5.6 — SMTPS + EOD Backup Reliability</a>
             <a href="#v3-5-5">v3.5.5 — Email IPv4 Fix</a>
             <a href="#v3-5-4">v3.5.4 — GitHub Auto-Backup</a>
@@ -283,12 +284,54 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.5.7 ───── -->
+        <div class="release current" id="v3-5-7">
+            <div class="release-header">
+                <span class="release-version">v3.5.7</span>
+                <span class="release-date">Released 2026-04-22</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Range View + Cumulative R Fix" — the Performance page now has a third mode alongside Single day and Cumulative: a <strong>Range</strong> picker that rolls up any arbitrary start/end window. At the same time, the Total R and Net $ headline cards finally show real numbers in Cumulative mode instead of "—".</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Once the log spans multiple days, "all of it" (Cumulative) and "just today" (Single day) stop being enough — you want to slice a week, a strategy-change boundary, or a single past date. Adding a calendar-driven Range picker covers that without building a second page. The R/$ bug was a separate, longstanding quirk: the UI re-computed the headline by re-summing per-pick rows, but in Cumulative mode those rows were synthesized with <code>r_realized: null</code>, so the sum was always zero-against-empty and the card rendered "—". Both fixes share the same engine change (an outcome-split sub-dict on every rollup), so they ship together.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>Range mode on the Performance page.</strong> A new "Range" chip joins "Single day" and "Cumulative" in the date-control group. Activating it swaps the day-dropdown for two <code>&lt;input type="date"&gt;</code> pickers (start / end) bounded to the first and last dates present in <code>performance_log.json</code>. Both inputs default to the full span. Changing either input invalidates the cached response and refetches. The rolled-up KPIs, category cards, time grid, and picks table all re-render against the selected window. The picks table gains a Date column when Range is active so multi-day picks are distinguishable.</li>
+                    <li><strong><code>GET /api/performance/range?start=YYYY-MM-DD&amp;end=YYYY-MM-DD</code>.</strong> Read-only projection over the existing log — filters entries to <code>start ≤ date ≤ end</code> and runs the same <code>_bucketed_rollup</code> primitive that powers Single day and Cumulative. Returns the same shape as <code>/api/performance</code> but with <code>range</code> instead of <code>cumulative</code>/<code>single_day</code>, plus <code>days</code> (list of dates actually present in the window) and <code>picks</code> (sorted by date → batch_time → ticker). Validates both params as <code>YYYY-MM-DD</code> and rejects <code>start &gt; end</code> with HTTP 400. Never mutates state.</li>
+                    <li><strong><code>by_outcome</code> sub-dict on every rollup.</strong> Each <code>_rollup</code> result (overall, per-category, per time bucket, per category-time) now carries <code>{ WIN: {n, total_r, total_pnl}, LOSS: {...}, EOD: {...} }</code>. Keyed by the active <code>result_key</code> — raw or effective — so the same rollup produces the right outcome split under either mode. This is the primitive the UI uses to respect the W/L/EOD chip filter in Cumulative/Range headlines where per-pick rows aren't available.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong>Total R and Net $ / share showed "—" in Cumulative mode.</strong> <code>renderOverall()</code> was computing headline totals by filtering a picks list and summing <code>r_realized</code> and <code>pnl_dollar</code>. In Single day mode those fields are real numbers on every pick. In Cumulative mode there are no picks, so the old <code>allFilteredEntries()</code> helper synthesized stand-in rows with <code>r_realized: null</code> and <code>pnl_dollar: null</code>, which filtered out in the reduce step. The headline fell back to "—" regardless of the actual total. The new path reads <code>stats.by_category[c].by_outcome[k]</code> directly from the engine when picks aren't available, summing only the selected categories × selected outcomes — so the headline always reflects the engine's canonical totals and respects the chip filters.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong><code>renderOverall()</code> signature is now <code>(stats, picks, label)</code>.</strong> When <code>picks</code> is an array (Single day, Range) it uses the per-pick path, preserving pre-v3.5.7 behavior exactly for those modes. When <code>picks</code> is <code>null</code> (Cumulative) it falls back to <code>by_outcome</code> aggregation. <code>allFilteredEntries()</code> — the synth-rows helper that caused the R bug — is removed.</li>
+                    <li><strong>Template headline copy reflects all three modes.</strong> Single day → "Day of YYYY-MM-DD · P&amp;L-adjusted", Cumulative → "Cumulative (N days) · P&amp;L-adjusted", Range → "Range (N days · YYYY-MM-DD → YYYY-MM-DD) · P&amp;L-adjusted".</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale" style="margin-top:12px">
+                <strong>Verification:</strong> (1) Three engine-level invariants checked against the Apr 20 + Apr 22 production log: <code>range(full span)</code> matches <code>cumulative</code> exactly (n=123, R=+4.499, $=+53.34), <code>range(d, d)</code> matches <code>single_day(d)</code> for both dates, and <code>by_outcome</code> sums (WIN+LOSS+EOD) equal the aggregate <code>overall</code> totals in both raw and effective modes. (2) Three end-to-end curls against the deployed API: full-span range matches <code>/api/performance .cumulative</code>, single-date range matches <code>/api/performance?date=…</code>, and both bad-format and reversed-date calls return HTTP 400. (3) Frontend headline recomputation replays against the engine in every mode — Single day 2026-04-22, Cumulative no-filter, Cumulative WIN-only, Cumulative A+B+WIN, Range full span, Range Apr 20 only — all match the engine's <code>overall</code> or the direct <code>by_outcome</code> roll-up to the cent. No write paths were touched: the log file, the upsert-per-date API, and the nightly EOD/backup jobs are all unchanged, so Apr 20 rows cannot be disturbed by this release.
+            </div>
+        </div>
+
         <!-- ───── v3.5.6.2 ───── -->
-        <div class="release current" id="v3-5-6-2">
+        <div class="release" id="v3-5-6-2">
             <div class="release-header">
                 <span class="release-version">v3.5.6.2</span>
                 <span class="release-date">Released 2026-04-22</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill">Shipped</span>
             </div>
             <div class="release-title">"Earlier EOD + Manual Trigger" — the post-market analysis job now runs at 4:15 PM ET instead of 5:00 PM, and a new <code>POST /api/analyze/trigger</code> endpoint lets the same job be kicked off on demand for any date.</div>
 

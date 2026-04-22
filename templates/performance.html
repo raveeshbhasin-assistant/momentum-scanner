@@ -297,8 +297,12 @@
             <div class="ctrl-group">
                 <span class="ctrl-label">Date</span>
                 <select id="dateSel"></select>
-                <span class="chip" id="modeToday" data-mode="single">Single day</span>
+                <input type="date" id="rangeStart" style="display:none">
+                <span id="rangeSep" style="display:none;color:var(--text-muted);font-family:var(--mono);font-size:12px">→</span>
+                <input type="date" id="rangeEnd" style="display:none">
+                <span class="chip" id="modeSingle" data-mode="single">Single day</span>
                 <span class="chip" id="modeCum" data-mode="cum">Cumulative</span>
+                <span class="chip" id="modeRange" data-mode="range">Range</span>
             </div>
             <div class="ctrl-group" style="margin-left:auto">
                 <span class="ctrl-label">Categories</span>
@@ -374,12 +378,17 @@
         const sign   = (x) => x > 0 ? "pos" : (x < 0 ? "neg" : "neu");
 
         const state = {
-            mode: "single",          // "single" or "cum"
+            mode: "single",          // "single", "cum", or "range"
             resultMode: "effective", // "raw" or "effective" — selects which rollup + per-pick result field
             date: VIEW.selected_date,
             cats: new Set(["A","B","C","D"]),
             results: new Set(["WIN","LOSS","EOD"]),
             sort: { key: "batch_time", dir: 1 },
+            // Range-mode state (v3.5.7)
+            rangeStart: (VIEW.dates && VIEW.dates[0]) || null,
+            rangeEnd: (VIEW.dates && VIEW.dates[VIEW.dates.length - 1]) || null,
+            rangeView: null,         // cached /api/performance/range response
+            rangeLoading: false,
         };
         // Which per-pick field represents the pick's classified result in the active mode.
         const resultField = () => state.resultMode === "effective" ? "effective_result" : "result";
@@ -393,12 +402,64 @@
         });
         dateSel.addEventListener("change", e => { state.date = e.target.value; render(); });
 
+        // Range date inputs (hidden until Range mode is active)
+        const rangeStartEl = document.getElementById("rangeStart");
+        const rangeEndEl   = document.getElementById("rangeEnd");
+        if (VIEW.dates && VIEW.dates.length) {
+            const first = VIEW.dates[0], last = VIEW.dates[VIEW.dates.length - 1];
+            rangeStartEl.min = first; rangeStartEl.max = last; rangeStartEl.value = state.rangeStart;
+            rangeEndEl.min   = first; rangeEndEl.max   = last; rangeEndEl.value   = state.rangeEnd;
+        }
+
+        function applyModeUI() {
+            const showSingle = state.mode === "single";
+            const showRange  = state.mode === "range";
+            document.getElementById("dateSel").style.display = showSingle ? "" : "none";
+            rangeStartEl.style.display = showRange ? "" : "none";
+            rangeEndEl.style.display   = showRange ? "" : "none";
+            document.getElementById("rangeSep").style.display = showRange ? "" : "none";
+        }
+
+        async function loadRange() {
+            if (!state.rangeStart || !state.rangeEnd) return;
+            if (state.rangeStart > state.rangeEnd) return;
+            state.rangeLoading = true;
+            try {
+                const url = `/api/performance/range?start=${encodeURIComponent(state.rangeStart)}&end=${encodeURIComponent(state.rangeEnd)}`;
+                const r = await fetch(url);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                state.rangeView = await r.json();
+            } catch (e) {
+                console.warn("Range fetch failed:", e);
+                state.rangeView = null;
+            } finally {
+                state.rangeLoading = false;
+            }
+        }
+
         document.querySelectorAll("[data-mode]").forEach(chip => {
             chip.classList.toggle("active", chip.dataset.mode === state.mode);
-            chip.addEventListener("click", () => {
+            chip.addEventListener("click", async () => {
                 state.mode = chip.dataset.mode;
                 document.querySelectorAll("[data-mode]").forEach(c => c.classList.toggle("active", c.dataset.mode === state.mode));
+                applyModeUI();
+                if (state.mode === "range" && !state.rangeView) {
+                    await loadRange();
+                }
                 render();
+            });
+        });
+
+        // Range date inputs invalidate the cache and refetch
+        [rangeStartEl, rangeEndEl].forEach(el => {
+            el.addEventListener("change", async () => {
+                state.rangeStart = rangeStartEl.value || state.rangeStart;
+                state.rangeEnd   = rangeEndEl.value   || state.rangeEnd;
+                if (state.rangeStart && state.rangeEnd && state.rangeStart <= state.rangeEnd) {
+                    state.rangeView = null;
+                    await loadRange();
+                    render();
+                }
             });
         });
 
@@ -429,32 +490,55 @@
 
         // ── Render ─────────────────────────────────────────────
         function render() {
-            // Pick the right container, then dive into the active rollup mode.
-            const bucket = state.mode === "single" ? VIEW.single_day : VIEW.cumulative;
-            const stats  = bucket ? bucket[state.resultMode] : null;
+            // Pick the right bucket based on mode. In range mode, bucket comes
+            // from the cached /api/performance/range response; single and cum
+            // use the SSR-injected VIEW.
+            let bucket = null, label = "";
+            if (state.mode === "single") {
+                bucket = VIEW.single_day;
+                label = "single day";
+            } else if (state.mode === "cum") {
+                bucket = VIEW.cumulative;
+                label = "cumulative";
+            } else {
+                // range
+                bucket = state.rangeView ? state.rangeView.range : null;
+                label = "range";
+            }
+            const stats = bucket ? bucket[state.resultMode] : null;
 
             if (!stats) {
-                document.querySelector(".main").innerHTML = '<div class="empty">No performance data yet. Run a scan day and the end-of-day resolver will populate this page.</div>';
+                // Friendly placeholder for range-before-load or genuinely empty log.
+                const msg = state.mode === "range" && state.rangeLoading
+                    ? "Loading range…"
+                    : state.mode === "range"
+                        ? "Pick a start and end date, then the range rolls up automatically."
+                        : "No performance data yet. Run a scan day and the end-of-day resolver will populate this page.";
+                document.getElementById("overallKpis").innerHTML =
+                    `<div class="empty" style="grid-column:1/-1">${msg}</div>`;
+                document.getElementById("overallTitle").textContent = "—";
+                document.getElementById("overallSub").textContent = "";
+                document.getElementById("catGrid").innerHTML = "";
+                document.getElementById("timeGrid").innerHTML = "";
+                renderPicksTable(null);
+                renderDiagnostics();
                 return;
             }
-            const view = {
-                label: state.mode === "single" ? "single day" : "cumulative",
-                stats: stats,
-                picks: state.mode === "single" ? (VIEW.single_day && VIEW.single_day.picks) || [] : null,
-            };
 
-            // Filter picks by chip state — use the active result field
+            // Filter picks by chip state — use the active result field.
             const rk = resultField();
             const passCat  = (e) => state.cats.has(e.category);
             const passRes  = (e) => state.results.has(e[rk]);
             const filter   = (e) => passCat(e) && passRes(e);
 
-            // Headline (always compute from whatever slice is visible)
-            const picks = view.picks ? view.picks.filter(filter) : allFilteredEntries(view.stats, filter);
-            renderOverall(picks, view.label);
-            renderCategories(view.stats, picks);
-            renderTimeGrid(view.stats);
-            renderPicksTable(view.picks ? picks : null);
+            // Single and range modes have real per-pick rows; cumulative doesn't.
+            const hasRows = Array.isArray(bucket.picks);
+            const picks = hasRows ? bucket.picks.filter(filter) : null;
+
+            renderOverall(stats, picks, label);
+            renderCategories(stats);
+            renderTimeGrid(stats);
+            renderPicksTable(hasRows ? picks : null);
 
             renderDiagnostics();
             document.getElementById("lastUpdated").textContent =
@@ -462,39 +546,63 @@
                     ? `Last resolver run: ${VIEW.diagnostics.last_updated}` : "";
         }
 
-        // When mode=cum, we don't have per-pick rows; recompute headline from by_category bucket sums.
-        function allFilteredEntries(stats, filter) {
-            // Fallback: aggregate at category-only level (since we don't have per-row cumulative data).
-            // Synthesized rows only need to carry the currently-active result field.
-            const rk = resultField();
-            const synth = (c, r) => { const e = {category:c, r_realized: null, pnl_dollar: null}; e[rk] = r; return e; };
-            const agg = [];
-            Object.entries(stats.by_category || {}).forEach(([c, s]) => {
-                if (!state.cats.has(c)) return;
-                for (let i=0; i<s.wins; i++)   if (state.results.has("WIN"))  agg.push(synth(c, "WIN"));
-                for (let i=0; i<s.losses; i++) if (state.results.has("LOSS")) agg.push(synth(c, "LOSS"));
-                for (let i=0; i<s.eods; i++)   if (state.results.has("EOD"))  agg.push(synth(c, "EOD"));
-            });
-            return agg;
-        }
-
-        function renderOverall(picks, label) {
+        function renderOverall(stats, picks, label) {
             const modeTag = state.resultMode === "effective" ? " · P&L-adjusted" : " · Raw exits";
-            document.getElementById("overallTitle").textContent = (label === "single day"
-                ? `Day of ${state.date}` : `Cumulative (${VIEW.dates.length} day${VIEW.dates.length===1?"":"s"})`) + modeTag;
+            const dateCount = (VIEW.dates || []).length;
+            let title;
+            if (label === "single day") {
+                title = `Day of ${state.date}`;
+            } else if (label === "cumulative") {
+                title = `Cumulative (${dateCount} day${dateCount === 1 ? "" : "s"})`;
+            } else {
+                // range
+                const rv = state.rangeView || {};
+                const days = (rv.days || []).length;
+                title = `Range (${days} day${days === 1 ? "" : "s"} · ${state.rangeStart} → ${state.rangeEnd})`;
+            }
+            document.getElementById("overallTitle").textContent = title + modeTag;
 
+            // Compute headline. Prefer per-pick rows (single + range); fall back
+            // to by_outcome from the engine for cumulative, which respects the
+            // WIN/LOSS/EOD and category chip filters.
             const rk = resultField();
-            const w = picks.filter(p=>p[rk]==="WIN").length;
-            const l = picks.filter(p=>p[rk]==="LOSS").length;
-            const eod = picks.filter(p=>p[rk]==="EOD").length;
-            const n = picks.length;
-            const wr = (w+l) ? (w/(w+l)*100) : null;
-            // Only sum R/$ if they're real (single-day mode); cumulative fallback has nulls.
-            const rs = picks.map(p => p.r_realized).filter(v => v !== null && v !== undefined);
-            const totalR = rs.reduce((a,b)=>a+b, 0);
-            const avgR = rs.length ? totalR / rs.length : null;
-            const ps = picks.map(p => p.pnl_dollar).filter(v => v !== null && v !== undefined);
-            const totalPnl = ps.reduce((a,b)=>a+b,0);
+            let n, w, l, eod, totalR, totalPnl, hasR, hasPnl;
+            if (Array.isArray(picks)) {
+                n = picks.length;
+                w = picks.filter(p => p[rk] === "WIN").length;
+                l = picks.filter(p => p[rk] === "LOSS").length;
+                eod = picks.filter(p => p[rk] === "EOD").length;
+                const rs = picks.map(p => p.r_realized).filter(v => v !== null && v !== undefined);
+                totalR = rs.reduce((a, b) => a + b, 0);
+                hasR = rs.length > 0;
+                const ps = picks.map(p => p.pnl_dollar).filter(v => v !== null && v !== undefined);
+                totalPnl = ps.reduce((a, b) => a + b, 0);
+                hasPnl = ps.length > 0;
+            } else {
+                // Cumulative fallback: sum by_outcome across (selected cats × selected results).
+                // This is the bug-fix from v3.5.7 — the old path synthesized null-R rows
+                // and so Total R / Net $ showed "—".
+                n = 0; w = 0; l = 0; eod = 0; totalR = 0; totalPnl = 0;
+                Object.entries(stats.by_category || {}).forEach(([c, s]) => {
+                    if (!state.cats.has(c)) return;
+                    const bo = s.by_outcome || {};
+                    ["WIN", "LOSS", "EOD"].forEach(k => {
+                        if (!state.results.has(k)) return;
+                        const b = bo[k] || { n: 0, total_r: 0, total_pnl: 0 };
+                        n += b.n;
+                        totalR += b.total_r;
+                        totalPnl += b.total_pnl;
+                        if (k === "WIN") w += b.n;
+                        else if (k === "LOSS") l += b.n;
+                        else eod += b.n;
+                    });
+                });
+                hasR = n > 0;
+                hasPnl = n > 0;
+            }
+
+            const wr = (w + l) ? (w / (w + l) * 100) : null;
+            const avgR = hasR && n > 0 ? totalR / n : null;
 
             document.getElementById("overallSub").textContent =
                 state.cats.size < 4 || state.results.size < 3
@@ -502,10 +610,10 @@
                     : `${n} picks`;
 
             const kpis = [
-                {label: "Picks", value: n, sub: `${w}W · ${l}L · ${eod}EOD`, cls: "neu"},
-                {label: "Win Rate (W/(W+L))", value: fmtWR(wr), sub: `${w}/${w+l}`, cls: wr==null?"neu":(wr>=40?"pos":(wr<25?"neg":"neu"))},
-                {label: "Total R", value: rs.length ? fmtR(totalR) : "—", sub: avgR==null?"":`avg ${fmtR(avgR)}`, cls: totalR>=0?"pos":"neg"},
-                {label: "Net $ / share", value: ps.length ? fmtPnl(totalPnl) : "—", sub: "", cls: totalPnl>=0?"pos":"neg"},
+                { label: "Picks", value: n, sub: `${w}W · ${l}L · ${eod}EOD`, cls: "neu" },
+                { label: "Win Rate (W/(W+L))", value: fmtWR(wr), sub: `${w}/${w + l}`, cls: wr == null ? "neu" : (wr >= 40 ? "pos" : (wr < 25 ? "neg" : "neu")) },
+                { label: "Total R", value: hasR ? fmtR(totalR) : "—", sub: avgR == null ? "" : `avg ${fmtR(avgR)}`, cls: totalR >= 0 ? "pos" : "neg" },
+                { label: "Net $ / share", value: hasPnl ? fmtPnl(totalPnl) : "—", sub: "", cls: totalPnl >= 0 ? "pos" : "neg" },
             ];
             const host = document.getElementById("overallKpis");
             host.innerHTML = kpis.map(k => `
@@ -517,7 +625,7 @@
             `).join("");
         }
 
-        function renderCategories(stats, filteredPicks) {
+        function renderCategories(stats) {
             const cats = ["A","B","C","D"];
             const byCat = stats.by_category || {};
             const byCatTime = stats.by_category_time || {};
@@ -603,9 +711,15 @@
                 return;
             }
             head.style.display = ""; wrap.style.display = "";
-            document.getElementById("picksSub").textContent = `${picks.length} picks on ${state.date} · click headers to sort`;
+            let scopeLabel;
+            if (state.mode === "single")      scopeLabel = `on ${state.date}`;
+            else if (state.mode === "range")  scopeLabel = `from ${state.rangeStart} → ${state.rangeEnd}`;
+            else                              scopeLabel = "";
+            document.getElementById("picksSub").textContent =
+                `${picks.length} picks ${scopeLabel} · click headers to sort`;
             const host = document.getElementById("picksTable");
             const cols = [
+                ...(state.mode === "range" ? [{k:"date", label:"Date"}] : []),
                 {k:"batch_time", label:"Time"},
                 {k:"ticker", label:"Ticker"},
                 {k:"category", label:"Cat"},
@@ -645,7 +759,9 @@
                 // When P&L-adjusted is on and a pick was upgraded/downgraded, annotate the badge (e.g. "WIN*")
                 const upgraded = state.resultMode === "effective" && p.result === "EOD" && disp !== "EOD";
                 const badge = upgraded ? `${disp}<span style="opacity:0.55;margin-left:2px" title="Reclassified from EOD by P&L sign">*</span>` : disp;
+                const dateCell = state.mode === "range" ? `<td>${p.date || "—"}</td>` : "";
                 html += `<tr class="${rowCls}">
+                    ${dateCell}
                     <td>${p.batch_time}</td>
                     <td><span class="ticker">${p.ticker}</span></td>
                     <td><span class="cat-badge ${p.category}">${p.category}</span></td>
