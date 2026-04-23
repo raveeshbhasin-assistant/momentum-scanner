@@ -15,6 +15,9 @@
 <meta name="color-scheme" content="dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" type="image/svg+xml" href="{{ url_for('static', path='favicon.svg') }}">
-<link rel="stylesheet" href="{{ url_for('static', path='css/tokens.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
+{# Root-relative paths (not url_for) to avoid mixed-content blocks:
+   Railway terminates TLS, so FastAPI sees http:// internally and url_for
+   emits absolute http:// URLs which HTTPS browsers refuse to load. #}
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/css/tokens.css">
+<link rel="stylesheet" href="/static/css/base.css">
