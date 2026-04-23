@@ -1,106 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "_head.html" %}
     <title>Performance — Momentum Scanner</title>
-    <link rel="stylesheet" href="/static/css/tokens.css">
-    <link rel="stylesheet" href="/static/css/base.css">
+    {# Chart.js for the equity-curve chart (same CDN as backtest.html) #}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --bg-primary: #0a0e17;
-            --bg-secondary: #111827;
-            --bg-card: #1a1f2e;
-            --bg-card-hover: #1f2640;
-            --border: #2a3148;
-            --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --green: #22c55e;
-            --green-bg: #22c55e15;
-            --red: #ef4444;
-            --red-bg: #ef444415;
-            --blue: #3b82f6;
-            --amber: #f59e0b;
-            --purple: #a78bfa;
-            --cyan: #22d3ee;
-
-            --cat-a: #22d3ee;   /* High-Score Leader */
-            --cat-b: #a78bfa;   /* High-Score Non-Leader */
-            --cat-c: #94a3b8;   /* Low-Score */
-            --cat-d: #f59e0b;   /* Unclassified */
-
-            --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-            --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
-        }
-
-        body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: var(--font);
-            line-height: 1.5;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            padding: 14px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            backdrop-filter: blur(12px);
-        }
-        .header-left { display: flex; align-items: center; gap: 14px; }
-        .logo {
-            font-size: 21px; font-weight: 700; letter-spacing: -0.5px;
-            background: linear-gradient(135deg, var(--green), var(--cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-        .page-title { font-size: 14px; color: var(--text-secondary); padding-left: 14px; border-left: 1px solid var(--border); }
-        .header-right { display: flex; align-items: center; gap: 8px; }
-        .nav-link {
-            color: var(--text-secondary); text-decoration: none;
-            font-size: 13px; font-weight: 500; padding: 7px 11px; border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
-        .nav-link.active { color: var(--cyan); background: var(--bg-card); }
-
+        /* ── Layout ───────────────────────────────────────────── */
         .main { padding: 22px 28px 48px; max-width: 1600px; margin: 0 auto; }
 
-        /* ── Controls bar ──────────────────────────────────────── */
+        /* ── Controls bar — two stacked rows (Scope / Filters) ── */
         .controls {
-            display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+            display: flex; flex-direction: column; gap: 10px;
             padding: 14px 18px; background: var(--bg-card);
-            border: 1px solid var(--border); border-radius: 12px;
+            border: 1px solid var(--border); border-radius: var(--radius-md);
             margin-bottom: 18px;
+        }
+        .ctrl-row {
+            display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+        }
+        .ctrl-row + .ctrl-row {
+            padding-top: 10px; border-top: 1px dashed var(--border);
         }
         .ctrl-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .ctrl-label {
-            font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
-            color: var(--text-muted); font-weight: 600;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-muted); font-weight: 700;
+        }
+        .ctrl-rowtag {
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--cyan); font-weight: 700;
+            padding: 3px 8px; border: 1px solid rgba(34,211,238,0.35);
+            border-radius: 999px; background: rgba(34,211,238,0.08);
+            min-width: 72px; text-align: center;
         }
         select, input[type="date"] {
             background: var(--bg-primary); color: var(--text-primary);
-            border: 1px solid var(--border); border-radius: 6px;
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
             padding: 7px 10px; font-family: var(--font); font-size: 13px;
             cursor: pointer; outline: none;
+            color-scheme: dark;
         }
         select:focus, input:focus { border-color: var(--cyan); }
         .chip {
             display: inline-flex; align-items: center; gap: 6px;
-            padding: 5px 10px; border-radius: 14px; cursor: pointer;
+            padding: 5px 10px; border-radius: 999px; cursor: pointer;
             font-size: 12px; font-weight: 500;
             background: var(--bg-primary); border: 1px solid var(--border);
             color: var(--text-secondary); transition: all 0.15s;
             user-select: none;
+        }
+        .chip b {
+            font-weight: 700; font-family: var(--mono);
+            font-size: 10px; opacity: 0.8;
         }
         .chip:hover { border-color: var(--text-secondary); color: var(--text-primary); }
         .chip.active { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--cyan); }
@@ -108,6 +60,16 @@
         .chip.cat-B.active { border-color: var(--cat-b); color: var(--cat-b); }
         .chip.cat-C.active { border-color: var(--cat-c); color: var(--cat-c); }
         .chip.cat-D.active { border-color: var(--cat-d); color: var(--cat-d); }
+        .chip.res-W.active { border-color: var(--green);  color: var(--green); }
+        .chip.res-L.active { border-color: var(--red);    color: var(--red); }
+        .chip.res-E.active { border-color: var(--amber);  color: var(--amber); }
+
+        :root {
+            --cat-a: #22d3ee;   /* High-Score Leader */
+            --cat-b: #a78bfa;   /* High-Score Non-Leader */
+            --cat-c: #94a3b8;   /* Low-Score */
+            --cat-d: #f59e0b;   /* Unclassified */
+        }
 
         /* ── Diagnostics banner ────────────────────────────────── */
         .diag {
@@ -128,6 +90,7 @@
             display: flex; align-items: baseline; gap: 14px;
             margin: 26px 0 12px; padding-bottom: 8px;
             border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
         }
         .section-head h2 { font-size: 15px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.3px; }
         .section-head .sub { font-size: 12px; color: var(--text-muted); font-family: var(--mono); }
@@ -135,12 +98,12 @@
         /* ── KPI cards ─────────────────────────────────────────── */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 10px; margin-bottom: 14px;
         }
         .kpi-card {
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 10px; padding: 14px 16px;
+            border-radius: var(--radius-md); padding: 14px 16px;
         }
         .kpi-label {
             font-size: 10px; text-transform: uppercase; letter-spacing: 1.1px;
@@ -152,6 +115,37 @@
         .neg { color: var(--red); }
         .neu { color: var(--amber); }
 
+        /* ── Equity curve ──────────────────────────────────────── */
+        .chart-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 14px 16px;
+            margin-bottom: 18px;
+        }
+        .chart-toolbar {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .chart-toolbar .seg {
+            display: inline-flex; background: var(--bg-primary);
+            border: 1px solid var(--border); border-radius: 999px;
+            padding: 2px;
+        }
+        .chart-toolbar .seg button {
+            background: transparent; color: var(--text-secondary);
+            border: none; cursor: pointer; padding: 5px 12px;
+            font-size: 11px; font-family: var(--font); font-weight: 600;
+            letter-spacing: 0.3px; border-radius: 999px;
+        }
+        .chart-toolbar .seg button.active { color: var(--cyan); background: var(--bg-card-hover); }
+        .chart-wrap {
+            position: relative; height: 260px;
+        }
+        .chart-empty {
+            display: flex; align-items: center; justify-content: center;
+            height: 100%; color: var(--text-muted); font-size: 12px;
+            border: 1px dashed var(--border); border-radius: var(--radius-sm);
+        }
+
         /* ── Category panels ───────────────────────────────────── */
         .cat-grid {
             display: grid;
@@ -162,7 +156,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-left: 3px solid var(--border);
-            border-radius: 10px; padding: 14px 16px;
+            border-radius: var(--radius-md); padding: 14px 16px;
         }
         .cat-card.A { border-left-color: var(--cat-a); }
         .cat-card.B { border-left-color: var(--cat-b); }
@@ -207,7 +201,7 @@
         table {
             width: 100%; border-collapse: collapse;
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 10px; overflow: hidden; font-size: 13px;
+            border-radius: var(--radius-md); overflow: hidden; font-size: 13px;
         }
         th {
             padding: 10px 12px; text-align: left;
@@ -241,37 +235,46 @@
 
         .ticker { font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; }
 
-        /* ── Time-bucket detail grid ───────────────────────────── */
+        /* ── Time-bucket detail grid ──
+           Heatmap cells are coloured via inline style computed in JS —
+           a linear blend of the green/red tokens over |R|/5 saturation. */
         .time-grid-wrap { overflow-x: auto; }
-        table.time-grid th, table.time-grid td { font-family: var(--mono); font-size: 11px; padding: 7px 9px; }
+        table.time-grid th, table.time-grid td {
+            font-family: var(--mono); font-size: 11px; padding: 7px 9px;
+            vertical-align: middle;
+        }
         table.time-grid td.cat-label { color: var(--text-primary); font-weight: 600; }
+        table.time-grid td.heat {
+            border-left: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+        table.time-grid td.heat .hm-top { font-size: 10px; color: var(--text-muted); }
+        table.time-grid td.heat .hm-r { font-weight: 700; }
+        table.time-grid td.empty-cell { color: var(--text-muted); }
 
         /* ── Empty states & footer ─────────────────────────────── */
         .empty {
             padding: 28px; text-align: center;
             color: var(--text-muted); font-size: 13px;
             background: var(--bg-card); border: 1px dashed var(--border);
-            border-radius: 10px; margin-bottom: 18px;
+            border-radius: var(--radius-md); margin-bottom: 18px;
         }
-        .footer {
+        .footer-note {
             text-align: center; padding: 22px;
             color: var(--text-muted); font-size: 11px; font-family: var(--mono);
-            border-top: 1px solid var(--border); margin-top: 36px;
         }
 
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
+        /* ── Page-specific mobile tweaks (shared chrome comes from base.css) ── */
         @media (max-width: 768px) {
-            .header { flex-wrap: wrap; padding: 12px 14px; gap: 8px; }
-            .header-left { width: 100%; }
-            .header-right { width: 100%; justify-content: center; flex-wrap: wrap; }
             .main { padding: 14px 10px; }
             .controls { padding: 12px; }
             .kpi-grid { grid-template-columns: repeat(2, 1fr); }
             .kpi-value { font-size: 18px; }
             .cat-grid { grid-template-columns: 1fr; }
+            .chart-wrap { height: 220px; }
+        }
+        @media (max-width: 640px) {
+            .ctrl-rowtag { min-width: 60px; }
         }
     </style>
 </head>
@@ -283,33 +286,47 @@
 
         <!-- Controls -->
         <div class="controls">
-            <div class="ctrl-group">
-                <span class="ctrl-label">Date</span>
-                <select id="dateSel"></select>
-                <input type="date" id="rangeStart" style="display:none">
-                <span id="rangeSep" style="display:none;color:var(--text-muted);font-family:var(--mono);font-size:12px">→</span>
-                <input type="date" id="rangeEnd" style="display:none">
-                <span class="chip" id="modeSingle" data-mode="single">Single day</span>
-                <span class="chip" id="modeCum" data-mode="cum">Cumulative</span>
-                <span class="chip" id="modeRange" data-mode="range">Range</span>
+            <!-- Row 1: Scope — which slice of time are we looking at? -->
+            <div class="ctrl-row">
+                <span class="ctrl-rowtag">Scope</span>
+                <div class="ctrl-group">
+                    <span class="chip active" data-mode="single">Single day</span>
+                    <span class="chip" data-mode="cum">Cumulative</span>
+                    <span class="chip" data-mode="range">Range</span>
+                </div>
+                <div class="ctrl-group" id="dateGroup">
+                    <span class="ctrl-label">Date</span>
+                    <select id="dateSel"></select>
+                </div>
+                <div class="ctrl-group" id="rangeGroup" style="display:none">
+                    <span class="ctrl-label">From</span>
+                    <input type="date" id="rangeStart">
+                    <span class="ctrl-label">to</span>
+                    <input type="date" id="rangeEnd">
+                </div>
             </div>
-            <div class="ctrl-group" style="margin-left:auto">
-                <span class="ctrl-label">Categories</span>
-                <span class="chip cat-A active" data-cat="A"><b>A</b> High-Score Leader</span>
-                <span class="chip cat-B active" data-cat="B"><b>B</b> High-Score Non-Leader</span>
-                <span class="chip cat-C active" data-cat="C"><b>C</b> Low-Score</span>
-                <span class="chip cat-D active" data-cat="D"><b>D</b> Unclassified</span>
-            </div>
-            <div class="ctrl-group">
-                <span class="ctrl-label">Result</span>
-                <span class="chip active" data-res="WIN">W</span>
-                <span class="chip active" data-res="LOSS">L</span>
-                <span class="chip active" data-res="EOD">EOD</span>
-            </div>
-            <div class="ctrl-group" title="Raw = exit reason only. P&L-adjusted = EOD picks count as WIN/LOSS based on the sign of their P&L.">
-                <span class="ctrl-label">Result mode</span>
-                <span class="chip" data-resmode="raw">Raw</span>
-                <span class="chip active" data-resmode="effective">P&amp;L-adjusted</span>
+
+            <!-- Row 2: Filters — narrow the slice we computed -->
+            <div class="ctrl-row">
+                <span class="ctrl-rowtag">Filters</span>
+                <div class="ctrl-group">
+                    <span class="ctrl-label">Categories</span>
+                    <span class="chip cat-A active" data-cat="A"><b>A</b> High-Score Leader</span>
+                    <span class="chip cat-B active" data-cat="B"><b>B</b> High-Score Non-Leader</span>
+                    <span class="chip cat-C active" data-cat="C"><b>C</b> Low-Score</span>
+                    <span class="chip cat-D active" data-cat="D"><b>D</b> Unclassified</span>
+                </div>
+                <div class="ctrl-group">
+                    <span class="ctrl-label">Result</span>
+                    <span class="chip res-W active" data-res="WIN">Wins</span>
+                    <span class="chip res-L active" data-res="LOSS">Losses</span>
+                    <span class="chip res-E active" data-res="EOD">EOD</span>
+                </div>
+                <div class="ctrl-group" title="Raw = use the exit reason only. P&L-adjusted = EOD picks that finished above entry count as wins, below entry count as losses.">
+                    <span class="ctrl-label">Count EOD as…</span>
+                    <span class="chip" data-resmode="raw">Raw exit</span>
+                    <span class="chip active" data-resmode="effective">P&amp;L-adjusted</span>
+                </div>
             </div>
         </div>
 
@@ -323,6 +340,30 @@
         </div>
         <div class="kpi-grid" id="overallKpis"></div>
 
+        <!-- Equity curve -->
+        <div class="section-head">
+            <h2>Equity curve</h2>
+            <span class="sub" id="equitySub"></span>
+        </div>
+        <div class="chart-card">
+            <div class="chart-toolbar">
+                <div class="seg" id="equityMetric">
+                    <button class="active" data-metric="r">R</button>
+                    <button data-metric="pnl">$ / share</button>
+                </div>
+                <div class="seg" id="equityShape">
+                    <button class="active" data-shape="cum">Cumulative</button>
+                    <button data-shape="day">Per-bar</button>
+                </div>
+                <span class="sub" style="color:var(--text-muted);font-size:11px;margin-left:auto"
+                      id="equityNote"></span>
+            </div>
+            <div class="chart-wrap">
+                <canvas id="equityCanvas"></canvas>
+                <div id="equityEmpty" class="chart-empty" style="display:none">No picks in this slice.</div>
+            </div>
+        </div>
+
         <!-- Category breakdown -->
         <div class="section-head">
             <h2>By category</h2>
@@ -333,7 +374,7 @@
         <!-- Time-bucket cross-tab -->
         <div class="section-head">
             <h2>Time-of-day within categories</h2>
-            <span class="sub">Rows = time bucket · Columns = category · Cells = n / WR / R</span>
+            <span class="sub">Rows = time bucket · Columns = category · Cells coloured by R</span>
         </div>
         <div class="time-grid-wrap">
             <table class="time-grid" id="timeGrid"></table>
@@ -345,14 +386,16 @@
             <span class="sub" id="picksSub"></span>
         </div>
         <div id="picksTableWrap">
-            <table id="picksTable"></table>
+            <table id="picksTable" class="card-table"></table>
         </div>
 
     </main>
 
     <footer class="footer">
-        Momentum Scanner v3.5 — Performance (category tracking started 2026-04-20). Not financial advice.
-        <div style="margin-top:4px" id="lastUpdated"></div>
+        <div class="footer-note">
+            Momentum Scanner v3.5 — Performance (category tracking started 2026-04-20). Not financial advice.
+            <div style="margin-top:4px" id="lastUpdated"></div>
+        </div>
     </footer>
 
     <script>
@@ -364,7 +407,16 @@
         const fmtPnl = (p) => p === null || p === undefined ? "—" : (p >= 0 ? "+$" : "-$") + Math.abs(p).toFixed(2);
         const fmtWR  = (w) => (w === null || w === undefined) ? "n/a" : w.toFixed(1) + "%";
         const fmtN   = (n) => n === null || n === undefined ? "—" : n;
-        const sign   = (x) => x > 0 ? "pos" : (x < 0 ? "neg" : "neu");
+
+        // Map an R value to a heatmap background. |R| >= 5 saturates fully.
+        // Uses the token greens/reds with an alpha ramp for subtle-but-readable fill.
+        function heatBg(r) {
+            if (r === null || r === undefined || !isFinite(r) || r === 0) return "transparent";
+            const mag = Math.min(Math.abs(r) / 5, 1);
+            const a = 0.12 + mag * 0.38;   // 0.12 → 0.50
+            if (r > 0) return `rgba(34, 197, 94, ${a.toFixed(3)})`;
+            return `rgba(239, 68, 68, ${a.toFixed(3)})`;
+        }
 
         const state = {
             mode: "single",          // "single", "cum", or "range"
@@ -373,13 +425,13 @@
             cats: new Set(["A","B","C","D"]),
             results: new Set(["WIN","LOSS","EOD"]),
             sort: { key: "batch_time", dir: 1 },
-            // Range-mode state (v3.5.7)
             rangeStart: (VIEW.dates && VIEW.dates[0]) || null,
             rangeEnd: (VIEW.dates && VIEW.dates[VIEW.dates.length - 1]) || null,
-            rangeView: null,         // cached /api/performance/range response
+            rangeView: null,
             rangeLoading: false,
+            equityMetric: "r",       // "r" | "pnl"
+            equityShape: "cum",      // "cum" | "day"
         };
-        // Which per-pick field represents the pick's classified result in the active mode.
         const resultField = () => state.resultMode === "effective" ? "effective_result" : "result";
 
         // ── Setup controls ─────────────────────────────────────
@@ -390,10 +442,6 @@
             dateSel.appendChild(o);
         });
 
-        // Cache of single-day views, keyed by date. Seeded with the SSR-injected
-        // view for the initially-selected date; other dates are fetched lazily
-        // from /api/performance?date=... when the dropdown changes. Without this
-        // the dropdown silently re-rendered the same data (pre-v3.5.7 behavior).
         const singleDayCache = {};
         if (VIEW.selected_date && VIEW.single_day) {
             singleDayCache[VIEW.selected_date] = VIEW.single_day;
@@ -419,7 +467,6 @@
             render();
         });
 
-        // Range date inputs (hidden until Range mode is active)
         const rangeStartEl = document.getElementById("rangeStart");
         const rangeEndEl   = document.getElementById("rangeEnd");
         if (VIEW.dates && VIEW.dates.length) {
@@ -431,10 +478,8 @@
         function applyModeUI() {
             const showSingle = state.mode === "single";
             const showRange  = state.mode === "range";
-            document.getElementById("dateSel").style.display = showSingle ? "" : "none";
-            rangeStartEl.style.display = showRange ? "" : "none";
-            rangeEndEl.style.display   = showRange ? "" : "none";
-            document.getElementById("rangeSep").style.display = showRange ? "" : "none";
+            document.getElementById("dateGroup").style.display  = showSingle ? "" : "none";
+            document.getElementById("rangeGroup").style.display = showRange  ? "" : "none";
         }
 
         async function loadRange() {
@@ -469,7 +514,6 @@
             });
         });
 
-        // Range date inputs invalidate the cache and refetch
         [rangeStartEl, rangeEndEl].forEach(el => {
             el.addEventListener("change", async () => {
                 state.rangeStart = rangeStartEl.value || state.rangeStart;
@@ -507,11 +551,26 @@
             });
         });
 
+        // Equity chart toolbar
+        document.querySelectorAll("#equityMetric button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                state.equityMetric = btn.dataset.metric;
+                document.querySelectorAll("#equityMetric button").forEach(b => b.classList.toggle("active", b === btn));
+                renderEquity(_lastEquityArgs);
+            });
+        });
+        document.querySelectorAll("#equityShape button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                state.equityShape = btn.dataset.shape;
+                document.querySelectorAll("#equityShape button").forEach(b => b.classList.toggle("active", b === btn));
+                renderEquity(_lastEquityArgs);
+            });
+        });
+
         // ── Render ─────────────────────────────────────────────
+        let _lastEquityArgs = null;   // remembered for toolbar re-renders
+
         function render() {
-            // Pick the right bucket based on mode. In range mode, bucket comes
-            // from the cached /api/performance/range response; single and cum
-            // use the SSR-injected VIEW.
             let bucket = null, label = "";
             if (state.mode === "single") {
                 bucket = singleDayCache[state.date] || null;
@@ -520,14 +579,12 @@
                 bucket = VIEW.cumulative;
                 label = "cumulative";
             } else {
-                // range
                 bucket = state.rangeView ? state.rangeView.range : null;
                 label = "range";
             }
             const stats = bucket ? bucket[state.resultMode] : null;
 
             if (!stats) {
-                // Friendly placeholder for range-before-load or genuinely empty log.
                 const msg = state.mode === "range" && state.rangeLoading
                     ? "Loading range…"
                     : state.mode === "range"
@@ -540,24 +597,25 @@
                 document.getElementById("catGrid").innerHTML = "";
                 document.getElementById("timeGrid").innerHTML = "";
                 renderPicksTable(null);
+                renderEquity({ picks: null, dailySeries: null, label });
                 renderDiagnostics();
                 return;
             }
 
-            // Filter picks by chip state — use the active result field.
             const rk = resultField();
             const passCat  = (e) => state.cats.has(e.category);
             const passRes  = (e) => state.results.has(e[rk]);
             const filter   = (e) => passCat(e) && passRes(e);
 
-            // Single and range modes have real per-pick rows; cumulative doesn't.
             const hasRows = Array.isArray(bucket.picks);
             const picks = hasRows ? bucket.picks.filter(filter) : null;
+            const dailySeries = bucket.daily_series || null;
 
             renderOverall(stats, picks, label);
             renderCategories(stats);
             renderTimeGrid(stats);
             renderPicksTable(hasRows ? picks : null);
+            renderEquity({ picks, dailySeries, label });
 
             renderDiagnostics();
             document.getElementById("lastUpdated").textContent =
@@ -574,16 +632,12 @@
             } else if (label === "cumulative") {
                 title = `Cumulative (${dateCount} day${dateCount === 1 ? "" : "s"})`;
             } else {
-                // range
                 const rv = state.rangeView || {};
                 const days = (rv.days || []).length;
                 title = `Range (${days} day${days === 1 ? "" : "s"} · ${state.rangeStart} → ${state.rangeEnd})`;
             }
             document.getElementById("overallTitle").textContent = title + modeTag;
 
-            // Compute headline. Prefer per-pick rows (single + range); fall back
-            // to by_outcome from the engine for cumulative, which respects the
-            // WIN/LOSS/EOD and category chip filters.
             const rk = resultField();
             let n, w, l, eod, totalR, totalPnl, hasR, hasPnl;
             if (Array.isArray(picks)) {
@@ -598,9 +652,6 @@
                 totalPnl = ps.reduce((a, b) => a + b, 0);
                 hasPnl = ps.length > 0;
             } else {
-                // Cumulative fallback: sum by_outcome across (selected cats × selected results).
-                // This is the bug-fix from v3.5.7 — the old path synthesized null-R rows
-                // and so Total R / Net $ showed "—".
                 n = 0; w = 0; l = 0; eod = 0; totalR = 0; totalPnl = 0;
                 Object.entries(stats.by_category || {}).forEach(([c, s]) => {
                     if (!state.cats.has(c)) return;
@@ -688,7 +739,6 @@
         function renderTimeGrid(stats) {
             const cats = ["A","B","C","D"];
             const byCatTime = stats.by_category_time || {};
-            // Collect all time buckets appearing in any category
             const allTimes = new Set();
             cats.forEach(c => Object.keys(byCatTime[c]||{}).forEach(t => allTimes.add(t)));
             const times = Array.from(allTimes).sort();
@@ -706,20 +756,171 @@
                 let rowN=0, rowW=0, rowL=0, rowEOD=0, rowR=0;
                 cats.forEach(c => {
                     const s = (byCatTime[c]||{})[t];
-                    if (!s || !s.n) { html += '<td style="color:var(--text-muted)">—</td>'; return; }
+                    if (!s || !s.n) { html += '<td class="empty-cell">—</td>'; return; }
                     rowN+=s.n; rowW+=s.wins; rowL+=s.losses; rowEOD+=s.eods; rowR+=s.total_r;
-                    const rCls = s.total_r > 0 ? "pos" : (s.total_r < 0 ? "neg" : "neu");
-                    html += `<td>
-                        <div>n=${s.n} · WR ${fmtWR(s.win_rate)}</div>
-                        <div class="${rCls}">${fmtR(s.total_r)} (${s.wins}W·${s.losses}L·${s.eods}E)</div>
+                    const bg = heatBg(s.total_r);
+                    html += `<td class="heat" style="background:${bg}">
+                        <div class="hm-top">n=${s.n} · WR ${fmtWR(s.win_rate)}</div>
+                        <div class="hm-r">${fmtR(s.total_r)} <span style="opacity:0.7;font-weight:500">(${s.wins}W·${s.losses}L·${s.eods}E)</span></div>
                     </td>`;
                 });
                 const rwr = (rowW+rowL) ? rowW/(rowW+rowL)*100 : null;
-                const rCls = rowR > 0 ? "pos" : (rowR < 0 ? "neg" : "neu");
-                html += `<td><div>n=${rowN} · WR ${fmtWR(rwr)}</div><div class="${rCls}">${fmtR(rowR)}</div></td></tr>`;
+                const bg = heatBg(rowR);
+                html += `<td class="heat" style="background:${bg}"><div class="hm-top">n=${rowN} · WR ${fmtWR(rwr)}</div><div class="hm-r">${fmtR(rowR)}</div></td></tr>`;
             });
             html += '</tbody>';
             host.innerHTML = html;
+        }
+
+        // ── Equity curve ──────────────────────────────────────
+        let equityChart = null;
+        function renderEquity(args) {
+            _lastEquityArgs = args;
+            const { picks, dailySeries, label } = args;
+            const canvas = document.getElementById("equityCanvas");
+            const empty = document.getElementById("equityEmpty");
+            const noteEl = document.getElementById("equityNote");
+            const subEl = document.getElementById("equitySub");
+
+            // Decide data source: intraday (picks) for single-day,
+            // daily series (dailySeries) for cumulative and range.
+            let labels = [], values = [];
+            let xTitle = "", yTitle = "", sourceNote = "";
+
+            if (label === "single day" && Array.isArray(picks)) {
+                const rows = picks.slice()
+                    .filter(p => p.r_realized !== null && p.r_realized !== undefined)
+                    .sort((a,b) => String(a.batch_time).localeCompare(String(b.batch_time)));
+                if (!rows.length) { showChartEmpty(true); subEl.textContent = ""; return; }
+                if (state.equityShape === "cum") {
+                    let cum = 0;
+                    rows.forEach(p => {
+                        cum += state.equityMetric === "r"
+                            ? (p.r_realized || 0)
+                            : (p.pnl_dollar || 0);
+                        labels.push(`${p.batch_time} ${p.ticker}`);
+                        values.push(+cum.toFixed(3));
+                    });
+                    yTitle = state.equityMetric === "r" ? "Cumulative R" : "Cumulative $ / share";
+                } else {
+                    rows.forEach(p => {
+                        labels.push(`${p.batch_time} ${p.ticker}`);
+                        values.push(state.equityMetric === "r"
+                            ? (p.r_realized || 0)
+                            : (p.pnl_dollar || 0));
+                    });
+                    yTitle = state.equityMetric === "r" ? "Per-pick R" : "Per-pick $ / share";
+                }
+                xTitle = "Pick (ordered by time)";
+                sourceNote = `${rows.length} picks on ${state.date}`;
+            } else if (Array.isArray(dailySeries) && dailySeries.length) {
+                const rows = dailySeries;
+                labels = rows.map(d => d.date);
+                if (state.equityShape === "cum") {
+                    values = rows.map(d => state.equityMetric === "r" ? d.cum_r : d.cum_pnl);
+                    yTitle = state.equityMetric === "r" ? "Cumulative R" : "Cumulative $ / share";
+                } else {
+                    values = rows.map(d => state.equityMetric === "r" ? d.day_r : d.day_pnl);
+                    yTitle = state.equityMetric === "r" ? "Daily R" : "Daily $ / share";
+                }
+                xTitle = "Trading day";
+                sourceNote = `${rows.length} day${rows.length === 1 ? "" : "s"}${label === "range" ? " in range" : " total"}`;
+            } else {
+                showChartEmpty(true);
+                subEl.textContent = "";
+                noteEl.textContent = "";
+                return;
+            }
+
+            showChartEmpty(false);
+            subEl.textContent = yTitle;
+            noteEl.textContent = sourceNote;
+
+            const positive = values.map(v => v >= 0 ? v : null);
+            const negative = values.map(v => v < 0 ? v : null);
+            const tokens = getComputedStyle(document.documentElement);
+            const green = (tokens.getPropertyValue("--green") || "#22c55e").trim();
+            const red   = (tokens.getPropertyValue("--red")   || "#ef4444").trim();
+            const textMuted = (tokens.getPropertyValue("--text-muted") || "#64748b").trim();
+            const border   = (tokens.getPropertyValue("--border") || "#2a3148").trim();
+
+            if (equityChart) equityChart.destroy();
+
+            const isCum = state.equityShape === "cum";
+            const commonOpts = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const v = ctx.parsed.y;
+                                if (v === null || v === undefined) return "";
+                                return state.equityMetric === "r" ? fmtR(v) : fmtPnl(v);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: xTitle, color: textMuted, font: { size: 11 } },
+                        ticks: { color: textMuted, font: { size: 10 }, maxRotation: 45, minRotation: 0 },
+                        grid:  { color: border, drawOnChartArea: false }
+                    },
+                    y: {
+                        title: { display: true, text: yTitle, color: textMuted, font: { size: 11 } },
+                        ticks: { color: textMuted, font: { size: 10 } },
+                        grid:  { color: border }
+                    }
+                }
+            };
+
+            if (isCum) {
+                // Single-series line chart with zero-line emphasis
+                equityChart = new Chart(canvas, {
+                    type: "line",
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: values,
+                            borderColor: values[values.length - 1] >= 0 ? green : red,
+                            backgroundColor: values[values.length - 1] >= 0
+                                ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)",
+                            fill: true,
+                            tension: 0.2,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            borderWidth: 2,
+                        }]
+                    },
+                    options: commonOpts,
+                });
+            } else {
+                // Bar chart split by sign for immediate red/green read
+                equityChart = new Chart(canvas, {
+                    type: "bar",
+                    data: {
+                        labels,
+                        datasets: [
+                            { data: positive, backgroundColor: "rgba(34,197,94,0.75)",  borderColor: green, borderWidth: 1 },
+                            { data: negative, backgroundColor: "rgba(239,68,68,0.75)", borderColor: red,   borderWidth: 1 },
+                        ]
+                    },
+                    options: {
+                        ...commonOpts,
+                        scales: {
+                            ...commonOpts.scales,
+                            x: { ...commonOpts.scales.x, stacked: true },
+                            y: { ...commonOpts.scales.y, stacked: true },
+                        }
+                    }
+                });
+            }
+        }
+        function showChartEmpty(isEmpty) {
+            document.getElementById("equityCanvas").style.display = isEmpty ? "none" : "";
+            document.getElementById("equityEmpty").style.display  = isEmpty ? "" : "none";
         }
 
         function renderPicksTable(picks) {
@@ -735,7 +936,7 @@
             else if (state.mode === "range")  scopeLabel = `from ${state.rangeStart} → ${state.rangeEnd}`;
             else                              scopeLabel = "";
             document.getElementById("picksSub").textContent =
-                `${picks.length} picks ${scopeLabel} · click headers to sort`;
+                `${picks.length} picks ${scopeLabel} · click headers to sort · narrow view shows one card per pick`;
             const host = document.getElementById("picksTable");
             const cols = [
                 ...(state.mode === "range" ? [{k:"date", label:"Date"}] : []),
@@ -775,27 +976,26 @@
                 const disp = p[rk];
                 const rowCls = disp === "WIN" ? "row-win" : (disp === "LOSS" ? "row-loss" : "row-eod");
                 const rCls = p.r_realized == null ? "" : (p.r_realized > 0 ? "pos" : (p.r_realized < 0 ? "neg" : ""));
-                // When P&L-adjusted is on and a pick was upgraded/downgraded, annotate the badge (e.g. "WIN*")
                 const upgraded = state.resultMode === "effective" && p.result === "EOD" && disp !== "EOD";
                 const badge = upgraded ? `${disp}<span style="opacity:0.55;margin-left:2px" title="Reclassified from EOD by P&L sign">*</span>` : disp;
-                const dateCell = state.mode === "range" ? `<td>${p.date || "—"}</td>` : "";
+                const dateCell = state.mode === "range" ? `<td data-label="Date">${p.date || "—"}</td>` : "";
                 html += `<tr class="${rowCls}">
                     ${dateCell}
-                    <td>${p.batch_time}</td>
-                    <td><span class="ticker">${p.ticker}</span></td>
-                    <td><span class="cat-badge ${p.category}">${p.category}</span></td>
-                    <td>${p.leadership_label || "—"}</td>
-                    <td>${p.score}</td>
-                    <td>${p.rsi ?? "—"}</td>
-                    <td>${p.rvol ?? "—"}</td>
-                    <td>${p.entry ?? "—"}</td>
-                    <td>${p.stop ?? "—"}</td>
-                    <td>${p.target ?? "—"}</td>
-                    <td><span class="result-badge">${badge}</span></td>
-                    <td>${p.resolve_time || "—"}</td>
-                    <td>${p.resolve_price ?? "—"}</td>
-                    <td class="${rCls}">${fmtR(p.r_realized)}</td>
-                    <td class="${rCls}">${fmtPnl(p.pnl_dollar)}</td>
+                    <td data-label="Time">${p.batch_time}</td>
+                    <td class="ticker-cell" data-label="Ticker"><span class="ticker">${p.ticker}</span></td>
+                    <td data-label="Cat"><span class="cat-badge ${p.category}">${p.category}</span></td>
+                    <td data-label="Leader">${p.leadership_label || "—"}</td>
+                    <td data-label="Score">${p.score}</td>
+                    <td data-label="RSI">${p.rsi ?? "—"}</td>
+                    <td data-label="RVOL">${p.rvol ?? "—"}</td>
+                    <td data-label="Entry">${p.entry ?? "—"}</td>
+                    <td data-label="Stop">${p.stop ?? "—"}</td>
+                    <td data-label="Target">${p.target ?? "—"}</td>
+                    <td data-label="Result"><span class="result-badge">${badge}</span></td>
+                    <td data-label="Hit">${p.resolve_time || "—"}</td>
+                    <td data-label="Exit">${p.resolve_price ?? "—"}</td>
+                    <td class="${rCls}" data-label="R">${fmtR(p.r_realized)}</td>
+                    <td class="${rCls}" data-label="P&L $">${fmtPnl(p.pnl_dollar)}</td>
                 </tr>`;
             });
             html += '</tbody>';
