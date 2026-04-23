@@ -113,6 +113,131 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     border-radius: 4px;
 }
 
+/* ── Shared tier pills (used in today.html + history.html) ───── */
+.tier-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+.tier-pill + .tier-pill { margin-left: 4px; }
+
+.tier-pill.ldr  { background: rgba(34,197,94,0.18);  color: var(--green);  border-color: rgba(34,197,94,0.4); }
+.tier-pill.solo { background: rgba(167,139,250,0.15); color: var(--purple); border-color: rgba(167,139,250,0.4); }
+.tier-pill.flw  { background: rgba(245,158,11,0.15); color: var(--amber);  border-color: rgba(245,158,11,0.4); }
+.tier-pill.lag  { background: rgba(148,163,184,0.15); color: var(--text-secondary); border-color: var(--border); }
+.tier-pill.unc  { background: rgba(148,163,184,0.12); color: var(--text-secondary); border-style: dashed; border-color: var(--border); }
+.tier-pill.weak { background: rgba(245,158,11,0.10); color: var(--amber);  border-style: dashed; border-color: rgba(245,158,11,0.4); }
+.tier-pill.earn { background: rgba(239,68,68,0.18);  color: var(--red);    border-color: rgba(239,68,68,0.5); }
+.tier-pill.none { color: var(--text-muted); background: transparent; border-color: transparent; font-family: var(--font); font-weight: 500; font-size: 10px; letter-spacing: 0; }
+
+/* ── Shared numeric alignment for data tables ─────────────────── */
+th.num, td.num { text-align: right; }
+th.center, td.center { text-align: center; }
+
+/* ── Shared sortable header affordance ────────────────────────── */
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+    position: relative;
+    padding-right: 22px !important;
+}
+th.sortable:hover { color: var(--cyan); }
+th.sortable.sorted { color: var(--cyan); }
+th.sortable::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.35;
+    font-size: 9px;
+    line-height: 1;
+}
+th.sortable.sorted.asc::after  { content: '▲'; opacity: 1; }
+th.sortable.sorted.desc::after { content: '▼'; opacity: 1; }
+
+/* ── Column visibility toggle chips (session-only state) ─────── */
+.col-toggles {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+.col-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.2s;
+    user-select: none;
+}
+.col-toggle:hover  { color: var(--text-primary); border-color: var(--cyan); }
+.col-toggle.active { color: var(--cyan); border-color: var(--cyan); background: rgba(34,211,238,0.08); }
+.col-toggle .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.8; }
+
+/* ── RTH filter active-indicator dot ──────────────────────────── */
+.rth-toggle .rth-active-dot {
+    display: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 6px rgba(245,158,11,0.8);
+}
+.rth-toggle.active .rth-active-dot { display: inline-block; }
+
+/* ── History date picker ──────────────────────────────────────── */
+.date-picker-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+.date-picker-wrap input[type="date"] {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 2px 4px;
+    outline: none;
+    color-scheme: dark;
+}
+.date-picker-wrap button {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--cyan);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--font);
+}
+.date-picker-wrap button:hover { border-color: var(--cyan); }
+.date-picker-wrap button[disabled] { opacity: 0.4; cursor: not-allowed; }
+
 /* ── Mobile breakpoints for the chrome ───────────────────────── */
 @media (max-width: 768px) {
     .header {
@@ -151,4 +276,52 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
         display: flex;
         align-items: center;
     }
+}
+
+/* ── Mobile card-view tables (v3.6.0) ──────────────────────────
+   Opt-in via <table class="card-table"> + data-label="…" on each <td>.
+   On narrow screens, each row becomes a stacked card; each cell shows
+   its label before the value (pulled from data-label). Headers hide.
+   ─────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    table.card-table thead { display: none; }
+    table.card-table, table.card-table tbody, table.card-table tr, table.card-table td {
+        display: block;
+        width: 100%;
+    }
+    table.card-table tr {
+        border-bottom: 1px solid var(--border);
+        padding: 10px 12px;
+        background: var(--bg-card);
+    }
+    table.card-table tr:nth-child(even) { background: var(--bg-secondary); }
+    table.card-table td {
+        padding: 4px 0;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        font-size: 12px;
+    }
+    table.card-table td::before {
+        content: attr(data-label);
+        color: var(--text-muted);
+        font-family: var(--font);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex: 0 0 auto;
+    }
+    table.card-table td.num { text-align: right; }
+    /* The ticker cell is the visual header of each card */
+    table.card-table td.ticker-cell {
+        font-size: 15px;
+        padding-bottom: 6px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid var(--border);
+    }
+    table.card-table td.ticker-cell::before { display: none; }
+    /* Hide empty/toggled-off cells entirely */
+    table.card-table td.col-hidden { display: none; }
 }

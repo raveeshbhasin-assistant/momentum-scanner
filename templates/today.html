@@ -1,91 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "_head.html" %}
     <title>Today's Finds — Momentum Scanner</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/tokens.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --bg-primary: #0a0e17;
-            --bg-secondary: #111827;
-            --bg-card: #1a1f2e;
-            --bg-card-hover: #1f2640;
-            --border: #2a3148;
-            --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --green: #22c55e;
-            --green-dim: #16a34a;
-            --green-bg: #22c55e15;
-            --red: #ef4444;
-            --red-bg: #ef444415;
-            --blue: #3b82f6;
-            --blue-bg: #3b82f615;
-            --amber: #f59e0b;
-            --purple: #a78bfa;
-            --cyan: #22d3ee;
-            --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-            --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
-        }
-
-        body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: var(--font);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            padding: 16px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(12px);
-        }
-
-        .header-left { display: flex; align-items: center; gap: 16px; }
-
-        .logo {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, var(--green), var(--cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-
-        .page-title {
-            font-size: 15px;
-            color: var(--text-secondary);
-            padding-left: 16px;
-            border-left: 1px solid var(--border);
-        }
-
-        .header-right { display: flex; align-items: center; gap: 12px; }
-
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
-        .nav-link.active { color: var(--cyan); background: var(--bg-card); }
-
         .main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
 
         /* ── MAE-Rule Reminder (v3.4.1) ────────────────────────── */
@@ -136,7 +54,6 @@
             border-radius: 12px;
             padding: 16px 20px;
         }
-
         .stat-label {
             font-size: 11px;
             text-transform: uppercase;
@@ -144,7 +61,6 @@
             color: var(--text-muted);
             margin-bottom: 4px;
         }
-
         .stat-value {
             font-size: 24px;
             font-weight: 700;
@@ -165,29 +81,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .table-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
+        .table-title { font-size: 16px; font-weight: 600; }
+        .table-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
-        .table-actions { display: flex; gap: 8px; }
-
-        .sort-btn {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            font-size: 12px;
-            cursor: pointer;
-            font-family: var(--font);
-            transition: all 0.2s;
-        }
-        .sort-btn:hover, .sort-btn.active { color: var(--cyan); border-color: var(--cyan); }
-
-        /* ── RTH filter toggle (v3.5.10) ─────────────────────────── */
         .rth-toggle {
             padding: 6px 12px;
             border-radius: 6px;
@@ -216,10 +116,7 @@
         /* Hide outside-RTH rows when the filter is active */
         table.rth-only tbody tr[data-rth="false"] { display: none; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; }
 
         th {
             padding: 12px 16px;
@@ -231,13 +128,7 @@
             font-weight: 600;
             border-bottom: 1px solid var(--border);
             background: var(--bg-secondary);
-            cursor: pointer;
-            user-select: none;
-            transition: color 0.2s;
         }
-
-        th:hover { color: var(--cyan); }
-        th.sorted { color: var(--cyan); }
 
         td {
             padding: 12px 16px;
@@ -248,12 +139,7 @@
 
         tr:hover td { background: var(--bg-card-hover); }
 
-        .ticker-cell {
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-
+        .ticker-cell { font-weight: 700; font-size: 14px; color: var(--text-primary); }
         .time-cell { color: var(--text-secondary); font-family: var(--font); }
         .price-cell { color: var(--text-primary); }
         .score-cell { color: var(--green); font-weight: 700; }
@@ -262,55 +148,26 @@
         .resistance-cell { color: var(--purple); }
         .stop-cell { color: var(--red); }
 
-        .empty-state {
-            text-align: center;
-            padding: 80px 32px;
-        }
+        /* Column-hidden: toggled off in session (desktop). Mobile card-view
+           uses .col-hidden on td separately via base.css. */
+        .col-hidden { display: none !important; }
+
+        .empty-state { text-align: center; padding: 80px 32px; }
         .empty-state h2 { font-size: 24px; font-weight: 600; margin-bottom: 12px; }
         .empty-state p { color: var(--text-secondary); font-size: 15px; max-width: 500px; margin: 0 auto; }
 
-        .footer {
-            text-align: center;
-            padding: 24px;
-            color: var(--text-muted);
-            font-size: 12px;
-            border-top: 1px solid var(--border);
-            margin-top: 48px;
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-        /* ── Mobile Responsive ─────────────────────────────────── */
+        /* ── Mobile ──────────────────────────────────────────────── */
         @media (max-width: 768px) {
-            .header {
-                flex-wrap: wrap;
-                padding: 12px 16px;
-                gap: 10px;
-            }
-            .header-left { width: 100%; }
-            .header-right {
-                width: 100%;
-                flex-wrap: wrap;
-                gap: 6px;
-                justify-content: center;
-            }
-            .nav-link { font-size: 12px; padding: 6px 8px; }
-            .logo { font-size: 18px; }
-            .page-title { font-size: 13px; padding-left: 10px; }
             .main { padding: 16px 12px; }
             .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .stat-card { padding: 12px 14px; }
             .stat-value { font-size: 18px; }
             .stat-label { font-size: 10px; }
-            .table-header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+            .table-header { padding: 12px 16px; }
             .table-title { font-size: 14px; }
-            .table-actions { flex-wrap: wrap; }
             th { padding: 8px 10px; font-size: 10px; }
             td { padding: 8px 10px; font-size: 12px; }
         }
-
         @media (max-width: 400px) {
             .stats-bar { grid-template-columns: 1fr; }
         }
@@ -356,71 +213,70 @@
                 <span class="table-title">All signals found during today's scans</span>
                 <div class="table-actions">
                     <button class="rth-toggle" id="rthToggle" onclick="toggleRTH()" title="Show only signals found during regular market hours (Mon–Fri 09:30–16:00 ET)">
+                        <span class="rth-active-dot"></span>
                         <span>Market hours only</span>
                         <span class="rth-count" id="rthCount"></span>
                     </button>
-                    <button class="sort-btn active" onclick="sortTable('time')">By Time</button>
-                    <button class="sort-btn" onclick="sortTable('score')">By Score</button>
-                    <button class="sort-btn" onclick="sortTable('ticker')">By Ticker</button>
+                    <span class="col-toggles" role="group" aria-label="Column visibility">
+                        <button type="button" class="col-toggle active" data-col="rsi"        title="Show/hide RSI column">RSI</button>
+                        <button type="button" class="col-toggle active" data-col="resistance" title="Show/hide Resistance column">Res.</button>
+                    </span>
                 </div>
             </div>
             <div style="overflow-x: auto;">
-                <table id="findsTable">
+                <table id="findsTable" class="card-table">
                     <thead>
                         <tr>
-                            <th>Time Found</th>
-                            <th>Ticker</th>
-                            <th>Price</th>
-                            <th>Score</th>
-                            <th>RVOL</th>
-                            <th>RSI</th>
-                            <th>Entry</th>
-                            <th>ATR Target</th>
-                            <th>Resistance</th>
-                            <th>Stop</th>
-                            <th>R:R</th>
+                            <th class="sortable sorted desc" data-sort="time"    data-type="time" data-default-dir="desc">Time</th>
+                            <th class="sortable"             data-sort="ticker"  data-type="str">Ticker</th>
+                            <th                              data-col="tier">Tier</th>
+                            <th class="sortable num"         data-sort="price"   data-type="num">Price</th>
+                            <th class="sortable num"         data-sort="score"   data-type="num" data-default-dir="desc">Score</th>
+                            <th class="sortable num"         data-sort="rvol"    data-type="num" data-default-dir="desc">RVOL</th>
+                            <th class="sortable num"         data-sort="rsi"     data-type="num" data-col="rsi">RSI</th>
+                            <th class="num"                  data-col="entry">Entry</th>
+                            <th class="sortable num"         data-sort="target"  data-type="num">ATR Tgt</th>
+                            <th class="num"                  data-col="resistance">Resistance</th>
+                            <th class="num">Stop</th>
+                            <th class="sortable num"         data-sort="rr"      data-type="num" data-default-dir="desc">R:R</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for find in finds %}
-                        <tr data-rth="{{ 'true' if is_rth(find.found_timestamp) else 'false' }}">
-                            <td class="time-cell">{{ find.found_time }}</td>
-                            <td class="ticker-cell">
-                                {{ find.ticker }}
-                                {# v3.3 leadership pills (v3.4.2: shown as display tier, not filter gate) #}
-                                {% if find.leadership and find.leadership.label == 'LEADER' %}
-                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(34,197,94,0.18); color:var(--green); border:1px solid rgba(34,197,94,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }}">LDR</span>
-                                {% elif find.leadership and find.leadership.label == 'SOLO_MOVER' %}
-                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(167,139,250,0.15); color:#a78bfa; border:1px solid rgba(167,139,250,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }}">SOLO</span>
-                                {% elif find.leadership and find.leadership.label == 'FOLLOWER' %}
-                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(245,158,11,0.15); color:var(--amber); border:1px solid rgba(245,158,11,0.4); font-family:var(--mono);" title="{{ find.leadership.reason }} — secondary pick in v3.4.2 display mode">FLW</span>
-                                {% elif find.leadership and find.leadership.label == 'LAGGARD' %}
-                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(148,163,184,0.15); color:#94a3b8; border:1px solid #2a3148; font-family:var(--mono);" title="{{ find.leadership.reason }} — unclassified tier in v3.4.2 display mode">LAG</span>
-                                {% elif find.leadership and find.leadership.label == 'UNKNOWN' %}
-                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px dashed #2a3148; font-family:var(--mono);" title="Sector/peer leadership could not be computed">UNC</span>
+                        <tr data-rth="{{ 'true' if is_rth(find.found_timestamp) else 'false' }}"
+                            data-time="{{ find.found_timestamp }}"
+                            data-ticker="{{ find.ticker }}"
+                            data-price="{{ find.price }}"
+                            data-score="{{ find.composite_score }}"
+                            data-rvol="{{ find.rvol }}"
+                            data-rsi="{{ find.rsi if find.rsi else '' }}"
+                            data-target="{{ find.atr_target }}"
+                            data-rr="{{ find.risk_reward_ratio }}">
+                            <td class="time-cell"  data-label="Time">{{ find.found_time }}</td>
+                            <td class="ticker-cell" data-label="Ticker">{{ find.ticker }}</td>
+                            <td class="tier-cell"   data-label="Tier" data-col="tier">
+                                {% set ldr = find.leadership.label if find.leadership else '' %}
+                                {% if ldr == 'LEADER' %}<span class="tier-pill ldr"  title="{{ find.leadership.reason }}">LDR</span>
+                                {% elif ldr == 'SOLO_MOVER' %}<span class="tier-pill solo" title="{{ find.leadership.reason }}">SOLO</span>
+                                {% elif ldr == 'FOLLOWER' %}<span class="tier-pill flw"  title="{{ find.leadership.reason }} — secondary pick in v3.4.2 display mode">FLW</span>
+                                {% elif ldr == 'LAGGARD' %}<span class="tier-pill lag"   title="{{ find.leadership.reason }} — unclassified tier in v3.4.2 display mode">LAG</span>
+                                {% elif ldr == 'UNKNOWN' %}<span class="tier-pill unc"   title="Sector/peer leadership could not be computed">UNC</span>
                                 {% endif %}
-                                {% if find.signal_strength == 'weak' %}
-                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(245,158,11,0.10); color:var(--amber); border:1px dashed rgba(245,158,11,0.4); font-family:var(--mono);" title="Composite score 40–59 (weak signal floor in v3.4.2)">WEAK</span>
-                                {% endif %}
-                                {% if find.earnings and find.earnings.has_earnings and find.earnings.badge_level in ('today_amc','tomorrow') %}
-                                    <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(239,68,68,0.18); color:var(--red); border:1px solid rgba(239,68,68,0.5); font-family:var(--mono);" title="{{ find.earnings.reason }}">⚡{{ find.earnings.badge_text }}</span>
-                                {% endif %}
+                                {% if find.signal_strength == 'weak' %}<span class="tier-pill weak" title="Composite score 40–59 (weak signal floor in v3.4.2)">WEAK</span>{% endif %}
+                                {% if find.earnings and find.earnings.has_earnings and find.earnings.badge_level in ('today_amc','tomorrow') %}<span class="tier-pill earn" title="{{ find.earnings.reason }}">⚡{{ find.earnings.badge_text }}</span>{% endif %}
+                                {% if not ldr and find.signal_strength != 'weak' and not (find.earnings and find.earnings.badge_level in ('today_amc','tomorrow')) %}<span class="tier-pill none">—</span>{% endif %}
                             </td>
-                            <td class="price-cell">${{ "%.2f"|format(find.price) }}</td>
-                            <td class="score-cell">{{ "%.0f"|format(find.composite_score) }}</td>
-                            <td class="rvol-cell">{{ "%.1f"|format(find.rvol) }}x</td>
-                            <td>{{ "%.0f"|format(find.rsi) if find.rsi else "—" }}</td>
-                            <td class="price-cell">${{ "%.2f"|format(find.entry) }}</td>
-                            <td class="target-cell">${{ "%.2f"|format(find.atr_target) }}</td>
-                            <td class="resistance-cell">
-                                {% if find.resistance_target and find.resistance_target > 0 %}
-                                    ${{ "%.2f"|format(find.resistance_target) }} ({{ find.resistance_level }})
-                                {% else %}
-                                    —
-                                {% endif %}
+                            <td class="price-cell num" data-label="Price">${{ "%.2f"|format(find.price) }}</td>
+                            <td class="score-cell num" data-label="Score">{{ "%.0f"|format(find.composite_score) }}</td>
+                            <td class="rvol-cell  num" data-label="RVOL">{{ "%.1f"|format(find.rvol) }}x</td>
+                            <td class="num"            data-label="RSI" data-col="rsi">{{ "%.0f"|format(find.rsi) if find.rsi else "—" }}</td>
+                            <td class="price-cell num" data-label="Entry" data-col="entry">${{ "%.2f"|format(find.entry) }}</td>
+                            <td class="target-cell num" data-label="ATR Tgt">${{ "%.2f"|format(find.atr_target) }}</td>
+                            <td class="resistance-cell num" data-label="Resistance" data-col="resistance">
+                                {% if find.resistance_target and find.resistance_target > 0 %}${{ "%.2f"|format(find.resistance_target) }} ({{ find.resistance_level }}){% else %}—{% endif %}
                             </td>
-                            <td class="stop-cell">${{ "%.2f"|format(find.stop_loss) }}</td>
-                            <td>{{ find.risk_reward_ratio }}:1</td>
+                            <td class="stop-cell num"  data-label="Stop">${{ "%.2f"|format(find.stop_loss) }}</td>
+                            <td class="num"            data-label="R:R">{{ find.risk_reward_ratio }}:1</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -438,29 +294,69 @@
     {% include "_footer.html" %}
 
     <script>
-        function sortTable(by) {
+        // ── Unified header-click sorting ──────────────────────────
+        (function setupSort() {
             const table = document.getElementById('findsTable');
-            const tbody = table.querySelector('tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
+            if (!table) return;
 
-            // Update active button
-            document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+            const headers = table.querySelectorAll('th.sortable');
+            headers.forEach(th => th.addEventListener('click', () => sortBy(th)));
 
-            rows.sort((a, b) => {
-                if (by === 'score') {
-                    return parseFloat(b.cells[3].textContent) - parseFloat(a.cells[3].textContent);
-                } else if (by === 'ticker') {
-                    return a.cells[1].textContent.localeCompare(b.cells[1].textContent);
-                } else { // time — reverse order (newest first)
-                    return rows.indexOf(b) - rows.indexOf(a);
-                }
+            function sortBy(th) {
+                const key = th.dataset.sort;
+                const type = th.dataset.type || 'str';
+                const defaultDir = th.dataset.defaultDir || 'asc';
+                // Flip direction if already sorted by this column, else use default
+                const isSorted = th.classList.contains('sorted');
+                const currentDir = th.classList.contains('desc') ? 'desc' : 'asc';
+                const newDir = isSorted ? (currentDir === 'asc' ? 'desc' : 'asc') : defaultDir;
+
+                // Clear all sort indicators
+                headers.forEach(h => h.classList.remove('sorted', 'asc', 'desc'));
+                th.classList.add('sorted', newDir);
+
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort((a, b) => {
+                    let av = a.dataset[key] ?? '';
+                    let bv = b.dataset[key] ?? '';
+                    if (type === 'num' || type === 'time') {
+                        av = parseFloat(av); bv = parseFloat(bv);
+                        if (isNaN(av)) av = -Infinity;
+                        if (isNaN(bv)) bv = -Infinity;
+                        if (type === 'time') {
+                            // dataset.time is ISO; compare lexically via Date
+                            av = Date.parse(a.dataset.time) || 0;
+                            bv = Date.parse(b.dataset.time) || 0;
+                        }
+                        return newDir === 'asc' ? av - bv : bv - av;
+                    }
+                    return newDir === 'asc' ? String(av).localeCompare(String(bv))
+                                            : String(bv).localeCompare(String(av));
+                });
+                rows.forEach(r => tbody.appendChild(r));
+            }
+
+            // Server delivers rows in time-desc order; the Time header carries
+            // the matching "sorted desc" class in the template. Nothing else to do.
+        })();
+
+        // ── Session-only column visibility toggle ─────────────────
+        (function setupColToggles() {
+            const table = document.getElementById('findsTable');
+            if (!table) return;
+            document.querySelectorAll('.col-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const col = btn.dataset.col;
+                    const show = btn.classList.toggle('active');
+                    table.querySelectorAll(`[data-col="${col}"]`).forEach(el => {
+                        el.classList.toggle('col-hidden', !show);
+                    });
+                });
             });
+        })();
 
-            rows.forEach(row => tbody.appendChild(row));
-        }
-
-        // ── RTH filter toggle (v3.5.10) ───────────────────────────
+        // ── RTH filter toggle ─────────────────────────────────────
         function _rthCounts() {
             const rows = document.querySelectorAll('#findsTable tbody tr');
             let rth = 0, total = rows.length;
@@ -472,7 +368,6 @@
             const { rth, total } = _rthCounts();
             const countEl = document.getElementById('rthCount');
             if (!countEl) return;
-            // Hide the badge entirely if every row is RTH — nothing to filter.
             if (rth === total) {
                 countEl.textContent = '';
                 const btn = document.getElementById('rthToggle');
@@ -494,11 +389,25 @@
             _updateRTHBadge();
         }
 
-        // Initial render of the count hint
         document.addEventListener('DOMContentLoaded', _updateRTHBadge);
 
-        // Auto-refresh every 2 minutes
-        setInterval(() => { window.location.reload(); }, 120000);
+        // ── Auto-refresh every 2 minutes (pauses on hidden tab) ──
+        let _refreshTimer = null;
+        function _armRefresh() {
+            if (_refreshTimer) return;
+            _refreshTimer = setInterval(() => {
+                if (!document.hidden) window.location.reload();
+            }, 120000);
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(_refreshTimer);
+                _refreshTimer = null;
+            } else {
+                _armRefresh();
+            }
+        });
+        _armRefresh();
     </script>
 </body>
 </html>

@@ -1,98 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "_head.html" %}
     <title>History — Momentum Scanner</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/tokens.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --bg-primary: #0a0e17;
-            --bg-secondary: #111827;
-            --bg-card: #1a1f2e;
-            --bg-card-hover: #1f2640;
-            --border: #2a3148;
-            --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --green: #22c55e;
-            --green-dim: #16a34a;
-            --red: #ef4444;
-            --blue: #3b82f6;
-            --amber: #f59e0b;
-            --purple: #a78bfa;
-            --cyan: #22d3ee;
-            --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-            --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
-        }
-
-        body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: var(--font);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            padding: 16px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(12px);
-        }
-
-        .header-left { display: flex; align-items: center; gap: 16px; }
-
-        .logo {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, var(--green), var(--cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-
-        .page-title {
-            font-size: 15px;
-            color: var(--text-secondary);
-            padding-left: 16px;
-            border-left: 1px solid var(--border);
-        }
-
-        .header-right { display: flex; align-items: center; gap: 12px; }
-
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
-        .nav-link.active { color: var(--cyan); background: var(--bg-card); }
-
         .main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
 
-        /* ── RTH filter toggle (v3.5.10) ─────────────────────────── */
+        /* ── Filter Bar (v3.5.10 + date picker v3.6.0) ─────────── */
         .filter-bar {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
             gap: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
+        .filter-bar-left  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .filter-bar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .filter-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+        }
+
         .rth-toggle {
             padding: 8px 14px;
             border-radius: 8px;
@@ -122,12 +53,7 @@
         .main.rth-only table tbody tr[data-rth="false"] { display: none; }
 
         /* ── Day Tabs ──────────────────────────────────────────── */
-        .day-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
+        .day-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
         .day-tab {
             padding: 12px 24px;
             border-radius: 12px;
@@ -140,10 +66,8 @@
             transition: all 0.2s;
             font-family: var(--font);
         }
-
         .day-tab:hover { border-color: var(--cyan); color: var(--text-primary); }
         .day-tab.active { border-color: var(--cyan); color: var(--cyan); background: var(--bg-card-hover); }
-
         .day-tab .tab-count {
             display: inline-block;
             background: var(--bg-secondary);
@@ -153,8 +77,15 @@
             font-family: var(--mono);
             margin-left: 8px;
         }
-
         .day-tab.active .tab-count { background: #22d3ee20; color: var(--cyan); }
+        .day-tab.archive { border-style: dashed; }
+        .day-tab.archive .tab-count { color: var(--purple); }
+        .day-tab .tab-close {
+            margin-left: 8px;
+            opacity: 0.5;
+            font-size: 11px;
+        }
+        .day-tab .tab-close:hover { opacity: 1; color: var(--red); }
 
         /* ── Day Panel ─────────────────────────────────────────── */
         .day-panel { display: none; }
@@ -173,7 +104,6 @@
             border-radius: 10px;
             padding: 14px 18px;
         }
-
         .summary-label {
             font-size: 11px;
             text-transform: uppercase;
@@ -181,7 +111,6 @@
             color: var(--text-muted);
             margin-bottom: 2px;
         }
-
         .summary-value {
             font-size: 20px;
             font-weight: 700;
@@ -195,9 +124,16 @@
             border-radius: 16px;
             overflow: hidden;
         }
-
+        .table-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
         table { width: 100%; border-collapse: collapse; }
-
         th {
             padding: 12px 16px;
             text-align: left;
@@ -209,14 +145,12 @@
             border-bottom: 1px solid var(--border);
             background: var(--bg-secondary);
         }
-
         td {
             padding: 10px 16px;
             font-size: 13px;
             border-bottom: 1px solid var(--border);
             font-family: var(--mono);
         }
-
         tr:hover td { background: var(--bg-card-hover); }
 
         .ticker-cell { font-weight: 700; font-size: 14px; color: var(--text-primary); }
@@ -227,6 +161,8 @@
         .resistance-cell { color: var(--purple); }
         .stop-cell { color: var(--red); }
 
+        .col-hidden { display: none !important; }
+
         .empty-day {
             padding: 48px;
             text-align: center;
@@ -234,38 +170,10 @@
             font-size: 14px;
         }
 
-        .footer {
-            text-align: center;
-            padding: 24px;
-            color: var(--text-muted);
-            font-size: 12px;
-            border-top: 1px solid var(--border);
-            margin-top: 48px;
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-        /* ── Mobile Responsive ─────────────────────────────────── */
+        /* ── Mobile ──────────────────────────────────────────────── */
         @media (max-width: 768px) {
-            .header {
-                flex-wrap: wrap;
-                padding: 12px 16px;
-                gap: 10px;
-            }
-            .header-left { width: 100%; }
-            .header-right {
-                width: 100%;
-                flex-wrap: wrap;
-                gap: 6px;
-                justify-content: center;
-            }
-            .nav-link { font-size: 12px; padding: 6px 8px; }
-            .logo { font-size: 18px; }
-            .page-title { font-size: 13px; padding-left: 10px; }
             .main { padding: 16px 12px; }
-            .day-tabs { flex-wrap: wrap; gap: 6px; }
+            .day-tabs { gap: 6px; }
             .day-tab { padding: 10px 16px; font-size: 13px; }
             .day-summary { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .summary-card { padding: 10px 14px; }
@@ -274,7 +182,6 @@
             th { padding: 8px 10px; font-size: 10px; }
             td { padding: 8px 10px; font-size: 12px; }
         }
-
         @media (max-width: 400px) {
             .day-summary { grid-template-columns: 1fr; }
             .day-tab { width: 100%; text-align: center; }
@@ -283,22 +190,38 @@
 </head>
 <body>
 
-    {% with active_page="history", page_title="3-Day History" %}{% include "_nav.html" %}{% endwith %}
+    {% with active_page="history", page_title="History" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="main" id="historyMain">
-        <!-- Filter Bar (v3.5.10) -->
+        <!-- Filter / Date-picker bar -->
         <div class="filter-bar">
-            <button class="rth-toggle" id="rthToggle" onclick="toggleRTH()" title="Show only signals found during regular market hours (Mon–Fri 09:30–16:00 ET)">
-                <span>Market hours only</span>
-                <span class="rth-count" id="rthCount"></span>
-            </button>
+            <div class="filter-bar-left">
+                <div class="date-picker-wrap" title="Load any archived day (within the 3-day retention window).">
+                    <span class="filter-label">Load date</span>
+                    <input type="date" id="datePicker" />
+                    <button type="button" id="loadDateBtn" disabled>Load</button>
+                </div>
+                <span id="loadStatus" class="filter-label" aria-live="polite"></span>
+            </div>
+            <div class="filter-bar-right">
+                <span class="col-toggles" role="group" aria-label="Column visibility">
+                    <button type="button" class="col-toggle active" data-col="rsi"        title="Show/hide RSI column">RSI</button>
+                    <button type="button" class="col-toggle active" data-col="resistance" title="Show/hide Resistance column">Res.</button>
+                </span>
+                <button class="rth-toggle" id="rthToggle" onclick="toggleRTH()" title="Show only signals found during regular market hours (Mon–Fri 09:30–16:00 ET)">
+                    <span class="rth-active-dot"></span>
+                    <span>Market hours only</span>
+                    <span class="rth-count" id="rthCount"></span>
+                </button>
+            </div>
         </div>
 
         <!-- Day Tabs -->
-        <div class="day-tabs">
+        <div class="day-tabs" id="dayTabs">
             {% for day in days %}
             <button class="day-tab {{ 'active' if loop.index0 == 0 else '' }}"
                     data-day-index="{{ loop.index0 }}"
+                    data-date="{{ day.date }}"
                     data-total="{{ day.signal_count }}"
                     onclick="showDay({{ loop.index0 }})">
                 {{ day.date_display }}
@@ -309,8 +232,9 @@
         </div>
 
         <!-- Day Panels -->
+        <div id="dayPanels">
         {% for day in days %}
-        <div class="day-panel {{ 'active' if loop.index0 == 0 else '' }}" id="day-{{ loop.index0 }}" data-day-index="{{ loop.index0 }}">
+        <div class="day-panel {{ 'active' if loop.index0 == 0 else '' }}" id="day-{{ loop.index0 }}" data-day-index="{{ loop.index0 }}" data-date="{{ day.date }}">
             {% if day.finds %}
             <div class="day-summary">
                 <div class="summary-card">
@@ -337,59 +261,59 @@
 
             <div class="table-container">
                 <div style="overflow-x: auto;">
-                    <table>
+                    <table class="card-table history-table">
                         <thead>
                             <tr>
-                                <th>Time</th>
-                                <th>Ticker</th>
-                                <th>Price</th>
-                                <th>Score</th>
-                                <th>RVOL</th>
-                                <th>RSI</th>
-                                <th>Entry</th>
-                                <th>ATR Target</th>
-                                <th>Resistance</th>
-                                <th>Stop</th>
-                                <th>R:R</th>
+                                <th class="sortable sorted desc" data-sort="time"   data-type="time" data-default-dir="desc">Time</th>
+                                <th class="sortable"              data-sort="ticker" data-type="str">Ticker</th>
+                                <th                               data-col="tier">Tier</th>
+                                <th class="sortable num"          data-sort="price"  data-type="num">Price</th>
+                                <th class="sortable num"          data-sort="score"  data-type="num">Score</th>
+                                <th class="sortable num"          data-sort="rvol"   data-type="num">RVOL</th>
+                                <th class="sortable num"          data-sort="rsi"    data-type="num" data-col="rsi">RSI</th>
+                                <th class="num"                   data-col="entry">Entry</th>
+                                <th class="sortable num"          data-sort="target" data-type="num">ATR Tgt</th>
+                                <th class="num"                   data-col="resistance">Resistance</th>
+                                <th class="num">Stop</th>
+                                <th class="sortable num"          data-sort="rr"     data-type="num">R:R</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for find in day.finds %}
-                            <tr data-rth="{{ 'true' if is_rth(find.found_timestamp) else 'false' }}">
-                                <td class="time-cell">{{ find.found_time }}</td>
-                                <td class="ticker-cell">
-                                    {{ find.ticker }}
-                                    {# v3.3.2 leadership pills (v3.4.2: shown as tier labels, not filter gate) #}
-                                    {% if find.leadership and find.leadership.label == 'LEADER' %}
-                                        <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(34,197,94,0.18); color:#22c55e; border:1px solid rgba(34,197,94,0.4); font-family:'SF Mono',monospace;" title="{{ find.leadership.reason }}">LDR</span>
-                                    {% elif find.leadership and find.leadership.label == 'SOLO_MOVER' %}
-                                        <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(167,139,250,0.15); color:#a78bfa; border:1px solid rgba(167,139,250,0.4); font-family:'SF Mono',monospace;" title="{{ find.leadership.reason }}">SOLO</span>
-                                    {% elif find.leadership and find.leadership.label == 'FOLLOWER' %}
-                                        <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.4); font-family:'SF Mono',monospace;" title="{{ find.leadership.reason }} — secondary pick in v3.4.2 display mode">FLW</span>
-                                    {% elif find.leadership and find.leadership.label == 'LAGGARD' %}
-                                        <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(148,163,184,0.15); color:#94a3b8; border:1px solid #2a3148; font-family:'SF Mono',monospace;" title="{{ find.leadership.reason }} — unclassified tier in v3.4.2 display mode">LAG</span>
-                                    {% elif find.leadership and find.leadership.label == 'UNKNOWN' %}
-                                        <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(148,163,184,0.12); color:#94a3b8; border:1px dashed #2a3148; font-family:'SF Mono',monospace;" title="Sector/peer leadership could not be computed">UNC</span>
+                            <tr data-rth="{{ 'true' if is_rth(find.found_timestamp) else 'false' }}"
+                                data-time="{{ find.found_timestamp }}"
+                                data-ticker="{{ find.ticker }}"
+                                data-price="{{ find.price }}"
+                                data-score="{{ find.composite_score }}"
+                                data-rvol="{{ find.rvol }}"
+                                data-rsi="{{ find.rsi if find.rsi else '' }}"
+                                data-target="{{ find.atr_target }}"
+                                data-rr="{{ find.risk_reward_ratio }}">
+                                <td class="time-cell"  data-label="Time">{{ find.found_time }}</td>
+                                <td class="ticker-cell" data-label="Ticker">{{ find.ticker }}</td>
+                                <td class="tier-cell"   data-label="Tier" data-col="tier">
+                                    {% set ldr = find.leadership.label if find.leadership else '' %}
+                                    {% if ldr == 'LEADER' %}<span class="tier-pill ldr"  title="{{ find.leadership.reason }}">LDR</span>
+                                    {% elif ldr == 'SOLO_MOVER' %}<span class="tier-pill solo" title="{{ find.leadership.reason }}">SOLO</span>
+                                    {% elif ldr == 'FOLLOWER' %}<span class="tier-pill flw"  title="{{ find.leadership.reason }} — secondary pick in v3.4.2 display mode">FLW</span>
+                                    {% elif ldr == 'LAGGARD' %}<span class="tier-pill lag"   title="{{ find.leadership.reason }} — unclassified tier in v3.4.2 display mode">LAG</span>
+                                    {% elif ldr == 'UNKNOWN' %}<span class="tier-pill unc"   title="Sector/peer leadership could not be computed">UNC</span>
                                     {% endif %}
-                                    {% if find.signal_strength == 'weak' %}
-                                        <span style="display:inline-block; margin-left:6px; padding:1px 5px; border-radius:3px; font-size:9px; font-weight:700; background:rgba(245,158,11,0.10); color:#f59e0b; border:1px dashed rgba(245,158,11,0.4); font-family:'SF Mono',monospace;" title="Composite score 40–59 (weak signal floor in v3.4.2)">WEAK</span>
-                                    {% endif %}
+                                    {% if find.signal_strength == 'weak' %}<span class="tier-pill weak" title="Composite score 40–59 (weak signal floor in v3.4.2)">WEAK</span>{% endif %}
+                                    {% if find.earnings and find.earnings.has_earnings and find.earnings.badge_level in ('today_amc','tomorrow') %}<span class="tier-pill earn" title="{{ find.earnings.reason }}">⚡{{ find.earnings.badge_text }}</span>{% endif %}
+                                    {% if not ldr and find.signal_strength != 'weak' and not (find.earnings and find.earnings.badge_level in ('today_amc','tomorrow')) %}<span class="tier-pill none">—</span>{% endif %}
                                 </td>
-                                <td>${{ "%.2f"|format(find.price) }}</td>
-                                <td class="score-cell">{{ "%.0f"|format(find.composite_score) }}</td>
-                                <td class="rvol-cell">{{ "%.1f"|format(find.rvol) }}x</td>
-                                <td>{{ "%.0f"|format(find.rsi) if find.rsi else "—" }}</td>
-                                <td>${{ "%.2f"|format(find.entry) }}</td>
-                                <td class="target-cell">${{ "%.2f"|format(find.atr_target) }}</td>
-                                <td class="resistance-cell">
-                                    {% if find.resistance_target and find.resistance_target > 0 %}
-                                        ${{ "%.2f"|format(find.resistance_target) }} ({{ find.resistance_level }})
-                                    {% else %}
-                                        —
-                                    {% endif %}
+                                <td class="num"        data-label="Price">${{ "%.2f"|format(find.price) }}</td>
+                                <td class="score-cell num" data-label="Score">{{ "%.0f"|format(find.composite_score) }}</td>
+                                <td class="rvol-cell num"  data-label="RVOL">{{ "%.1f"|format(find.rvol) }}x</td>
+                                <td class="num"            data-label="RSI" data-col="rsi">{{ "%.0f"|format(find.rsi) if find.rsi else "—" }}</td>
+                                <td class="num"            data-label="Entry" data-col="entry">${{ "%.2f"|format(find.entry) }}</td>
+                                <td class="target-cell num" data-label="ATR Tgt">${{ "%.2f"|format(find.atr_target) }}</td>
+                                <td class="resistance-cell num" data-label="Resistance" data-col="resistance">
+                                    {% if find.resistance_target and find.resistance_target > 0 %}${{ "%.2f"|format(find.resistance_target) }} ({{ find.resistance_level }}){% else %}—{% endif %}
                                 </td>
-                                <td class="stop-cell">${{ "%.2f"|format(find.stop_loss) }}</td>
-                                <td>{{ find.risk_reward_ratio }}:1</td>
+                                <td class="stop-cell num"  data-label="Stop">${{ "%.2f"|format(find.stop_loss) }}</td>
+                                <td class="num"            data-label="R:R">{{ find.risk_reward_ratio }}:1</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -403,23 +327,77 @@
             {% endif %}
         </div>
         {% endfor %}
+        </div>
     </main>
 
     {% include "_footer.html" %}
 
     <script>
+        // ── Day-tab switching ─────────────────────────────────────
         function showDay(index) {
-            document.querySelectorAll('.day-tab').forEach((t, i) => {
-                t.classList.toggle('active', i === index);
+            document.querySelectorAll('.day-tab').forEach(t => {
+                t.classList.toggle('active', Number(t.dataset.dayIndex) === index);
             });
-            document.querySelectorAll('.day-panel').forEach((p, i) => {
-                p.classList.toggle('active', i === index);
+            document.querySelectorAll('.day-panel').forEach(p => {
+                p.classList.toggle('active', Number(p.dataset.dayIndex) === index);
             });
         }
 
-        // ── RTH filter (v3.5.10) ──────────────────────────────────
-        // Counts per day-panel — populated on DOMContentLoaded so we only walk the DOM once.
-        // Each entry: { rth, total }.
+        // ── Unified sortable headers (per-day) ────────────────────
+        function bindSortHeaders(root) {
+            root.querySelectorAll('table.history-table').forEach(table => {
+                const headers = table.querySelectorAll('th.sortable');
+                headers.forEach(th => {
+                    th.addEventListener('click', () => {
+                        const type = th.dataset.type || 'str';
+                        const defaultDir = th.dataset.defaultDir || 'asc';
+                        const isSorted = th.classList.contains('sorted');
+                        const currentDir = th.classList.contains('desc') ? 'desc' : 'asc';
+                        const newDir = isSorted ? (currentDir === 'asc' ? 'desc' : 'asc') : defaultDir;
+
+                        headers.forEach(h => h.classList.remove('sorted', 'asc', 'desc'));
+                        th.classList.add('sorted', newDir);
+
+                        const key = th.dataset.sort;
+                        const tbody = table.querySelector('tbody');
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+                        rows.sort((a, b) => {
+                            let av = a.dataset[key] ?? '';
+                            let bv = b.dataset[key] ?? '';
+                            if (type === 'num') {
+                                av = parseFloat(av); bv = parseFloat(bv);
+                                if (isNaN(av)) av = -Infinity;
+                                if (isNaN(bv)) bv = -Infinity;
+                                return newDir === 'asc' ? av - bv : bv - av;
+                            }
+                            if (type === 'time') {
+                                av = Date.parse(a.dataset.time) || 0;
+                                bv = Date.parse(b.dataset.time) || 0;
+                                return newDir === 'asc' ? av - bv : bv - av;
+                            }
+                            return newDir === 'asc' ? String(av).localeCompare(String(bv))
+                                                    : String(bv).localeCompare(String(av));
+                        });
+                        rows.forEach(r => tbody.appendChild(r));
+                    });
+                });
+            });
+        }
+
+        // ── Column-visibility toggles (session only) ──────────────
+        function bindColToggles(root) {
+            root.querySelectorAll('.col-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const col = btn.dataset.col;
+                    const show = btn.classList.toggle('active');
+                    document.querySelectorAll(`[data-col="${col}"]`).forEach(el => {
+                        el.classList.toggle('col-hidden', !show);
+                    });
+                });
+            });
+        }
+
+        // ── RTH filter ────────────────────────────────────────────
         let _rthCounts = [];
 
         function _computeRTHCounts() {
@@ -454,10 +432,11 @@
             const countEl = document.getElementById('rthCount');
             const btn = document.getElementById('rthToggle');
             if (!countEl || !btn) return;
-            if (rth === total) {
-                // Every row on every day-panel is RTH — filter is a no-op.
+            if (total === 0 || rth === total) {
                 countEl.textContent = '';
-                btn.setAttribute('title', 'All history rows are from regular market hours — filter would be a no-op.');
+                btn.setAttribute('title', total === 0
+                    ? 'No signals to filter.'
+                    : 'All history rows are from regular market hours — filter would be a no-op.');
                 return;
             }
             const main = document.getElementById('historyMain');
@@ -476,7 +455,235 @@
             _updateRTHBadge();
         }
 
+        // ── Date picker (loads archived days via API) ─────────────
+        (function setupDatePicker() {
+            const input = document.getElementById('datePicker');
+            const btn   = document.getElementById('loadDateBtn');
+            const status = document.getElementById('loadStatus');
+            if (!input || !btn) return;
+
+            // Default max = today (ET); min = today - 10 days (loose bound,
+            // backend returns empty for files outside its retention window).
+            const today = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+            input.max = fmt(today);
+            const past = new Date(today); past.setDate(past.getDate() - 30);
+            input.min = fmt(past);
+
+            input.addEventListener('change', () => { btn.disabled = !input.value; });
+
+            btn.addEventListener('click', async () => {
+                const date = input.value;
+                if (!date) return;
+                // If an existing tab already matches this date, just switch to it.
+                const existing = Array.from(document.querySelectorAll('.day-tab'))
+                    .find(t => t.dataset.date === date);
+                if (existing) {
+                    showDay(Number(existing.dataset.dayIndex));
+                    status.textContent = 'Already loaded — switched tab.';
+                    setTimeout(() => { status.textContent = ''; }, 2500);
+                    return;
+                }
+                btn.disabled = true;
+                status.textContent = 'Loading…';
+                try {
+                    const res = await fetch(`/api/history/day?date=${encodeURIComponent(date)}`);
+                    const data = await res.json();
+                    if (!data.ok) {
+                        status.textContent = data.error || 'Failed to load.';
+                        return;
+                    }
+                    appendArchiveDay(date, data);
+                    status.textContent = data.signal_count === 0
+                        ? 'No signals on that date.'
+                        : `Loaded ${data.signal_count} signals.`;
+                    setTimeout(() => { status.textContent = ''; }, 3500);
+                } catch (err) {
+                    status.textContent = 'Network error.';
+                    console.error(err);
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+        })();
+
+        // Monotonic counter for archive day indices so we never collide with
+        // a previously-used index even after tabs are closed and reloaded.
+        let _nextDayIdx = {{ days|length }};
+
+        function appendArchiveDay(date, data) {
+            const dayTabs = document.getElementById('dayTabs');
+            const dayPanels = document.getElementById('dayPanels');
+            if (!dayTabs || !dayPanels) return;
+
+            const idx = _nextDayIdx++;
+            const d = new Date(date + 'T12:00:00'); // noon to avoid TZ flip
+            const weekday = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+            const month   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+            const dateDisplay = `${weekday} ${month} ${d.getDate()}`;
+
+            // Tab button with a close (remove) affordance
+            const tab = document.createElement('button');
+            tab.className = 'day-tab archive';
+            tab.dataset.dayIndex = idx;
+            tab.dataset.date = date;
+            tab.onclick = () => showDay(idx);
+            tab.innerHTML = `${dateDisplay}
+                <span class="tab-count">${data.signal_count}</span>
+                <span class="tab-close" onclick="event.stopPropagation(); this.closest('.day-tab').remove(); document.getElementById('day-${idx}-archive').remove(); _computeRTHCounts(); _updateRTHBadge();" title="Close archive tab">✕</span>`;
+            dayTabs.appendChild(tab);
+
+            // Panel
+            const panel = document.createElement('div');
+            panel.className = 'day-panel';
+            panel.id = `day-${idx}-archive`;
+            panel.dataset.dayIndex = idx;
+            panel.dataset.date = date;
+            panel.innerHTML = renderDayPanelHTML(dateDisplay, data);
+            dayPanels.appendChild(panel);
+
+            // Wire up sort/toggles on the new table
+            bindSortHeaders(panel);
+
+            // Recompute RTH counts and switch to the new tab
+            _computeRTHCounts();
+            _applyRTHCounts(document.getElementById('historyMain').classList.contains('rth-only'));
+            _updateRTHBadge();
+            showDay(idx);
+        }
+
+        function renderDayPanelHTML(dateDisplay, data) {
+            if (!data.finds || data.finds.length === 0) {
+                return `<div class="table-container"><div class="empty-day">No signals recorded for ${dateDisplay}</div></div>`;
+            }
+            const finds = data.finds;
+            const bestScore = Math.max(...finds.map(f => f.composite_score || 0));
+            const topTicker = [...finds].sort((a,b) => (b.composite_score||0) - (a.composite_score||0))[0].ticker;
+
+            const rows = finds.map(f => {
+                const isoTs = f.found_timestamp || '';
+                // RTH = Mon-Fri 09:30–16:00 ET. Use server-side computed value
+                // from the stamp if present; else fall back to a lightweight
+                // check so the UI filter still works for archive-loaded days.
+                const rth = isWithinRTH(isoTs);
+                const rsi = (f.rsi ?? '') === '' ? '—' : Math.round(f.rsi);
+                const rsiData = (f.rsi ?? '') === '' ? '' : f.rsi;
+                const resCell = (f.resistance_target && f.resistance_target > 0)
+                    ? `$${f.resistance_target.toFixed(2)} (${f.resistance_level || ''})`
+                    : '—';
+                const tierHTML = buildTierHTML(f);
+                return `<tr data-rth="${rth}"
+                            data-time="${isoTs}"
+                            data-ticker="${escapeHtml(f.ticker)}"
+                            data-price="${f.price}"
+                            data-score="${f.composite_score}"
+                            data-rvol="${f.rvol}"
+                            data-rsi="${rsiData}"
+                            data-target="${f.atr_target}"
+                            data-rr="${f.risk_reward_ratio}">
+                    <td class="time-cell"   data-label="Time">${escapeHtml(f.found_time || '')}</td>
+                    <td class="ticker-cell" data-label="Ticker">${escapeHtml(f.ticker)}</td>
+                    <td class="tier-cell"   data-label="Tier" data-col="tier">${tierHTML}</td>
+                    <td class="num"         data-label="Price">$${Number(f.price).toFixed(2)}</td>
+                    <td class="score-cell num" data-label="Score">${Math.round(f.composite_score)}</td>
+                    <td class="rvol-cell num"  data-label="RVOL">${Number(f.rvol).toFixed(1)}x</td>
+                    <td class="num"         data-label="RSI" data-col="rsi">${rsi}</td>
+                    <td class="num"         data-label="Entry" data-col="entry">$${Number(f.entry||0).toFixed(2)}</td>
+                    <td class="target-cell num" data-label="ATR Tgt">$${Number(f.atr_target||0).toFixed(2)}</td>
+                    <td class="resistance-cell num" data-label="Resistance" data-col="resistance">${resCell}</td>
+                    <td class="stop-cell num" data-label="Stop">$${Number(f.stop_loss||0).toFixed(2)}</td>
+                    <td class="num"         data-label="R:R">${f.risk_reward_ratio}:1</td>
+                </tr>`;
+            }).join('');
+
+            return `
+            <div class="day-summary">
+                <div class="summary-card">
+                    <div class="summary-label">Total Signals</div>
+                    <div class="summary-value" style="color: var(--green);">${data.signal_count}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Unique Tickers</div>
+                    <div class="summary-value" style="color: var(--blue);">${data.unique_tickers}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Best Score</div>
+                    <div class="summary-value" style="color: var(--amber);">${Math.round(bestScore)}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Top Ticker</div>
+                    <div class="summary-value" style="color: var(--text-primary); font-size: 16px;">${escapeHtml(topTicker)}</div>
+                </div>
+            </div>
+            <div class="table-container">
+                <div style="overflow-x: auto;">
+                    <table class="card-table history-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable sorted desc" data-sort="time"   data-type="time" data-default-dir="desc">Time</th>
+                                <th class="sortable"              data-sort="ticker" data-type="str">Ticker</th>
+                                <th                               data-col="tier">Tier</th>
+                                <th class="sortable num"          data-sort="price"  data-type="num">Price</th>
+                                <th class="sortable num"          data-sort="score"  data-type="num">Score</th>
+                                <th class="sortable num"          data-sort="rvol"   data-type="num">RVOL</th>
+                                <th class="sortable num"          data-sort="rsi"    data-type="num" data-col="rsi">RSI</th>
+                                <th class="num"                   data-col="entry">Entry</th>
+                                <th class="sortable num"          data-sort="target" data-type="num">ATR Tgt</th>
+                                <th class="num"                   data-col="resistance">Resistance</th>
+                                <th class="num">Stop</th>
+                                <th class="sortable num"          data-sort="rr"     data-type="num">R:R</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            </div>`;
+        }
+
+        function buildTierHTML(f) {
+            const parts = [];
+            const ldr = f.leadership && f.leadership.label;
+            const reason = (f.leadership && f.leadership.reason) || '';
+            if (ldr === 'LEADER')     parts.push(`<span class="tier-pill ldr"  title="${escapeHtml(reason)}">LDR</span>`);
+            else if (ldr === 'SOLO_MOVER') parts.push(`<span class="tier-pill solo" title="${escapeHtml(reason)}">SOLO</span>`);
+            else if (ldr === 'FOLLOWER') parts.push(`<span class="tier-pill flw"  title="${escapeHtml(reason)} — secondary pick in v3.4.2 display mode">FLW</span>`);
+            else if (ldr === 'LAGGARD')  parts.push(`<span class="tier-pill lag"  title="${escapeHtml(reason)} — unclassified tier in v3.4.2 display mode">LAG</span>`);
+            else if (ldr === 'UNKNOWN')  parts.push(`<span class="tier-pill unc"  title="Sector/peer leadership could not be computed">UNC</span>`);
+            if (f.signal_strength === 'weak') parts.push(`<span class="tier-pill weak" title="Composite score 40–59">WEAK</span>`);
+            const earn = f.earnings;
+            if (earn && earn.has_earnings && (earn.badge_level === 'today_amc' || earn.badge_level === 'tomorrow')) {
+                parts.push(`<span class="tier-pill earn" title="${escapeHtml(earn.reason || '')}">⚡${escapeHtml(earn.badge_text || '')}</span>`);
+            }
+            return parts.length ? parts.join('') : `<span class="tier-pill none">—</span>`;
+        }
+
+        function isWithinRTH(iso) {
+            if (!iso) return false;
+            try {
+                // Use the 'en-US' formatter pinned to America/New_York to get ET fields.
+                const fmt = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'America/New_York',
+                    weekday: 'short', hour12: false,
+                    hour: '2-digit', minute: '2-digit'
+                });
+                const parts = fmt.formatToParts(new Date(iso));
+                const obj = Object.fromEntries(parts.filter(p => p.type !== 'literal').map(p => [p.type, p.value]));
+                if (obj.weekday === 'Sat' || obj.weekday === 'Sun') return false;
+                const mins = parseInt(obj.hour,10) * 60 + parseInt(obj.minute,10);
+                return mins >= 9*60 + 30 && mins < 16*60;
+            } catch { return false; }
+        }
+
+        function escapeHtml(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({
+                '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+            }[c]));
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            bindSortHeaders(document);
+            bindColToggles(document);
             _computeRTHCounts();
             _updateRTHBadge();
         });

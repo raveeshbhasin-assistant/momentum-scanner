@@ -809,6 +809,34 @@ async def history_page(request: Request):
     )
 
 
+@app.get("/api/history/day", response_class=JSONResponse)
+async def api_history_day(date: str):
+    """
+    Return a single day's finds by date string (YYYY-MM-DD).
+
+    Used by the date picker on the History page to surface any arbitrary
+    archived day. Files older than HISTORY_DAYS+1 are cleaned up by the
+    daily cron, so lookups for dates past that window may return an empty
+    list — the UI shows a 'no data' state in that case.
+    """
+    try:
+        # Validate the date string parses; 400 on bad input.
+        datetime.strptime(date, "%Y-%m-%d")
+    except ValueError:
+        return JSONResponse(
+            status_code=400,
+            content={"ok": False, "error": "date must be YYYY-MM-DD"},
+        )
+    finds = load_daily_finds(date)
+    return {
+        "ok": True,
+        "date": date,
+        "finds": finds,
+        "signal_count": len(finds),
+        "unique_tickers": len({f.get("ticker") for f in finds}),
+    }
+
+
 @app.get("/api/today", response_class=JSONResponse)
 async def api_today():
     """JSON API for today's cumulative finds."""
