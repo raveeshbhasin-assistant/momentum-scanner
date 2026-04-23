@@ -350,6 +350,7 @@
                 <div class="seg" id="equityMetric">
                     <button class="active" data-metric="r">R</button>
                     <button data-metric="pnl">$ / share</button>
+                    <button data-metric="pct" title="Per-pick % return, equally weighted across picks (v3.6.2)">%</button>
                 </div>
                 <div class="seg" id="equityShape">
                     <button class="active" data-shape="cum">Cumulative</button>
@@ -401,6 +402,8 @@
         // ── Helpers ────────────────────────────────────────────
         const fmtR   = (r) => r === null || r === undefined ? "—" : (r >= 0 ? "+" : "") + r.toFixed(2) + "R";
         const fmtPnl = (p) => p === null || p === undefined ? "—" : (p >= 0 ? "+$" : "-$") + Math.abs(p).toFixed(2);
+        // v3.6.2 — per-pick % return (equally weighted across picks)
+        const fmtPct = (p) => p === null || p === undefined ? "—" : (p >= 0 ? "+" : "") + p.toFixed(2) + "%";
         const fmtWR  = (w) => (w === null || w === undefined) ? "n/a" : w.toFixed(1) + "%";
         const fmtN   = (n) => n === null || n === undefined ? "—" : n;
 
@@ -635,7 +638,7 @@
             document.getElementById("overallTitle").textContent = title + modeTag;
 
             const rk = resultField();
-            let n, w, l, eod, totalR, totalPnl, hasR, hasPnl;
+            let n, w, l, eod, totalR, totalPnl, totalPct, nPct, hasR, hasPnl, hasPct;
             if (Array.isArray(picks)) {
                 n = picks.length;
                 w = picks.filter(p => p[rk] === "WIN").length;
@@ -647,17 +650,23 @@
                 const ps = picks.map(p => p.pnl_dollar).filter(v => v !== null && v !== undefined);
                 totalPnl = ps.reduce((a, b) => a + b, 0);
                 hasPnl = ps.length > 0;
+                const pcts = picks.map(p => p.pnl_pct).filter(v => v !== null && v !== undefined);
+                totalPct = pcts.reduce((a, b) => a + b, 0);
+                nPct = pcts.length;
+                hasPct = nPct > 0;
             } else {
-                n = 0; w = 0; l = 0; eod = 0; totalR = 0; totalPnl = 0;
+                n = 0; w = 0; l = 0; eod = 0; totalR = 0; totalPnl = 0; totalPct = 0; nPct = 0;
                 Object.entries(stats.by_category || {}).forEach(([c, s]) => {
                     if (!state.cats.has(c)) return;
                     const bo = s.by_outcome || {};
                     ["WIN", "LOSS", "EOD"].forEach(k => {
                         if (!state.results.has(k)) return;
-                        const b = bo[k] || { n: 0, total_r: 0, total_pnl: 0 };
+                        const b = bo[k] || { n: 0, total_r: 0, total_pnl: 0, total_pct: 0, n_pct: 0 };
                         n += b.n;
                         totalR += b.total_r;
                         totalPnl += b.total_pnl;
+                        totalPct += (b.total_pct || 0);
+                        nPct += (b.n_pct || 0);
                         if (k === "WIN") w += b.n;
                         else if (k === "LOSS") l += b.n;
                         else eod += b.n;
@@ -665,10 +674,14 @@
                 });
                 hasR = n > 0;
                 hasPnl = n > 0;
+                hasPct = nPct > 0;
             }
 
             const wr = (w + l) ? (w / (w + l) * 100) : null;
             const avgR = hasR && n > 0 ? totalR / n : null;
+            // Equal-weight average %: divide by picks that HAVE a pnl_pct (nPct),
+            // not total n — avoids deflating the avg when some picks lack resolve.
+            const avgPct = hasPct ? totalPct / nPct : null;
 
             document.getElementById("overallSub").textContent =
                 state.cats.size < 4 || state.results.size < 3
@@ -680,6 +693,9 @@
                 { label: "Win Rate (W/(W+L))", value: fmtWR(wr), sub: `${w}/${w + l}`, cls: wr == null ? "neu" : (wr >= 40 ? "pos" : (wr < 25 ? "neg" : "neu")) },
                 { label: "Total R", value: hasR ? fmtR(totalR) : "—", sub: avgR == null ? "" : `avg ${fmtR(avgR)}`, cls: totalR >= 0 ? "pos" : "neg" },
                 { label: "Net $ / share", value: hasPnl ? fmtPnl(totalPnl) : "—", sub: "", cls: totalPnl >= 0 ? "pos" : "neg" },
+                // v3.6.2 — Avg % / pick: equal-weight mean of per-pick (resolve-entry)/entry*100.
+                // Shown alongside Net $/share as a price-normalized companion metric.
+                { label: "Avg % / pick", value: fmtPct(avgPct), sub: hasPct ? `Σ ${fmtPct(totalPct)} · ${nPct} pk` : "", cls: avgPct == null ? "neu" : (avgPct >= 0 ? "pos" : "neg") },
             ];
             const host = document.getElementById("overallKpis");
             host.innerHTML = kpis.map(k => `
@@ -783,6 +799,29 @@
             let labels = [], values = [];
             let xTitle = "", yTitle = "", sourceNote = "";
 
+            // v3.6.2 — helper: extract per-pick value for the active metric
+            const pickVal = (p) => (
+                state.equityMetric === "r"   ? (p.r_realized || 0)  :
+                state.equityMetric === "pct" ? (p.pnl_pct    || 0)  :
+                                               (p.pnl_dollar || 0)
+            );
+            const dayVal = (d) => (
+                state.equityMetric === "r"   ? d.day_r   :
+                state.equityMetric === "pct" ? d.day_pct :
+                                               d.day_pnl
+            );
+            const cumVal = (d) => (
+                state.equityMetric === "r"   ? d.cum_r   :
+                state.equityMetric === "pct" ? d.cum_pct :
+                                               d.cum_pnl
+            );
+            const metricLabel = (shape) => {
+                const prefix = shape === "cum" ? "Cumulative" : (label === "single day" ? "Per-pick" : "Daily");
+                if (state.equityMetric === "r")   return `${prefix} R`;
+                if (state.equityMetric === "pct") return `${prefix} %`;
+                return `${prefix} $ / share`;
+            };
+
             if (label === "single day" && Array.isArray(picks)) {
                 const rows = picks.slice()
                     .filter(p => p.r_realized !== null && p.r_realized !== undefined)
@@ -791,34 +830,24 @@
                 if (state.equityShape === "cum") {
                     let cum = 0;
                     rows.forEach(p => {
-                        cum += state.equityMetric === "r"
-                            ? (p.r_realized || 0)
-                            : (p.pnl_dollar || 0);
+                        cum += pickVal(p);
                         labels.push(`${p.batch_time} ${p.ticker}`);
                         values.push(+cum.toFixed(3));
                     });
-                    yTitle = state.equityMetric === "r" ? "Cumulative R" : "Cumulative $ / share";
                 } else {
                     rows.forEach(p => {
                         labels.push(`${p.batch_time} ${p.ticker}`);
-                        values.push(state.equityMetric === "r"
-                            ? (p.r_realized || 0)
-                            : (p.pnl_dollar || 0));
+                        values.push(pickVal(p));
                     });
-                    yTitle = state.equityMetric === "r" ? "Per-pick R" : "Per-pick $ / share";
                 }
+                yTitle = metricLabel(state.equityShape);
                 xTitle = "Pick (ordered by time)";
                 sourceNote = `${rows.length} picks on ${state.date}`;
             } else if (Array.isArray(dailySeries) && dailySeries.length) {
                 const rows = dailySeries;
                 labels = rows.map(d => d.date);
-                if (state.equityShape === "cum") {
-                    values = rows.map(d => state.equityMetric === "r" ? d.cum_r : d.cum_pnl);
-                    yTitle = state.equityMetric === "r" ? "Cumulative R" : "Cumulative $ / share";
-                } else {
-                    values = rows.map(d => state.equityMetric === "r" ? d.day_r : d.day_pnl);
-                    yTitle = state.equityMetric === "r" ? "Daily R" : "Daily $ / share";
-                }
+                values = rows.map(state.equityShape === "cum" ? cumVal : dayVal);
+                yTitle = metricLabel(state.equityShape);
                 xTitle = "Trading day";
                 sourceNote = `${rows.length} day${rows.length === 1 ? "" : "s"}${label === "range" ? " in range" : " total"}`;
             } else {
@@ -853,7 +882,9 @@
                             label: (ctx) => {
                                 const v = ctx.parsed.y;
                                 if (v === null || v === undefined) return "";
-                                return state.equityMetric === "r" ? fmtR(v) : fmtPnl(v);
+                                if (state.equityMetric === "r")   return fmtR(v);
+                                if (state.equityMetric === "pct") return fmtPct(v);
+                                return fmtPnl(v);
                             }
                         }
                     }
@@ -951,6 +982,7 @@
                 {k:"resolve_price", label:"Exit"},
                 {k:"r_realized", label:"R"},
                 {k:"pnl_dollar", label:"P&L $"},
+                {k:"pnl_pct", label:"P&L %"},
             ];
             picks = picks.slice().sort((a,b) => {
                 const k = state.sort.key, d = state.sort.dir;
@@ -992,6 +1024,7 @@
                     <td data-label="Exit">${p.resolve_price ?? "—"}</td>
                     <td class="${rCls}" data-label="R">${fmtR(p.r_realized)}</td>
                     <td class="${rCls}" data-label="P&L $">${fmtPnl(p.pnl_dollar)}</td>
+                    <td class="${rCls}" data-label="P&L %">${fmtPct(p.pnl_pct)}</td>
                 </tr>`;
             });
             html += '</tbody>';

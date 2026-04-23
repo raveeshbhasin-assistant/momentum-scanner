@@ -163,6 +163,16 @@ def normalize_entry(raw: dict) -> dict:
     bt = raw.get("batch_time") or raw.get("time_et") or ""
     result = raw.get("result", raw.get("status", ""))
     pnl = _f(raw.get("pnl_dollar", raw.get("pnl_per_share")))
+    # v3.6.2 — per-pick % return: (resolve - entry) / entry * 100.
+    # Position-size agnostic; price-normalized (unlike $/share, which over-weights
+    # high-priced tickers). Null-safe if either side is missing.
+    entry_px = _f(raw.get("entry"))
+    pct = None
+    if pnl is not None and entry_px not in (None, 0):
+        try:
+            pct = round((pnl / entry_px) * 100.0, 3)
+        except (TypeError, ZeroDivisionError):
+            pct = None
     # P&L-adjusted ("effective") reclassification:
     # If a pick is sold at EOD (close-only exit), upgrade to WIN if it ended
     # above entry, downgrade to LOSS if it ended below entry. Pure ties stay EOD.
@@ -190,6 +200,7 @@ def normalize_entry(raw: dict) -> dict:
         "resolve_time": raw.get("resolve_time", ""),
         "resolve_price": _f(raw.get("resolve_price")),
         "pnl_dollar": pnl,
+        "pnl_pct": pct,
         "r_realized": _f(raw.get("r_realized")),
         "appearance": raw.get("appearance", 1),
         "post_close": bool(raw.get("post_close", False)),
@@ -239,6 +250,7 @@ def _rollup(group: list[dict], result_key: str = "result") -> dict:
             "n": 0, "wins": 0, "losses": 0, "eods": 0,
             "win_rate": None, "total_r": 0.0, "avg_r": 0.0,
             "total_pnl": 0.0, "avg_pnl": 0.0,
+            "total_pct": 0.0, "avg_pct": 0.0, "n_pct": 0,
             "by_outcome": _empty_by_outcome(),
         }
     w = sum(1 for e in group if e.get(result_key) == "WIN")
@@ -246,8 +258,10 @@ def _rollup(group: list[dict], result_key: str = "result") -> dict:
     eod = sum(1 for e in group if e.get(result_key) == "EOD")
     rs = [e["r_realized"] for e in group if _is_num(e.get("r_realized"))]
     pnls = [e["pnl_dollar"] for e in group if _is_num(e.get("pnl_dollar"))]
+    pcts = [e["pnl_pct"] for e in group if _is_num(e.get("pnl_pct"))]
     total_r = sum(rs) if rs else 0.0
     total_pnl = sum(pnls) if pnls else 0.0
+    total_pct = sum(pcts) if pcts else 0.0
     wr = (w / (w + l) * 100) if (w + l) > 0 else None
 
     # Per-outcome split for filter-respecting headlines in cum/range mode.
@@ -263,9 +277,13 @@ def _rollup(group: list[dict], result_key: str = "result") -> dict:
             b["total_r"] += float(e["r_realized"])
         if _is_num(e.get("pnl_dollar")):
             b["total_pnl"] += float(e["pnl_dollar"])
+        if _is_num(e.get("pnl_pct")):
+            b["total_pct"] += float(e["pnl_pct"])
+            b["n_pct"] = b.get("n_pct", 0) + 1
     for oc in by_outcome:
         by_outcome[oc]["total_r"] = round(by_outcome[oc]["total_r"], 3)
         by_outcome[oc]["total_pnl"] = round(by_outcome[oc]["total_pnl"], 2)
+        by_outcome[oc]["total_pct"] = round(by_outcome[oc].get("total_pct", 0.0), 3)
 
     return {
         "n": len(group),
@@ -277,6 +295,12 @@ def _rollup(group: list[dict], result_key: str = "result") -> dict:
         "avg_r": round(total_r / len(group), 3) if group else 0.0,
         "total_pnl": round(total_pnl, 2),
         "avg_pnl": round(total_pnl / len(group), 3) if group else 0.0,
+        # v3.6.2 — average % per pick (Option 1: equally weighted across picks,
+        # not capital-weighted). Null-safe: denominator is picks that actually
+        # have pnl_pct (entry + resolve both present), not the full group.
+        "total_pct": round(total_pct, 3),
+        "avg_pct": round(total_pct / len(pcts), 3) if pcts else 0.0,
+        "n_pct": len(pcts),
         "by_outcome": by_outcome,
     }
 
@@ -284,9 +308,9 @@ def _rollup(group: list[dict], result_key: str = "result") -> dict:
 def _empty_by_outcome() -> dict:
     """Shape-stable empty split used by _rollup. Keeps keys consistent for UI."""
     return {
-        "WIN":  {"n": 0, "total_r": 0.0, "total_pnl": 0.0},
-        "LOSS": {"n": 0, "total_r": 0.0, "total_pnl": 0.0},
-        "EOD":  {"n": 0, "total_r": 0.0, "total_pnl": 0.0},
+        "WIN":  {"n": 0, "total_r": 0.0, "total_pnl": 0.0, "total_pct": 0.0, "n_pct": 0},
+        "LOSS": {"n": 0, "total_r": 0.0, "total_pnl": 0.0, "total_pct": 0.0, "n_pct": 0},
+        "EOD":  {"n": 0, "total_r": 0.0, "total_pnl": 0.0, "total_pct": 0.0, "n_pct": 0},
     }
 
 
@@ -375,12 +399,16 @@ def _daily_series(entries: list[dict]) -> list[dict]:
     rows: list[dict] = []
     cum_r = 0.0
     cum_pnl = 0.0
+    cum_pct = 0.0     # v3.6.2 — equal-weight sum of per-pick % returns
     for d in sorted(by_date.keys()):
         grp = by_date[d]
         day_r = sum(e["r_realized"] for e in grp if _is_num(e.get("r_realized")))
         day_pnl = sum(e["pnl_dollar"] for e in grp if _is_num(e.get("pnl_dollar")))
+        day_pct_vals = [e["pnl_pct"] for e in grp if _is_num(e.get("pnl_pct"))]
+        day_pct_sum = sum(day_pct_vals) if day_pct_vals else 0.0
         cum_r += day_r
         cum_pnl += day_pnl
+        cum_pct += day_pct_sum
         w = sum(1 for e in grp if e.get("effective_result") == "WIN")
         l = sum(1 for e in grp if e.get("effective_result") == "LOSS")
         eod = sum(1 for e in grp if e.get("effective_result") == "EOD")
@@ -392,8 +420,14 @@ def _daily_series(entries: list[dict]) -> list[dict]:
             "eods": eod,
             "day_r": round(day_r, 3),
             "day_pnl": round(day_pnl, 2),
+            # day_pct is the SUM of per-pick % for that date (not an avg).
+            # Mirrors day_pnl semantics; the chart divides by day n if it
+            # wants an average. n_pct tracks picks with valid % for that day.
+            "day_pct": round(day_pct_sum, 3),
+            "n_pct": len(day_pct_vals),
             "cum_r": round(cum_r, 3),
             "cum_pnl": round(cum_pnl, 2),
+            "cum_pct": round(cum_pct, 3),
         })
     return rows
 

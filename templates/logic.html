@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.6.1</title>
+    <title>Algorithm Logic — Momentum Scanner v3.6.2</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.6.1</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.6.2</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,45 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.6.2 ───── -->
+        <div class="release current" id="v3-6-2">
+            <div class="release-header">
+                <span class="release-version">v3.6.2</span>
+                <span class="release-date">Released 2026-04-23</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">Performance — <code>Avg % / pick</code> metric. The <code>/performance</code> page gains a new KPI card and a third equity-curve toggle alongside <code>R</code> and <code>$ / share</code>. "% / pick" answers: <em>"how much did the typical pick move, as a percentage of its own entry price?"</em> Equal-weighted across picks (Option 1 — not capital-weighted), so a +2% move on a $500 stock and a +2% move on a $20 stock count the same. Complements <code>R</code> (risk-normalized) and <code>$ / share</code> (sizing-dollar view) with a third, price-normalized lens.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> "Net $ / share" is easy to misread because higher-priced tickers dominate it in absolute terms — NVDA contributing +$2 is a smaller move than F contributing +$1 in percentage terms, but the old KPI made them look 2:1. "Avg % / pick" is the metric most traders intuitively translate to "is the scanner's typical pick worth trading?" — it's what gets compared to a benchmark like SPY-intraday or a fixed-% stop strategy.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>pnl_pct</code> on every performance entry.</strong> Computed in <code>performance_engine.normalize_entry</code> as <code>(pnl_dollar / entry) × 100</code>, rounded to 3 decimals. Null-safe if either side is missing. The existing JSON store doesn't need re-seeding — derivation happens on every page render.</li>
+                    <li><strong>New rollup fields: <code>total_pct</code>, <code>avg_pct</code>, <code>n_pct</code>.</strong> Added to <code>_rollup()</code> and its <code>by_outcome</code> sub-split so range / cumulative mode can aggregate % even when per-pick rows aren't present. <code>n_pct</code> tracks how many picks in the group actually carry a valid % (not all do — picks without a resolve price have null pct), so the average divides correctly.</li>
+                    <li><strong><code>day_pct</code> and <code>cum_pct</code> on <code>_daily_series</code>.</strong> Mirrors the existing R / $ fields so the equity-curve chart can plot the % series without any extra server work.</li>
+                    <li><strong>KPI card "Avg % / pick".</strong> Shows the equally-weighted mean of per-pick % across the filtered view. Sub-line shows <code>Σ total% · N picks</code> so you can also see the sum and the denominator. Green if positive, red if negative.</li>
+                    <li><strong>Equity curve — third metric toggle.</strong> The existing R / $ / share segmented-toggle gains a <code>%</code> button. Works in both single-day mode (per-pick % accumulation) and cumulative/range mode (daily sum of %). Y-axis title and tooltip formatter all branch on the active metric.</li>
+                    <li><strong>Picks table — new <code>P&L %</code> column.</strong> Sortable like the existing R and P&L columns, rendered via <code>fmtPct</code>. Colour-matches the R cell (positive green, negative red).</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Version stamp bumped to <code>3.6.2</code></strong> in <code>FastAPI(title=..., version=...)</code>, <code>_footer.html</code>, and this page's <code>&lt;title&gt;</code> + version-tag. No algorithm change — scoring, leadership classification, category assignment, and WIN/LOSS resolution are all identical to v3.6.1. Only the post-hoc P&L metric set on <code>/performance</code> is richer. The existing <code>performance_log.json</code> is read unchanged and every byte-compatible consumer (backup JSON, <code>/api/performance/range</code>) is preserved.</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- ───── v3.6.1 ───── -->
-        <div class="release current" id="v3-6-1">
+        <div class="release" id="v3-6-1">
             <div class="release-header">
                 <span class="release-version">v3.6.1</span>
                 <span class="release-date">Released 2026-04-23</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">Today's Finds — category filter. The <code>/today</code> page now carries four A/B/C/D filter chips and an "A+B only" shortcut, matching the semantic-category language already used on <code>/performance</code> and in the notifier. Each row gets a small cat-pill in the Tier column so the assignment is visible at a glance. No data is removed — it's a pure UI filter.</div>
 

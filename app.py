@@ -60,7 +60,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.6.1")
+app = FastAPI(title="Momentum Scanner", version="3.6.2")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
