@@ -280,7 +280,7 @@
 </head>
 <body>
 
-    {% with active_page="performance", page_title="Performance — v3.5 Categories" %}{% include "_nav.html" %}{% endwith %}
+    {% with active_page="performance", page_title="Performance" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="main">
 
@@ -391,12 +391,8 @@
 
     </main>
 
-    <footer class="footer">
-        <div class="footer-note">
-            Momentum Scanner v3.5 — Performance (category tracking started 2026-04-20). Not financial advice.
-            <div style="margin-top:4px" id="lastUpdated"></div>
-        </div>
-    </footer>
+    {% with footer_note="Performance — category tracking started 2026-04-20." %}{% include "_footer.html" %}{% endwith %}
+    <div id="lastUpdated" style="text-align:center; padding: 0 24px 24px; color: var(--text-muted); font-size: 11px;"></div>
 
     <script>
         // ── Data injected from backend ─────────────────────────
