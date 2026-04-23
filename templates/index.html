@@ -176,6 +176,74 @@
         .stat-value.amber { color: var(--amber); }
         .stat-value.blue { color: var(--blue); }
 
+        /* ── Config pills (v3.6.0) ──────────────────────────────
+           Compact replacement for the old 4-up config "stat cards"
+           (Scan interval, Universe, Data source, Risk profile).
+           Primary numbers stay in .stats-bar above. */
+        .config-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .config-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            border-radius: 999px;
+            font-size: 12px;
+            line-height: 1;
+        }
+        .config-pill .pill-label {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .config-pill .pill-value {
+            color: var(--text-primary);
+            font-family: var(--mono);
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .config-pill.data-ok   .pill-value { color: var(--green); }
+        .config-pill.data-warn .pill-value { color: var(--amber); }
+        .config-pill.risk      .pill-value { color: var(--amber); }
+        .config-pill.universe  .pill-value { color: var(--purple); }
+
+        /* ── 3:55 PM close countdown in header (v3.6.0) ────────
+           Active only between 15:30 and 15:55 ET; hidden otherwise. */
+        .close-countdown {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(245,158,11,0.12);
+            border: 1px solid rgba(245,158,11,0.4);
+            color: var(--amber);
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .close-countdown[hidden] { display: none !important; }
+        .close-countdown.urgent {
+            background: rgba(239,68,68,0.15);
+            border-color: rgba(239,68,68,0.5);
+            color: var(--red);
+            animation: pulse 2s infinite;
+        }
+        .close-countdown .cc-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: currentColor; opacity: 0.9;
+        }
+
         /* ── Signal Cards ─────────────────────────────────────── */
         .signals-grid {
             display: flex;
@@ -488,6 +556,31 @@
             color: var(--text-secondary);
             line-height: 1.7;
         }
+        /* v3.6.0: bullet-list rendering of the reasoning summary */
+        .reasoning-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .reasoning-list li {
+            position: relative;
+            padding-left: 18px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+        .reasoning-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--cyan);
+            font-size: 11px;
+        }
+        .reasoning-list li strong { color: var(--text-primary); font-weight: 600; }
 
         /* ── Empty State ───────────────────────────────────────── */
         .empty-state {
@@ -730,6 +823,11 @@
                     {% if is_scanning %}Scanning...{% else %}Last scan: {{ last_scan }}{% endif %}
                 </span>
             </div>
+            <span id="closeCountdown" class="close-countdown" hidden
+                  title="Intraday-only rule: close all positions by 3:55 PM ET">
+                <span class="cc-dot"></span>
+                <span id="closeCountdownText">Close by 3:55 PM</span>
+            </span>
         </div>
         <div class="header-right">
             <a href="/today" class="nav-link">Today's Finds</a>
@@ -784,7 +882,9 @@
         </div>
         {% endif %}
 
-        <!-- 60-MIN MAE CHECK REMINDER (v3.4.1 manual rule) -->
+        <!-- 60-MIN MAE CHECK REMINDER (v3.4.1 manual rule) —
+             v3.6.0: only shown when there's at least one active signal. -->
+        {% if signals %}
         <div class="mae-rule-banner" title="Manual Fidelity rule — check at 60 minutes into trade">
             <span class="mae-tag">60-MIN MAE CHECK</span>
             <span>
@@ -794,8 +894,9 @@
                 <a href="/logic#v3-4-1">see logic →</a>
             </span>
         </div>
+        {% endif %}
 
-        <!-- STATS BAR -->
+        <!-- PRIMARY STATS — the two numbers that actually move day to day -->
         <div class="stats-bar">
             <div class="stat-card">
                 <div class="stat-label">Active Signals</div>
@@ -807,22 +908,28 @@
                     {{ "%.1f"|format(signals[0].composite_score) if signals else "—" }}
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Scan Interval</div>
-                <div class="stat-value blue">{{ scan_interval }}m</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Universe</div>
-                <div class="stat-value" style="color: var(--purple);">S&P 500</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Data Source</div>
-                <div class="stat-value" style="color: {{ 'var(--green)' if 'Real-Time' in data_source else 'var(--amber)' }}; font-size: 16px;">{{ data_source }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Risk Profile</div>
-                <div class="stat-value" style="color: var(--amber); font-size: 18px;">Aggressive</div>
-            </div>
+        </div>
+
+        <!-- CONFIG PILLS (v3.6.0) — compact row replacing the
+             old fixed "config" stat cards. -->
+        <div class="config-pills" aria-label="Scanner configuration">
+            <span class="config-pill" title="Scan cadence — how often the scanner sweeps the universe">
+                <span class="pill-label">Interval</span>
+                <span class="pill-value">{{ scan_interval }}m</span>
+            </span>
+            <span class="config-pill universe" title="Ticker universe being scanned">
+                <span class="pill-label">Universe</span>
+                <span class="pill-value">S&amp;P 500</span>
+            </span>
+            <span class="config-pill {{ 'data-ok' if 'Real-Time' in data_source else 'data-warn' }}"
+                  title="Live price feed provider">
+                <span class="pill-label">Data</span>
+                <span class="pill-value">{{ data_source }}</span>
+            </span>
+            <span class="config-pill risk" title="Position-sizing profile (see Logic page)">
+                <span class="pill-label">Risk</span>
+                <span class="pill-value">Aggressive</span>
+            </span>
         </div>
 
         <!-- SIGNALS -->
@@ -1113,7 +1220,10 @@
                 });
                 candleSeries.setData(signal.chart_data);
 
-                // Entry line
+                // Entry / Target / Stop / Resistance price lines.
+                // v3.6.0: on narrow screens the y-axis has little room for labels,
+                // so shorten ENTRY/TARGET/STOP to ENT/TGT/STP.
+                const isNarrow = window.matchMedia('(max-width: 640px)').matches;
                 if (signal.trade) {
                     candleSeries.createPriceLine({
                         price: signal.trade.entry,
@@ -1121,7 +1231,7 @@
                         lineWidth: 2,
                         lineStyle: 0,
                         axisLabelVisible: true,
-                        title: 'ENTRY',
+                        title: isNarrow ? 'ENT' : 'ENTRY',
                     });
                     candleSeries.createPriceLine({
                         price: signal.trade.target,
@@ -1129,7 +1239,7 @@
                         lineWidth: 1,
                         lineStyle: 2,
                         axisLabelVisible: true,
-                        title: 'TARGET',
+                        title: isNarrow ? 'TGT' : 'TARGET',
                     });
                     candleSeries.createPriceLine({
                         price: signal.trade.stop_loss,
@@ -1137,17 +1247,18 @@
                         lineWidth: 1,
                         lineStyle: 2,
                         axisLabelVisible: true,
-                        title: 'STOP',
+                        title: isNarrow ? 'STP' : 'STOP',
                     });
                     // Resistance target (pivot point)
                     if (signal.trade.resistance_target && signal.trade.resistance_target > 0) {
+                        const resLabel = signal.trade.resistance_level || 'RES';
                         candleSeries.createPriceLine({
                             price: signal.trade.resistance_target,
                             color: '#a78bfa',
                             lineWidth: 1,
                             lineStyle: 1,
                             axisLabelVisible: true,
-                            title: signal.trade.resistance_level || 'RES',
+                            title: isNarrow ? 'RES' : resLabel,
                         });
                     }
                 }
@@ -1180,45 +1291,57 @@
             generateReasoning(ticker, signal);
         }
 
-        // Generate natural-language reasoning for each signal
+        // Generate reasoning as an easy-to-scan bullet list (v3.6.0).
+        // Each bullet is one short, self-contained fact about the setup.
         function generateReasoning(ticker, signal) {
             const el = document.getElementById(`reasoning-${ticker}`);
             if (!el) return;
 
-            let parts = [];
+            const bullets = [];
 
-            // Technical summary
+            // 1) Technical headline
             const ts = signal.technical_score;
-            if (ts >= 80) parts.push(`${ticker} shows a strong technical setup (score: ${ts}/100).`);
-            else if (ts >= 60) parts.push(`${ticker} has a solid technical setup (score: ${ts}/100).`);
-            else parts.push(`${ticker}'s technicals are moderate (score: ${ts}/100) but other factors compensate.`);
+            if (ts >= 80)      bullets.push(`<strong>Strong</strong> technical setup — technical score ${ts}/100.`);
+            else if (ts >= 60) bullets.push(`<strong>Solid</strong> technical setup — technical score ${ts}/100.`);
+            else               bullets.push(`Technicals are <strong>moderate</strong> (${ts}/100); other factors need to compensate.`);
 
-            // EMA
+            // 2) EMA stack
             const ema = signal.tech_details?.ema;
-            if (ema?.bullish) parts.push(ema.status + '.');
+            if (ema?.bullish) bullets.push(ema.status + '.');
 
-            // RSI
+            // 3) RSI
             const rsi = signal.tech_details?.rsi;
-            if (rsi) parts.push(`RSI at ${rsi.value} — ${rsi.status.toLowerCase()}.`);
+            if (rsi) bullets.push(`RSI at <strong>${rsi.value}</strong> — ${rsi.status.toLowerCase()}.`);
 
-            // MACD
+            // 4) MACD
             const macd = signal.tech_details?.macd;
-            if (macd?.bullish) parts.push(`MACD is ${macd.status.toLowerCase()}.`);
+            if (macd?.bullish) bullets.push(`MACD is ${macd.status.toLowerCase()}.`);
 
-            // Volume
-            parts.push(`Relative volume is ${signal.rvol}x the time-adjusted average — ${signal.rvol >= 2 ? 'very strong' : 'elevated'} institutional interest.`);
+            // 5) Volume
+            bullets.push(
+                `Relative volume <strong>${signal.rvol}x</strong> the time-adjusted average — ` +
+                (signal.rvol >= 2 ? 'very strong' : 'elevated') + ' institutional interest.'
+            );
 
-            // Sentiment
+            // 6) Sentiment (only when meaningful)
             if (signal.sentiment_score > 0.15) {
-                parts.push(`News sentiment is bullish (+${(signal.sentiment_score * 100).toFixed(0)}%), adding conviction.`);
+                bullets.push(`News sentiment is <strong>bullish</strong> (+${(signal.sentiment_score * 100).toFixed(0)}%), adding conviction.`);
             } else if (signal.sentiment_score < -0.15) {
-                parts.push(`Note: news sentiment is negative (${(signal.sentiment_score * 100).toFixed(0)}%), but technicals and volume outweigh it.`);
+                bullets.push(`News sentiment is <strong>negative</strong> (${(signal.sentiment_score * 100).toFixed(0)}%) — technicals and volume outweigh it.`);
             }
 
-            // Trade
-            parts.push(`Entry at $${signal.trade.entry} with a ${signal.trade.risk_reward_ratio}:1 reward-to-risk ratio. Risk ${signal.trade.risk_pct}% to make ${signal.trade.reward_pct}%. Close position by 3:55 PM ET — no overnight holds.`);
+            // 7) Trade plan (single tight bullet)
+            bullets.push(
+                `Entry <strong>$${signal.trade.entry}</strong> · Target <strong>$${signal.trade.target}</strong> · ` +
+                `Stop <strong>$${signal.trade.stop_loss}</strong> — ${signal.trade.risk_reward_ratio}:1 R/R ` +
+                `(risk ${signal.trade.risk_pct}% · reward ${signal.trade.reward_pct}%). Close by 3:55 PM ET.`
+            );
 
-            el.textContent = parts.join(' ');
+            // Render as <ul> — HTML content is trusted (all values come from our backend).
+            el.innerHTML =
+                '<ul class="reasoning-list">' +
+                bullets.map(b => `<li>${b}</li>`).join('') +
+                '</ul>';
         }
 
         // Trigger manual scan
@@ -1278,10 +1401,74 @@
             });
         });
 
-        // Expand first card automatically if there are signals
-        if (signals.length > 0) {
+        // Expand first card automatically — desktop only (v3.6.0).
+        // On mobile the card body is tall and the auto-expand hid the other
+        // signals below the fold.
+        if (signals.length > 0 && window.matchMedia('(min-width: 768px)').matches) {
             toggleCard(signals[0].ticker);
         }
+
+        // ── 3:55 PM close countdown (v3.6.0) ─────────────────────
+        // Shows between 3:30 PM and 3:55 PM ET as a pulsing reminder to
+        // close intraday positions before the hard stop. Turns red in the
+        // final 5 minutes.
+        (function setupCloseCountdown() {
+            const el = document.getElementById('closeCountdown');
+            const txt = document.getElementById('closeCountdownText');
+            if (!el || !txt) return;
+
+            function etNow() {
+                // Extract H:M:S in America/New_York regardless of the
+                // viewer's local TZ. Works for both EST and EDT.
+                const parts = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'America/New_York',
+                    hour12: false,
+                    weekday: 'short',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                }).formatToParts(new Date());
+                const get = t => parts.find(p => p.type === t)?.value;
+                return {
+                    weekday: get('weekday'),
+                    h: parseInt(get('hour'), 10),
+                    m: parseInt(get('minute'), 10),
+                    s: parseInt(get('second'), 10),
+                };
+            }
+
+            function update() {
+                const t = etNow();
+                // Weekend → hide.
+                if (t.weekday === 'Sat' || t.weekday === 'Sun') {
+                    el.hidden = true; return;
+                }
+                const nowSec = t.h * 3600 + t.m * 60 + t.s;
+                const closeSec = 15 * 3600 + 55 * 60; // 15:55:00 ET
+                const startSec = 15 * 3600 + 30 * 60; // 15:30:00 ET
+
+                if (nowSec < startSec || nowSec >= closeSec + 60) {
+                    // Outside the window (or 1 min past close) — hide.
+                    el.hidden = true;
+                    el.classList.remove('urgent');
+                    return;
+                }
+
+                el.hidden = false;
+                const remaining = closeSec - nowSec;
+                if (remaining <= 0) {
+                    txt.textContent = 'MARKET CLOSE — 3:55 PM';
+                    el.classList.add('urgent');
+                    return;
+                }
+                const mm = Math.floor(remaining / 60);
+                const ss = remaining % 60;
+                txt.textContent =
+                    `Close by 3:55 PM — ${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+                el.classList.toggle('urgent', remaining <= 5 * 60);
+            }
+
+            update();
+            setInterval(update, 1000);
+        })();
     </script>
 </body>
 </html>
