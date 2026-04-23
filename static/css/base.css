@@ -1,0 +1,154 @@
+/* ═══════════════════════════════════════════════════════════════
+   Momentum Scanner — Base layout (v3.6.0)
+   Global reset, body defaults, shared header/nav/footer styling,
+   scrollbar, and shared mobile breakpoints for the chrome.
+   Page-specific layouts stay in per-template <style>.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font);
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Header / Nav ─────────────────────────────────────────────── */
+.header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+}
+
+.header-left  { display: flex; align-items: center; gap: 16px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--green), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-decoration: none;
+}
+
+.page-title {
+    font-size: 14px;
+    color: var(--text-secondary);
+    padding-left: 12px;
+    border-left: 1px solid var(--border);
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+}
+.nav-link:hover  { color: var(--text-primary); background: var(--bg-card); }
+.nav-link.active { color: var(--cyan);          background: var(--bg-card); }
+
+/* Hamburger toggle — hidden by default, revealed on mobile (Phase 6).
+   Present in _nav.html so markup is ready; visual promotion is gated
+   behind the mobile breakpoint below. */
+.nav-toggle {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    width: 40px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
+}
+.nav-toggle:hover { color: var(--text-primary); border-color: var(--cyan); }
+
+/* ── Footer ───────────────────────────────────────────────────── */
+.footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+}
+.footer a { color: var(--text-secondary); text-decoration: none; }
+.footer a:hover { color: var(--cyan); }
+
+/* ── Scrollbar ────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 8px; height: 8px; }
+::-webkit-scrollbar-track  { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Shared focus ring (accessibility) ───────────────────────── */
+a:focus-visible, button:focus-visible, [role="button"]:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ── Mobile breakpoints for the chrome ───────────────────────── */
+@media (max-width: 768px) {
+    .header {
+        flex-wrap: wrap;
+        padding: 12px 16px;
+        gap: 10px;
+    }
+    .header-left  { flex: 1; min-width: 0; }
+    .header-right { flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+    .logo       { font-size: 18px; }
+    .page-title { font-size: 13px; padding-left: 10px; }
+    .nav-link   { font-size: 12px; padding: 6px 10px; }
+    .footer     { padding: 20px 16px; }
+}
+
+@media (max-width: 480px) {
+    .nav-toggle { display: inline-flex; }
+    .header-right {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border);
+        padding: 8px 12px 12px;
+        display: none;
+    }
+    .header.nav-open .header-right { display: flex; }
+    .header.nav-open .nav-toggle   { color: var(--cyan); border-color: var(--cyan); }
+    .nav-link {
+        padding: 12px;
+        min-height: var(--tap-target);
+        display: flex;
+        align-items: center;
+    }
+}

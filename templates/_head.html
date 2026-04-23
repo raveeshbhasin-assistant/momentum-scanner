@@ -1,0 +1,20 @@
+{#
+    _head.html — shared <head> block for every page.
+    Include at the top of <head> and follow with per-page <title>, meta, and <style> overrides.
+
+    Usage:
+        <head>
+            {% include "_head.html" %}
+            <title>Today's Finds — Momentum Scanner</title>
+            <style> /* page-specific */ </style>
+        </head>
+#}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e17">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', path='favicon.svg') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='css/tokens.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">

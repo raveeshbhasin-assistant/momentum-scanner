@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Algorithm Logic — Momentum Scanner v3.5.10</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -1646,8 +1648,6 @@
         <p><strong>Not financial advice:</strong> This scanner is an educational tool. Past technical patterns don't guarantee future results. Always do your own research and consider consulting a financial advisor.</p>
     </main>
 
-    <footer class="footer">
-        Momentum Scanner v3.4.2 &mdash; Algorithm documentation. For educational purposes only.
-    </footer>
+    {% include "_footer.html" %}
 </body>
 </html>

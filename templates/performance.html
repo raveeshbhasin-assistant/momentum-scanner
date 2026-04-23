@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Performance — Momentum Scanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -275,20 +277,7 @@
 </head>
 <body>
 
-    <header class="header">
-        <div class="header-left">
-            <a href="/" class="logo">Momentum Scanner</a>
-            <span class="page-title">Performance — v3.5 Categories</span>
-        </div>
-        <div class="header-right">
-            <a href="/" class="nav-link">Dashboard</a>
-            <a href="/today" class="nav-link">Today</a>
-            <a href="/history" class="nav-link">History</a>
-            <a href="/performance" class="nav-link active">Performance</a>
-            <a href="/backtest" class="nav-link">Backtest</a>
-            <a href="/logic" class="nav-link">Logic</a>
-        </div>
-    </header>
+    {% with active_page="performance", page_title="Performance — v3.5 Categories" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="main">
 

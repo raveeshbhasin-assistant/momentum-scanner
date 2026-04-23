@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>History — Momentum Scanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -281,20 +283,7 @@
 </head>
 <body>
 
-    <header class="header">
-        <div class="header-left">
-            <a href="/" class="logo">Momentum Scanner</a>
-            <span class="page-title">3-Day History</span>
-        </div>
-        <div class="header-right">
-            <a href="/" class="nav-link">Dashboard</a>
-            <a href="/today" class="nav-link">Today's Finds</a>
-            <a href="/history" class="nav-link active">History</a>
-            <a href="/performance" class="nav-link">Performance</a>
-            <a href="/backtest" class="nav-link">Backtest</a>
-            <a href="/logic" class="nav-link">Algorithm Logic</a>
-        </div>
-    </header>
+    {% with active_page="history", page_title="3-Day History" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="main" id="historyMain">
         <!-- Filter Bar (v3.5.10) -->
@@ -416,9 +405,7 @@
         {% endfor %}
     </main>
 
-    <footer class="footer">
-        Momentum Scanner v3.4.2 &mdash; For educational and informational purposes only. Not financial advice.
-    </footer>
+    {% include "_footer.html" %}
 
     <script>
         function showDay(index) {

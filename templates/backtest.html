@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Backtest — Momentum Scanner v3.4.2</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -195,20 +197,7 @@
 </head>
 <body>
 
-<header class="header">
-    <div class="header-left">
-        <a href="/" class="logo">Momentum Scanner</a>
-        <span class="page-title">Backtest</span>
-    </div>
-    <div class="header-right">
-        <a href="/" class="nav-link">Dashboard</a>
-        <a href="/today" class="nav-link">Today's Finds</a>
-        <a href="/history" class="nav-link">History</a>
-        <a href="/performance" class="nav-link">Performance</a>
-        <a href="/backtest" class="nav-link active">Backtest</a>
-        <a href="/logic" class="nav-link">Algorithm Logic</a>
-    </div>
-</header>
+{% with active_page="backtest", page_title="Backtest" %}{% include "_nav.html" %}{% endwith %}
 
 <main class="main">
     <h1>Backtest <span class="status idle" id="status">idle</span></h1>
@@ -272,9 +261,7 @@
     <div id="results"></div>
 </main>
 
-<footer class="footer">
-    Momentum Scanner v3.4.2 &mdash; Backtest engine. For educational analysis only; past performance does not predict future results.
-</footer>
+{% include "_footer.html" %}
 
 <script>
 // ═══════════════════════════════════════════════════════════════

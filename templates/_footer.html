@@ -1,0 +1,18 @@
+{#
+    _footer.html — shared footer.
+
+    Parameters (optional, passed via `with` or set in calling template):
+        footer_note: extra text appended after the standard disclaimer
+                     (e.g. page-specific context on /performance).
+
+    Usage:
+        {% include "_footer.html" %}
+        # or with a per-page note:
+        {% with footer_note="Category tracking started 2026-04-20." %}
+            {% include "_footer.html" %}
+        {% endwith %}
+#}
+<footer class="footer">
+    Momentum Scanner v3.5.10 &mdash; For educational and informational purposes only. Not financial advice.
+    {% if footer_note %}<br><span style="opacity:0.8">{{ footer_note }}</span>{% endif %}
+</footer>

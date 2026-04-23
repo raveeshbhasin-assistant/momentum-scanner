@@ -1,0 +1,37 @@
+{#
+    _nav.html — shared header / primary nav.
+
+    Parameters (passed via `with` or set in calling template):
+        active_page: one of "dashboard", "today", "history",
+                     "performance", "backtest", "logic"
+        page_title:  short label shown next to the logo
+                     (e.g. "Today's Finds"). Omit to hide the divider.
+
+    Usage:
+        {% with active_page="today", page_title="Today's Finds" %}
+            {% include "_nav.html" %}
+        {% endwith %}
+#}
+<header class="header" id="siteHeader">
+    <div class="header-left">
+        <a href="/" class="logo">Momentum Scanner</a>
+        {% if page_title %}
+            <span class="page-title">{{ page_title }}</span>
+        {% endif %}
+    </div>
+
+    <button type="button" class="nav-toggle" aria-label="Open menu"
+            aria-expanded="false" aria-controls="primaryNav"
+            onclick="(function(h){var open=h.classList.toggle('nav-open');var b=h.querySelector('.nav-toggle');if(b)b.setAttribute('aria-expanded',open);})(document.getElementById('siteHeader'))">
+        ☰
+    </button>
+
+    <nav class="header-right" id="primaryNav" role="navigation" aria-label="Primary">
+        <a href="/"            class="nav-link{% if active_page == 'dashboard'   %} active{% endif %}">Dashboard</a>
+        <a href="/today"       class="nav-link{% if active_page == 'today'       %} active{% endif %}">Today's Finds</a>
+        <a href="/history"     class="nav-link{% if active_page == 'history'     %} active{% endif %}">History</a>
+        <a href="/performance" class="nav-link{% if active_page == 'performance' %} active{% endif %}">Performance</a>
+        <a href="/backtest"    class="nav-link{% if active_page == 'backtest'    %} active{% endif %}">Backtest</a>
+        <a href="/logic"       class="nav-link{% if active_page == 'logic'       %} active{% endif %}">Algorithm Logic</a>
+    </nav>
+</header>

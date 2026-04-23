@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Today's Finds — Momentum Scanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -316,20 +318,7 @@
 </head>
 <body>
 
-    <header class="header">
-        <div class="header-left">
-            <a href="/" class="logo">Momentum Scanner</a>
-            <span class="page-title">Today's Finds</span>
-        </div>
-        <div class="header-right">
-            <a href="/" class="nav-link">Dashboard</a>
-            <a href="/today" class="nav-link active">Today's Finds</a>
-            <a href="/history" class="nav-link">History</a>
-            <a href="/performance" class="nav-link">Performance</a>
-            <a href="/backtest" class="nav-link">Backtest</a>
-            <a href="/logic" class="nav-link">Algorithm Logic</a>
-        </div>
-    </header>
+    {% with active_page="today", page_title="Today's Finds" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="main">
 
@@ -446,9 +435,7 @@
         {% endif %}
     </main>
 
-    <footer class="footer">
-        Momentum Scanner v3.4.2 &mdash; For educational and informational purposes only. Not financial advice.
-    </footer>
+    {% include "_footer.html" %}
 
     <script>
         function sortTable(by) {
