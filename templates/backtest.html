@@ -1,122 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backtest — Momentum Scanner v3.4.2</title>
-    <link rel="stylesheet" href="/static/css/tokens.css">
-    <link rel="stylesheet" href="/static/css/base.css">
+    {% include "_head.html" %}
+    <title>Backtest — Momentum Scanner v3.6.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --bg-primary: #0a0e17;
-            --bg-secondary: #111827;
-            --bg-card: #1a1f2e;
-            --bg-card-hover: #1f2640;
-            --border: #2a3148;
-            --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --green: #22c55e;
-            --green-bg: #22c55e15;
-            --red: #ef4444;
-            --red-bg: #ef444415;
-            --blue: #3b82f6;
-            --blue-bg: #3b82f615;
-            --amber: #f59e0b;
-            --amber-bg: #f59e0b15;
-            --purple: #a78bfa;
-            --cyan: #22d3ee;
-            --orange: #fb923c;
-            --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-            --mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
-        }
-        body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font); line-height: 1.6; min-height: 100vh; }
-
-        .header {
-            background: var(--bg-secondary); border-bottom: 1px solid var(--border);
-            padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px);
-        }
-        .header-left { display: flex; align-items: center; gap: 16px; }
-        .logo {
-            font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
-            background: linear-gradient(135deg, var(--green), var(--cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-        .page-title { font-size: 14px; color: var(--text-secondary); padding-left: 12px; border-left: 1px solid var(--border); }
-        .nav-link {
-            color: var(--text-secondary); text-decoration: none; font-size: 13px;
-            font-weight: 500; padding: 8px 12px; border-radius: 6px; transition: all 0.2s;
-        }
-        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
-        .nav-link.active { color: var(--cyan); background: var(--bg-card); }
+        /* Reset / chrome / scrollbar / nav / footer all come from base.css. */
 
         .main { max-width: 1400px; margin: 0 auto; padding: 32px; }
-        h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
         h2 { font-size: 16px; font-weight: 600; margin: 32px 0 12px; color: var(--cyan);
              padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-        .subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+        .subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; }
+        .subtitle a { color: var(--cyan); }
 
-        /* ── Limitations callout ── */
+        /* ── Limitations callout (neutral info, amber accent) ── */
         .callout {
-            background: var(--amber-bg); border: 1px solid var(--amber);
-            border-radius: 10px; padding: 14px 18px; margin: 16px 0 24px;
-            font-size: 13px; color: var(--text-secondary);
+            background: var(--amber-bg);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-left: 3px solid var(--amber);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin: 16px 0 24px;
+            font-size: 13px;
+            color: var(--text-secondary);
         }
-        .callout strong { color: var(--amber); }
-        .callout ul { margin: 8px 0 0 20px; }
+        .callout-head {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 600; color: var(--amber); margin-bottom: 6px;
+            font-size: 13px; letter-spacing: 0.2px;
+        }
+        .callout-head .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--amber); box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+        }
+        .callout ul { margin: 6px 0 0 20px; }
         .callout li { margin: 4px 0; }
+        .callout strong { color: var(--text-primary); font-weight: 600; }
 
         /* ── Control panel ── */
         .controls {
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 20px; margin-bottom: 24px;
+            border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px;
             display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
         .control-group { display: flex; flex-direction: column; gap: 6px; }
         .control-group label { font-size: 11px; font-weight: 600; text-transform: uppercase;
                                 letter-spacing: 0.5px; color: var(--text-muted); }
-        .control-group input[type="date"], .control-group input[type="number"] {
+        .control-group input[type="date"],
+        .control-group input[type="number"],
+        .control-group select {
             background: var(--bg-secondary); color: var(--text-primary);
-            border: 1px solid var(--border); border-radius: 6px;
-            padding: 8px 10px; font-family: var(--mono); font-size: 13px;
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 10px 12px; font-family: var(--mono); font-size: 13px;
+            min-height: var(--tap-target);
+            color-scheme: dark;
         }
+        .control-group input:focus,
+        .control-group select:focus { outline: none; border-color: var(--cyan); }
+
+        /* Unified toggle chip — same primitive used by Performance + Logic. */
         .toggle-row { display: flex; flex-wrap: wrap; gap: 8px; grid-column: 1 / -1; }
         .toggle {
-            display: flex; align-items: center; gap: 6px;
+            display: inline-flex; align-items: center; gap: 6px;
             background: var(--bg-secondary); border: 1px solid var(--border);
-            border-radius: 999px; padding: 6px 12px; cursor: pointer;
+            border-radius: 999px; padding: 6px 14px; cursor: pointer;
             font-size: 12px; color: var(--text-secondary); user-select: none;
+            min-height: 32px;
+            transition: color 0.15s, border-color 0.15s, background 0.15s;
         }
         .toggle input { margin: 0; accent-color: var(--green); }
-        .toggle.on { border-color: var(--green); color: var(--green); }
-        .toggle.off { border-color: var(--red); color: var(--red); }
+        .toggle.on  { border-color: rgba(34, 197, 94, 0.55); color: var(--green); background: var(--green-bg); }
+        .toggle.off { border-color: rgba(239, 68, 68, 0.45); color: var(--red);   background: var(--red-bg);   opacity: 0.8; }
+        .toggle:hover { border-color: var(--cyan); }
 
         .btn-row { display: flex; gap: 12px; grid-column: 1 / -1; flex-wrap: wrap; }
         .btn {
-            padding: 10px 20px; border-radius: 8px; border: none;
-            font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;
-            font-family: var(--font);
+            padding: 10px 22px; border-radius: 8px; border: 1px solid transparent;
+            font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.15s;
+            font-family: var(--font); min-height: var(--tap-target);
         }
-        .btn-primary { background: var(--green); color: #000; }
-        .btn-primary:hover { background: #16a34a; }
+        /* Primary is blue — matches the cyan/blue accent used across the app */
+        .btn-primary { background: var(--blue); color: white; }
+        .btn-primary:hover:not(:disabled) { background: #2563eb; }
         .btn-primary:disabled { background: var(--bg-secondary); color: var(--text-muted); cursor: not-allowed; }
         .btn-secondary { background: var(--bg-secondary); color: var(--text-secondary);
                          border: 1px solid var(--border); }
-        .btn-secondary:hover { color: var(--text-primary); background: var(--bg-card); }
+        .btn-secondary:hover { color: var(--text-primary); background: var(--bg-card); border-color: var(--cyan); }
 
-        /* ── Status ── */
+        /* ── Status pill (rides inline with h1) ── */
         .status {
-            display: inline-block; padding: 6px 12px; border-radius: 999px;
-            font-size: 12px; font-family: var(--mono); margin-left: 12px;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 999px;
+            font-size: 11px; font-family: var(--mono); letter-spacing: 0.4px;
+            text-transform: uppercase; font-weight: 600;
         }
-        .status.idle { background: var(--bg-secondary); color: var(--text-muted); }
-        .status.running { background: var(--amber-bg); color: var(--amber); }
-        .status.done { background: var(--green-bg); color: var(--green); }
-        .status.err { background: var(--red-bg); color: var(--red); }
+        .status::before {
+            content: ''; width: 6px; height: 6px; border-radius: 50%;
+            background: currentColor; box-shadow: 0 0 6px currentColor;
+        }
+        .status.idle    { background: var(--bg-secondary); color: var(--text-muted); }
+        .status.running { background: var(--amber-bg);    color: var(--amber); }
+        .status.done    { background: var(--green-bg);    color: var(--green); }
+        .status.err     { background: var(--red-bg);      color: var(--red); }
+
+        /* ── Strategy banner ── */
+        .strat-banner {
+            margin: 0 0 16px;
+            padding: 10px 14px;
+            border: 1px solid rgba(167, 139, 250, 0.35);
+            background: rgba(167, 139, 250, 0.06);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .strat-banner code {
+            color: var(--purple); font-weight: 600; font-family: var(--mono);
+        }
+        .strat-banner a { color: var(--purple); }
 
         /* ── KPI grid ── */
         .kpi-grid {
@@ -126,21 +127,26 @@
         }
         .kpi-card {
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 10px; padding: 14px 16px;
+            border-radius: var(--radius-md); padding: 14px 16px;
         }
         .kpi-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase;
                      letter-spacing: 0.5px; margin-bottom: 6px; }
         .kpi-value { font-size: 24px; font-weight: 700; font-family: var(--mono); }
         .kpi-sub   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-        /* ── Chart containers ── */
+        /* ── Chart containers — height clamped for consistent layout ── */
         .chart-card {
             background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 16px; margin-bottom: 20px;
+            border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px;
         }
         .chart-card h3 { font-size: 14px; font-weight: 600; color: var(--text-primary);
                          margin-bottom: 12px; }
-        .chart-wrap { position: relative; height: 280px; }
+        .chart-wrap {
+            position: relative;
+            height: 280px;
+            min-height: 220px;
+            max-height: 320px;
+        }
 
         /* ── Breakdown tables ── */
         .table-grid {
@@ -164,7 +170,7 @@
 
         /* ── Trade blotter ── */
         .blotter-wrap { overflow-x: auto; background: var(--bg-card);
-                        border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+                        border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; }
         .blotter { width: 100%; border-collapse: collapse; font-size: 12px;
                    font-family: var(--mono); }
         .blotter th {
@@ -174,24 +180,24 @@
         }
         .blotter td { padding: 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
         .blotter .outcome-TARGET { color: var(--green); font-weight: 600; }
-        .blotter .outcome-STOP { color: var(--red); font-weight: 600; }
-        .blotter .outcome-EOD { color: var(--amber); font-weight: 600; }
-
-        .footer {
-            text-align: center; padding: 24px; color: var(--text-muted);
-            font-size: 12px; border-top: 1px solid var(--border); margin-top: 48px;
-        }
+        .blotter .outcome-STOP   { color: var(--red);   font-weight: 600; }
+        .blotter .outcome-EOD    { color: var(--amber); font-weight: 600; }
 
         .empty-state {
             text-align: center; padding: 60px 20px; color: var(--text-muted);
             background: var(--bg-card); border: 1px dashed var(--border);
-            border-radius: 12px;
+            border-radius: var(--radius-md);
         }
         .empty-state h3 { color: var(--text-primary); margin-bottom: 8px; }
 
         @media (max-width: 700px) {
             .main { padding: 16px; }
-            .nav-link { font-size: 12px; padding: 6px 8px; }
+            .kpi-value { font-size: 20px; }
+            .chart-wrap { height: 240px; min-height: 200px; }
+        }
+
+        @media (max-width: 480px) {
+            .btn { flex: 1 1 auto; }
         }
     </style>
 </head>
@@ -201,10 +207,11 @@
 
 <main class="main">
     <h1>Backtest <span class="status idle" id="status">idle</span></h1>
-    <p class="subtitle">Replay the v3.4.2 algorithm against historical 5-minute bars. Technicals-only entries, MAE-aware exits (see <a href="/logic#v3-4-2" style="color: inherit; text-decoration: underline;">logic</a>). Backtest Filters logic is unchanged from v3.4.1; leader <code>display</code> mode and weak-signal floor are live-scanner-only concerns.</p>
+    <p class="subtitle">Replay the v3.4.2 algorithm against historical 5-minute bars. Technicals-only entries, MAE-aware exits (see <a href="/logic#v3-4-2">logic</a>). Backtest Filters logic is unchanged from v3.4.1; leader <code>display</code> mode and weak-signal floor are live-scanner-only concerns.</p>
 
-    <div class="callout">
-        <strong>Read before trusting numbers.</strong> This backtest has known limitations:
+    <div class="callout" role="note" aria-label="Backtest limitations">
+        <div class="callout-head"><span class="dot" aria-hidden="true"></span>Read before trusting numbers</div>
+        This backtest has known limitations:
         <ul>
             <li><strong>Technicals only.</strong> News sentiment and pre-market catalyst boosts are assumed zero — headlines can't be faithfully replayed. Live composite scores will be higher on average than backtest scores.</li>
             <li><strong>No survivorship adjustment.</strong> Universe is today's list; delistings and ticker changes are not modeled.</li>
@@ -242,7 +249,7 @@
             </select>
         </div>
 
-        <div class="toggle-row">
+        <div class="toggle-row" role="group" aria-label="Filter toggles">
             <label class="toggle on" data-filter="leadership_enabled"><input type="checkbox" checked> Leadership</label>
             <label class="toggle on" data-filter="regime_enabled"><input type="checkbox" checked> Regime (VIX)</label>
             <label class="toggle on" data-filter="earnings_enabled"><input type="checkbox" checked> Earnings</label>
@@ -374,12 +381,11 @@ function render(data) {
     const fmtMoney = v => (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
     const cls = v => v > 0 ? 'pos' : v < 0 ? 'neg' : '';
 
-    // v3.4.1 — surface which exit rule produced the headline numbers, plus quick FLAT comparison
     const exitStrat = (data.filters && data.filters.exit_strategy) || 'mae_exit';
     const flatSum = s.flat_summary || null;
-    let stratLine = `<div style="margin: -8px 0 16px; padding: 10px 14px; border:1px solid rgba(167,139,250,0.35); background: rgba(167,139,250,0.06); border-radius: 8px; font-size: 13px; color: var(--muted);">
-        <strong style="color: var(--text);">Headline strategy:</strong>
-        <code style="color: var(--purple); font-weight: 600;">${exitStrat.toUpperCase()}</code>`;
+    let stratLine = `<div class="strat-banner">
+        <strong>Headline strategy:</strong>
+        <code>${exitStrat.toUpperCase()}</code>`;
     if (flatSum && exitStrat !== 'flat') {
         const delta = (s.total_pnl || 0) - (flatSum.total_pnl || 0);
         const sign = delta >= 0 ? '+' : '';
@@ -387,7 +393,7 @@ function render(data) {
         stratLine += ` &middot; vs FLAT baseline: <span style="color:${colour}; font-weight:600;">${sign}$${delta.toLocaleString(undefined,{maximumFractionDigits:0})}</span>
             (FLAT was ${flatSum.win_rate}% WR / $${(flatSum.total_pnl||0).toLocaleString(undefined,{maximumFractionDigits:0})})`;
     }
-    stratLine += ` &middot; <a href="/logic#v3-4-1" style="color: var(--purple);">see logic →</a></div>`;
+    stratLine += ` &middot; <a href="/logic#v3-4-1">see logic →</a></div>`;
 
     root.innerHTML = stratLine + `
         <div class="kpi-grid">

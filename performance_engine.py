@@ -337,6 +337,7 @@ def build_view(entries: list[dict], date_str: Optional[str] = None) -> dict:
 
     # Cumulative = everything in the log
     cumulative = _bucketed_rollup(normalized)
+    cumulative["daily_series"] = _daily_series(normalized)
 
     day_entries = [e for e in normalized if e["date"] == date_str]
     single_day = _bucketed_rollup(day_entries)
@@ -354,6 +355,47 @@ def build_view(entries: list[dict], date_str: Optional[str] = None) -> dict:
         "single_day": single_day,
         "diagnostics": _diagnostics(entries, normalized),
     }
+
+
+def _daily_series(entries: list[dict]) -> list[dict]:
+    """
+    Per-day series consumed by the Performance equity-curve chart.
+
+    Each row carries both the raw day (n/total_r/total_pnl/wins/losses/eods)
+    and the running cumulative totals so the chart can plot either a daily
+    bar or a cumulative line without re-scanning. Dates that have no picks
+    are omitted — the chart uses a category x-axis so gaps self-absorb.
+    """
+    by_date: dict[str, list[dict]] = defaultdict(list)
+    for e in entries:
+        d = e.get("date")
+        if d:
+            by_date[d].append(e)
+
+    rows: list[dict] = []
+    cum_r = 0.0
+    cum_pnl = 0.0
+    for d in sorted(by_date.keys()):
+        grp = by_date[d]
+        day_r = sum(e["r_realized"] for e in grp if _is_num(e.get("r_realized")))
+        day_pnl = sum(e["pnl_dollar"] for e in grp if _is_num(e.get("pnl_dollar")))
+        cum_r += day_r
+        cum_pnl += day_pnl
+        w = sum(1 for e in grp if e.get("effective_result") == "WIN")
+        l = sum(1 for e in grp if e.get("effective_result") == "LOSS")
+        eod = sum(1 for e in grp if e.get("effective_result") == "EOD")
+        rows.append({
+            "date": d,
+            "n": len(grp),
+            "wins": w,
+            "losses": l,
+            "eods": eod,
+            "day_r": round(day_r, 3),
+            "day_pnl": round(day_pnl, 2),
+            "cum_r": round(cum_r, 3),
+            "cum_pnl": round(cum_pnl, 2),
+        })
+    return rows
 
 
 def _bucketed_rollup(entries: list[dict]) -> dict:
@@ -483,6 +525,7 @@ def build_range_view(entries: list[dict], start: str, end: str) -> dict:
         in_range,
         key=lambda e: (e["date"], e["batch_time"], e["ticker"]),
     )
+    rollups["daily_series"] = _daily_series(in_range)
 
     return {
         "dates": dates,

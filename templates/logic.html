@@ -1,53 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.5.10</title>
-    <link rel="stylesheet" href="/static/css/tokens.css">
-    <link rel="stylesheet" href="/static/css/base.css">
+    {% include "_head.html" %}
+    <title>Algorithm Logic — Momentum Scanner v3.6.0</title>
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --bg-primary: #0a0e17;
-            --bg-secondary: #111827;
-            --bg-card: #1a1f2e;
-            --border: #2a3148;
-            --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --green: #22c55e;
-            --red: #ef4444;
-            --blue: #3b82f6;
-            --amber: #f59e0b;
-            --cyan: #22d3ee;
-            --purple: #a78bfa;
-            --orange: #fb923c;
-            --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-            --mono: 'SF Mono', 'Fira Code', monospace;
-        }
-        body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font); line-height: 1.8; }
-
-        .header {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            padding: 16px 32px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .logo {
-            font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
-            background: linear-gradient(135deg, var(--green), var(--cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .nav-link {
-            color: var(--text-secondary); text-decoration: none; font-size: 13px;
-            font-weight: 500; padding: 8px 12px; border-radius: 6px; transition: all 0.2s;
-        }
-        .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
-
-        .content { max-width: 920px; margin: 0 auto; padding: 48px 32px; }
+        /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
+        .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
         h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
         .version-tag {
             display: inline-block; background: var(--green); color: #000; font-size: 12px;
@@ -157,14 +115,106 @@
         .schedule-table code { font-family: var(--mono); color: var(--cyan);
             background: var(--bg-card); padding: 2px 6px; border-radius: 4px; }
 
-        .footer {
-            text-align: center; padding: 24px; color: var(--text-muted);
-            font-size: 12px; border-top: 1px solid var(--border); margin-top: 48px;
-        }
+        /* footer styling comes from base.css */
 
         /* ═══ RELEASE NOTES ═══ */
-        .release-toc {
-            display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 24px;
+
+        /* Sticky toolbar: search + tag-filter chips + expand-all/collapse-all */
+        .release-toolbar {
+            position: sticky;
+            top: 68px;       /* clears the main header (~56px + border) */
+            z-index: 20;
+            background: var(--bg-primary);
+            padding: 10px 0 12px;
+            margin: 12px 0 4px;
+            border-bottom: 1px solid var(--border);
+        }
+        .release-toolbar .row {
+            display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+        }
+        .release-toolbar .row + .row { margin-top: 8px; }
+        .release-search {
+            flex: 1 1 260px;
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            min-height: 40px;
+        }
+        .release-search:focus-within { border-color: var(--cyan); }
+        .release-search input {
+            flex: 1; background: transparent; border: none; outline: none;
+            color: var(--text-primary); font-family: var(--font);
+            font-size: 13px;
+        }
+        .release-search input::placeholder { color: var(--text-muted); }
+        .release-search .search-icon { color: var(--text-muted); font-size: 13px; }
+        .release-search .search-clear {
+            background: transparent; border: none; color: var(--text-muted);
+            cursor: pointer; font-size: 14px; padding: 2px 6px;
+        }
+        .release-search .search-clear:hover { color: var(--text-primary); }
+        .release-search .search-clear.hidden { display: none; }
+
+        .filter-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 11px; border-radius: 999px; cursor: pointer;
+            font-size: 12px; font-weight: 500; font-family: var(--font);
+            background: var(--bg-card); border: 1px solid var(--border);
+            color: var(--text-secondary); transition: all 0.15s;
+            user-select: none;
+        }
+        .filter-chip:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+        .filter-chip.active {
+            color: var(--text-primary); background: var(--bg-card-hover);
+            border-color: var(--cyan);
+        }
+        .filter-chip[data-tag="added"].active   { color: var(--green); border-color: var(--green); }
+        .filter-chip[data-tag="changed"].active { color: var(--blue);  border-color: var(--blue); }
+        .filter-chip[data-tag="fixed"].active   { color: var(--amber); border-color: var(--amber); }
+        .filter-chip[data-tag="removed"].active { color: var(--red);   border-color: var(--red); }
+        .filter-chip .dot {
+            width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.9;
+        }
+
+        .release-actions {
+            display: inline-flex; gap: 8px; margin-left: auto;
+        }
+        .release-actions button {
+            background: var(--bg-card); border: 1px solid var(--border);
+            color: var(--text-secondary); font-family: var(--font);
+            font-size: 12px; padding: 6px 12px; border-radius: var(--radius-sm);
+            cursor: pointer; transition: all 0.15s;
+        }
+        .release-actions button:hover { color: var(--cyan); border-color: var(--cyan); }
+
+        .release-match-hint {
+            font-family: var(--mono); font-size: 11px; color: var(--text-muted);
+            padding: 2px 8px;
+        }
+
+        /* Grouped TOC: Current · Recent · Older */
+        .release-toc-groups { margin: 6px 0 18px; }
+        .release-toc-group { margin-top: 8px; }
+        .release-toc-group .group-label {
+            display: inline-block; font-family: var(--mono);
+            font-size: 10px; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; color: var(--text-muted);
+            margin-right: 8px; min-width: 60px;
+        }
+        .release-toc-group.older .group-label { cursor: pointer; }
+        .release-toc-group.older .group-label:hover { color: var(--cyan); }
+        .release-toc-group.older .group-label::before {
+            content: "▸ "; display: inline-block; transition: transform 0.2s;
+        }
+        .release-toc-group.older.open .group-label::before {
+            content: "▾ ";
+        }
+        .release-toc-group.older .toc-chips { display: none; }
+        .release-toc-group.older.open .toc-chips { display: inline-flex; flex-wrap: wrap; gap: 8px; vertical-align: middle; }
+        .release-toc-group .toc-chips {
+            display: inline-flex; flex-wrap: wrap; gap: 8px; vertical-align: middle;
         }
         .release-toc a {
             font-family: var(--mono); font-size: 12px; text-decoration: none;
@@ -184,13 +234,38 @@
             background: var(--bg-card); border: 1px solid var(--border);
             border-radius: 12px; padding: 20px 24px; margin: 16px 0;
             position: relative;
+            transition: border-color 0.2s;
         }
         .release.current { border-color: var(--green); box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.25); }
+        .release.hidden-by-filter { display: none; }
+        .release.collapsed .release-title { margin-bottom: 0; }
+        .release.collapsed .change-group,
+        .release.collapsed .release-rationale,
+        .release.collapsed > ul,
+        .release.collapsed > p,
+        .release.collapsed > blockquote { display: none; }
 
         .release-header {
             display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
             margin-bottom: 4px;
+            cursor: pointer;
+            user-select: none;
         }
+        .release-header::after {
+            content: "▾";
+            margin-left: auto;
+            color: var(--text-muted);
+            font-size: 11px;
+            transition: transform 0.2s;
+        }
+        .release.collapsed .release-header::after {
+            transform: rotate(-90deg);
+            content: "▸";
+        }
+        .release-header:hover::after { color: var(--cyan); }
+
+        /* Search highlight */
+        .search-hit { background: rgba(34, 211, 238, 0.22); color: var(--text-primary); border-radius: 2px; padding: 0 2px; }
         .release-version {
             font-size: 22px; font-weight: 700; font-family: var(--mono);
             color: var(--text-primary); letter-spacing: -0.5px;
@@ -243,58 +318,134 @@
             border-radius: 4px; font-size: 13px; color: var(--text-secondary);
         }
         .release-rationale strong { color: var(--cyan); }
+
+        /* ═══ Mobile ═══ */
+        @media (max-width: 768px) {
+            .content { padding: 24px 16px 36px; }
+            h1 { font-size: 26px; }
+            h2 { font-size: 18px; }
+            .release { padding: 14px 16px; }
+            .release-version { font-size: 18px; }
+            .release-title { font-size: 14px; }
+            .release li { font-size: 13px; }
+            .release-rationale { font-size: 12px; padding: 8px 10px; }
+            .release-toolbar { top: 56px; padding: 8px 0 10px; }
+            .release-toolbar .row { gap: 6px; }
+            .release-actions { margin-left: 0; width: 100%; justify-content: flex-end; }
+            .filter-chip { padding: 5px 9px; font-size: 11px; }
+            .release-toc-group .group-label { display: block; margin-bottom: 4px; }
+            .release-toc a { font-size: 11px; padding: 3px 9px; }
+            .flow-step { padding: 14px 16px; gap: 12px; }
+            .step-num { width: 28px; height: 28px; font-size: 12px; }
+            .risk-table th, .risk-table td,
+            .schedule-table th, .schedule-table td { padding: 8px 10px; font-size: 12px; }
+        }
+        @media (max-width: 480px) {
+            .release-toolbar { top: 52px; }
+            .release-search { min-height: var(--tap-target); }
+            .release-actions button { min-height: 36px; }
+        }
     </style>
 </head>
 <body>
-    <header class="header">
-        <a href="/" class="logo" style="text-decoration: none;">Momentum Scanner</a>
-        <a href="/" class="nav-link">&larr; Dashboard</a>
-        <a href="/today" class="nav-link">Today's Finds</a>
-        <a href="/history" class="nav-link">History</a>
-        <a href="/performance" class="nav-link">Performance</a>
-        <a href="/backtest" class="nav-link">Backtest</a>
-        <a href="/theme-scanner" class="nav-link">ThemeHunter</a>
-    </header>
+    {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.5.10</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.6.0</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
         <!--  RELEASE NOTES                                         -->
         <!-- ═══════════════════════════════════════════════════════ -->
         <h2 id="release-notes">Release Notes</h2>
-        <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
+        <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top. Click any release to expand it; use the search and tag filters to narrow the list.</p>
 
-        <div class="release-toc">
-            <a href="#v3-5-10" class="current">v3.5.10 — "Market Hours Only" Filter on Today / History</a>
-            <a href="#v3-5-9">v3.5.9 — RTH Gate on Re-Entry Dedup + Daily Finds Persistence</a>
-            <a href="#v3-5-8">v3.5.8 — Market-Hours + Category Filters + Test Hook</a>
-            <a href="#v3-5-7">v3.5.7 — Range View + Cumulative R Fix</a>
-            <a href="#v3-5-6-2">v3.5.6.2 — Earlier EOD + Manual Trigger</a>
-            <a href="#v3-5-6">v3.5.6 — SMTPS + EOD Backup Reliability</a>
-            <a href="#v3-5-5">v3.5.5 — Email IPv4 Fix</a>
-            <a href="#v3-5-4">v3.5.4 — GitHub Auto-Backup</a>
-            <a href="#v3-5-3">v3.5.3 — Persistent Data Volume</a>
-            <a href="#v3-5-2">v3.5.2 — Email Notifier</a>
-            <a href="#v3-5">v3.5 — Performance Categories</a>
-            <a href="#themehunter-v0-1">ThemeHunter v0.1 (prototype)</a>
-            <a href="#v3-4-2">v3.4.2</a>
-            <a href="#v3-4-1">v3.4.1</a>
-            <a href="#v3-4">v3.4</a>
-            <a href="#v3-3-2">v3.3.2</a>
-            <a href="#v3-3">v3.3</a>
-            <a href="#v3-2">v3.2</a>
-            <a href="#v3-1">v3.1</a>
-            <a href="#v3-0">v3.0</a>
+        <!-- ── Sticky search + filter toolbar (Phase 5) ── -->
+        <div class="release-toolbar" role="search">
+            <div class="row">
+                <label class="release-search" for="releaseSearch">
+                    <span class="search-icon" aria-hidden="true">🔍</span>
+                    <input type="search" id="releaseSearch"
+                           placeholder="Search releases (text, code, version…)"
+                           autocomplete="off">
+                    <button type="button" class="search-clear hidden" id="searchClear"
+                            aria-label="Clear search">✕</button>
+                </label>
+                <div class="release-actions">
+                    <button type="button" id="expandAll">Expand all</button>
+                    <button type="button" id="collapseAll">Collapse all</button>
+                </div>
+            </div>
+            <div class="row">
+                <span class="filter-chip" data-tag="added"><span class="dot"></span>Added</span>
+                <span class="filter-chip" data-tag="changed"><span class="dot"></span>Changed</span>
+                <span class="filter-chip" data-tag="fixed"><span class="dot"></span>Fixed</span>
+                <span class="filter-chip" data-tag="removed"><span class="dot"></span>Removed</span>
+                <span class="release-match-hint" id="matchHint"></span>
+            </div>
+        </div>
+
+        <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
+        <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
+
+        <!-- ───── v3.6.0 ───── -->
+        <div class="release current" id="v3-6-0">
+            <div class="release-header">
+                <span class="release-version">v3.6.0</span>
+                <span class="release-date">Released 2026-04-22</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">UI overhaul — six-phase rebuild of the chrome: shared <code>_head.html</code> / <code>_nav.html</code> / <code>_footer.html</code> partials, a single <code>tokens.css</code> + <code>base.css</code> pair as the sole source of visual truth, and per-page polish across Dashboard, Today, History, Performance, Backtest, and Logic. Mobile ergonomics get a proper pass: a 44px tap-target token, hamburger nav under 480&nbsp;px, card-view tables on narrow screens, and a sticky search-and-filter toolbar on this very page. No algorithm change; every number you see on <code>/performance</code>, <code>/backtest</code>, <code>/today</code>, and <code>/history</code> is produced by the same v3.5.10 engine — only the chrome is new.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> The pages accreted duplicated <code>:root</code> blocks, duplicated header/nav/footer markup, one-off toggle patterns, and inconsistent mobile behaviour across six months of incremental edits. Each new release was paying a tax — every CSS tweak had to be repeated in 5-7 templates, and mobile was unusable on several pages (page-width overflow, sub-44px tap targets, horizontally-scrolling tables). This release pays that debt down in one consolidated pass rather than leaking it across three more point releases.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>static/css/tokens.css</code> — design-token source of truth.</strong> Every surface colour, semantic colour, radius, typography stack, and the new <code>--tap-target: 44px</code> ergonomics token live here. Loaded via <code>_head.html</code> ahead of <code>base.css</code> so cascade order is predictable.</li>
+                    <li><strong><code>static/css/base.css</code> — shared chrome primitives.</strong> Reset, body defaults, <code>.header</code> / <code>.nav-link</code> / <code>.nav-toggle</code> (hamburger) / <code>.footer</code>, scrollbar, focus ring, tier pills, sortable header affordance, column-toggle chips, date-picker wrap, RTH toggle dot, and — new — <code>table.card-table</code> mobile card-view rules with <code>data-label</code> attrs. Pages now only own their page-specific layout CSS; everything else is inherited.</li>
+                    <li><strong>Shared Jinja partials <code>_head.html</code>, <code>_nav.html</code>, <code>_footer.html</code>.</strong> <code>_head.html</code> carries every <code>&lt;meta&gt;</code> and the two stylesheet links (root-relative paths, not <code>url_for</code>, to avoid Railway's http/https mixed-content block). <code>_nav.html</code> renders the header + primary nav + hamburger toggle, with <code>active_page</code> highlighting driven by a single parameter. <code>_footer.html</code> carries the version string plus an optional <code>footer_note</code> slot for per-page context.</li>
+                    <li><strong>Dashboard (<code>/</code>) redesign.</strong> KPI hero cards, last-scan status, regime chip, and a scan-history strip — the landing page is now glanceable in under two seconds rather than a wall of text.</li>
+                    <li><strong>Performance (<code>/performance</code>) overhaul.</strong> Two-row controls (Scope + Filters with semantic pill labels). Equity curve rendered via Chart.js with R/$ metric toggle and Cumulative/Per-bar shape toggle. <code>_daily_series</code> helper in <code>performance_engine.py</code> emits server-side running totals so the cumulative-mode plot is correct for ranges (not a reconstruction from the picks array). Heatmap cells scale opacity by trade R-magnitude. Picks table is a <code>.card-table</code> — desktop gets the grid, mobile gets stacked cards.</li>
+                    <li><strong>Backtest (<code>/backtest</code>) polish.</strong> Limitations are now a neutral info callout (amber accent, not a warning banner). Run button is the blue primary — matches the cyan/blue accent language used everywhere else. All form controls meet the <code>--tap-target</code> minimum height. Chart canvas clamps between 220–320 px so the page never jumps when results render. Inline <code>:root</code> / <code>.header</code> / <code>.nav-link</code> / <code>.footer</code> / scrollbar duplication stripped — the template is ~170 lines leaner.</li>
+                    <li><strong>Logic (<code>/logic</code>) collapse + search (Phase 5).</strong> Release cards default to collapsed; click the header (or Enter/Space — it's <code>role="button"</code> with synced <code>aria-expanded</code>) to toggle. A sticky toolbar at the top of the page carries a search input with debounced client-side matching (DOM TreeWalker + cyan-highlighted <code>.search-hit</code> wraps), four semantic filter chips (Added / Changed / Fixed / Removed) with Set-based OR-logic, and expand-all / collapse-all buttons. TOC is grouped Current / Recent (5) / Older (remaining) with the Older group behind a disclosure. <code>data-version</code>, <code>data-tags</code>, and <code>data-searchText</code> are JS-derived at load from existing markup — new release cards Just Work without authoring overhead.</li>
+                    <li><strong>Mobile polish.</strong> Hamburger nav under 480&nbsp;px collapses the primary nav into a vertical drawer (44px tap targets each). Card-view tables on <code>/today</code>, <code>/history</code>, and <code>/performance</code> under 640&nbsp;px. Backtest controls, Performance toolbar, and Logic search all honour <code>--tap-target</code>. Header reflows below 768&nbsp;px with smaller logo and nav font sizes. No horizontal overflow on any page at 320&nbsp;px.</li>
+                    <li><strong>Safety checkpoint.</strong> A <code>pre-v3.6.0-ui-overhaul</code> git tag was cut before Phase 0 so the entire six-phase rewrite can be bisected or reverted as a unit if anything regresses in production.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Version stamp bumped to <code>3.6.0</code></strong> in <code>FastAPI(title=..., version=...)</code>, <code>_footer.html</code>, and this page's <code>&lt;title&gt;</code> + version-tag. No API contract changed — <code>/api/backtest/run</code>, <code>/api/notify/test</code>, and the static scan JSON files are all byte-compatible with v3.5.10 consumers.</li>
+                    <li><strong>Stylesheet loading is now root-relative everywhere.</strong> Every <code>&lt;link rel="stylesheet"&gt;</code> goes through <code>_head.html</code>, which uses <code>/static/...</code> paths rather than <code>url_for('static', ...)</code>. This is locked in by memory — Railway terminates TLS, FastAPI sees http internally, and <code>url_for</code> emits absolute http URLs that HTTPS browsers refuse to load.</li>
+                    <li><strong>Per-page CSS is page-specific only.</strong> Dashboard, Today, History, Performance, Backtest, and Logic each kept only their layout/page-unique rules; all chrome is inherited. Net deletion is in the low-thousand-lines range across the template set — no visual regression.</li>
+                    <li><strong>Toggle chips use a single primitive.</strong> The <code>.toggle</code> / <code>.filter-chip</code> / <code>.chip</code> pattern is now applied consistently on Backtest, Performance, and Logic — same sizing, same hover, same focus ring.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong>Mixed-content stylesheet block on HTTPS.</strong> Under Railway's TLS termination, <code>url_for('static', path=...)</code> had been emitting <code>http://</code> URLs that Chrome/Safari blocked, leaving pages briefly un-styled on first paint. Resolved by switching every stylesheet and favicon reference to root-relative <code>/static/...</code> paths in <code>_head.html</code>.</li>
+                    <li><strong>Logic page was effectively unsearchable.</strong> 20 release cards rendered flat made it impossible to find prior-release context. The collapse-by-default + search toolbar turns a 170 KB scroll into a targeted query — hit any release card's header-chevron to drill in.</li>
+                    <li><strong>Sub-44px mobile tap targets across the app.</strong> Several buttons and nav links were &lt;36 px tall; now every interactive element on a touch-sized viewport clears the <code>--tap-target: 44px</code> token.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale" style="margin-top:12px">
+                <strong>Verification:</strong> (1) <code>FastAPI(...).version</code> is <code>"3.6.0"</code>; checked via <code>ast.parse</code> on <code>app.py</code>. (2) Every template renders cleanly through Jinja2 with no undefined variables. (3) <code>node --check</code> passes on the inline script blocks in <code>logic.html</code> and <code>backtest.html</code>. (4) Card-view table breakpoint verified at 640&nbsp;px on Today, History, Performance. (5) Hamburger nav drawer opens/closes and traps <code>aria-expanded</code> correctly at 480&nbsp;px. (6) Logic page: 20 release cards parsed, TOC builds into 3 groups (Current / Recent 5 / Older 14), search highlights + pre-expands collapsed cards on match, filter chips OR-combine, and TOC links pre-expand before scrolling. (7) Backtest primary button is blue (<code>var(--blue)</code>) and meets tap-target height; chart canvas clamps 220–320 px. (8) <code>_footer.html</code> reports <code>v3.6.0</code> on every page. (9) Exactly one <code>pill-current</code> on a release header (this card); v3.5.10 demoted to <code>pill-previous</code>. (10) All stylesheet links are root-relative (no <code>url_for</code> anywhere).
+            </div>
         </div>
 
         <!-- ───── v3.5.10 ───── -->
-        <div class="release current" id="v3-5-10">
+        <div class="release" id="v3-5-10">
             <div class="release-header">
                 <span class="release-version">v3.5.10</span>
                 <span class="release-date">Released 2026-04-22</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">"Market Hours Only" filter on <code>/today</code> and <code>/history</code> — a client-side toggle pill that hides signals found outside regular session (Mon–Fri 09:30–16:00 ET). Default off; click to filter. No data is deleted — rows stay in <code>data/{date}.json</code> and simply hide in the DOM when the toggle is active, so legacy pre-v3.5.9 history is filterable without a migration script.</div>
 
@@ -1649,5 +1800,260 @@
     </main>
 
     {% include "_footer.html" %}
+
+    <!-- ═══ Phase 5: release notes search / filter / collapse ═══ -->
+    <script>
+    (function() {
+        const releases = Array.from(document.querySelectorAll('.release'));
+        if (!releases.length) return;
+
+        /* ── Step 1: derive data-version and data-tags on each release card ──
+           This lets the search/filter logic avoid re-traversing the DOM. */
+        releases.forEach(r => {
+            const verEl = r.querySelector('.release-version');
+            const ver = verEl ? verEl.textContent.trim() : r.id;
+            r.dataset.version = ver;
+            const tags = new Set();
+            r.querySelectorAll('.change-tag').forEach(t => {
+                ['added','changed','fixed','removed'].forEach(tag => {
+                    if (t.classList.contains('tag-' + tag)) tags.add(tag);
+                });
+            });
+            r.dataset.tags = Array.from(tags).join(' ');
+            /* Cache searchable text so search is a single string.includes() per card */
+            r.dataset.searchText = r.textContent.toLowerCase();
+        });
+
+        /* ── Step 2: build grouped TOC (Current · Recent · Older) ──
+           Current = .release.current; Recent = next 5; Older = the rest. */
+        const tocHost = document.getElementById('tocGroups');
+        const current = releases.find(r => r.classList.contains('current')) || releases[0];
+        const rest = releases.filter(r => r !== current);
+        const recent = rest.slice(0, 5);
+        const older = rest.slice(5);
+
+        const tocLink = (r) => {
+            const ver = r.dataset.version;
+            const titleEl = r.querySelector('.release-title');
+            const hint = titleEl ? ' — ' + shortTitle(titleEl.textContent) : '';
+            const cls = r === current ? ' class="current"' : '';
+            return `<a href="#${r.id}"${cls} data-target="${r.id}">${ver}${hint}</a>`;
+        };
+        function shortTitle(s) {
+            /* First 40 chars of the title; cut at a natural boundary if possible. */
+            s = s.trim().replace(/\s+/g, ' ');
+            if (s.length <= 40) return s;
+            const cut = s.slice(0, 40);
+            const boundary = cut.lastIndexOf(' ');
+            return (boundary > 20 ? cut.slice(0, boundary) : cut) + '…';
+        }
+
+        let html = '';
+        html += `<div class="release-toc-group release-toc" data-group="current">`;
+        html += `<span class="group-label">Current</span>`;
+        html += `<span class="toc-chips">${tocLink(current)}</span>`;
+        html += `</div>`;
+        if (recent.length) {
+            html += `<div class="release-toc-group release-toc" data-group="recent">`;
+            html += `<span class="group-label">Recent</span>`;
+            html += `<span class="toc-chips">${recent.map(tocLink).join('')}</span>`;
+            html += `</div>`;
+        }
+        if (older.length) {
+            html += `<div class="release-toc-group release-toc older" data-group="older">`;
+            html += `<span class="group-label" role="button" tabindex="0"
+                            aria-expanded="false">Older (${older.length})</span>`;
+            html += `<span class="toc-chips">${older.map(tocLink).join('')}</span>`;
+            html += `</div>`;
+        }
+        tocHost.innerHTML = html;
+
+        /* Older-group disclosure */
+        tocHost.querySelectorAll('.release-toc-group.older .group-label').forEach(lbl => {
+            const toggle = () => {
+                const group = lbl.closest('.release-toc-group');
+                const open = group.classList.toggle('open');
+                lbl.setAttribute('aria-expanded', open ? 'true' : 'false');
+            };
+            lbl.addEventListener('click', toggle);
+            lbl.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+            });
+        });
+
+        /* TOC chip click: if the target release is collapsed, expand it before
+           scrolling — otherwise anchor-scroll lands on a collapsed card. */
+        tocHost.querySelectorAll('a[data-target]').forEach(a => {
+            a.addEventListener('click', e => {
+                const target = document.getElementById(a.dataset.target);
+                if (target) {
+                    target.classList.remove('collapsed');
+                    if (target.dataset.group === 'older') {
+                        const olderGroup = tocHost.querySelector('.release-toc-group.older');
+                        if (olderGroup) olderGroup.classList.add('open');
+                    }
+                }
+            });
+        });
+
+        /* ── Step 3: default-collapse every non-current release ── */
+        releases.forEach(r => {
+            if (r !== current) r.classList.add('collapsed');
+        });
+        /* Click the whole header to toggle collapse. */
+        releases.forEach(r => {
+            const header = r.querySelector('.release-header');
+            if (!header) return;
+            header.setAttribute('role', 'button');
+            header.setAttribute('tabindex', '0');
+            header.setAttribute('aria-expanded', r.classList.contains('collapsed') ? 'false' : 'true');
+            const toggle = () => {
+                const collapsed = r.classList.toggle('collapsed');
+                header.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            };
+            header.addEventListener('click', toggle);
+            header.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+            });
+        });
+
+        document.getElementById('expandAll').addEventListener('click', () => {
+            releases.forEach(r => {
+                r.classList.remove('collapsed');
+                const h = r.querySelector('.release-header');
+                if (h) h.setAttribute('aria-expanded', 'true');
+            });
+        });
+        document.getElementById('collapseAll').addEventListener('click', () => {
+            releases.forEach(r => {
+                r.classList.add('collapsed');
+                const h = r.querySelector('.release-header');
+                if (h) h.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        /* ── Step 4: search + tag filter (both contribute to visibility) ── */
+        const searchEl = document.getElementById('releaseSearch');
+        const clearBtn = document.getElementById('searchClear');
+        const matchHint = document.getElementById('matchHint');
+        const activeTags = new Set();
+        let debounce = null;
+
+        function applyFilters() {
+            const q = (searchEl.value || '').trim().toLowerCase();
+            let shown = 0;
+            releases.forEach(r => {
+                const textHit = !q || r.dataset.searchText.includes(q);
+                const rTags = (r.dataset.tags || '').split(/\s+/).filter(Boolean);
+                const tagHit = activeTags.size === 0 ||
+                    rTags.some(t => activeTags.has(t));
+                const show = textHit && tagHit;
+                r.classList.toggle('hidden-by-filter', !show);
+                if (show) {
+                    shown++;
+                    /* Auto-expand cards that match a text query so the hit is visible. */
+                    if (q) r.classList.remove('collapsed');
+                } else {
+                    /* Collapse hidden cards to keep the DOM compact for screen readers. */
+                    r.classList.add('collapsed');
+                }
+            });
+            /* Hint text: "N of M releases" when any filter is active. */
+            if (q || activeTags.size) {
+                matchHint.textContent = `${shown} of ${releases.length} releases`;
+            } else {
+                matchHint.textContent = '';
+            }
+            clearBtn.classList.toggle('hidden', !q);
+            /* Apply highlights only to visible cards to keep cost bounded. */
+            highlightHits(q);
+        }
+
+        function highlightHits(q) {
+            /* Strip old highlights, then re-apply to every matching text node
+               in visible cards. Uses TreeWalker for text nodes only. */
+            releases.forEach(r => {
+                r.querySelectorAll('.search-hit').forEach(span => {
+                    const parent = span.parentNode;
+                    parent.replaceChild(document.createTextNode(span.textContent), span);
+                    parent.normalize();
+                });
+            });
+            if (!q) return;
+            const qLower = q.toLowerCase();
+            releases.forEach(r => {
+                if (r.classList.contains('hidden-by-filter')) return;
+                const walker = document.createTreeWalker(r, NodeFilter.SHOW_TEXT, {
+                    acceptNode(node) {
+                        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                        /* Skip nodes inside buttons / script / style. */
+                        const p = node.parentNode;
+                        if (!p) return NodeFilter.FILTER_REJECT;
+                        const tag = p.tagName;
+                        if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'BUTTON') return NodeFilter.FILTER_REJECT;
+                        return node.nodeValue.toLowerCase().includes(qLower)
+                            ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                    }
+                });
+                const targets = [];
+                let n;
+                while ((n = walker.nextNode())) targets.push(n);
+                targets.forEach(node => wrapHits(node, qLower));
+            });
+        }
+        function wrapHits(node, q) {
+            const text = node.nodeValue;
+            const lower = text.toLowerCase();
+            const frag = document.createDocumentFragment();
+            let i = 0;
+            while (i < text.length) {
+                const idx = lower.indexOf(q, i);
+                if (idx === -1) {
+                    frag.appendChild(document.createTextNode(text.slice(i)));
+                    break;
+                }
+                if (idx > i) frag.appendChild(document.createTextNode(text.slice(i, idx)));
+                const span = document.createElement('span');
+                span.className = 'search-hit';
+                span.textContent = text.slice(idx, idx + q.length);
+                frag.appendChild(span);
+                i = idx + q.length;
+            }
+            node.parentNode.replaceChild(frag, node);
+        }
+
+        searchEl.addEventListener('input', () => {
+            clearTimeout(debounce);
+            debounce = setTimeout(applyFilters, 80);
+        });
+        clearBtn.addEventListener('click', () => {
+            searchEl.value = '';
+            applyFilters();
+            searchEl.focus();
+        });
+
+        document.querySelectorAll('.filter-chip[data-tag]').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const t = chip.dataset.tag;
+                if (activeTags.has(t)) {
+                    activeTags.delete(t); chip.classList.remove('active');
+                } else {
+                    activeTags.add(t); chip.classList.add('active');
+                }
+                applyFilters();
+            });
+        });
+
+        /* Scroll to a hash on first paint now that the current release is expanded. */
+        if (location.hash) {
+            const t = document.querySelector(location.hash);
+            if (t) {
+                t.classList.remove('collapsed');
+                /* Defer to allow layout to settle before scrolling. */
+                setTimeout(() => t.scrollIntoView({ behavior: 'instant', block: 'start' }), 0);
+            }
+        }
+    })();
+    </script>
 </body>
 </html>
