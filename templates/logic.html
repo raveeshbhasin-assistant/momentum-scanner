@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.6.0</title>
+    <title>Algorithm Logic — Momentum Scanner v3.6.1</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.6.0</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.6.1</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,42 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.6.1 ───── -->
+        <div class="release current" id="v3-6-1">
+            <div class="release-header">
+                <span class="release-version">v3.6.1</span>
+                <span class="release-date">Released 2026-04-23</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">Today's Finds — category filter. The <code>/today</code> page now carries four A/B/C/D filter chips and an "A+B only" shortcut, matching the semantic-category language already used on <code>/performance</code> and in the notifier. Each row gets a small cat-pill in the Tier column so the assignment is visible at a glance. No data is removed — it's a pure UI filter.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> On busy days the <code>/today</code> board can accumulate 40-60 picks across all four categories, but the picks that actually matter for email/live-trading decisions are Cat A (High-Score Leader) and Cat B (High-Score Non-Leader) — the same gate the notifier uses. Eyeballing which rows are A/B among 50 picks was friction. Now it's one click (either toggle C + D off individually, or hit "A+B only").
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>Category filter chips on <code>/today</code>.</strong> Four A/B/C/D chips (colour-matched to the Performance-page palette: A = cyan, B = purple, C = slate, D = amber) sit in the table toolbar next to the RTH toggle and column toggles. Each chip shows the per-category row count. Clicking toggles that category's visibility via a class on the table (<code>table.hide-cat-X tbody tr[data-cat=X] { display: none }</code>). All four are active by default — no data hidden on first load.</li>
+                    <li><strong>"A+B only" shortcut button.</strong> One click forces A + B on and C + D off. Mirrors the notifier's default email gate (<code>NOTIFY_CATEGORIES=A,B</code>) so the view matches the feed you're getting in Gmail.</li>
+                    <li><strong>Category pill in the Tier column.</strong> Each row now shows a small <code>A</code> / <code>B</code> / <code>C</code> / <code>D</code> pill before the existing leadership pill (LDR / SOLO / FLW / LAG / UNC / WEAK / ⚡EARN), so the category assignment is visible without needing to look at the score + leadership combo by hand.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Version stamp bumped to <code>3.6.1</code></strong> in <code>FastAPI(title=..., version=...)</code>, <code>_footer.html</code>, and this page's <code>&lt;title&gt;</code> + version-tag. No algorithm change — picks, scores, and leadership labels are produced by the same engine as v3.6.0. The category assignment on <code>/today</code> is computed inline in the Jinja template (mirroring <code>performance_engine.assign_category</code>) so no server-side changes were needed. All existing consumers (backup JSON, Performance log, API responses) are byte-compatible with v3.6.0.</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- ───── v3.6.0 ───── -->
-        <div class="release current" id="v3-6-0">
+        <div class="release" id="v3-6-0">
             <div class="release-header">
                 <span class="release-version">v3.6.0</span>
                 <span class="release-date">Released 2026-04-22</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">UI overhaul — six-phase rebuild of the chrome: shared <code>_head.html</code> / <code>_nav.html</code> / <code>_footer.html</code> partials, a single <code>tokens.css</code> + <code>base.css</code> pair as the sole source of visual truth, and per-page polish across Dashboard, Today, History, Performance, Backtest, and Logic. Mobile ergonomics get a proper pass: a 44px tap-target token, hamburger nav under 480&nbsp;px, card-view tables on narrow screens, and a sticky search-and-filter toolbar on this very page. No algorithm change; every number you see on <code>/performance</code>, <code>/backtest</code>, <code>/today</code>, and <code>/history</code> is produced by the same v3.5.10 engine — only the chrome is new.</div>
 

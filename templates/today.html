@@ -116,6 +116,65 @@
         /* Hide outside-RTH rows when the filter is active */
         table.rth-only tbody tr[data-rth="false"] { display: none; }
 
+        /* ── Category filter (v3.6.1) ────────────────────────────── */
+        :root {
+            --cat-a: #22d3ee;   /* High-Score Leader */
+            --cat-b: #a78bfa;   /* High-Score Non-Leader */
+            --cat-c: #94a3b8;   /* Low-Score */
+            --cat-d: #f59e0b;   /* Unclassified */
+        }
+        .cat-chips {
+            display: inline-flex; gap: 6px; flex-wrap: wrap;
+            align-items: center;
+        }
+        .cat-chips-label {
+            font-size: 11px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.6px;
+            margin-right: 2px;
+        }
+        .chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 10px; border-radius: 999px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 12px; font-family: var(--font);
+            cursor: pointer; user-select: none;
+            transition: all 0.15s;
+            min-height: 28px;
+        }
+        .chip b { font-weight: 700; font-family: var(--mono); font-size: 10px; opacity: 0.8; }
+        .chip .chip-n { font-family: var(--mono); font-size: 10px; opacity: 0.75; }
+        .chip:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+        .chip.active { color: var(--text-primary); background: var(--bg-card-hover); }
+        .chip.cat-A.active { border-color: var(--cat-a); color: var(--cat-a); }
+        .chip.cat-B.active { border-color: var(--cat-b); color: var(--cat-b); }
+        .chip.cat-C.active { border-color: var(--cat-c); color: var(--cat-c); }
+        .chip.cat-D.active { border-color: var(--cat-d); color: var(--cat-d); }
+        /* Dim inactive state so users can tell which are filtered out */
+        .chip:not(.active) { opacity: 0.55; }
+
+        /* Row hiding: table class toggles per-category */
+        table.hide-cat-A tbody tr[data-cat="A"],
+        table.hide-cat-B tbody tr[data-cat="B"],
+        table.hide-cat-C tbody tr[data-cat="C"],
+        table.hide-cat-D tbody tr[data-cat="D"] { display: none; }
+
+        /* Small category pill shown inside the Tier column */
+        .cat-pill {
+            display: inline-block;
+            padding: 2px 6px; border-radius: 4px;
+            font-family: var(--mono); font-size: 10px; font-weight: 700;
+            letter-spacing: 0.4px;
+            margin-right: 4px;
+            border: 1px solid transparent;
+            vertical-align: middle;
+        }
+        .cat-pill.A { background: rgba(34,211,238,0.15);  color: var(--cat-a); border-color: rgba(34,211,238,0.35); }
+        .cat-pill.B { background: rgba(167,139,250,0.15); color: var(--cat-b); border-color: rgba(167,139,250,0.35); }
+        .cat-pill.C { background: rgba(148,163,184,0.15); color: var(--cat-c); border-color: rgba(148,163,184,0.35); }
+        .cat-pill.D { background: rgba(245,158,11,0.15);  color: var(--cat-d); border-color: rgba(245,158,11,0.35); }
+
         table { width: 100%; border-collapse: collapse; }
 
         th {
@@ -212,6 +271,14 @@
             <div class="table-header">
                 <span class="table-title">All signals found during today's scans</span>
                 <div class="table-actions">
+                    <span class="cat-chips" role="group" aria-label="Filter by category">
+                        <span class="cat-chips-label" title="Categories from performance page: A = High-Score Leader, B = High-Score Non-Leader, C = Low-Score, D = Unclassified">Cat:</span>
+                        <span class="chip cat-A active" data-cat="A" title="High-Score Leader (score ≥ 60, leadership = LEADER)"><b>A</b><span class="chip-n" id="chipN-A"></span></span>
+                        <span class="chip cat-B active" data-cat="B" title="High-Score Non-Leader (score ≥ 60, leadership ∈ FOLLOWER/LAGGARD/SOLO)"><b>B</b><span class="chip-n" id="chipN-B"></span></span>
+                        <span class="chip cat-C active" data-cat="C" title="Low-Score (score < 60, classified leadership)"><b>C</b><span class="chip-n" id="chipN-C"></span></span>
+                        <span class="chip cat-D active" data-cat="D" title="Unclassified (no leadership label yet — usually early-session picks)"><b>D</b><span class="chip-n" id="chipN-D"></span></span>
+                        <button type="button" class="chip" id="catABOnly" title="Quick filter: show only A + B (the categories the notifier sends emails on)">A+B only</button>
+                    </span>
                     <button class="rth-toggle" id="rthToggle" onclick="toggleRTH()" title="Show only signals found during regular market hours (Mon–Fri 09:30–16:00 ET)">
                         <span class="rth-active-dot"></span>
                         <span>Market hours only</span>
@@ -243,7 +310,15 @@
                     </thead>
                     <tbody>
                         {% for find in finds %}
+                        {# ── Category (mirrors performance_engine.assign_category) ── #}
+                        {% set _score = (find.composite_score or 0)|float %}
+                        {% set _lbl = ((find.leadership.label if find.leadership else '') or '')|upper %}
+                        {% if _lbl not in ('LEADER','FOLLOWER','LAGGARD','SOLO_MOVER') %}{% set cat = 'D' %}
+                        {% elif _score >= 60 and _lbl == 'LEADER' %}{% set cat = 'A' %}
+                        {% elif _score >= 60 %}{% set cat = 'B' %}
+                        {% else %}{% set cat = 'C' %}{% endif %}
                         <tr data-rth="{{ 'true' if is_rth(find.found_timestamp) else 'false' }}"
+                            data-cat="{{ cat }}"
                             data-time="{{ find.found_timestamp }}"
                             data-ticker="{{ find.ticker }}"
                             data-price="{{ find.price }}"
@@ -255,6 +330,7 @@
                             <td class="time-cell"  data-label="Time">{{ find.found_time }}</td>
                             <td class="ticker-cell" data-label="Ticker">{{ find.ticker }}</td>
                             <td class="tier-cell"   data-label="Tier" data-col="tier">
+                                <span class="cat-pill {{ cat }}" title="Category {{ cat }} — {% if cat=='A' %}High-Score Leader{% elif cat=='B' %}High-Score Non-Leader{% elif cat=='C' %}Low-Score{% else %}Unclassified{% endif %}">{{ cat }}</span>
                                 {% set ldr = find.leadership.label if find.leadership else '' %}
                                 {% if ldr == 'LEADER' %}<span class="tier-pill ldr"  title="{{ find.leadership.reason }}">LDR</span>
                                 {% elif ldr == 'SOLO_MOVER' %}<span class="tier-pill solo" title="{{ find.leadership.reason }}">SOLO</span>
@@ -390,6 +466,59 @@
         }
 
         document.addEventListener('DOMContentLoaded', _updateRTHBadge);
+
+        // ── Category filter chips (v3.6.1) ────────────────────────
+        (function setupCatFilter() {
+            const table = document.getElementById('findsTable');
+            if (!table) return;
+
+            // Populate per-chip counts from the rendered rows
+            const counts = { A: 0, B: 0, C: 0, D: 0 };
+            table.querySelectorAll('tbody tr[data-cat]').forEach(r => {
+                const c = r.getAttribute('data-cat');
+                if (counts[c] !== undefined) counts[c] += 1;
+            });
+            ['A','B','C','D'].forEach(c => {
+                const el = document.getElementById('chipN-' + c);
+                if (el) el.textContent = counts[c] ? `(${counts[c]})` : '(0)';
+                // Dim the chip further if there are no rows of that cat
+                if (!counts[c]) {
+                    const chip = document.querySelector('.chip.cat-' + c);
+                    if (chip) chip.style.cursor = 'not-allowed';
+                }
+            });
+
+            function toggleCat(c) {
+                const chip = document.querySelector('.chip.cat-' + c);
+                if (!chip) return;
+                const nowOff = chip.classList.contains('active');      // flip
+                chip.classList.toggle('active', !nowOff);
+                table.classList.toggle('hide-cat-' + c, nowOff);
+                _updateRTHBadge();  // counts update since visible rows changed
+            }
+
+            document.querySelectorAll('.chip[data-cat]').forEach(chip => {
+                chip.addEventListener('click', () => toggleCat(chip.dataset.cat));
+            });
+
+            // A+B shortcut: forces A + B active, C + D off
+            const shortcut = document.getElementById('catABOnly');
+            if (shortcut) {
+                shortcut.addEventListener('click', () => {
+                    ['A','B'].forEach(c => {
+                        const chip = document.querySelector('.chip.cat-' + c);
+                        if (chip && !chip.classList.contains('active')) chip.classList.add('active');
+                        table.classList.remove('hide-cat-' + c);
+                    });
+                    ['C','D'].forEach(c => {
+                        const chip = document.querySelector('.chip.cat-' + c);
+                        if (chip) chip.classList.remove('active');
+                        table.classList.add('hide-cat-' + c);
+                    });
+                    _updateRTHBadge();
+                });
+            }
+        })();
 
         // ── Auto-refresh every 2 minutes (pauses on hidden tab) ──
         let _refreshTimer = null;
