@@ -185,6 +185,35 @@
         }
         .sort-btn:hover, .sort-btn.active { color: var(--cyan); border-color: var(--cyan); }
 
+        /* ── RTH filter toggle (v3.5.10) ─────────────────────────── */
+        .rth-toggle {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .rth-toggle:hover { color: var(--amber); border-color: var(--amber); }
+        .rth-toggle.active {
+            color: var(--amber);
+            border-color: var(--amber);
+            background: rgba(245, 158, 11, 0.08);
+        }
+        .rth-toggle .rth-count {
+            font-family: var(--mono);
+            font-size: 11px;
+            opacity: 0.75;
+        }
+        /* Hide outside-RTH rows when the filter is active */
+        table.rth-only tbody tr[data-rth="false"] { display: none; }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -337,6 +366,10 @@
             <div class="table-header">
                 <span class="table-title">All signals found during today's scans</span>
                 <div class="table-actions">
+                    <button class="rth-toggle" id="rthToggle" onclick="toggleRTH()" title="Show only signals found during regular market hours (Mon–Fri 09:30–16:00 ET)">
+                        <span>Market hours only</span>
+                        <span class="rth-count" id="rthCount"></span>
+                    </button>
                     <button class="sort-btn active" onclick="sortTable('time')">By Time</button>
                     <button class="sort-btn" onclick="sortTable('score')">By Score</button>
                     <button class="sort-btn" onclick="sortTable('ticker')">By Ticker</button>
@@ -361,7 +394,7 @@
                     </thead>
                     <tbody>
                         {% for find in finds %}
-                        <tr>
+                        <tr data-rth="{{ 'true' if is_rth(find.found_timestamp) else 'false' }}">
                             <td class="time-cell">{{ find.found_time }}</td>
                             <td class="ticker-cell">
                                 {{ find.ticker }}
@@ -439,6 +472,43 @@
 
             rows.forEach(row => tbody.appendChild(row));
         }
+
+        // ── RTH filter toggle (v3.5.10) ───────────────────────────
+        function _rthCounts() {
+            const rows = document.querySelectorAll('#findsTable tbody tr');
+            let rth = 0, total = rows.length;
+            rows.forEach(r => { if (r.getAttribute('data-rth') === 'true') rth++; });
+            return { rth, total };
+        }
+
+        function _updateRTHBadge() {
+            const { rth, total } = _rthCounts();
+            const countEl = document.getElementById('rthCount');
+            if (!countEl) return;
+            // Hide the badge entirely if every row is RTH — nothing to filter.
+            if (rth === total) {
+                countEl.textContent = '';
+                const btn = document.getElementById('rthToggle');
+                if (btn) btn.setAttribute('title', 'All signals on this page are from regular market hours — filter would be a no-op.');
+                return;
+            }
+            const table = document.getElementById('findsTable');
+            const active = table && table.classList.contains('rth-only');
+            countEl.textContent = active ? `${rth}/${total}` : `(${rth} of ${total} RTH)`;
+        }
+
+        function toggleRTH() {
+            const table = document.getElementById('findsTable');
+            const btn = document.getElementById('rthToggle');
+            if (!table || !btn) return;
+            const nowActive = !table.classList.contains('rth-only');
+            table.classList.toggle('rth-only', nowActive);
+            btn.classList.toggle('active', nowActive);
+            _updateRTHBadge();
+        }
+
+        // Initial render of the count hint
+        document.addEventListener('DOMContentLoaded', _updateRTHBadge);
 
         // Auto-refresh every 2 minutes
         setInterval(() => { window.location.reload(); }, 120000);

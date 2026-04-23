@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.5.9</title>
+    <title>Algorithm Logic — Momentum Scanner v3.5.10</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -255,7 +255,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.5.9</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.5.10</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -265,7 +265,8 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-5-9" class="current">v3.5.9 — RTH Gate on Re-Entry Dedup + Daily Finds Persistence</a>
+            <a href="#v3-5-10" class="current">v3.5.10 — "Market Hours Only" Filter on Today / History</a>
+            <a href="#v3-5-9">v3.5.9 — RTH Gate on Re-Entry Dedup + Daily Finds Persistence</a>
             <a href="#v3-5-8">v3.5.8 — Market-Hours + Category Filters + Test Hook</a>
             <a href="#v3-5-7">v3.5.7 — Range View + Cumulative R Fix</a>
             <a href="#v3-5-6-2">v3.5.6.2 — Earlier EOD + Manual Trigger</a>
@@ -286,12 +287,47 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.5.10 ───── -->
+        <div class="release current" id="v3-5-10">
+            <div class="release-header">
+                <span class="release-version">v3.5.10</span>
+                <span class="release-date">Released 2026-04-22</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"Market Hours Only" filter on <code>/today</code> and <code>/history</code> — a client-side toggle pill that hides signals found outside regular session (Mon–Fri 09:30–16:00 ET). Default off; click to filter. No data is deleted — rows stay in <code>data/{date}.json</code> and simply hide in the DOM when the toggle is active, so legacy pre-v3.5.9 history is filterable without a migration script.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> v3.5.9 stopped <em>new</em> outside-RTH rows from reaching <code>data/{date}.json</code>, but pre-v3.5.9 daily files on the Railway volume still carry 9:00-ET and 16:30-ET noise. Rather than run a one-shot scrub and lose the raw record (pre-market sightings do occasionally matter for post-hoc review), this release adds a view-only filter. One click to see the clean intraday picture, one click back to the full record. Going forward the filter is a no-op on any day whose finds were all written by v3.5.9+, and the toggle's count-hint collapses to empty in that case — so on clean days the UI doesn't nag.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>_ts_is_rth(ts)</code> Jinja global in <code>app.py</code>.</strong> Accepts an ISO timestamp string or a datetime, normalizes to <code>config.ET</code> (assumes ET when tz-naive), and returns <code>_in_regular_session(dt)</code>. Malformed or missing timestamps return <code>False</code> so the filter hides unlabeled rows rather than leaving orphans visible. Registered as <code>templates.env.globals["is_rth"]</code> so every template can call <code>is_rth(find.found_timestamp)</code>.</li>
+                    <li><strong>"Market hours only" toggle pill on <code>/today</code>.</strong> Sits in the table-actions row next to the existing By Time / By Score / By Ticker sort buttons. Amber accent when active; title-tooltip explains the RTH window. Each <code>&lt;tr&gt;</code> carries <code>data-rth="true|false"</code> baked server-side via <code>is_rth()</code>, and the toggle adds a <code>rth-only</code> class to the table. A CSS rule <code>table.rth-only tbody tr[data-rth="false"] { display: none; }</code> does the hiding — no row mutation, just visibility. A count hint on the pill reads "(X of Y RTH)" when inactive and "X/Y" when active, and hides entirely if all rows are RTH.</li>
+                    <li><strong>"Market hours only" toggle pill on <code>/history</code>.</strong> Mounted above the day-tabs in a new <code>.filter-bar</code>. When active, the class is applied to the <code>&lt;main&gt;</code> wrapper so every day-panel's table filters at once. Each day-tab's signal count updates to reflect RTH-only rows while the filter is on (using counts pre-computed in JS at <code>DOMContentLoaded</code>), and reverts to total when toggled off.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Version stamp bumped to <code>3.5.10</code></strong> in <code>FastAPI(title=..., version=...)</code>. No API contract changed.</li>
+                    <li><strong><code>&lt;main&gt;</code> on <code>history.html</code> now carries <code>id="historyMain"</code></strong> so the JS toggle has a stable hook. Cosmetic only.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale" style="margin-top:12px">
+                <strong>Verification:</strong> (1) <code>_ts_is_rth</code> unit-tested across ISO strings with/without tzinfo, Wed 09:00/09:30/16:00/16:30 ET boundaries, Sat/Sun any hour, empty/<code>None</code>/malformed inputs. (2) Jinja global registration confirmed — <code>templates.env.globals["is_rth"]</code> is the same function object. (3) Rendered <code>today.html</code> and <code>history.html</code> against a synthetic day containing a 9:00 AM row, a 10:30 AM row, a 3:00 PM row, and a 4:30 PM row — confirmed <code>data-rth</code> matches expected on every row. (4) Verified the toggle and count-hint JS in isolation: for a 3-RTH-of-4 scenario the inactive label reads "(3 of 4 RTH)" and the active label reads "3/4"; for a 4-of-4 scenario both read empty. (5) Day-tab count rewriting verified in JS: pre-computed <code>_rthCounts</code> matches server-counted totals, and tab-count text correctly swaps on toggle. (6) <code>ast.parse</code> on <code>app.py</code> clean; version string is <code>3.5.10</code>. (7) Logic-page invariants re-checked after the new block — divs balanced, TOC ↔ section ids match, exactly one <code>pill-current</code> on a release header (v3.5.10).
+            </div>
+        </div>
+
         <!-- ───── v3.5.9 ───── -->
-        <div class="release current" id="v3-5-9">
+        <div class="release" id="v3-5-9">
             <div class="release-header">
                 <span class="release-version">v3.5.9</span>
                 <span class="release-date">Released 2026-04-22</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill">Shipped</span>
             </div>
             <div class="release-title">"RTH Gate on Re-Entry Dedup + Daily Finds Persistence" — two bugs at a single scheduler seam. The 9:00 ET and 16:30 ET main-scan fires now neither consume a ticker's once-per-day dedup slot nor persist to the daily-finds JSON, so every strong ticker gets its guaranteed one-per-day showing during regular session <em>and</em> <code>/today</code> / <code>/history</code> stay free of pre-market and post-close noise. The in-memory live dashboard still reflects every scan regardless of session, so operators don't lose visibility.</div>
 

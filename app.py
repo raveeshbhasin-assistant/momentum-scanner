@@ -60,7 +60,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.5.9")
+app = FastAPI(title="Momentum Scanner", version="3.5.10")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -109,6 +109,46 @@ def _in_regular_session(now_et: datetime) -> bool:
     if now_et.weekday() >= 5:
         return False
     return _RTH_OPEN <= now_et.time() <= _RTH_CLOSE
+
+
+def _ts_is_rth(ts) -> bool:
+    """
+    True iff an ISO timestamp string (or datetime) represents a moment
+    inside the US regular trading session (Mon–Fri 09:30–16:00 ET).
+
+    Exposed to Jinja templates as `is_rth(find.found_timestamp)` so that
+    today.html and history.html can bake a `data-rth` attribute onto
+    each find row. The "Market hours only" toggle then hides outside-
+    RTH rows client-side without a reload.
+
+    Pre-v3.5.9 daily files may contain outside-RTH rows from the 9:00
+    and 16:30 scheduler fires; v3.5.9+ never writes outside-RTH rows,
+    so on fresh data every row is RTH and this filter is a no-op.
+
+    Missing / malformed timestamps return False so the toggle hides
+    unlabeled rows rather than leaving orphan entries visible.
+    """
+    if not ts:
+        return False
+    try:
+        if isinstance(ts, str):
+            dt = datetime.fromisoformat(ts)
+        elif isinstance(ts, datetime):
+            dt = ts
+        else:
+            # Unknown type (int, list, etc.) — treat as malformed.
+            return False
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=config.ET)
+        else:
+            dt = dt.astimezone(config.ET)
+    except (ValueError, TypeError):
+        return False
+    return _in_regular_session(dt)
+
+
+# Expose is_rth() to every Jinja template (v3.5.10: market-hours filter toggle)
+templates.env.globals["is_rth"] = _ts_is_rth
 
 
 def premarket_scan_job():

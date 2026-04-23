@@ -83,6 +83,42 @@
 
         .main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
 
+        /* ── RTH filter toggle (v3.5.10) ─────────────────────────── */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .rth-toggle {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .rth-toggle:hover { color: var(--amber); border-color: var(--amber); }
+        .rth-toggle.active {
+            color: var(--amber);
+            border-color: var(--amber);
+            background: rgba(245, 158, 11, 0.08);
+        }
+        .rth-toggle .rth-count {
+            font-family: var(--mono);
+            font-size: 11px;
+            opacity: 0.75;
+        }
+        /* Hide outside-RTH rows in every day panel when the filter is active */
+        .main.rth-only table tbody tr[data-rth="false"] { display: none; }
+
         /* ── Day Tabs ──────────────────────────────────────────── */
         .day-tabs {
             display: flex;
@@ -260,11 +296,21 @@
         </div>
     </header>
 
-    <main class="main">
+    <main class="main" id="historyMain">
+        <!-- Filter Bar (v3.5.10) -->
+        <div class="filter-bar">
+            <button class="rth-toggle" id="rthToggle" onclick="toggleRTH()" title="Show only signals found during regular market hours (Mon–Fri 09:30–16:00 ET)">
+                <span>Market hours only</span>
+                <span class="rth-count" id="rthCount"></span>
+            </button>
+        </div>
+
         <!-- Day Tabs -->
         <div class="day-tabs">
             {% for day in days %}
             <button class="day-tab {{ 'active' if loop.index0 == 0 else '' }}"
+                    data-day-index="{{ loop.index0 }}"
+                    data-total="{{ day.signal_count }}"
                     onclick="showDay({{ loop.index0 }})">
                 {{ day.date_display }}
                 {% if loop.index0 == 0 %}<span style="font-size: 11px; color: var(--cyan);">(today)</span>{% endif %}
@@ -275,7 +321,7 @@
 
         <!-- Day Panels -->
         {% for day in days %}
-        <div class="day-panel {{ 'active' if loop.index0 == 0 else '' }}" id="day-{{ loop.index0 }}">
+        <div class="day-panel {{ 'active' if loop.index0 == 0 else '' }}" id="day-{{ loop.index0 }}" data-day-index="{{ loop.index0 }}">
             {% if day.finds %}
             <div class="day-summary">
                 <div class="summary-card">
@@ -320,7 +366,7 @@
                         </thead>
                         <tbody>
                             {% for find in day.finds %}
-                            <tr>
+                            <tr data-rth="{{ 'true' if is_rth(find.found_timestamp) else 'false' }}">
                                 <td class="time-cell">{{ find.found_time }}</td>
                                 <td class="ticker-cell">
                                     {{ find.ticker }}
@@ -383,6 +429,70 @@
                 p.classList.toggle('active', i === index);
             });
         }
+
+        // ── RTH filter (v3.5.10) ──────────────────────────────────
+        // Counts per day-panel — populated on DOMContentLoaded so we only walk the DOM once.
+        // Each entry: { rth, total }.
+        let _rthCounts = [];
+
+        function _computeRTHCounts() {
+            _rthCounts = [];
+            document.querySelectorAll('.day-panel').forEach(panel => {
+                const rows = panel.querySelectorAll('table tbody tr');
+                let rth = 0;
+                rows.forEach(r => { if (r.getAttribute('data-rth') === 'true') rth++; });
+                _rthCounts.push({ rth, total: rows.length });
+            });
+        }
+
+        function _rthTotal() {
+            return _rthCounts.reduce(
+                (acc, c) => ({ rth: acc.rth + c.rth, total: acc.total + c.total }),
+                { rth: 0, total: 0 }
+            );
+        }
+
+        function _applyRTHCounts(active) {
+            document.querySelectorAll('.day-tab').forEach((tab, i) => {
+                const c = _rthCounts[i];
+                if (!c) return;
+                const countEl = tab.querySelector('.tab-count');
+                if (!countEl) return;
+                countEl.textContent = active ? c.rth : c.total;
+            });
+        }
+
+        function _updateRTHBadge() {
+            const { rth, total } = _rthTotal();
+            const countEl = document.getElementById('rthCount');
+            const btn = document.getElementById('rthToggle');
+            if (!countEl || !btn) return;
+            if (rth === total) {
+                // Every row on every day-panel is RTH — filter is a no-op.
+                countEl.textContent = '';
+                btn.setAttribute('title', 'All history rows are from regular market hours — filter would be a no-op.');
+                return;
+            }
+            const main = document.getElementById('historyMain');
+            const active = main && main.classList.contains('rth-only');
+            countEl.textContent = active ? `${rth}/${total}` : `(${rth} of ${total} RTH)`;
+        }
+
+        function toggleRTH() {
+            const main = document.getElementById('historyMain');
+            const btn = document.getElementById('rthToggle');
+            if (!main || !btn) return;
+            const nowActive = !main.classList.contains('rth-only');
+            main.classList.toggle('rth-only', nowActive);
+            btn.classList.toggle('active', nowActive);
+            _applyRTHCounts(nowActive);
+            _updateRTHBadge();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            _computeRTHCounts();
+            _updateRTHBadge();
+        });
     </script>
 </body>
 </html>
