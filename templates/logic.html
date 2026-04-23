@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Logic — Momentum Scanner v3.5.8</title>
+    <title>Algorithm Logic — Momentum Scanner v3.5.9</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -255,7 +255,7 @@
     </header>
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.5.8</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.5.9</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -265,7 +265,8 @@
         <p>Every material change to the scanner — new indicators, filter tweaks, UI updates, data-source swaps — lands here. Newest release on top.</p>
 
         <div class="release-toc">
-            <a href="#v3-5-8" class="current">v3.5.8 — Market-Hours + Category Filters + Test Hook</a>
+            <a href="#v3-5-9" class="current">v3.5.9 — RTH Gate on Re-Entry Dedup + Daily Finds Persistence</a>
+            <a href="#v3-5-8">v3.5.8 — Market-Hours + Category Filters + Test Hook</a>
             <a href="#v3-5-7">v3.5.7 — Range View + Cumulative R Fix</a>
             <a href="#v3-5-6-2">v3.5.6.2 — Earlier EOD + Manual Trigger</a>
             <a href="#v3-5-6">v3.5.6 — SMTPS + EOD Backup Reliability</a>
@@ -285,12 +286,55 @@
             <a href="#v3-0">v3.0</a>
         </div>
 
+        <!-- ───── v3.5.9 ───── -->
+        <div class="release current" id="v3-5-9">
+            <div class="release-header">
+                <span class="release-version">v3.5.9</span>
+                <span class="release-date">Released 2026-04-22</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">"RTH Gate on Re-Entry Dedup + Daily Finds Persistence" — two bugs at a single scheduler seam. The 9:00 ET and 16:30 ET main-scan fires now neither consume a ticker's once-per-day dedup slot nor persist to the daily-finds JSON, so every strong ticker gets its guaranteed one-per-day showing during regular session <em>and</em> <code>/today</code> / <code>/history</code> stay free of pre-market and post-close noise. The in-memory live dashboard still reflects every scan regardless of session, so operators don't lose visibility.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> The APScheduler cron for <code>scheduled_scan</code> is <code>hour="9-16", minute="0,30"</code> — it fires at 9:00 and 16:30 ET in addition to the 30 in-session slots. Two independent bugs rode on those two fires. <em>Bug 1:</em> the 9:00 fire was populating <code>_today_tickers_seen</code>, so any ticker that flashed strong on thin pre-market tape (typically un-actionable on Fidelity) silently consumed its once-per-day slot and the legitimate 9:30+ emissions were suppressed as "re-entries." Same root cause at 16:30. This undercut what v3.5.8's Resend notifier could ever send. <em>Bug 2:</em> every fire — in- or out-of-session — was calling <code>add_signals_to_daily()</code>, so <code>data/{date}.json</code> carried pre-market and post-close rows that polluted <code>/today</code> and <code>/history</code>. (The performance log itself was always safe: <code>daily_analysis.filter_market_hours</code> drops anything outside 09:30–16:00 before it hits <code>performance_log.json</code>, which is why 4/20 and 4/22 have zero post-close rows there.) Both bugs live at the same scheduler seam, so they share one fix: compute an RTH flag once per scan and gate both sites on it.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>_in_regular_session(now_et)</code> helper in <code>app.py</code>.</strong> Returns <code>True</code> iff <code>now_et</code> is Mon–Fri and between 09:30 and 16:00 ET inclusive on both ends. Weekend check uses <code>weekday() &gt;= 5</code>. Callers must pass a datetime already localized to <code>config.ET</code> — <code>scheduled_scan</code> always does. No timezone conversion inside the helper so there's exactly one place the TZ contract lives.</li>
+                    <li><strong>Outside-RTH branch in the re-entry suppression block.</strong> When <code>config.SUPPRESS_REENTRIES</code> is on, there are strong signals, and the scan fired <em>outside</em> regular session, every signal is tagged <code>is_reentry=False</code> (downstream shape unchanged) and the Railway log emits <code>"Outside RTH (Fri 09:00 ET): N signal(s) passed through without dedup-set update"</code>. The dedup set is not touched.</li>
+                    <li><strong>Outside-RTH skip on <code>add_signals_to_daily()</code>.</strong> The persist-to-daily-finds call is now gated on the same <code>in_rth</code> flag. When outside RTH, results are <em>not</em> written to <code>data/{date}.json</code>, and the log emits <code>"Outside RTH (… ET): N signal(s) NOT persisted to daily finds (live dashboard still shows them)"</code>. The in-memory <code>scan_results</code> is still assigned <em>before</em> this branch so the live dashboard and <code>/api/live</code> continue to show pre-market/after-hours chatter for situational awareness.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong>Pre-market 9:00 fire was consuming dedup slots.</strong> A ticker that flashed strong at 9:00 was silently suppressed when it re-emitted at 9:30+. The dedup set now grows only during 09:30–16:00 ET Mon–Fri, so every strong ticker gets at least one RTH emission regardless of pre- or post-market activity. Existing RTH behavior — one-per-day within the session — unchanged.</li>
+                    <li><strong>Pre-market and post-close rows were polluting <code>data/{date}.json</code> (and therefore <code>/today</code> and <code>/history</code>).</strong> Future scans at 9:00 and 16:30 ET will no longer persist to daily finds. This does <em>not</em> retroactively clean existing days — if you see stale 9:00 or 16:30 rows on 4/20 or 4/22 in <code>/today</code> or <code>/history</code>, they were written before this fix and would need a separate cleanup script if they bother you. Performance-log entries on those dates are unaffected because <code>filter_market_hours</code> was already dropping them in <code>analyze_day</code>.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong><code>from datetime import datetime</code> → <code>datetime, time as dtime</code></strong> so the RTH boundary constants can be expressed as <code>time(9, 30)</code> / <code>time(16, 0)</code> without namespace-shadowing the <code>time</code> module used elsewhere.</li>
+                    <li><strong>Version stamp bumped to <code>3.5.9</code> in <code>FastAPI(title=..., version=...)</code>.</strong> No API contract changed.</li>
+                </ul>
+            </div>
+
+            <div class="release-rationale" style="margin-top:12px">
+                <strong>Verification:</strong> (1) <code>_in_regular_session</code> unit-tested against boundaries — Wed 09:00/09:29/16:01/16:30 → False; Wed 09:30/12:00/16:00 → True; Sat/Sun at any hour → False. (2) Four-scan replay with the same ticker AAA at simulated 09:00, 09:30, 10:30, 16:30 ET: 09:00 emits <code>is_reentry=False</code> with empty dedup set; 09:30 emits <code>is_reentry=False</code> and set={AAA}; 10:30 suppressed as re-entry; 16:30 emits <code>is_reentry=False</code> without set mutation. (3) Control replay — BBB at 10:00 (emitted + added) and 11:00 (suppressed); <code>SUPPRESS_REENTRIES=False</code> short-circuits both branches. (4) Source-shape invariant checks confirm both gates are present, the skip-log strings are there, and <code>scan_results = results</code> runs before the persistence gate so the live dashboard stays current. (5) <code>ast.parse</code> on <code>app.py</code> clean. (6) Logic-page invariants — divs balanced, TOC ↔ section ids match, exactly one release block carries <code>pill-current</code> for Current. (7) Current <code>performance_log.json</code> for 4/20 and 4/22 audited: 123 entries, all <code>post_close=False</code>, latest <code>batch_time=15:31</code> on both dates — confirming this release does not require any retroactive cleanup of the performance page.
+            </div>
+        </div>
+
         <!-- ───── v3.5.8 ───── -->
-        <div class="release current" id="v3-5-8">
+        <div class="release" id="v3-5-8">
             <div class="release-header">
                 <span class="release-version">v3.5.8</span>
                 <span class="release-date">Released 2026-04-22</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill">Shipped</span>
             </div>
             <div class="release-title">"Market-Hours + Category Filters + Test Hook" — the Resend notifier now only fires during the US equity regular session (Mon–Fri 09:30–16:00 ET) and only when at least one strong signal lands in Category A or B. A new <code>POST /api/notify/test</code> endpoint sends a filter-bypassing round-trip email so Railway env vars can be verified anytime, not just during a live Cat A/B hit.</div>
 

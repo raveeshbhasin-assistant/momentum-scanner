@@ -7,7 +7,7 @@ a professional trading dashboard.
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, time as dtime
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -60,7 +60,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.5.8")
+app = FastAPI(title="Momentum Scanner", version="3.5.9")
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -89,6 +89,26 @@ def _reset_daily_state():
         _last_reset_date = today
         reset_premarket()
         logger.info(f"Daily state reset for {today}")
+
+
+# US equity regular trading hours, used to gate re-entry dedup (v3.5.9).
+# The main scan cron fires at 9:00 and 16:30 ET too; without this gate a
+# ticker that flashed strong pre-market would burn its once-per-day
+# dedup slot and be suppressed during the actual tradeable session.
+_RTH_OPEN = dtime(9, 30)
+_RTH_CLOSE = dtime(16, 0)
+
+
+def _in_regular_session(now_et: datetime) -> bool:
+    """
+    True iff `now_et` is Mon–Fri between 09:30 and 16:00 ET inclusive.
+
+    Callers must pass a datetime already localized to config.ET — this
+    function does not itself convert. scheduled_scan always does so.
+    """
+    if now_et.weekday() >= 5:
+        return False
+    return _RTH_OPEN <= now_et.time() <= _RTH_CLOSE
 
 
 def premarket_scan_job():
@@ -287,7 +307,14 @@ def scheduled_scan():
             results = []
 
         # ── RE-ENTRY SUPPRESSION: Mark and filter re-entries ──
-        if config.SUPPRESS_REENTRIES and results:
+        # v3.5.9: the dedup set is only mutated during regular trading
+        # hours (Mon–Fri 09:30–16:00 ET). Pre-market (9:00 fire) and
+        # after-hours (16:30 fire) still produce signals and still get
+        # logged + persisted, but they don't consume a ticker's
+        # once-per-day slot. This guarantees every strong ticker gets
+        # at least one emission during regular session.
+        in_rth = _in_regular_session(now)
+        if config.SUPPRESS_REENTRIES and results and in_rth:
             filtered = []
             for signal in results:
                 ticker = signal["ticker"]
@@ -305,6 +332,17 @@ def scheduled_scan():
             if suppressed > 0:
                 logger.info(f"Re-entry filter: {suppressed} signals suppressed, {len(filtered)} kept")
             results = filtered
+        elif config.SUPPRESS_REENTRIES and results and not in_rth:
+            # Outside regular session — don't mutate the dedup set, but
+            # still annotate every signal so downstream code has a
+            # consistent shape. Tickers that fire here may re-appear
+            # during RTH and will be emitted fresh.
+            for signal in results:
+                signal["is_reentry"] = False
+            logger.info(
+                f"Outside RTH ({now.strftime('%a %H:%M ET')}): "
+                f"{len(results)} signal(s) passed through without dedup-set update"
+            )
 
         if not results:
             logger.warning("Live scan returned no results after filters")
@@ -312,9 +350,20 @@ def scheduled_scan():
         scan_results = results
         last_scan_time = now.strftime("%Y-%m-%d %I:%M:%S %p ET")
 
-        # Persist to daily cumulative finds (for /today and /history pages)
-        if results:
+        # Persist to daily cumulative finds (for /today and /history pages).
+        # v3.5.9: gate on RTH so the 9:00 and 16:30 scheduler fires don't
+        # pollute data/{date}.json with un-actionable pre-market / post-
+        # close emissions. The in-memory `scan_results` is still updated
+        # above so the live dashboard reflects the latest scan, but the
+        # persisted file stays clean.
+        if results and in_rth:
             add_signals_to_daily(results)
+        elif results and not in_rth:
+            logger.info(
+                f"Outside RTH ({now.strftime('%a %H:%M ET')}): "
+                f"{len(results)} signal(s) NOT persisted to daily finds "
+                "(live dashboard still shows them)"
+            )
 
         # ── Email notifier (v3.4.3) ─────────────────────────────────
         # Sends a strong-signals-only email after each scan. Fully
