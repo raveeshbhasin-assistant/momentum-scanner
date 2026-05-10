@@ -157,6 +157,93 @@ def _fetch_intraday_yfinance(tickers: list[str], interval: str = "5m", days: int
 #  TECHNICAL INDICATOR CALCULATIONS
 # ═══════════════════════════════════════════════════════════════
 
+def compute_strong_signal(df: pd.DataFrame) -> dict:
+    """
+    v3.7.0: Compute the four STRONG-signal conditions on the most recent
+    COMPLETE 5-min bar:
+      - bar_green        — last complete bar close > open
+      - above_vwap       — last complete bar close > running VWAP
+      - new_hod          — last complete bar high ≥ session high so far (within ε)
+      - pm_high_hold     — last complete bar close > max of pre-market highs
+
+    Returns dict with the four booleans + a top-level `strong: bool`.
+    Conservative fallback: if any condition cannot be confirmed (missing
+    column, no PM bars, df too short, partial bar only), the corresponding
+    flag is False and `strong` is False. We never report STRONG without
+    all four being confirmable.
+
+    13-day research: this 4-way conjunction lifts 2.5R hit rate from
+    21.8% baseline to ~46–53%.
+    """
+    out = {
+        "bar_green": False,
+        "above_vwap": False,
+        "new_hod": False,
+        "pm_high_hold": False,
+        "strong": False,
+        "complete_bar_used": False,
+    }
+    if df is None or df.empty or len(df) < 2:
+        return out
+
+    # Determine the most recent COMPLETE bar (mirror calculate_rvol logic)
+    try:
+        last_ts = df.index[-1]
+        if hasattr(last_ts, "tz") and last_ts.tz is not None:
+            now_ref = pd.Timestamp.now(tz=last_ts.tz)
+        else:
+            now_ref = pd.Timestamp.utcnow().tz_localize(None)
+        bar_end = last_ts + pd.Timedelta(minutes=5)
+        is_partial = now_ref < bar_end
+    except Exception:
+        is_partial = False
+
+    ref_idx = -2 if (is_partial and len(df) >= 2) else -1
+    out["complete_bar_used"] = (ref_idx == -2)
+
+    try:
+        last = df.iloc[ref_idx]
+        # bar_green
+        if pd.notna(last.get("Open")) and pd.notna(last.get("Close")):
+            out["bar_green"] = bool(last["Close"] > last["Open"])
+        # above_vwap
+        vwap_val = last.get("VWAP")
+        if pd.notna(last.get("Close")) and pd.notna(vwap_val):
+            out["above_vwap"] = bool(last["Close"] > vwap_val)
+        # new_hod — last complete bar's high ≥ session high (within 0.05% ε).
+        # Slice highs through the reference bar inclusive, ignoring any later
+        # partial bar so we don't compare against a still-forming high.
+        try:
+            highs_through_ref = df["High"] if ref_idx == -1 else df["High"].iloc[:-1]
+            session_high = highs_through_ref.max()
+            if pd.notna(session_high) and pd.notna(last.get("High")):
+                out["new_hod"] = bool(last["High"] >= session_high * 0.9995)
+        except Exception:
+            out["new_hod"] = False
+        # pm_high_hold: max of bars whose ET timestamp < 09:30
+        try:
+            idx_et = df.index
+            if hasattr(idx_et, "tz") and idx_et.tz is not None:
+                # idx is timezone-aware. Determine local hour:minute per row
+                hours = idx_et.hour
+                mins  = idx_et.minute
+                pm_mask = (hours < 9) | ((hours == 9) & (mins < 30))
+                pm_highs = df["High"][pm_mask]
+            else:
+                pm_highs = pd.Series(dtype=float)
+            if len(pm_highs) > 0 and pd.notna(last.get("Close")):
+                out["pm_high_hold"] = bool(last["Close"] > pm_highs.max())
+        except Exception:
+            out["pm_high_hold"] = False
+    except Exception:
+        return out
+
+    out["strong"] = bool(
+        out["bar_green"] and out["above_vwap"] and out["new_hod"] and out["pm_high_hold"]
+    )
+    return out
+
+
 def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate all technical indicators on a DataFrame with OHLCV columns.
@@ -542,6 +629,18 @@ def run_scan(tickers: Optional[list[str]] = None,
     if tickers is None:
         tickers = config.get_full_universe()
 
+    # ── v3.7.0: Emission cutoff — block new picks after EMISSION_CUTOFF time ──
+    # Open-position management still runs; this only stops *new* signal emission.
+    now_et = datetime.now(_config_module.ET)
+    cutoff_h = getattr(config, "EMISSION_CUTOFF_HOUR", 15)
+    cutoff_m = getattr(config, "EMISSION_CUTOFF_MINUTE", 0)
+    if (now_et.hour, now_et.minute) >= (cutoff_h, cutoff_m):
+        logger.info(
+            f"v3.7.0 emission cutoff: now={now_et.strftime('%H:%M')} ET "
+            f">= {cutoff_h:02d}:{cutoff_m:02d}. Skipping new-signal scan."
+        )
+        return []
+
     logger.info(f"Starting scan of {len(tickers)} tickers...")
     start_time = time.time()
 
@@ -584,6 +683,18 @@ def run_scan(tickers: Optional[list[str]] = None,
             rvol = calculate_rvol(df)
             if rvol < config.MIN_RVOL:
                 continue
+
+            # ── v3.7.0: RSI hard cap — reject if RSI > RSI_HARD_CAP ──
+            # 13-day research: picks with RSI > 75 hit 2.5R at 14.3% vs 23%
+            # for the 55–75 band. Previously was a soft -15 point penalty.
+            if getattr(config, "RSI_HARD_CAP_ENABLED", True):
+                rsi_now = df["RSI"].iloc[-1] if "RSI" in df.columns else None
+                rsi_cap = getattr(config, "RSI_HARD_CAP", 75)
+                if rsi_now is not None and pd.notna(rsi_now) and rsi_now > rsi_cap:
+                    logger.debug(
+                        f"v3.7.0 RSI gate: skipping {ticker} — RSI={rsi_now:.1f} > {rsi_cap}"
+                    )
+                    continue
 
             # ── Earnings hard filter (v3.3): block entries after 2pm on AMC days ──
             earnings_ctx = get_earnings_context(ticker)
@@ -637,6 +748,19 @@ def run_scan(tickers: Optional[list[str]] = None,
                 ticker,
                 ticker_pct if ticker_pct is not None else 0.0,
             )
+
+            # ── v3.7.0: Sector exclusion gate ──
+            # 13-day research: Utilities (6.7%), Consumer Disc (11.3%), and
+            # Real Estate (14.3%) all underperformed the 22% baseline.
+            # Crypto/Blockchain retained per operator preference.
+            excluded = getattr(config, "EXCLUDED_SECTORS", [])
+            ld_sector = (leadership or {}).get("sector")
+            if excluded and ld_sector in excluded:
+                logger.debug(
+                    f"v3.7.0 sector gate: skipping {ticker} — sector={ld_sector!r}"
+                )
+                continue
+
             _LEADER_ALLOWED = {
                 "display":    {"LEADER", "SOLO_MOVER", "FOLLOWER", "LAGGARD", "UNKNOWN"},
                 "score":      {"LEADER", "SOLO_MOVER", "FOLLOWER", "LAGGARD", "UNKNOWN"},
@@ -718,14 +842,41 @@ def run_scan(tickers: Optional[list[str]] = None,
                 # Chart data: last 78 bars (~6.5 hours of 5-min candles)
                 "chart_data": _prepare_chart_data(df.tail(78)),
             }
+
+            # ── v3.7.0: STRONG signal flag ──
+            # 4-way conjunction (bar_green AND above_vwap AND new_hod AND
+            # pm_high_hold). Visual badge + sort priority on the dashboard,
+            # NO emission filtering this version. 13-day research: ~46–53%
+            # 2.5R hit rate when STRONG vs ~22% baseline.
+            try:
+                strong_info = compute_strong_signal(df)
+                signal["strong_signal"] = bool(strong_info.get("strong"))
+                signal["strong_components"] = {
+                    "bar_green": strong_info.get("bar_green", False),
+                    "above_vwap": strong_info.get("above_vwap", False),
+                    "new_hod": strong_info.get("new_hod", False),
+                    "pm_high_hold": strong_info.get("pm_high_hold", False),
+                    "complete_bar_used": strong_info.get("complete_bar_used", False),
+                }
+            except Exception as _e:
+                logger.debug(f"strong_signal compute failed for {ticker}: {_e}")
+                signal["strong_signal"] = False
+                signal["strong_components"] = {
+                    "bar_green": False, "above_vwap": False,
+                    "new_hod": False, "pm_high_hold": False,
+                    "complete_bar_used": False,
+                }
             signals.append(signal)
 
         except Exception as e:
             logger.warning(f"Error scanning {ticker}: {e}")
             continue
 
-    # Sort by composite score
-    signals.sort(key=lambda x: x["composite_score"], reverse=True)
+    # Sort: STRONG signals first, then by composite score (v3.7.0)
+    signals.sort(
+        key=lambda x: (1 if x.get("strong_signal") else 0, x.get("composite_score", 0)),
+        reverse=True,
+    )
     signals = signals[:config.MAX_SIGNALS_PER_SCAN]
 
     elapsed = round(time.time() - start_time, 1)

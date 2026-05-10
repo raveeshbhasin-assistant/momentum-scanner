@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.6.2</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.6.2</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,80 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0 ───── -->
+        <div class="release current" id="v3-7-0">
+            <div class="release-header">
+                <span class="release-version">v3.7.0</span>
+                <span class="release-date">Released 2026-05-09</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">Tier&nbsp;1+2 precision pass — universe expansion (+80 mid-caps), three hard gates (excluded sectors, RSI&nbsp;>&nbsp;75 reject, 15:00 ET emission cutoff), and a STRONG-signal badge on <code>/today</code> derived from a four-condition conjunction (<code>bar_green</code> AND <code>above_vwap</code> AND <code>new_hod</code> AND <code>pm_high_hold</code>). Backed by 13 trading days of out-of-sample evaluation (Apr&nbsp;22 – May&nbsp;8 2026, 660 picks): the gate combination preserves <strong>84% of 2.5R winners while removing 27% of picks</strong>, and the STRONG flag historically lifts 2.5R hit rate from ~22% baseline to ~46–53%.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> A 13-day day-blocked LOO modeling exercise on production picks made three things clear. <em>(1)</em> The current 137-ticker universe missed roughly half of S&amp;P&nbsp;500 / mid-cap names that produced clean 2.5R moves on those days — pure coverage gap, no scoring tweak fixes it. <em>(2)</em> Three sectors (Utilities&nbsp;6.7%, Consumer Disc&nbsp;11.3%, Real Estate&nbsp;14.3%) hit 2.5R at less than half the 22% universe baseline; one bucket (RSI&nbsp;>&nbsp;75) hit at 14.3% vs ~23% in the 55–75 band; and the 15:00–16:00 emission window hit at 3.7%. Each of those sub-populations was bounded enough on per-day stability (10+/13 days positive lift on the gate-removal effect) to support a hard reject. <em>(3)</em> A four-way conjunction of bar-shape, VWAP, HOD, and PM-high-hold conditions — every one of which is a feature already computable from in-flight scan bars — bumps 2.5R hit rate by 24–31&nbsp;pp on the picks where it fires, with positive lift on 11+/13 days. That's strong enough to surface as a visual STRONG tier today, not strong enough to gate emission until we've seen another 10 trading days. Crypto/Blockchain was retained in the universe despite a 13.3% rate per operator preference — small <em>n</em>, high-conviction names, judgement call.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>Universe expansion: <code>MIDCAP_EXTENDED</code> in <code>config.py</code></strong> — 80 mid-caps ranked by 30-day average dollar-volume (range $210M–$2.5B/day; median price ~$105). Names include ASML, VRT, RKLB, BE, BSX, TER, SLB, CEG, DVN, PYPL, MPWR, TJX, FANG, WDAY, ULTA, URI, FSLR, INSM, ETR, MRNA, FIVE, IDXX, MLM, EME, HUBB, BBY, ROKU, WSM, ENPH, CHWY, and 50 more. Each was absent from the prior <code>SP500_LIQUID</code>+<code>HIGH_BETA_EXTENDED</code> universe. <code>get_full_universe()</code> dedupes the union; total grows from 137 → 217 tickers. Source: <code>research/midcap_top80.json</code>.</li>
+                    <li><strong>Sector exclusion gate (<code>EXCLUDED_SECTORS</code>)</strong> — skip emission when <code>leadership.sector</code> ∈ {<code>Utilities</code>, <code>Consumer Disc</code>, <code>Real Estate</code>}. Applied in <code>scanner.scan()</code> immediately after <code>classify_leadership()</code>, before the soft score floor, so excluded names never reach signal-build. Crypto/Blockchain is explicitly retained.</li>
+                    <li><strong>RSI hard cap (<code>RSI_HARD_CAP=75</code>, <code>RSI_HARD_CAP_ENABLED=True</code>)</strong> — reject the ticker if the latest bar's RSI exceeds the cap. Previously, RSI&nbsp;>&nbsp;75 was only a -15-point penalty inside the technical score; now it's a hard reject before any composite math. Set <code>RSI_HARD_CAP_ENABLED=False</code> to fall back to the soft-penalty behaviour.</li>
+                    <li><strong>Emission cutoff (<code>EMISSION_CUTOFF_HOUR=15</code>, <code>EMISSION_CUTOFF_MINUTE=0</code>)</strong> — at the start of <code>scan()</code>, return <code>[]</code> when ET wall-clock is at or past 15:00. Open-position management, dashboard refresh, and the existing <code>HARD_CLOSE</code> behaviour are untouched — this only stops <em>new</em> signals from entering the day.</li>
+                    <li><strong>STRONG-signal helper (<code>scanner.compute_strong_signal(df)</code>)</strong> — returns a dict with the four component flags and a top-level <code>strong</code> bool. Uses the most recent COMPLETE 5-min bar as the reference (mirrors <code>calculate_rvol</code>). All four conditions must be confirmable from in-flight data; otherwise <code>strong</code> is False (conservative — false negatives accepted, false positives never).</li>
+                    <li><strong><code>strong_signal</code> + <code>strong_components</code> on every emitted pick</strong> — the four sub-booleans plus a <code>complete_bar_used</code> flag (False when the helper had to read a still-forming live bar). Persisted to <code>data/{date}.json</code> alongside every other field so post-hoc audits of the STRONG WR claim are byte-trivial.</li>
+                    <li><strong>STRONG visual treatment on <code>/today</code></strong> — gold <code>.tier-pill.strong</code> badge in the Tier cell with a tooltip listing the four components and the historical 2.5R lift. Row gains a <code>data-strong="1"</code> attribute and a <code>strong-row</code> class that paints a gold left-edge accent (<code>box-shadow: inset 3px 0 0 var(--gold)</code>).</li>
+                    <li><strong>Sort priority change (<code>scanner.scan</code>)</strong> — the final signal sort is now <code>(strong_signal, composite_score)</code> descending. STRONG picks float to the top within the <code>MAX_SIGNALS_PER_SCAN</code> cap.</li>
+                    <li><strong>Test suite <code>tests/test_v36_gates.py</code></strong> — 16 tests covering config invariants (universe size, list overlap, gate constants), the STRONG helper on six crafted DataFrames (clean STRONG, red bar, below VWAP, below PM high, no PM bars, empty), and four replay tests against the 14-day production pick history. The replay confirms the combined gate retains 84% of 2.5R winners (121/144) while blocking 27% of picks (178/660). Runs without pytest via <code>python3 tests/test_v36_gates.py</code>.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Scan universe doubled (137 → 217 tickers).</strong> FMP load math: at ~2 calls/ticker/scan the per-scan cost is ~434 calls (~110&nbsp;s wall-time at the 4-calls/sec pacing in <code>fmp_data.fetch_batch_quotes</code>); easily inside the 30-minute scan interval and ~5% of the FMP Starter daily quota. No plan upgrade required.</li>
+                    <li><strong>RSI&nbsp;>&nbsp;75 went from soft -15 penalty to hard reject.</strong> The RSI scoring branch in <code>score_technicals</code> (the 5-out-of-20 case) is unreachable for RSI&nbsp;>&nbsp;75 when <code>RSI_HARD_CAP_ENABLED=True</code> — that branch only runs in the kill-switch fallback. Other RSI bands (≥55, 50–55, &lt;50) are unchanged.</li>
+                    <li><strong>Pick payload schema (additive only).</strong> Two new fields per signal: <code>strong_signal: bool</code> and <code>strong_components: {bar_green, above_vwap, new_hod, pm_high_hold, complete_bar_used}</code>. All existing consumers (<code>data/{date}.json</code> readers, <code>/today</code> Jinja, <code>performance_engine</code>, the Resend notifier, the backup JSON pipe) ignore unknown keys — byte-compatible with v3.6.2 readers.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-deferred">Deferred</span>
+                <ul>
+                    <li><strong>Tier&nbsp;3 ML model (planned v3.7.1).</strong> The 13-day day-blocked-LOO HistGradientBoosting classifier (74 features, OOF AUC 0.71) is ready, but pulled out of v3.7.0 to keep the surface area auditable. v3.7.1 will (a) port <code>research/build_features_v2.py</code> to a runtime <code>feature_engine.py</code>, (b) compute the score per pick, (c) gate emission at <code>score &lt; 0.30</code>, (d) expose <code>MODEL_HIGH/MED</code> badges, and (e) ship a manual kill-switch <code>config.ML_FILTER_ENABLED</code>.</li>
+                    <li><strong>Full 74-feature payload logging (planned v3.7.1).</strong> Required for the rolling-30-day retraining job. Adds a <code>features: {...}</code> dict to every pick row.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-research">Research</span>
+                <ul>
+                    <li><strong>13-day OOS evaluation</strong>: Apr&nbsp;22 – May&nbsp;8 2026, 660 deduped intraday picks, scanner's own ATR-based stop/target. Base 2.5R hit rate 21.8%. Per-day rate 7.1%–34.5%.</li>
+                    <li><strong>Sector WR breakdown (top vs bottom)</strong>: Technology 30.3%, Semiconductors 28.3%, AI/Cloud 25.9%, Financials 23.8% &middot; Consumer Disc 11.3%, Crypto/Blockchain 13.3% (kept), Real Estate 14.3%, Utilities 6.7%.</li>
+                    <li><strong>RSI band WR (intraday 5m)</strong>: &lt;50 → 3.6%, 50–60 → 7.8%, 60–70 → 20.8%, &gt;70 → 13.6%. Sector-ETF daily RSI&nbsp;>&nbsp;70 → 30.3% (momentum begets momentum, opposite of "buy oversold" intuition).</li>
+                    <li><strong>STRONG conjunction joint filter (Filter J in the research sweep)</strong>: <code>bar_green AND above_vwap AND new_hod AND pm_high_hold AND scanner_RSI ≤ 75</code> → 53.6% 2.5R hit rate on 10% of pick volume, +1.19R/trade, positive lift on 11/13 days.</li>
+                    <li><strong>Day-blocked LOO ML model</strong>: HistGradientBoosting on 74 features, OOF AUC 0.71 (random-split 0.76 — generalizes across days). Top permutation-importance features: <code>dist_pm_high_pct</code>, <code>dist_ma20_pct</code>, <code>bar_green</code>, <code>rsi_scanner</code>, <code>lead_spy_pct</code>. Findings doc: <code>research_findings_13day_v2.md</code>.</li>
+                </ul>
+            </div>
+
+            <div class="release-verification">
+                <strong>Verification:</strong>
+                (1) <code>python3 tests/test_v36_gates.py</code> — 16/16 tests pass, including 6 STRONG-helper crafted-DataFrame tests and 4 replay tests against the 14-day production pick history.
+                (2) <code>config.get_full_universe()</code> returns 217 unique tickers, contains every name in <code>research/midcap_top80.json</code>, and dedupes correctly across <code>SP500_LIQUID</code>, <code>HIGH_BETA_EXTENDED</code>, <code>MIDCAP_EXTENDED</code>.
+                (3) <code>config.EXCLUDED_SECTORS</code> matches the exact strings emitted by <code>leadership.sector</code> across all 14 days of production data (verified by enumerating <code>(leadership.sector → count)</code> across <code>data/2026-04-21.json</code> … <code>2026-05-08.json</code>).
+                (4) Combined gate replay: 178 picks blocked, 121/144 winners retained = 84.0%; per-gate rejection rates fall inside the research-predicted bands.
+                (5) Pre-edit checksums of <code>config.py</code>, <code>scanner.py</code>, <code>notifier.py</code>, <code>performance_engine.py</code>, <code>app.py</code>, <code>logic.html</code>, <code>today.html</code> recorded in <code>backup_v3.6_pre/</code> for rollback comparison.
+                (6) Exactly one <code>pill-current</code> on a release header (this card); v3.6.2 demoted to <code>pill-previous</code>.
+                (7) All static URLs in <code>today.html</code> remain root-relative (no <code>url_for</code>) per the Railway-TLS rule.
+            </div>
+        </div>
+
         <!-- ───── v3.6.2 ───── -->
-        <div class="release current" id="v3-6-2">
+        <div class="release" id="v3-6-2">
             <div class="release-header">
                 <span class="release-version">v3.6.2</span>
                 <span class="release-date">Released 2026-04-23</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">Performance — <code>Avg % / pick</code> metric. The <code>/performance</code> page gains a new KPI card and a third equity-curve toggle alongside <code>R</code> and <code>$ / share</code>. "% / pick" answers: <em>"how much did the typical pick move, as a percentage of its own entry price?"</em> Equal-weighted across picks (Option 1 — not capital-weighted), so a +2% move on a $500 stock and a +2% move on a $20 stock count the same. Complements <code>R</code> (risk-normalized) and <code>$ / share</code> (sizing-dollar view) with a third, price-normalized lens.</div>
 

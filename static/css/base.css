@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   Momentum Scanner — Base layout (v3.6.0)
+   Momentum Scanner — Base layout (v3.7.0)
    Global reset, body defaults, shared header/nav/footer styling,
    scrollbar, and shared mobile breakpoints for the chrome.
    Page-specific layouts stay in per-template <style>.
@@ -137,6 +137,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .tier-pill.weak { background: rgba(245,158,11,0.10); color: var(--amber);  border-style: dashed; border-color: rgba(245,158,11,0.4); }
 .tier-pill.earn { background: rgba(239,68,68,0.18);  color: var(--red);    border-color: rgba(239,68,68,0.5); }
 .tier-pill.none { color: var(--text-muted); background: transparent; border-color: transparent; font-family: var(--font); font-weight: 500; font-size: 10px; letter-spacing: 0; }
+/* v3.7.0: STRONG-signal badge — bar_green + above_vwap + new_hod + pm_high_hold */
+.tier-pill.strong {
+    background: rgba(250,204,21,0.18);
+    color: var(--gold, #facc15);
+    border-color: rgba(250,204,21,0.55);
+    font-weight: 800;
+}
+/* v3.7.0: STRONG row gets a left-edge gold accent */
+tr.strong-row td:first-child { box-shadow: inset 3px 0 0 var(--gold, #facc15); }
 
 /* ── Shared numeric alignment for data tables ─────────────────── */
 th.num, td.num { text-align: right; }
@@ -278,7 +287,7 @@ th.sortable.sorted.desc::after { content: '▼'; opacity: 1; }
     }
 }
 
-/* ── Mobile card-view tables (v3.6.0) ──────────────────────────
+/* ── Mobile card-view tables (v3.7.0) ──────────────────────────
    Opt-in via <table class="card-table"> + data-label="…" on each <td>.
    On narrow screens, each row becomes a stacked card; each cell shows
    its label before the value (pulled from data-label). Headers hide.

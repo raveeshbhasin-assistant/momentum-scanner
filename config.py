@@ -25,6 +25,29 @@ RVOL_LOOKBACK_DAYS = 20             # Days for avg volume baseline
 MIN_RVOL = 1.33                     # Minimum relative volume (30%+ above avg)
 RSI_MOMENTUM_LOW = 55               # RSI lower bound for bullish momentum
 RSI_MOMENTUM_HIGH = 75              # RSI upper bound (avoid overbought)
+
+# v3.7.0: Hard reject above this RSI. 13-day research showed picks with
+# RSI > 75 hit 2.5R only 14.3% vs ~23% for the 55–75 band. Previously was
+# only a soft -15 point penalty.
+RSI_HARD_CAP = 75                   # If True, reject before composite scoring
+RSI_HARD_CAP_ENABLED = True
+
+# v3.7.0: Sector exclusion list. These four sectors had 7–14% 2.5R hit
+# rates in the 13-day research window, well below the 22% baseline.
+# Crypto/Blockchain was retained per operator preference despite a 13.3%
+# rate (small n; volatile but high-conviction names).
+EXCLUDED_SECTORS = [
+    "Utilities",
+    "Consumer Disc",
+    "Real Estate",
+]
+
+# v3.7.0: Block emission of new picks after this ET time. Open-position
+# management (alerts, exits, dashboard) continues to run. Research showed
+# 15:00–16:00 picks hit 2.5R only 3.7% of the time — not enough runway
+# left in the day for the 2.5R target.
+EMISSION_CUTOFF_HOUR = 15
+EMISSION_CUTOFF_MINUTE = 0
 MIN_COMPOSITE_SCORE = 60            # Strong signal threshold (0-100)
 WEAK_SIGNAL_FLOOR = 40              # v3.4.2: show down to this, label <MIN as weak
 MAX_SIGNALS_PER_SCAN = 20           # v3.4.2: bumped from 10 to show weak tier too
@@ -94,12 +117,30 @@ HIGH_BETA_EXTENDED = [
     "DDOG", "NOW", "OKLO", "AEVA", "EOSE",
 ]
 
-# Full scan universe = core + extended (deduped at runtime)
+# v3.7.0: Mid-cap expansion — 80 high-liquidity names that scanner historically
+# missed but which produced clean 2.5R moves in the 13-day research window
+# (Apr 22 – May 8 2026). Ranked by 30-day average dollar-volume; range
+# $210M–$2.5B/day ADV. Median price ~$105.
+# Source: research/midcap_top80.json
+MIDCAP_EXTENDED = [
+    'ASML', 'VRT', 'RKLB', 'BE', 'BSX', 'TER', 'SLB', 'SATS',
+    'CEG', 'DVN', 'PYPL', 'MPWR', 'TJX', 'HAL', 'ON', 'FANG',
+    'WDAY', 'MCHP', 'VST', 'PWR', 'BKR', 'PL', 'CRH', 'HWM',
+    'EQT', 'FTNT', 'TEAM', 'EBAY', 'HOLX', 'ULTA', 'URI', 'DOCN',
+    'TTD', 'CFLT', 'DHI', 'PCG', 'EW', 'FN', 'STM', 'ZS',
+    'EXC', 'APA', 'FSLR', 'XYZ', 'SMR', 'INSM', 'ETR', 'HUBS',
+    'VMC', 'MRNA', 'CTRA', 'FIVE', 'LEN', 'ENTG', 'OKTA', 'PINS',
+    'IDXX', 'MTZ', 'WAT', 'NVT', 'MLM', 'AFRM', 'DT', 'EME',
+    'HUBB', 'BBY', 'AVAV', 'ROKU', 'WSM', 'W', 'PHM', 'AR',
+    'DKS', 'OVV', 'TLN', 'BURL', 'DOCU', 'LII', 'ENPH', 'CHWY',
+]
+
+# Full scan universe = core + extended + midcap (deduped at runtime)
 def get_full_universe() -> list[str]:
     """Return deduplicated full scan universe."""
     seen = set()
     result = []
-    for t in SP500_LIQUID + HIGH_BETA_EXTENDED:
+    for t in SP500_LIQUID + HIGH_BETA_EXTENDED + MIDCAP_EXTENDED:
         if t not in seen:
             result.append(t)
             seen.add(t)
