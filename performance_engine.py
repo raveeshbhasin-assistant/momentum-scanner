@@ -364,6 +364,15 @@ def build_view(entries: list[dict], date_str: Optional[str] = None) -> dict:
     # Cumulative = everything in the log
     cumulative = _bucketed_rollup(normalized)
     cumulative["daily_series"] = _daily_series(normalized)
+    # v3.7.0.11: include the full picks list in the cumulative bucket so
+    # client-side filters (STRONG-only, Cat A/B, Result) can narrow every
+    # rendered section from a single source. Previously only `single_day`
+    # carried picks — the STRONG-only filter in cumulative mode had nothing
+    # to filter and silently showed unfiltered server-rolled stats.
+    cumulative["picks"] = sorted(
+        normalized,
+        key=lambda e: (e.get("date") or "", e.get("batch_time") or "", e.get("ticker") or ""),
+    )
 
     day_entries = [e for e in normalized if e["date"] == date_str]
     single_day = _bucketed_rollup(day_entries)
