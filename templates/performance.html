@@ -642,9 +642,18 @@
             }
             const dailySeries = bucket.daily_series || null;
 
-            renderOverall(stats, picks, label);
-            renderCategories(stats);
-            renderTimeGrid(stats);
+            // v3.7.0.5: when STRONG-only is active, every section must update
+            // together. Server-rolled `stats` is computed from all picks, so
+            // we recompute by_category / by_category_time client-side from
+            // the filtered picks and use those for the grids and KPIs.
+            let effectiveStats = stats;
+            if (state.strongOnly && hasRows) {
+                effectiveStats = recomputeStatsFromPicks(picks, rk);
+            }
+
+            renderOverall(effectiveStats, picks, label);
+            renderCategories(effectiveStats);
+            renderTimeGrid(effectiveStats);
             renderPicksTable(hasRows ? picks : null);
             renderEquity({ picks, dailySeries, label });
 
@@ -652,6 +661,68 @@
             document.getElementById("lastUpdated").textContent =
                 VIEW.diagnostics && VIEW.diagnostics.last_updated
                     ? `Last resolver run: ${VIEW.diagnostics.last_updated}` : "";
+        }
+
+        // v3.7.0.5: rebuild stats.by_category and stats.by_category_time from a
+        // filtered picks array so the STRONG-only chip narrows every section,
+        // not just the per-pick table. Mirrors the server's _rollup shape just
+        // closely enough for renderCategories + renderTimeGrid to consume.
+        function recomputeStatsFromPicks(picks, rk) {
+            const cats = ["A","B","C","D"];
+            const by_category = {};
+            const by_category_time = {};
+            cats.forEach(c => {
+                by_category[c] = {n:0, wins:0, losses:0, eods:0, win_rate:null,
+                                  total_r:0, total_pnl:0, total_pct:0, n_pct:0,
+                                  by_outcome:{WIN:{n:0,total_r:0,total_pnl:0,total_pct:0,n_pct:0},
+                                              LOSS:{n:0,total_r:0,total_pnl:0,total_pct:0,n_pct:0},
+                                              EOD:{n:0,total_r:0,total_pnl:0,total_pct:0,n_pct:0}}};
+                by_category_time[c] = {};
+            });
+            (picks || []).forEach(p => {
+                const c = p.category;
+                if (!by_category[c]) return;
+                const cs = by_category[c];
+                cs.n += 1;
+                const outcome = p[rk] || "?";
+                if (outcome === "WIN")  cs.wins += 1;
+                else if (outcome === "LOSS") cs.losses += 1;
+                else if (outcome === "EOD")  cs.eods += 1;
+                if (p.r_realized != null) cs.total_r += p.r_realized;
+                if (p.pnl_dollar != null) cs.total_pnl += p.pnl_dollar;
+                if (p.pnl_pct != null) { cs.total_pct += p.pnl_pct; cs.n_pct += 1; }
+                if (cs.by_outcome[outcome]) {
+                    const o = cs.by_outcome[outcome];
+                    o.n += 1;
+                    if (p.r_realized != null) o.total_r += p.r_realized;
+                    if (p.pnl_dollar != null) o.total_pnl += p.pnl_dollar;
+                    if (p.pnl_pct != null) { o.total_pct += p.pnl_pct; o.n_pct += 1; }
+                }
+                // time-bucket grid
+                const tb = p.time_bucket || "?";
+                if (!by_category_time[c][tb]) {
+                    by_category_time[c][tb] = {n:0, wins:0, losses:0, eods:0, win_rate:null, total_r:0};
+                }
+                const ts = by_category_time[c][tb];
+                ts.n += 1;
+                if (outcome === "WIN")  ts.wins += 1;
+                else if (outcome === "LOSS") ts.losses += 1;
+                else if (outcome === "EOD")  ts.eods += 1;
+                if (p.r_realized != null) ts.total_r += p.r_realized;
+            });
+            // Finalize win-rates
+            cats.forEach(c => {
+                const cs = by_category[c];
+                const wl = cs.wins + cs.losses;
+                cs.win_rate = wl > 0 ? (cs.wins / wl * 100) : null;
+                cs.avg_r = cs.n > 0 ? (cs.total_r / cs.n) : 0;
+                Object.keys(by_category_time[c]).forEach(tb => {
+                    const ts = by_category_time[c][tb];
+                    const tw = ts.wins + ts.losses;
+                    ts.win_rate = tw > 0 ? (ts.wins / tw * 100) : null;
+                });
+            });
+            return { by_category, by_category_time, _recomputed_from: "filtered_picks" };
         }
 
         function renderOverall(stats, picks, label) {

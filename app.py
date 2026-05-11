@@ -617,10 +617,41 @@ async def get_config():
     }
 
 
+_LAZY_BACKFILL_INFLIGHT: dict[str, bool] = {}
+
+def _kick_lazy_backfill(target_date: str):
+    """
+    v3.7.0.5: lazy backfill of STRONG flag. Spawns a non-daemon thread that
+    patches data/{date}.json if any row is missing strong_signal. Guards
+    against re-entrancy so concurrent GETs don't pile up threads.
+    """
+    if _LAZY_BACKFILL_INFLIGHT.get(target_date):
+        return
+    _LAZY_BACKFILL_INFLIGHT[target_date] = True
+    import threading
+    def _go():
+        try:
+            stat = _backfill_strong_for_date(target_date)
+            logger.info(f"lazy_backfill: {stat}")
+        except Exception as e:
+            logger.warning(f"lazy_backfill {target_date} failed: {e}")
+        finally:
+            _LAZY_BACKFILL_INFLIGHT[target_date] = False
+    # NB: non-daemon so a fast process exit during shutdown doesn't drop it
+    t = threading.Thread(target=_go, daemon=False, name=f"lazy-backfill-{target_date}")
+    t.start()
+
+
 @app.get("/today", response_class=HTMLResponse)
 async def today_page(request: Request):
     """Serve today's cumulative finds table."""
     finds = load_daily_finds()
+    # v3.7.0.5: lazy backfill of strong_signal if any row is missing it.
+    # Fires in a background thread; current request returns the file as-is.
+    # Next page refresh picks up the patched values.
+    if any("strong_signal" not in r for r in finds):
+        today = datetime.now(config.ET).strftime("%Y-%m-%d")
+        _kick_lazy_backfill(today)
     regime = get_regime() if config.MARKET_REGIME_ENABLED else None
     return templates.TemplateResponse(
         request=request,
@@ -753,15 +784,22 @@ def _backfill_strong_for_date(target: str) -> dict:
     tickers = sorted({r["ticker"] for r in need})
     logger.info(f"backfill_strong: {target} — {len(need)} rows × {len(tickers)} tickers")
 
+    # v3.7.0.5: try FMP first, fall back to yfinance directly if it returns empty.
+    # The wrapper in scanner.fetch_intraday_data already falls back internally,
+    # but if BOTH return empty the helper just returns {}; we catch that here.
+    bar_data = {}
     try:
         bar_data = fetch_intraday_data(
             tickers,
             interval=config.CANDLE_INTERVAL,
             days=config.CANDLE_LOOKBACK_DAYS,
         )
+        logger.info(f"backfill_strong: {target} bar fetch returned {len(bar_data)}/{len(tickers)} tickers")
     except Exception as e:
-        logger.warning(f"backfill_strong: {target} bar fetch failed: {e}")
-        return {"date": target, "rows": len(rows), "patched": 0, "error": str(e)}
+        logger.warning(f"backfill_strong: {target} bar fetch raised: {e}")
+        # don't bail — proceed and mark rows as no_bars
+    if not bar_data:
+        logger.warning(f"backfill_strong: {target} bar fetch returned empty dict")
 
     patched = no_bars = errors = 0
     for r in need:
@@ -804,7 +842,14 @@ def _backfill_strong_for_date(target: str) -> dict:
         save_daily_finds(rows, target)
         logger.info(
             f"backfill_strong: {target} patched={patched} no_bars={no_bars} "
-            f"errors={errors} already_present={skipped}"
+            f"errors={errors} already_present={skipped} "
+            f"strong_after={sum(1 for r in rows if r.get('strong_signal'))}"
+        )
+    else:
+        # v3.7.0.5: even with 0 patched, log so we can diagnose
+        logger.warning(
+            f"backfill_strong: {target} patched=0 no_bars={no_bars} errors={errors} "
+            f"(file unchanged; bar fetch likely empty)"
         )
     return {
         "date": target,
@@ -1001,6 +1046,17 @@ async def performance_page(request: Request, date: str | None = None):
     performance_engine. Single-day slice defaults to the latest date
     present in the log, but ?date=YYYY-MM-DD overrides.
     """
+    # v3.7.0.5: lazy backfill of strong_signal on today's data file so the
+    # /performance STRONG-only filter has values to work with. Cheap when
+    # the field is already present (early-exits).
+    try:
+        today = datetime.now(config.ET).strftime("%Y-%m-%d")
+        finds = load_daily_finds(today)
+        if finds and any("strong_signal" not in r for r in finds):
+            _kick_lazy_backfill(today)
+    except Exception:
+        pass
+
     view = _get_performance_view(date)
     return templates.TemplateResponse(
         request=request,

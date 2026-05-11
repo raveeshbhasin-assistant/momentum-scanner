@@ -326,6 +326,7 @@
                         <span class="chip cat-D active" data-cat="D" title="Unclassified (no leadership label yet — usually early-session picks)"><b>D</b><span class="chip-n" id="chipN-D"></span></span>
                         <button type="button" class="chip" id="catABOnly" title="Quick filter: show only A + B (the categories the notifier sends emails on)">A+B only</button>
                         <button type="button" class="chip strong-chip" id="strongOnly" title="v3.7.0: STRONG-only — picks with bar_green + above_vwap + new_hod + pm_high_hold. Historical 2.5R hit rate ~46–53% vs ~22% baseline.">STRONG only <span class="chip-n" id="chipN-STRONG"></span></button>
+                        <button type="button" class="chip" id="refreshStrong" title="v3.7.0.5: Force a synchronous STRONG-signal backfill for today's picks. Refreshes the page when complete.">↻ Refresh STRONG</button>
                     </span>
                     <button class="rth-toggle" id="rthToggle" onclick="toggleRTH()" title="Show only signals found during regular market hours (Mon–Fri 09:30–16:00 ET)">
                         <span class="rth-active-dot"></span>
@@ -618,6 +619,35 @@
                     strongChip.classList.toggle('active', !wasActive);
                     table.classList.toggle('strong-only', !wasActive);
                     _updateRTHBadge();
+                });
+            }
+
+            // v3.7.0.5: Manual "Refresh STRONG" button — forces backfill.
+            const refreshBtn = document.getElementById('refreshStrong');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', async () => {
+                    const orig = refreshBtn.textContent;
+                    refreshBtn.disabled = true;
+                    refreshBtn.textContent = '⏳ Backfilling…';
+                    try {
+                        const r = await fetch('/api/backfill_strong', { method: 'POST' });
+                        const data = await r.json();
+                        const patched = data.patched ?? 0;
+                        const strongAfter = data.strong_count ?? data.strong_count_after_patch ?? 0;
+                        const note = data.note || data.error || '';
+                        if (patched > 0 || strongAfter > 0) {
+                            refreshBtn.textContent = `✓ ${strongAfter} STRONG`;
+                            setTimeout(() => window.location.reload(), 800);
+                        } else {
+                            refreshBtn.textContent = `⚠ 0 patched ${note ? '· '+note.slice(0,40) : ''}`;
+                            refreshBtn.disabled = false;
+                            setTimeout(() => { refreshBtn.textContent = orig; }, 6000);
+                        }
+                    } catch (e) {
+                        refreshBtn.textContent = '✗ Error · check logs';
+                        refreshBtn.disabled = false;
+                        setTimeout(() => { refreshBtn.textContent = orig; }, 6000);
+                    }
                 });
             }
         })();

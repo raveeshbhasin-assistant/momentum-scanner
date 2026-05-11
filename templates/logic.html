@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.4</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.5</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.4</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.5</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,53 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.5 ───── -->
+        <div class="release current" id="v3-7-0-5">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.5</span>
+                <span class="release-date">Released 2026-05-11</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">Belt-and-suspenders STRONG backfill (lazy on GET, manual button) + Performance page recomputes <em>every</em> section when STRONG-only is toggled, not just the per-pick table.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> v3.7.0.4 added an at-startup backfill thread but on the live deploy that thread did not produce visible results — likely because the FMP fetch raced with the running scanner or the daemon was killed before completing. Instead of hunting that root cause across the deploy boundary, this release adds two independent fallback paths: a lazy backfill that fires on every <code>/today</code> and <code>/performance</code> GET if any row is still missing the flag, and a manual <strong>↻ Refresh STRONG</strong> button right next to the chip that triggers the synchronous endpoint and reloads when complete. Separately, the v3.7.0.3 perf-page chip narrowed only the per-pick table; the operator asked for the KPI cards, categories grid, time-bucket grid, and equity curve to follow suit. v3.7.0.5 recomputes a stats-shaped object from the filtered picks client-side and feeds it to every render function.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>Lazy backfill on <code>GET /today</code> and <code>GET /performance</code>.</strong> If any row of today's data file lacks <code>strong_signal</code>, the handler kicks <code>_backfill_strong_for_date(today)</code> in a non-daemon background thread, guarded by an in-flight map so concurrent GETs don't pile up. The first page-load fires the patch; the next refresh shows the filled rows.</li>
+                    <li><strong>↻ Refresh STRONG button on <code>/today</code></strong> next to the STRONG-only chip. Fetches <code>POST /api/backfill_strong</code> from the browser, parses the JSON response, and reloads on success. On failure, leaves the button enabled with a 6-second toast of the error so the operator can see <em>why</em> (no_bars, errors, empty bar fetch, etc.).</li>
+                    <li><strong><code>recomputeStatsFromPicks(picks, rk)</code> on <code>/performance</code></strong> — rebuilds <code>stats.by_category</code> and <code>stats.by_category_time</code> client-side from the post-filter picks array. Returns a stats-shaped object that drops straight into <code>renderOverall</code>, <code>renderCategories</code>, and <code>renderTimeGrid</code> with no signature changes.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Performance render path</strong>: when <code>state.strongOnly</code> is on, <code>render()</code> passes the recomputed stats to every section. When off, the original server-rolled stats are used (zero performance cost when the toggle is off).</li>
+                    <li><strong>Backfill helper logging</strong>: now logs <code>bar fetch returned N/M tickers</code> and <code>strong_after=K</code> on success, and a dedicated WARNING line when <code>patched=0</code> so the failure mode is visible in Railway logs.</li>
+                    <li><strong>Backfill thread is now non-daemon</strong> (was <code>daemon=True</code>). Daemon threads can be killed mid-execution when the parent process pauses; switching keeps the thread alive until <code>save_daily_finds</code> completes.</li>
+                </ul>
+            </div>
+
+            <div class="release-verification">
+                <strong>Verification:</strong>
+                (1) Local replay against the May 11 dump confirms <code>_backfill_strong_for_date</code> produces 13 STRONG / 87 picks with 0 failures — code is correct independent of the deploy environment.
+                (2) After deploy, the first load of <code>/today</code> kicks the lazy backfill; the second load shows the STRONG-only chip with a non-zero count.
+                (3) Clicking <strong>↻ Refresh STRONG</strong> on <code>/today</code> calls <code>POST /api/backfill_strong</code> synchronously, shows the result inline, and reloads.
+                (4) On <code>/performance</code>, toggling STRONG-only narrows the Win Rate, Total R, $/share, and Avg % / pick KPIs; the Cat A/B/C/D cards; the time-bucket heatmap; the equity curve; and the per-pick table together.
+                (5) Footer reads <code>Momentum Scanner v3.7.0.5</code>.
+            </div>
+        </div>
+
         <!-- ───── v3.7.0.4 ───── -->
-        <div class="release current" id="v3-7-0-4">
+        <div class="release" id="v3-7-0-4">
             <div class="release-header">
                 <span class="release-version">v3.7.0.4</span>
                 <span class="release-date">Released 2026-05-11</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">Mobile ergonomics + STRONG self-heal: header opens expanded on mobile, Today gains a mobile-friendly sort selector (Time defaults to latest-first), and the app now auto-backfills the day's <code>strong_signal</code> in a background thread at startup so the operator never has to curl the endpoint again for today's data.</div>
 
