@@ -520,6 +520,26 @@ async def startup():
     )
     logger.info(f"Dashboard running at http://localhost:{config.PORT}")
 
+    # v3.7.0.4: Auto-backfill STRONG-signal flag on today's data file in
+    # a background thread. Defensive: ensures that picks emitted before
+    # v3.7.0.1's persistence fix get retroactively tagged without the
+    # operator having to curl the endpoint. Idempotent — rows that
+    # already carry strong_signal are skipped. Failure is logged-only;
+    # never blocks startup.
+    import threading
+    def _startup_backfill_strong():
+        try:
+            today = datetime.now(config.ET).strftime("%Y-%m-%d")
+            stat = _backfill_strong_for_date(today)
+            logger.info(f"startup_backfill_strong: {stat}")
+        except Exception as e:
+            logger.warning(f"startup_backfill_strong failed: {e}")
+    threading.Thread(
+        target=_startup_backfill_strong,
+        daemon=True,
+        name="startup-backfill-strong",
+    ).start()
+
 
 @app.on_event("shutdown")
 async def shutdown():

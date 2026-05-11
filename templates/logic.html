@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.3</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.4</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.3</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.4</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,52 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.4 ───── -->
+        <div class="release current" id="v3-7-0-4">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.4</span>
+                <span class="release-date">Released 2026-05-11</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">Mobile ergonomics + STRONG self-heal: header opens expanded on mobile, Today gains a mobile-friendly sort selector (Time defaults to latest-first), and the app now auto-backfills the day's <code>strong_signal</code> in a background thread at startup so the operator never has to curl the endpoint again for today's data.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> Three things landed together. <em>(1)</em> The mobile nav at &lt;480&nbsp;px was collapsed under the hamburger by default. First page paint on a phone hid every link until a tap; quicker to leave the nav expanded since the user can still collapse it on demand. <em>(2)</em> Today's th-click sort works on desktop but is invisible in the mobile card view (<code>thead { display: none }</code> at &lt;640&nbsp;px). A separate mobile sort control fixes that without breaking the card layout. <em>(3)</em> Even with v3.7.0.1's persistence fix and v3.7.0.2's batch endpoint, the operator still had to curl <code>/api/backfill_strong</code> after every deploy to populate <code>strong_signal</code> on picks emitted before the deploy landed. An on-startup background-thread call to <code>_backfill_strong_for_date(today)</code> closes that gap — today's file is self-healing now.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong>Mobile nav opens expanded.</strong> <code>_nav.html</code> now ships with <code>class="header nav-open"</code> and <code>aria-expanded="true"</code> as defaults; the inline hamburger toggle just flips state from there. Existing desktop CSS is unaffected (the <code>.nav-open</code> rule only applies inside the &lt;480&nbsp;px media query).</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>Mobile sort selector on <code>/today</code>.</strong> A <code>&lt;select&gt;</code> visible only inside the &lt;640&nbsp;px media query offers seven sort options: <em>Time latest first</em> (default), <em>Time oldest first</em>, Score ↓, RVOL ↓, RSI ↓, Ticker A→Z, R:R ↓. Reuses the same sort engine as the desktop th-click. Selection stays in sync between the two when the user resizes the viewport.</li>
+                    <li><strong>Sort engine refactored.</strong> The internal <code>sortBy(th)</code> now splits into <code>sortByTh(th)</code> (toggles direction if already sorted) and <code>applySort(key, type, dir, thRef)</code> (uses explicit direction). The mobile selector calls the latter directly with the desired direction; the desktop click calls the former. No behaviour change for the th-click path.</li>
+                    <li><strong>Startup auto-backfill of STRONG.</strong> A background daemon thread fires <code>_backfill_strong_for_date(today)</code> a few seconds after the FastAPI startup event. Idempotent — rows already carrying <code>strong_signal</code> are skipped. Logged as <code>startup_backfill_strong: {...}</code>. Failure is non-fatal. The result of today's deploy will be visible in <code>/api/diagnose/egress</code> or the Railway logs.</li>
+                </ul>
+            </div>
+
+            <div class="release-verification">
+                <strong>Verification:</strong>
+                (1) Open the site on a phone (or DevTools &lt;480&nbsp;px) — every nav link is visible without tapping the hamburger.
+                (2) <code>/today</code> on &lt;640&nbsp;px shows a Sort selector above the cards; the default selection is <em>Time — latest first</em> and matches the server-side row order.
+                (3) Choosing other options reorders the cards in place; switching to desktop width keeps the same active sort indicated on the th.
+                (4) Railway logs (or the next startup) include a line like <code>startup_backfill_strong: {"date":"2026-05-11","patched":N,...}</code>.
+                (5) After today's startup-backfill finishes, the STRONG-only chip on <code>/today</code> and <code>/performance</code> render meaningful counts (the post-hoc reconstruction for May 11 expected 13 STRONG of 87 picks).
+                (6) Footer reads <code>Momentum Scanner v3.7.0.4</code> on every page.
+            </div>
+        </div>
+
         <!-- ───── v3.7.0.3 ───── -->
-        <div class="release current" id="v3-7-0-3">
+        <div class="release" id="v3-7-0-3">
             <div class="release-header">
                 <span class="release-version">v3.7.0.3</span>
                 <span class="release-date">Released 2026-05-11</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">STRONG-only filter chip on <code>/performance</code> + footer version bump. The <code>strong_signal</code> field now flows through <code>performance_engine.normalize_entry</code> so the per-pick table and equity charts can scope to STRONG-tagged picks only.</div>
 

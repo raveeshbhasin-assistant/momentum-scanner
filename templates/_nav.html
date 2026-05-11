@@ -12,7 +12,7 @@
             {% include "_nav.html" %}
         {% endwith %}
 #}
-<header class="header" id="siteHeader">
+<header class="header nav-open" id="siteHeader">
     <div class="header-left">
         <a href="/" class="logo">Momentum Scanner</a>
         {% if page_title %}
@@ -20,8 +20,11 @@
         {% endif %}
     </div>
 
-    <button type="button" class="nav-toggle" aria-label="Open menu"
-            aria-expanded="false" aria-controls="primaryNav"
+    {# v3.7.0.4: header now defaults to expanded (nav-open) on mobile so
+       the first paint shows every nav link. The toggle still collapses
+       the menu on demand. aria-expanded matches the default class state. #}
+    <button type="button" class="nav-toggle" aria-label="Toggle menu"
+            aria-expanded="true" aria-controls="primaryNav"
             onclick="(function(h){var open=h.classList.toggle('nav-open');var b=h.querySelector('.nav-toggle');if(b)b.setAttribute('aria-expanded',open);})(document.getElementById('siteHeader'))">
         ☰
     </button>

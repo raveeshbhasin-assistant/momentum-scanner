@@ -165,6 +165,48 @@
         .chip.strong-chip { border-color: rgba(250,204,21,0.55); color: var(--gold, #facc15); }
         .chip.strong-chip.active { background: rgba(250,204,21,0.10); border-color: rgba(250,204,21,0.85); color: var(--gold, #facc15); font-weight: 800; }
 
+        /* v3.7.0.4: Mobile-only sort selector. Hidden on desktop (>640px)
+           where the th-click sort already works. Card-view hides <th>, so
+           on mobile this is the only sort UI the user sees. */
+        .mobile-sort { display: none; }
+        @media (max-width: 640px) {
+            .mobile-sort {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px;
+                background: var(--bg-secondary);
+                border-bottom: 1px solid var(--border);
+                font-size: 12px;
+            }
+            .mobile-sort label {
+                color: var(--text-muted);
+                font-family: var(--font);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                flex: 0 0 auto;
+            }
+            .mobile-sort select {
+                flex: 1;
+                background: var(--bg-card);
+                color: var(--text-primary);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 8px 10px;
+                font-family: var(--mono);
+                font-size: 12px;
+                min-height: var(--tap-target, 44px);
+                appearance: none;
+                -webkit-appearance: none;
+                background-image: linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%), linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+                background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+                background-size: 5px 5px, 5px 5px;
+                background-repeat: no-repeat;
+                padding-right: 28px;
+            }
+            .mobile-sort select:focus { outline: 2px solid var(--cyan); outline-offset: 1px; }
+        }
+
         /* Small category pill shown inside the Tier column */
         .cat-pill {
             display: inline-block;
@@ -296,6 +338,20 @@
                     </span>
                 </div>
             </div>
+            <!-- v3.7.0.4: Mobile-only sort selector. Card-view hides <th> on
+                 narrow screens, so this provides an equivalent sort UI. -->
+            <div class="mobile-sort">
+                <label for="mobileSortSel">Sort:</label>
+                <select id="mobileSortSel">
+                    <option value="time:desc" selected>Time — latest first</option>
+                    <option value="time:asc">Time — oldest first</option>
+                    <option value="score:desc">Score — high → low</option>
+                    <option value="rvol:desc">RVOL — high → low</option>
+                    <option value="rsi:desc">RSI — high → low</option>
+                    <option value="ticker:asc">Ticker — A → Z</option>
+                    <option value="rr:desc">R:R — high → low</option>
+                </select>
+            </div>
             <div style="overflow-x: auto;">
                 <table id="findsTable" class="card-table">
                     <thead>
@@ -385,9 +441,21 @@
             if (!table) return;
 
             const headers = table.querySelectorAll('th.sortable');
-            headers.forEach(th => th.addEventListener('click', () => sortBy(th)));
+            headers.forEach(th => th.addEventListener('click', () => sortByTh(th)));
 
-            function sortBy(th) {
+            // v3.7.0.4: also wire the mobile sort selector to the same engine
+            const mobSel = document.getElementById('mobileSortSel');
+            if (mobSel) {
+                mobSel.addEventListener('change', () => {
+                    const [key, dir] = mobSel.value.split(':');
+                    const th = table.querySelector(`th.sortable[data-sort="${key}"]`);
+                    if (th) {
+                        applySort(th.dataset.sort, th.dataset.type || 'str', dir || 'asc', th);
+                    }
+                });
+            }
+
+            function sortByTh(th) {
                 const key = th.dataset.sort;
                 const type = th.dataset.type || 'str';
                 const defaultDir = th.dataset.defaultDir || 'asc';
@@ -395,10 +463,20 @@
                 const isSorted = th.classList.contains('sorted');
                 const currentDir = th.classList.contains('desc') ? 'desc' : 'asc';
                 const newDir = isSorted ? (currentDir === 'asc' ? 'desc' : 'asc') : defaultDir;
+                applySort(key, type, newDir, th);
+                // keep the mobile selector in sync if this column has an entry there
+                if (mobSel) {
+                    const val = `${key}:${newDir}`;
+                    if (Array.from(mobSel.options).some(o => o.value === val)) {
+                        mobSel.value = val;
+                    }
+                }
+            }
 
+            function applySort(key, type, dir, thRef) {
                 // Clear all sort indicators
                 headers.forEach(h => h.classList.remove('sorted', 'asc', 'desc'));
-                th.classList.add('sorted', newDir);
+                if (thRef) thRef.classList.add('sorted', dir);
 
                 const tbody = table.querySelector('tbody');
                 const rows = Array.from(tbody.querySelectorAll('tr'));
@@ -410,14 +488,13 @@
                         if (isNaN(av)) av = -Infinity;
                         if (isNaN(bv)) bv = -Infinity;
                         if (type === 'time') {
-                            // dataset.time is ISO; compare lexically via Date
                             av = Date.parse(a.dataset.time) || 0;
                             bv = Date.parse(b.dataset.time) || 0;
                         }
-                        return newDir === 'asc' ? av - bv : bv - av;
+                        return dir === 'asc' ? av - bv : bv - av;
                     }
-                    return newDir === 'asc' ? String(av).localeCompare(String(bv))
-                                            : String(bv).localeCompare(String(av));
+                    return dir === 'asc' ? String(av).localeCompare(String(bv))
+                                         : String(bv).localeCompare(String(av));
                 });
                 rows.forEach(r => tbody.appendChild(r));
             }
