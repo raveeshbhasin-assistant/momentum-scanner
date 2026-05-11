@@ -111,6 +111,16 @@ def add_signals_to_daily(signals: list[dict]):
             "regime_label": signal.get("regime_label"),
             "leader_adjustment": signal.get("leader_adjustment", 0),
             "earnings_adjustment": signal.get("earnings_adjustment", 0),
+            # v3.7.0.1 hotfix: persist STRONG flag so /today badge + /performance
+            # filter chips can read it from data/{date}.json. v3.7.0 attached
+            # these to the in-memory signal dict but this slim-record builder
+            # was the bottleneck dropping them on the way to disk.
+            "strong_signal": bool(signal.get("strong_signal", False)),
+            "strong_components": signal.get("strong_components") or {
+                "bar_green": False, "above_vwap": False,
+                "new_hod": False, "pm_high_hold": False,
+                "complete_bar_used": False,
+            },
         }
         existing.append(record)
 

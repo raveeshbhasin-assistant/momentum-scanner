@@ -157,6 +157,81 @@ def _fetch_intraday_yfinance(tickers: list[str], interval: str = "5m", days: int
 #  TECHNICAL INDICATOR CALCULATIONS
 # ═══════════════════════════════════════════════════════════════
 
+def compute_strong_signal_at(df: pd.DataFrame, hhmm_et: str) -> dict:
+    """
+    v3.7.0.1: Compute the four STRONG conditions at a SPECIFIC bar time
+    (HH:MM ET, e.g. '09:31' → uses the bar whose start ≤ 09:31 < bar+5min).
+    Used by the /api/backfill_strong endpoint to retroactively tag picks
+    that were emitted before v3.7.0.1 shipped.
+
+    Returns the same dict shape as compute_strong_signal.
+    Falls back to all-False if df is missing required columns or the
+    target time is outside the df's range.
+    """
+    out = {
+        "bar_green": False, "above_vwap": False,
+        "new_hod": False, "pm_high_hold": False,
+        "strong": False, "complete_bar_used": True,
+    }
+    if df is None or df.empty or len(df) < 2:
+        return out
+    # Parse HH:MM (24h)
+    try:
+        h, m = int(hhmm_et[:2]), int(hhmm_et[3:5])
+        m5 = (m // 5) * 5
+        target_minutes = h * 60 + m5
+    except Exception:
+        return out
+    try:
+        ref_idx = None
+        for k, ts in enumerate(df.index):
+            if not hasattr(ts, "hour"):
+                continue
+            ts_minutes = ts.hour * 60 + ts.minute
+            if ts_minutes == target_minutes:
+                ref_idx = k
+                break
+            if ts_minutes > target_minutes:
+                ref_idx = max(0, k - 1)
+                break
+        if ref_idx is None:
+            # target time after last bar; use last
+            ref_idx = len(df) - 1
+        last = df.iloc[ref_idx]
+        # bar_green
+        if pd.notna(last.get("Open")) and pd.notna(last.get("Close")):
+            out["bar_green"] = bool(last["Close"] > last["Open"])
+        # above_vwap
+        vwap_val = last.get("VWAP")
+        if pd.notna(last.get("Close")) and pd.notna(vwap_val):
+            out["above_vwap"] = bool(last["Close"] > vwap_val)
+        # new_hod — highs through ref bar inclusive
+        try:
+            highs_through_ref = df["High"].iloc[: ref_idx + 1]
+            session_high = highs_through_ref.max()
+            if pd.notna(session_high) and pd.notna(last.get("High")):
+                out["new_hod"] = bool(last["High"] >= session_high * 0.9995)
+        except Exception:
+            pass
+        # pm_high_hold (bars with HH:MM < 09:30)
+        try:
+            idx_et = df.index
+            if hasattr(idx_et, "tz") and idx_et.tz is not None:
+                hours = idx_et.hour; mins = idx_et.minute
+                pm_mask = (hours < 9) | ((hours == 9) & (mins < 30))
+                pm_highs = df["High"][pm_mask]
+                if len(pm_highs) > 0 and pd.notna(last.get("Close")):
+                    out["pm_high_hold"] = bool(last["Close"] > pm_highs.max())
+        except Exception:
+            pass
+    except Exception:
+        return out
+    out["strong"] = bool(
+        out["bar_green"] and out["above_vwap"] and out["new_hod"] and out["pm_high_hold"]
+    )
+    return out
+
+
 def compute_strong_signal(df: pd.DataFrame) -> dict:
     """
     v3.7.0: Compute the four STRONG-signal conditions on the most recent

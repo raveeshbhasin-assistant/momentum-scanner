@@ -160,6 +160,11 @@
         table.hide-cat-C tbody tr[data-cat="C"],
         table.hide-cat-D tbody tr[data-cat="D"] { display: none; }
 
+        /* v3.7.0.1: STRONG-only filter — hide all non-STRONG rows when active */
+        table.strong-only tbody tr[data-strong="0"] { display: none; }
+        .chip.strong-chip { border-color: rgba(250,204,21,0.55); color: var(--gold, #facc15); }
+        .chip.strong-chip.active { background: rgba(250,204,21,0.10); border-color: rgba(250,204,21,0.85); color: var(--gold, #facc15); font-weight: 800; }
+
         /* Small category pill shown inside the Tier column */
         .cat-pill {
             display: inline-block;
@@ -278,6 +283,7 @@
                         <span class="chip cat-C active" data-cat="C" title="Low-Score (score < 60, classified leadership)"><b>C</b><span class="chip-n" id="chipN-C"></span></span>
                         <span class="chip cat-D active" data-cat="D" title="Unclassified (no leadership label yet — usually early-session picks)"><b>D</b><span class="chip-n" id="chipN-D"></span></span>
                         <button type="button" class="chip" id="catABOnly" title="Quick filter: show only A + B (the categories the notifier sends emails on)">A+B only</button>
+                        <button type="button" class="chip strong-chip" id="strongOnly" title="v3.7.0: STRONG-only — picks with bar_green + above_vwap + new_hod + pm_high_hold. Historical 2.5R hit rate ~46–53% vs ~22% baseline.">STRONG only <span class="chip-n" id="chipN-STRONG"></span></button>
                     </span>
                     <button class="rth-toggle" id="rthToggle" onclick="toggleRTH()" title="Show only signals found during regular market hours (Mon–Fri 09:30–16:00 ET)">
                         <span class="rth-active-dot"></span>
@@ -518,6 +524,22 @@
                         if (chip) chip.classList.remove('active');
                         table.classList.add('hide-cat-' + c);
                     });
+                    _updateRTHBadge();
+                });
+            }
+
+            // v3.7.0.1: STRONG-only toggle — show only rows with data-strong="1"
+            const strongChip = document.getElementById('strongOnly');
+            const chipNStrong = document.getElementById('chipN-STRONG');
+            if (chipNStrong) {
+                const cnt = table.querySelectorAll('tbody tr[data-strong="1"]').length;
+                if (cnt > 0) chipNStrong.textContent = cnt;
+            }
+            if (strongChip) {
+                strongChip.addEventListener('click', () => {
+                    const wasActive = strongChip.classList.contains('active');
+                    strongChip.classList.toggle('active', !wasActive);
+                    table.classList.toggle('strong-only', !wasActive);
                     _updateRTHBadge();
                 });
             }

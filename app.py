@@ -711,6 +711,110 @@ async def api_trigger_backup():
     return {"today": today, "summary": summary}
 
 
+@app.post("/api/backfill_strong", response_class=JSONResponse)
+async def api_backfill_strong(date: str | None = None):
+    """
+    v3.7.0.1: Backfill the STRONG-signal flag on previously emitted picks
+    in data/{date}.json. Use this once after deploying v3.7.0.1 to tag
+    today's (and earlier) picks that were saved before the persistence
+    fix landed.
+
+    Behaviour:
+      - Reads data/{date}.json (defaults to today ET if date omitted)
+      - For each row missing `strong_signal`, fetches that ticker's 5-min
+        bars via the standard scanner pipeline, computes the four
+        conditions at the pick's `found_time` bar, and patches the record
+      - Writes the file back; idempotent (records already carrying
+        `strong_signal` are skipped)
+
+    Returns counts for: patched, already_present, no_bars, errors.
+    """
+    from history import load_daily_finds, save_daily_finds
+    from scanner import fetch_intraday_data, calculate_indicators, compute_strong_signal_at
+
+    target = date or datetime.now(config.ET).strftime("%Y-%m-%d")
+    rows = load_daily_finds(target)
+    if not rows:
+        return {"date": target, "rows": 0, "note": "no picks for that date"}
+
+    # Determine which rows need backfilling
+    need = [r for r in rows if "strong_signal" not in r]
+    skipped = len(rows) - len(need)
+    if not need:
+        return {"date": target, "rows": len(rows), "patched": 0, "already_present": skipped}
+
+    tickers = sorted({r["ticker"] for r in need})
+    logger.info(f"backfill_strong: {target} — patching {len(need)} rows across {len(tickers)} tickers")
+
+    # Fetch bars (will be 1 day worth, since the file is for that date)
+    try:
+        bar_data = fetch_intraday_data(
+            tickers,
+            interval=config.CANDLE_INTERVAL,
+            days=config.CANDLE_LOOKBACK_DAYS,
+        )
+    except Exception as e:
+        logger.warning(f"backfill_strong: bar fetch failed: {e}")
+        return {"date": target, "rows": len(rows), "patched": 0, "error": str(e)}
+
+    patched = 0
+    no_bars = 0
+    errors = 0
+    for r in need:
+        t = r["ticker"]
+        df = bar_data.get(t)
+        if df is None or df.empty:
+            no_bars += 1
+            continue
+        try:
+            # need indicators (VWAP) on df
+            df = calculate_indicators(df)
+            # Parse "09:31 AM ET" → "09:31" (24h)
+            ft = r.get("found_time", "")
+            try:
+                parts = ft.strip().split()
+                hm = parts[0]
+                suffix = parts[1] if len(parts) > 1 else ""
+                h, m = int(hm.split(":")[0]), int(hm.split(":")[1])
+                if suffix.upper() == "PM" and h != 12:
+                    h += 12
+                elif suffix.upper() == "AM" and h == 12:
+                    h = 0
+                hhmm = f"{h:02d}:{m:02d}"
+            except Exception:
+                errors += 1
+                continue
+            info = compute_strong_signal_at(df, hhmm)
+            r["strong_signal"] = bool(info.get("strong"))
+            r["strong_components"] = {
+                "bar_green": info.get("bar_green", False),
+                "above_vwap": info.get("above_vwap", False),
+                "new_hod": info.get("new_hod", False),
+                "pm_high_hold": info.get("pm_high_hold", False),
+                "complete_bar_used": info.get("complete_bar_used", True),
+            }
+            patched += 1
+        except Exception as e:
+            errors += 1
+            logger.debug(f"backfill_strong: {t} {ft}: {e}")
+
+    if patched > 0:
+        save_daily_finds(rows, target)
+        logger.info(
+            f"backfill_strong: {target} patched={patched} no_bars={no_bars} "
+            f"errors={errors} already_present={skipped}"
+        )
+    return {
+        "date": target,
+        "rows": len(rows),
+        "patched": patched,
+        "already_present": skipped,
+        "no_bars": no_bars,
+        "errors": errors,
+        "strong_count_after_patch": sum(1 for r in rows if r.get("strong_signal")),
+    }
+
+
 @app.post("/api/analyze/trigger", response_class=JSONResponse)
 async def api_trigger_analyze(date: str | None = None):
     """

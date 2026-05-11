@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.1</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.1</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,57 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.1 ───── -->
+        <div class="release current" id="v3-7-0-1">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.1</span>
+                <span class="release-date">Released 2026-05-11</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">Hotfix — persist <code>strong_signal</code> on the slim daily record + add a STRONG-only filter chip on <code>/today</code> + a one-shot <code>/api/backfill_strong</code> endpoint to retroactively tag picks emitted before this hotfix.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> v3.7.0's scanner did compute the four-condition STRONG signal correctly and attach <code>strong_signal</code> + <code>strong_components</code> to the in-memory pick dict — but <code>history.add_signals_to_daily()</code> rebuilds a "slim record" with an explicit field whitelist on its way to disk, and the whitelist didn't list the two new fields. Result: every May&nbsp;11 pick was emitted, scored, and resolved correctly, but the STRONG flag was dropped before <code>data/2026-05-11.json</code> was written. <code>/today</code> had nothing to render, and <code>/performance</code> had nothing to filter on. v3.7.0's own test suite covered the SCANNER side; it didn't cover the PERSISTENCE side. This patch closes that gap.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-fixed">Fixed</span>
+                <ul>
+                    <li><strong><code>history.add_signals_to_daily()</code></strong> now carries <code>strong_signal</code> (bool) and <code>strong_components</code> (5-key dict) through the slim-record builder. Default values are conservative (False / all-False) when the scanner couldn't compute the signal.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong>STRONG-only filter chip on <code>/today</code></strong> next to the existing Cat A/B/C/D chips. Toggles a <code>strong-only</code> class on the picks table; CSS hides any row with <code>data-strong="0"</code>. Chip shows the live STRONG count.</li>
+                    <li><strong><code>scanner.compute_strong_signal_at(df, "HH:MM")</code></strong> — sibling to the existing <code>compute_strong_signal</code> helper, but uses the bar at a specified ET time rather than the latest complete bar. Needed for the backfill endpoint and for any future post-hoc audits.</li>
+                    <li><strong><code>POST /api/backfill_strong?date=YYYY-MM-DD</code></strong> — one-shot endpoint that reads <code>data/{date}.json</code>, finds rows lacking <code>strong_signal</code>, fetches that ticker's 5-min bars via the standard scanner pipeline, computes the four conditions at the pick's exact <code>found_time</code> bar, and patches the file in place. Idempotent. Returns <code>{patched, already_present, no_bars, errors, strong_count_after_patch}</code>.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-research">Operational note</span>
+                <ul>
+                    <li><strong>Post-hoc May 11 reconstruction (using Yahoo 5-min bars before this hotfix shipped):</strong> 13 of the 87 picks (15%) would have been STRONG-tagged. STRONG hit 2.5R at <strong>5 of 13 = 38.5%</strong> with <strong>+1.37 R per trade</strong> vs −0.34 R on non-STRONG (74 picks, 9.5% hit rate). Total R for the STRONG bucket: +17.84; for the non-STRONG bucket: −25.37. STRONG was <strong>4× more precise</strong> than non-STRONG on a day where the overall scanner was net negative (−7.5 R).</li>
+                </ul>
+            </div>
+
+            <div class="release-verification">
+                <strong>Verification:</strong>
+                (1) After deploy, <code>POST /api/backfill_strong?date=2026-05-11</code> reports <code>patched ≥ 13</code> and <code>strong_count_after_patch ≥ 13</code>.
+                (2) <code>/today</code> renders the new <strong>STRONG only</strong> chip with a live count; clicking it hides non-STRONG rows.
+                (3) Each STRONG row carries a gold <code>STRONG</code> pill in the Tier cell and a gold left-edge accent on the row.
+                (4) Exactly one <code>pill-current</code> on a release header (this card); v3.7.0 demoted to <code>pill-previous</code>.
+            </div>
+        </div>
+
         <!-- ───── v3.7.0 ───── -->
-        <div class="release current" id="v3-7-0">
+        <div class="release" id="v3-7-0">
             <div class="release-header">
                 <span class="release-version">v3.7.0</span>
                 <span class="release-date">Released 2026-05-09</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">Tier&nbsp;1+2 precision pass — universe expansion (+80 mid-caps), three hard gates (excluded sectors, RSI&nbsp;>&nbsp;75 reject, 15:00 ET emission cutoff), and a STRONG-signal badge on <code>/today</code> derived from a four-condition conjunction (<code>bar_green</code> AND <code>above_vwap</code> AND <code>new_hod</code> AND <code>pm_high_hold</code>). Backed by 13 trading days of out-of-sample evaluation (Apr&nbsp;22 – May&nbsp;8 2026, 660 picks): the gate combination preserves <strong>84% of 2.5R winners while removing 27% of picks</strong>, and the STRONG flag historically lifts 2.5R hit rate from ~22% baseline to ~46–53%.</div>
 
