@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.6</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.7</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.6</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.7</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,56 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.7 ───── -->
+        <div class="release current" id="v3-7-0-7">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.7</span>
+                <span class="release-date">Released 2026-05-11</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">Hardcoded STRONG override map shipped in <code>data_seed/strong_overrides.json</code> — the backfill now reads pre-computed STRONG values directly, no network call required. Network paths (Yahoo direct, FMP, yfinance) become tertiary fallbacks for ticker-times not in the map.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> v3.7.0.5's Refresh button returned <code>0 patched</code>. v3.7.0.6 swapped the bar source to Yahoo direct (verified working from sandbox: AAPL returned 173 May-11 bars) — and <em>also</em> returned <code>0 patched</code> on the live Railway deploy. That means all three independent network paths (FMP stable, yfinance library, Yahoo <code>/v8/finance/chart</code>) are blocked or returning empty from Railway. Rather than try a fourth network path, this release sidesteps the network entirely: I'd already computed authoritative STRONG values offline for every historical day using the exact same <code>compute_strong_signal_at</code> code, so I just bake those values into a shipped JSON file. The backfill consults the map first; for ticker-times not in the map (only relevant for picks the live scanner emits BEFORE we re-run the offline tool against fresh bars), it falls back to the network paths from v3.7.0.6.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>data_seed/strong_overrides.json</code></strong> — 726 ticker-time mappings across 15 trading days (Apr 22 – May 11), 116 STRONG. Schema: <code>{date → {"TICKER|HH:MM": {strong_signal, strong_components}}}</code>. Today's slice (2026-05-11) contains 66 mappings with 11 STRONG.</li>
+                    <li><strong><code>_load_strong_overrides()</code></strong> — lazy-loads + caches the map. Checks <code>data/strong_overrides.json</code> first (volume copy, if the operator wants to extend the map without a redeploy), then <code>data_seed/strong_overrides.json</code> (ship-with-code default).</li>
+                    <li><strong><code>_ft_to_hhmm()</code></strong> helper — parses <code>"09:31 AM ET"</code> → <code>"09:31"</code>. Was inline in three places, hoisted out.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong><code>_backfill_strong_for_date</code> tier chain</strong>:
+                        <em>Tier 0 (NEW)</em> override map — fast, no network. Handles every row with a matching key.
+                        <em>Tier 1</em> Yahoo direct urllib hit — for rows the map doesn't cover.
+                        <em>Tier 2</em> FMP/yfinance wrapper — last-resort fallback for tickers Yahoo direct fails on.
+                        When the override map covers every needed row, the network is never touched at all — backfill returns in milliseconds.</li>
+                    <li><strong>Response shape</strong> gains a <code>source: "override_only"</code> field when Tier 0 satisfied everything, so the operator can see which path produced the result.</li>
+                </ul>
+            </div>
+
+            <div class="release-verification">
+                <strong>Verification:</strong>
+                (1) Local build: 15 dates × ~50 rows each = 726 mappings; 116 STRONG total; 11 STRONG for today. Override file is 147 KB; ships with the deploy at <code>data_seed/strong_overrides.json</code>.
+                (2) <code>data_seed/</code> is not in <code>.gitignore</code>; Railway's deploy picks it up from the repo.
+                (3) After deploy, click <strong>↻ Refresh STRONG</strong> on <code>/today</code> — should return <code>{"patched": 66, "strong_count": 11, "source": "override_only"}</code> in well under a second.
+                (4) Footer reads <code>Momentum Scanner v3.7.0.7</code>.
+                (5) Tomorrow's live picks: <em>unaffected</em> by this change. They get <code>strong_signal</code> directly from the scanner via the v3.7.0.1 persistence path — no backfill needed for them.
+            </div>
+        </div>
+
         <!-- ───── v3.7.0.6 ───── -->
-        <div class="release current" id="v3-7-0-6">
+        <div class="release" id="v3-7-0-6">
             <div class="release-header">
                 <span class="release-version">v3.7.0.6</span>
                 <span class="release-date">Released 2026-05-11</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">Direct Yahoo-chart bar fetch for STRONG backfill — decouples retroactive STRONG tagging from FMP/yfinance entirely. Same urllib path that built the 13-day research bar cache.</div>
 

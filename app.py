@@ -762,6 +762,52 @@ async def api_trigger_backup():
     return {"today": today, "summary": summary}
 
 
+_STRONG_OVERRIDES_CACHE: dict | None = None
+
+def _load_strong_overrides() -> dict:
+    """
+    v3.7.0.7: Pre-computed STRONG values for known historical days, shipped
+    in data_seed/strong_overrides.json. Used as the highest-priority source
+    in the backfill so we don't depend on FMP / yfinance / Yahoo for days
+    we already have the answer for.
+
+    Format: { "YYYY-MM-DD": { "TICKER|HH:MM": {strong_signal, strong_components}, ... }, ... }
+    """
+    global _STRONG_OVERRIDES_CACHE
+    if _STRONG_OVERRIDES_CACHE is not None:
+        return _STRONG_OVERRIDES_CACHE
+    candidates = [
+        _APP_ROOT / "data" / "strong_overrides.json",
+        _APP_ROOT / "data_seed" / "strong_overrides.json",
+    ]
+    for p in candidates:
+        if p.exists():
+            try:
+                _STRONG_OVERRIDES_CACHE = json.loads(p.read_text())
+                logger.info(f"strong_overrides loaded from {p}: {len(_STRONG_OVERRIDES_CACHE)} dates")
+                return _STRONG_OVERRIDES_CACHE
+            except Exception as e:
+                logger.warning(f"strong_overrides parse failed at {p}: {e}")
+    _STRONG_OVERRIDES_CACHE = {}
+    return _STRONG_OVERRIDES_CACHE
+
+
+def _ft_to_hhmm(found_time: str) -> str | None:
+    """Parse '09:31 AM ET' (or '09:31') → '09:31' (24-hour). None on failure."""
+    try:
+        parts = (found_time or "").strip().split()
+        hm = parts[0]
+        suffix = parts[1].upper() if len(parts) > 1 else ""
+        h, m = int(hm.split(":")[0]), int(hm.split(":")[1])
+        if suffix == "PM" and h != 12:
+            h += 12
+        elif suffix == "AM" and h == 12:
+            h = 0
+        return f"{h:02d}:{m:02d}"
+    except Exception:
+        return None
+
+
 def _fetch_yahoo_chart_direct(ticker: str, date_str: str, http_timeout: int = 12) -> "pd.DataFrame|None":
     """
     v3.7.0.6: Independent 5-min bar fetcher hitting Yahoo's v8/finance/chart
@@ -855,12 +901,52 @@ def _backfill_strong_for_date(target: str) -> dict:
             "strong_count": sum(1 for r in rows if r.get("strong_signal")),
         }
 
-    tickers = sorted({r["ticker"] for r in need})
-    logger.info(f"backfill_strong: {target} — {len(need)} rows × {len(tickers)} tickers")
+    # v3.7.0.7: TIER 0 — shipped override map. Pre-computed values for known
+    # historical days. If a row matches (date + ticker + HH:MM), use the
+    # stored value directly and bypass every bar fetch. Guaranteed correct
+    # since these were computed offline from the SAME compute_strong_signal_at
+    # logic against authoritative Yahoo /v8/finance/chart bars.
+    overrides = _load_strong_overrides().get(target, {}) or {}
+    override_patched = 0
+    if overrides:
+        still_need = []
+        for r in need:
+            hhmm = _ft_to_hhmm(r.get("found_time", ""))
+            if hhmm is None:
+                still_need.append(r)
+                continue
+            key = f"{r['ticker']}|{hhmm}"
+            ov = overrides.get(key)
+            if ov is None:
+                still_need.append(r)
+                continue
+            r["strong_signal"] = bool(ov.get("strong_signal"))
+            r["strong_components"] = ov.get("strong_components") or {}
+            override_patched += 1
+        logger.info(
+            f"backfill_strong: {target} override map patched {override_patched}/{len(need)} rows"
+        )
+        need = still_need
 
-    # v3.7.0.6: PRIMARY — direct Yahoo chart endpoint per ticker. Throttled
-    # at ~6 req/sec so 87 tickers takes ~15s. Each result is a self-
-    # contained day's bars (pre/post-market included for pm_high_hold).
+    tickers = sorted({r["ticker"] for r in need})
+    if not tickers:
+        # Everything came from the override map; save and return
+        save_daily_finds(rows, target)
+        strong_after = sum(1 for r in rows if r.get("strong_signal"))
+        logger.info(
+            f"backfill_strong: {target} ALL FROM OVERRIDE  patched={override_patched} "
+            f"strong_after={strong_after}"
+        )
+        return {
+            "date": target, "rows": len(rows), "patched": override_patched,
+            "already_present": skipped, "no_bars": 0, "errors": 0,
+            "strong_count": strong_after, "source": "override_only",
+        }
+    logger.info(f"backfill_strong: {target} — {len(need)} rows × {len(tickers)} tickers still need bar fetch")
+
+    # v3.7.0.6: PRIMARY (network) — direct Yahoo chart endpoint per ticker.
+    # Throttled at ~6 req/sec. Falls back to FMP/yfinance wrapper if Yahoo
+    # can't serve a ticker.
     bar_data: dict = {}
     yahoo_fail = []
     for t in tickers:
