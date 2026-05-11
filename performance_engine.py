@@ -205,6 +205,8 @@ def normalize_entry(raw: dict) -> dict:
         "appearance": raw.get("appearance", 1),
         "post_close": bool(raw.get("post_close", False)),
         "note": raw.get("note", ""),
+        # v3.7.0.3: carry STRONG flag through so /performance can filter on it
+        "strong_signal": bool(raw.get("strong_signal", False)),
     }
 
 

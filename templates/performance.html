@@ -327,6 +327,10 @@
                     <span class="chip" data-resmode="raw">Raw exit</span>
                     <span class="chip active" data-resmode="effective">P&amp;L-adjusted</span>
                 </div>
+                <div class="ctrl-group" title="v3.7.0: STRONG = picks where bar_green AND above_vwap AND new_hod AND pm_high_hold all hold at signal time. Historical 2.5R hit rate ~46–53% vs ~22% baseline.">
+                    <span class="ctrl-label">STRONG</span>
+                    <span class="chip" data-strongonly="1" id="strongOnlyChip" style="border-color:rgba(250,204,21,0.55); color:var(--gold,#facc15);">STRONG only <span id="strongOnlyCount" style="font-family:var(--mono);font-size:10px;opacity:0.75;"></span></span>
+                </div>
             </div>
         </div>
 
@@ -430,6 +434,7 @@
             rangeLoading: false,
             equityMetric: "r",       // "r" | "pnl"
             equityShape: "cum",      // "cum" | "day"
+            strongOnly: false,       // v3.7.0.3 — STRONG-only filter toggle
         };
         const resultField = () => state.resultMode === "effective" ? "effective_result" : "result";
 
@@ -550,6 +555,26 @@
             });
         });
 
+        // v3.7.0.3: STRONG-only toggle on /performance
+        const strongChip = document.getElementById("strongOnlyChip");
+        if (strongChip) {
+            strongChip.addEventListener("click", () => {
+                state.strongOnly = !state.strongOnly;
+                if (state.strongOnly) {
+                    strongChip.classList.add("active");
+                    strongChip.style.background = "rgba(250,204,21,0.10)";
+                    strongChip.style.borderColor = "rgba(250,204,21,0.85)";
+                    strongChip.style.fontWeight = "800";
+                } else {
+                    strongChip.classList.remove("active");
+                    strongChip.style.background = "";
+                    strongChip.style.borderColor = "rgba(250,204,21,0.55)";
+                    strongChip.style.fontWeight = "";
+                }
+                render();
+            });
+        }
+
         // Equity chart toolbar
         document.querySelectorAll("#equityMetric button").forEach(btn => {
             btn.addEventListener("click", () => {
@@ -602,12 +627,19 @@
             }
 
             const rk = resultField();
-            const passCat  = (e) => state.cats.has(e.category);
-            const passRes  = (e) => state.results.has(e[rk]);
-            const filter   = (e) => passCat(e) && passRes(e);
+            const passCat    = (e) => state.cats.has(e.category);
+            const passRes    = (e) => state.results.has(e[rk]);
+            const passStrong = (e) => !state.strongOnly || !!e.strong_signal;
+            const filter     = (e) => passCat(e) && passRes(e) && passStrong(e);
 
             const hasRows = Array.isArray(bucket.picks);
             const picks = hasRows ? bucket.picks.filter(filter) : null;
+            // v3.7.0.3: update STRONG count badge (regardless of toggle state)
+            if (hasRows) {
+                const totalStrong = bucket.picks.filter(e => !!e.strong_signal).length;
+                const cntEl = document.getElementById("strongOnlyCount");
+                if (cntEl) cntEl.textContent = totalStrong > 0 ? `(${totalStrong})` : "";
+            }
             const dailySeries = bucket.daily_series || null;
 
             renderOverall(stats, picks, label);

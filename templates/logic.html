@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.2</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.3</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.2</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.3</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,49 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.3 ───── -->
+        <div class="release current" id="v3-7-0-3">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.3</span>
+                <span class="release-date">Released 2026-05-11</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">STRONG-only filter chip on <code>/performance</code> + footer version bump. The <code>strong_signal</code> field now flows through <code>performance_engine.normalize_entry</code> so the per-pick table and equity charts can scope to STRONG-tagged picks only.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> v3.7.0.1 added the STRONG visual on <code>/today</code> and v3.7.0.2 wired the email notifier; <code>/performance</code> was the only page still ignoring the flag. <code>performance_engine.normalize_entry</code> rebuilds each pick into a canonical shape and was stripping <code>strong_signal</code> (same pattern as the v3.7.0 history.py bug). This pass plugs that final leak and adds a chip in the existing Filters row so a single click compares STRONG vs all picks across single-day, cumulative, or range mode — all the KPI cards, category grid, time-bucket grid, equity curve, and per-pick table update together.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>performance_engine.normalize_entry</code></strong> now carries <code>strong_signal: bool</code> on every entry it returns.</li>
+                    <li><strong><code>/performance</code> — STRONG-only filter chip</strong> in the existing Filters row. Toggles <code>state.strongOnly</code>; when on, <code>passStrong(e) = !!e.strong_signal</code> is added to the filter chain alongside the existing Cat and Result passes. The chip carries a live count badge of how many STRONG picks exist in the current view (regardless of toggle state).</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong><code>_footer.html</code> version bumped to <code>v3.7.0.3</code></strong> (was stuck at <code>v3.6.2</code> since the v3.7.0 chain — every page footer now reflects the right version).</li>
+                </ul>
+            </div>
+
+            <div class="release-verification">
+                <strong>Verification:</strong>
+                (1) Footer reads <code>Momentum Scanner v3.7.0.3</code> on every page.
+                (2) <code>/performance</code> shows a new STRONG-only chip; with <code>NOTIFY_STRONG_ONLY</code> default-on and the backfill complete, the chip's count badge matches the STRONG total for the active view.
+                (3) Toggling the chip narrows the KPI cards, equity curve, and per-pick table to STRONG picks only; toggling off restores the full view.
+                (4) Exactly one <code>pill-current</code> on a release header (this card); v3.7.0.2 demoted.
+            </div>
+        </div>
+
         <!-- ───── v3.7.0.2 ───── -->
-        <div class="release current" id="v3-7-0-2">
+        <div class="release" id="v3-7-0-2">
             <div class="release-header">
                 <span class="release-version">v3.7.0.2</span>
                 <span class="release-date">Released 2026-05-11</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">Batch backfill of <code>strong_signal</code> across every historical day + STRONG-only gate on the Resend email notifier.</div>
 
