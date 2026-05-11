@@ -985,57 +985,71 @@ def _backfill_strong_for_date(target: str) -> dict:
     rows = load_daily_finds(target)
     if not rows:
         return {"date": target, "rows": 0, "patched": 0, "note": "no picks"}
-    need = [r for r in rows if "strong_signal" not in r]
-    skipped = len(rows) - len(need)
-    if not need:
-        return {
-            "date": target, "rows": len(rows), "patched": 0,
-            "already_present": skipped,
-            "strong_count": sum(1 for r in rows if r.get("strong_signal")),
-        }
 
-    # v3.7.0.7: TIER 0 — shipped override map. Pre-computed values for known
-    # historical days. If a row matches (date + ticker + HH:MM), use the
-    # stored value directly and bypass every bar fetch. Guaranteed correct
-    # since these were computed offline from the SAME compute_strong_signal_at
-    # logic against authoritative Yahoo /v8/finance/chart bars.
+    # v3.7.0.9: KEY FIX — the override map is the SOURCE OF TRUTH. Apply it
+    # to every matching row regardless of whether `strong_signal` is already
+    # present. Previous logic (v3.7.0.7) skipped any row that already had
+    # the field, so when the scanner emitted picks with strong_signal=False
+    # at scan time (because partial-bar VWAP/HOD/pm_high checks returned
+    # conservative False), the override never got a chance to correct them.
+    # v3.7.0.8's diagnose endpoint proved this: 87/87 rows had the field
+    # present (false) but the override map had 11 of them as true. Result:
+    # 0 patched on the manual button, while the override correctly disagreed
+    # with the stored values.
     overrides = _load_strong_overrides().get(target, {}) or {}
-    override_patched = 0
+    override_patched = 0       # rows whose value CHANGED from override
+    override_already_correct = 0  # rows where override agreed with file
+    override_keys_present = set()
     if overrides:
-        still_need = []
-        for r in need:
+        for r in rows:
             hhmm = _ft_to_hhmm(r.get("found_time", ""))
             if hhmm is None:
-                still_need.append(r)
                 continue
             key = f"{r['ticker']}|{hhmm}"
             ov = overrides.get(key)
             if ov is None:
-                still_need.append(r)
                 continue
-            r["strong_signal"] = bool(ov.get("strong_signal"))
-            r["strong_components"] = ov.get("strong_components") or {}
-            override_patched += 1
+            override_keys_present.add(key)
+            new_val = bool(ov.get("strong_signal"))
+            new_components = ov.get("strong_components") or {}
+            current_val = r.get("strong_signal")
+            current_components = r.get("strong_components") or {}
+            if current_val == new_val and current_components == new_components:
+                override_already_correct += 1
+            else:
+                r["strong_signal"] = new_val
+                r["strong_components"] = new_components
+                override_patched += 1
         logger.info(
-            f"backfill_strong: {target} override map patched {override_patched}/{len(need)} rows"
+            f"backfill_strong: {target} override: changed={override_patched}, "
+            f"already_correct={override_already_correct}, "
+            f"map_size={len(overrides)}, picks={len(rows)}"
         )
-        need = still_need
 
-    tickers = sorted({r["ticker"] for r in need})
-    if not tickers:
-        # Everything came from the override map; save and return
-        save_daily_finds(rows, target)
+    # Rows still missing strong_signal AFTER override pass = picks whose
+    # (ticker,HH:MM) wasn't in the map. Those get the network-tier fallback.
+    need = [r for r in rows if "strong_signal" not in r]
+    skipped = len(rows) - len(need) - override_patched  # rows untouched (had field, no override)
+
+    if not need:
+        # Nothing left to do via network. Persist if override changed anything.
+        if override_patched > 0:
+            save_daily_finds(rows, target)
         strong_after = sum(1 for r in rows if r.get("strong_signal"))
         logger.info(
-            f"backfill_strong: {target} ALL FROM OVERRIDE  patched={override_patched} "
+            f"backfill_strong: {target} DONE via override  patched={override_patched} "
             f"strong_after={strong_after}"
         )
         return {
             "date": target, "rows": len(rows), "patched": override_patched,
+            "already_correct": override_already_correct,
             "already_present": skipped, "no_bars": 0, "errors": 0,
-            "strong_count": strong_after, "source": "override_only",
+            "strong_count": strong_after,
+            "source": "override_only" if override_patched else "no_change_needed",
         }
-    logger.info(f"backfill_strong: {target} — {len(need)} rows × {len(tickers)} tickers still need bar fetch")
+
+    tickers = sorted({r["ticker"] for r in need})
+    logger.info(f"backfill_strong: {target} — {len(need)} rows × {len(tickers)} tickers still need bar fetch (no override entry)")
 
     # v3.7.0.6: PRIMARY (network) — direct Yahoo chart endpoint per ticker.
     # Throttled at ~6 req/sec. Falls back to FMP/yfinance wrapper if Yahoo
@@ -1113,23 +1127,30 @@ def _backfill_strong_for_date(target: str) -> dict:
             errors += 1
             logger.debug(f"backfill_strong: {target} {t} {ft}: {e}")
 
-    if patched > 0:
+    # v3.7.0.9: persist if EITHER the override pass or the network pass changed anything.
+    total_patched = override_patched + patched
+    if total_patched > 0:
         save_daily_finds(rows, target)
         logger.info(
-            f"backfill_strong: {target} patched={patched} no_bars={no_bars} "
-            f"errors={errors} already_present={skipped} "
+            f"backfill_strong: {target} TOTAL_PATCHED={total_patched} "
+            f"(override={override_patched}, network={patched})  "
+            f"no_bars={no_bars} errors={errors} already_present={skipped} "
             f"strong_after={sum(1 for r in rows if r.get('strong_signal'))}"
         )
     else:
-        # v3.7.0.5: even with 0 patched, log so we can diagnose
         logger.warning(
-            f"backfill_strong: {target} patched=0 no_bars={no_bars} errors={errors} "
-            f"(file unchanged; bar fetch likely empty)"
+            f"backfill_strong: {target} total_patched=0 "
+            f"override_already_correct={override_already_correct} "
+            f"no_bars={no_bars} errors={errors} "
+            f"(file unchanged; override + bar fetch produced no changes)"
         )
     return {
         "date": target,
         "rows": len(rows),
-        "patched": patched,
+        "patched": total_patched,
+        "patched_via_override": override_patched,
+        "patched_via_network": patched,
+        "override_already_correct": override_already_correct,
         "already_present": skipped,
         "no_bars": no_bars,
         "errors": errors,
