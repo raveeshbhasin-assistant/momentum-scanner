@@ -29,8 +29,9 @@ from premarket import run_premarket_scan, reset_daily as reset_premarket
 from daily_analysis import analyze_day
 from data_backup import backup_data_files
 from performance_engine import (
-    get_view as _get_performance_view,
-    get_range_view as _get_performance_range_view,
+    load_entries as _perf_load_entries,
+    build_view as _perf_build_view,
+    build_range_view as _perf_build_range_view,
 )
 from market_regime import get_regime
 from earnings import refresh_earnings_cache
@@ -885,6 +886,57 @@ def _load_strong_overrides() -> dict:
     return _STRONG_OVERRIDES_CACHE
 
 
+def _enrich_perf_entries_with_strong(entries: list) -> int:
+    """
+    v3.7.0.10: Mutate `entries` in place, copying strong_signal +
+    strong_components from the override map onto each entry that matches
+    (date, ticker, batch_time). Returns the number of entries enriched.
+
+    Why: performance_log.json was written by the 4:15 PM EOD analysis
+    cron, which doesn't yet know about strong_signal. So /performance
+    loads entries with no STRONG context. The override map (Tier 0 of
+    the backfill) is the authoritative source — apply it here so the
+    perf-page STRONG filter narrows correctly.
+    """
+    overrides_all = _load_strong_overrides() or {}
+    if not overrides_all or not entries:
+        return 0
+    enriched = 0
+    for e in entries:
+        date_str = e.get("date")
+        ticker = e.get("ticker")
+        bt = e.get("batch_time")  # already HH:MM in perf log
+        if not (date_str and ticker and bt):
+            continue
+        day_map = overrides_all.get(date_str, {})
+        if not day_map:
+            continue
+        key = f"{ticker}|{bt}"
+        ov = day_map.get(key)
+        if ov is None:
+            continue
+        e["strong_signal"] = bool(ov.get("strong_signal"))
+        e["strong_components"] = ov.get("strong_components") or {}
+        enriched += 1
+    return enriched
+
+
+def _get_performance_view_enriched(selected_date: str | None = None) -> dict:
+    """v3.7.0.10: load perf entries, enrich with strong_signal, then build view."""
+    entries = _perf_load_entries()
+    n = _enrich_perf_entries_with_strong(entries)
+    logger.info(f"perf view: enriched {n}/{len(entries)} entries with strong_signal")
+    return _perf_build_view(entries, selected_date)
+
+
+def _get_performance_range_view_enriched(start: str, end: str) -> dict:
+    """v3.7.0.10: same enrichment for the range view."""
+    entries = _perf_load_entries()
+    n = _enrich_perf_entries_with_strong(entries)
+    logger.info(f"perf range view: enriched {n}/{len(entries)} entries with strong_signal")
+    return _perf_build_range_view(entries, start, end)
+
+
 def _ft_to_hhmm(found_time: str) -> str | None:
     """Parse '09:31 AM ET' (or '09:31') → '09:31' (24-hour). None on failure."""
     try:
@@ -1353,7 +1405,7 @@ async def performance_page(request: Request, date: str | None = None):
     except Exception:
         pass
 
-    view = _get_performance_view(date)
+    view = _get_performance_view_enriched(date)
     return templates.TemplateResponse(
         request=request,
         name="performance.html",
@@ -1366,7 +1418,7 @@ async def performance_page(request: Request, date: str | None = None):
 @app.get("/api/performance", response_class=JSONResponse)
 async def api_performance(date: str | None = None):
     """JSON API for the performance dashboard (same view dict the template receives)."""
-    return _get_performance_view(date)
+    return _get_performance_view_enriched(date)
 
 
 @app.get("/api/performance/range", response_class=JSONResponse)
@@ -1392,7 +1444,7 @@ async def api_performance_range(start: str, end: str):
             status_code=400,
             content={"error": f"start '{start}' must be <= end '{end}'"},
         )
-    return _get_performance_range_view(start, end)
+    return _get_performance_range_view_enriched(start, end)
 
 
 def _load_trade_log() -> tuple[list[dict], list[dict]]:
