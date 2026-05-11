@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.5</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.6</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.5</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.6</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,49 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.6 ───── -->
+        <div class="release current" id="v3-7-0-6">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.6</span>
+                <span class="release-date">Released 2026-05-11</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">Direct Yahoo-chart bar fetch for STRONG backfill — decouples retroactive STRONG tagging from FMP/yfinance entirely. Same urllib path that built the 13-day research bar cache.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> v3.7.0.5's <strong>↻ Refresh STRONG</strong> button reported <code>0 patched</code> on the live deploy, meaning every one of today's 87 picks went into the <code>no_bars</code> bucket. The likely chain: <em>(a)</em> FMP's first-ticker connectivity test returned empty (rate-limit collision with the live scanner, or after-hours endpoint quirk) → <em>(b)</em> wrapper fell back to <code>yfinance.download()</code> → <em>(c)</em> yfinance also returned empty (Railway egress or library issue) → <em>(d)</em> <code>bar_data == {}</code> for all tickers → patched=0. The live scanner is unaffected: it ran FMP successfully today during market hours and emitted 87 picks with full prices/RSI/RVOL/ATR. The backfill is what hit the empty. This release routes backfill through a <em>third</em>, independent fetcher (direct Yahoo <code>/v8/finance/chart</code> hit via urllib) that has zero dependencies on FMP, the yfinance library, or any wrapper logic. The same code path successfully built the 13-day analysis bar cache in research.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>_fetch_yahoo_chart_direct(ticker, date_str)</code></strong> — single-ticker fetcher hitting <code>https://query1.finance.yahoo.com/v8/finance/chart/{TICKER}?interval=5m&amp;period1=…&amp;period2=…&amp;includePrePost=true</code> via <code>urllib.request</code>. Returns a pandas DataFrame in the exact shape <code>scanner.calculate_indicators</code> expects (Open/High/Low/Close/Volume, ET-tz <code>DatetimeIndex</code>), or <code>None</code> on any failure. ET-zone aware so the pre-market filter inside <code>compute_strong_signal_at</code> works correctly. Includes prepost bars (needed for the <code>pm_high_hold</code> check).</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong><code>_backfill_strong_for_date</code></strong> now routes through <em>Yahoo direct → FMP/yfinance wrapper</em>. Primary path is a per-ticker Yahoo call (87 tickers × ~150&nbsp;ms = ~15&nbsp;s for today's load). Tickers Yahoo can't serve are retried through the existing <code>fetch_intraday_data</code> wrapper. Only tickers that fail BOTH paths land in <code>no_bars</code>.</li>
+                    <li><strong>Live scanner data path is unchanged.</strong> It still uses FMP first with yfinance fallback — no contention with the backfill's new Yahoo path.</li>
+                </ul>
+            </div>
+
+            <div class="release-verification">
+                <strong>Verification:</strong>
+                (1) Yahoo's <code>/v8/finance/chart</code> endpoint is what <code>research/fetch_bars.py</code> used to build the 14-day bar cache, with 309/322 success rate (the failures were delisted tickers, not endpoint problems). Same code shape here.
+                (2) After deploy, click <strong>↻ Refresh STRONG</strong> on <code>/today</code>. With 87 picks, the call should take ~15&nbsp;s and return <code>{"patched": 87, "strong_count": ~13, "no_bars": 0, "errors": 0}</code>. The page reloads and the STRONG chip shows a non-zero count.
+                (3) Footer reads <code>Momentum Scanner v3.7.0.6</code>.
+                (4) Live scanner's next 30-min scan emits new picks with <code>strong_signal</code> populated as before (history.py persistence fix landed in v3.7.0.1; no change here).
+            </div>
+        </div>
+
         <!-- ───── v3.7.0.5 ───── -->
-        <div class="release current" id="v3-7-0-5">
+        <div class="release" id="v3-7-0-5">
             <div class="release-header">
                 <span class="release-version">v3.7.0.5</span>
                 <span class="release-date">Released 2026-05-11</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">Belt-and-suspenders STRONG backfill (lazy on GET, manual button) + Performance page recomputes <em>every</em> section when STRONG-only is toggled, not just the per-pick table.</div>
 

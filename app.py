@@ -762,9 +762,83 @@ async def api_trigger_backup():
     return {"today": today, "summary": summary}
 
 
+def _fetch_yahoo_chart_direct(ticker: str, date_str: str, http_timeout: int = 12) -> "pd.DataFrame|None":
+    """
+    v3.7.0.6: Independent 5-min bar fetcher hitting Yahoo's v8/finance/chart
+    endpoint via urllib. Used as the PRIMARY path for STRONG backfill —
+    doesn't depend on the FMP wrapper, doesn't depend on the yfinance
+    library. Returns a DataFrame matching the shape scanner.calculate_indicators
+    expects (Open/High/Low/Close/Volume columns, ET-tz DatetimeIndex), or
+    None on any failure.
+
+    Critically, this is the SAME endpoint and parameter shape used by
+    research/fetch_bars.py to successfully build the 13-day analysis bar
+    cache — so we have high confidence it works.
+    """
+    import urllib.request, urllib.parse, json as _json
+    from datetime import datetime as _dt, timedelta as _td, timezone as _tz
+    try:
+        import pandas as _pd  # local alias; module-level pd may not be imported here
+    except Exception:
+        return None
+    try:
+        d = _dt.fromisoformat(date_str)
+    except Exception:
+        return None
+    t1 = int(_dt(d.year, d.month, d.day, tzinfo=_tz.utc).timestamp()) - 24*3600
+    t2 = int(_dt(d.year, d.month, d.day, tzinfo=_tz.utc).timestamp()) + 30*3600  # 30h forward = next-day buffer
+    sym = urllib.parse.quote(ticker)
+    url = (
+        f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}"
+        f"?interval=5m&period1={t1}&period2={t2}"
+        f"&includePrePost=true&events=div,splits"
+    )
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=http_timeout) as r:
+            payload = _json.loads(r.read().decode())
+    except Exception as e:
+        logger.debug(f"yahoo_direct {ticker} {date_str}: HTTP {e}")
+        return None
+    try:
+        res = payload["chart"]["result"][0]
+        ts = res.get("timestamp") or []
+        q = res["indicators"]["quote"][0]
+    except (KeyError, IndexError, TypeError) as e:
+        logger.debug(f"yahoo_direct {ticker} {date_str}: parse {e}")
+        return None
+    if not ts:
+        return None
+    try:
+        from zoneinfo import ZoneInfo
+        ET = ZoneInfo("America/New_York")
+    except Exception:
+        return None
+    rows = []
+    for i, t in enumerate(ts):
+        try:
+            o, h, l, c, v = q["open"][i], q["high"][i], q["low"][i], q["close"][i], q["volume"][i]
+        except Exception:
+            continue
+        if None in (o, h, l, c):
+            continue
+        dt = _dt.fromtimestamp(t, ET)
+        if dt.strftime("%Y-%m-%d") != date_str:
+            continue
+        rows.append({"_idx": _pd.Timestamp(dt), "Open": o, "High": h, "Low": l, "Close": c, "Volume": v or 0})
+    if not rows:
+        return None
+    df = _pd.DataFrame(rows).set_index("_idx")
+    return df
+
+
 def _backfill_strong_for_date(target: str) -> dict:
     """
     v3.7.0.1: backfill STRONG flag on one date's picks. Returns a stats dict.
+    v3.7.0.6: PRIMARY bar source is now a direct Yahoo /v8/finance/chart
+    fetch via urllib (the FMP wrapper + yfinance library both returned
+    empty on the live Railway deploy). Falls back to fetch_intraday_data
+    only for tickers Yahoo direct couldn't serve.
     """
     from history import load_daily_finds, save_daily_finds
     from scanner import fetch_intraday_data, calculate_indicators, compute_strong_signal_at
@@ -784,22 +858,44 @@ def _backfill_strong_for_date(target: str) -> dict:
     tickers = sorted({r["ticker"] for r in need})
     logger.info(f"backfill_strong: {target} — {len(need)} rows × {len(tickers)} tickers")
 
-    # v3.7.0.5: try FMP first, fall back to yfinance directly if it returns empty.
-    # The wrapper in scanner.fetch_intraday_data already falls back internally,
-    # but if BOTH return empty the helper just returns {}; we catch that here.
-    bar_data = {}
-    try:
-        bar_data = fetch_intraday_data(
-            tickers,
-            interval=config.CANDLE_INTERVAL,
-            days=config.CANDLE_LOOKBACK_DAYS,
-        )
-        logger.info(f"backfill_strong: {target} bar fetch returned {len(bar_data)}/{len(tickers)} tickers")
-    except Exception as e:
-        logger.warning(f"backfill_strong: {target} bar fetch raised: {e}")
-        # don't bail — proceed and mark rows as no_bars
+    # v3.7.0.6: PRIMARY — direct Yahoo chart endpoint per ticker. Throttled
+    # at ~6 req/sec so 87 tickers takes ~15s. Each result is a self-
+    # contained day's bars (pre/post-market included for pm_high_hold).
+    bar_data: dict = {}
+    yahoo_fail = []
+    for t in tickers:
+        df = _fetch_yahoo_chart_direct(t, target)
+        if df is not None and not df.empty:
+            bar_data[t] = df
+        else:
+            yahoo_fail.append(t)
+        time.sleep(0.15)
+    logger.info(
+        f"backfill_strong: {target} Yahoo direct returned {len(bar_data)}/{len(tickers)} "
+        f"tickers; fails: {len(yahoo_fail)}"
+    )
+
+    # v3.7.0.6: SECONDARY — for tickers Yahoo direct couldn't serve, try
+    # the existing FMP/yfinance wrapper.
+    if yahoo_fail:
+        try:
+            fallback = fetch_intraday_data(
+                yahoo_fail,
+                interval=config.CANDLE_INTERVAL,
+                days=config.CANDLE_LOOKBACK_DAYS,
+            )
+            for t, df in (fallback or {}).items():
+                if df is not None and not df.empty:
+                    bar_data[t] = df
+            logger.info(
+                f"backfill_strong: {target} wrapper fallback covered "
+                f"{len(fallback or {})}/{len(yahoo_fail)} retried tickers"
+            )
+        except Exception as e:
+            logger.warning(f"backfill_strong: {target} wrapper fallback raised: {e}")
+
     if not bar_data:
-        logger.warning(f"backfill_strong: {target} bar fetch returned empty dict")
+        logger.warning(f"backfill_strong: {target} ALL bar sources returned empty for every ticker")
 
     patched = no_bars = errors = 0
     for r in need:
