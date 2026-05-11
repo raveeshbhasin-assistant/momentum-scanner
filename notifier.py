@@ -130,6 +130,16 @@ def _allowed_categories() -> Set[str]:
     return allowed or {"A", "B"}
 
 
+def _strong_only() -> bool:
+    """
+    v3.7.0.2: gate the email notifier to STRONG-tagged picks only.
+    Toggle with NOTIFY_STRONG_ONLY env var ("0" to disable). Default ON.
+    Kept as env var (not config.py constant) so it can be flipped without
+    a redeploy via Railway's variable UI.
+    """
+    return _env("NOTIFY_STRONG_ONLY", "1") not in ("0", "false", "False", "")
+
+
 def _market_hours_only() -> bool:
     return _env("NOTIFY_MARKET_HOURS_ONLY", "true").lower() in ("1", "true", "yes", "on")
 
@@ -438,6 +448,23 @@ def send_scan_email(
             f"filter {sorted(allowed)} (< NOTIFY_MIN_SIGNALS={_min_signals()}), skipping"
         )
         return
+
+    # v3.7.0.2: STRONG-only gate — when enabled (default), restrict the
+    # notifier to picks where bar_green + above_vwap + new_hod + pm_high_hold
+    # all hold. 13-day research: STRONG picks hit 2.5R at ~46–53% vs ~22%
+    # baseline; May 11 production: 38.5% vs 9.5% non-STRONG. Toggle via
+    # NOTIFY_STRONG_ONLY=0 env var to fall back to the prior behaviour
+    # (any strong-signal-strength pick in an allowed category).
+    if _strong_only():
+        before = len(filtered)
+        filtered = [s for s in filtered if bool(s.get("strong_signal"))]
+        if len(filtered) < _min_signals():
+            logger.info(
+                f"notifier: {before} cat-allowed → {len(filtered)} after STRONG "
+                f"filter (< NOTIFY_MIN_SIGNALS={_min_signals()}), skipping"
+            )
+            return
+        logger.info(f"notifier: STRONG-only narrowed {before} → {len(filtered)} picks")
 
     if not _is_configured():
         logger.warning(

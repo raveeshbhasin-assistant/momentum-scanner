@@ -711,42 +711,28 @@ async def api_trigger_backup():
     return {"today": today, "summary": summary}
 
 
-@app.post("/api/backfill_strong", response_class=JSONResponse)
-async def api_backfill_strong(date: str | None = None):
+def _backfill_strong_for_date(target: str) -> dict:
     """
-    v3.7.0.1: Backfill the STRONG-signal flag on previously emitted picks
-    in data/{date}.json. Use this once after deploying v3.7.0.1 to tag
-    today's (and earlier) picks that were saved before the persistence
-    fix landed.
-
-    Behaviour:
-      - Reads data/{date}.json (defaults to today ET if date omitted)
-      - For each row missing `strong_signal`, fetches that ticker's 5-min
-        bars via the standard scanner pipeline, computes the four
-        conditions at the pick's `found_time` bar, and patches the record
-      - Writes the file back; idempotent (records already carrying
-        `strong_signal` are skipped)
-
-    Returns counts for: patched, already_present, no_bars, errors.
+    v3.7.0.1: backfill STRONG flag on one date's picks. Returns a stats dict.
     """
     from history import load_daily_finds, save_daily_finds
     from scanner import fetch_intraday_data, calculate_indicators, compute_strong_signal_at
 
-    target = date or datetime.now(config.ET).strftime("%Y-%m-%d")
     rows = load_daily_finds(target)
     if not rows:
-        return {"date": target, "rows": 0, "note": "no picks for that date"}
-
-    # Determine which rows need backfilling
+        return {"date": target, "rows": 0, "patched": 0, "note": "no picks"}
     need = [r for r in rows if "strong_signal" not in r]
     skipped = len(rows) - len(need)
     if not need:
-        return {"date": target, "rows": len(rows), "patched": 0, "already_present": skipped}
+        return {
+            "date": target, "rows": len(rows), "patched": 0,
+            "already_present": skipped,
+            "strong_count": sum(1 for r in rows if r.get("strong_signal")),
+        }
 
     tickers = sorted({r["ticker"] for r in need})
-    logger.info(f"backfill_strong: {target} — patching {len(need)} rows across {len(tickers)} tickers")
+    logger.info(f"backfill_strong: {target} — {len(need)} rows × {len(tickers)} tickers")
 
-    # Fetch bars (will be 1 day worth, since the file is for that date)
     try:
         bar_data = fetch_intraday_data(
             tickers,
@@ -754,12 +740,10 @@ async def api_backfill_strong(date: str | None = None):
             days=config.CANDLE_LOOKBACK_DAYS,
         )
     except Exception as e:
-        logger.warning(f"backfill_strong: bar fetch failed: {e}")
+        logger.warning(f"backfill_strong: {target} bar fetch failed: {e}")
         return {"date": target, "rows": len(rows), "patched": 0, "error": str(e)}
 
-    patched = 0
-    no_bars = 0
-    errors = 0
+    patched = no_bars = errors = 0
     for r in need:
         t = r["ticker"]
         df = bar_data.get(t)
@@ -767,9 +751,7 @@ async def api_backfill_strong(date: str | None = None):
             no_bars += 1
             continue
         try:
-            # need indicators (VWAP) on df
             df = calculate_indicators(df)
-            # Parse "09:31 AM ET" → "09:31" (24h)
             ft = r.get("found_time", "")
             try:
                 parts = ft.strip().split()
@@ -796,7 +778,7 @@ async def api_backfill_strong(date: str | None = None):
             patched += 1
         except Exception as e:
             errors += 1
-            logger.debug(f"backfill_strong: {t} {ft}: {e}")
+            logger.debug(f"backfill_strong: {target} {t} {ft}: {e}")
 
     if patched > 0:
         save_daily_finds(rows, target)
@@ -811,8 +793,50 @@ async def api_backfill_strong(date: str | None = None):
         "already_present": skipped,
         "no_bars": no_bars,
         "errors": errors,
-        "strong_count_after_patch": sum(1 for r in rows if r.get("strong_signal")),
+        "strong_count": sum(1 for r in rows if r.get("strong_signal")),
     }
+
+
+@app.post("/api/backfill_strong", response_class=JSONResponse)
+async def api_backfill_strong(date: str | None = None, all_days: bool = False):
+    """
+    v3.7.0.1: Backfill the STRONG-signal flag on previously emitted picks
+    in data/{date}.json. Idempotent — rows that already carry
+    `strong_signal` are skipped.
+
+    v3.7.0.2: optional `all_days=true` walks every YYYY-MM-DD.json file in
+    the data volume and backfills any row missing the flag. Useful as a
+    one-shot after the persistence fix to retroactively tag every
+    historical pick. Performs one bar-fetch round per date.
+
+    Query params:
+      - date=YYYY-MM-DD: backfill that single date (default today ET if
+        all_days is False and date is omitted)
+      - all_days=true:    walk every data/YYYY-MM-DD.json file
+    """
+    if all_days:
+        import re
+        dates: list[str] = []
+        try:
+            for p in sorted(_DATA_DIR.glob("*.json")):
+                stem = p.stem
+                if re.match(r"^\d{4}-\d{2}-\d{2}$", stem):
+                    dates.append(stem)
+        except Exception as e:
+            return {"error": f"could not list data dir: {e}"}
+        per_date = []
+        totals = {"rows": 0, "patched": 0, "already_present": 0,
+                  "no_bars": 0, "errors": 0, "strong_count": 0}
+        for d in dates:
+            stat = _backfill_strong_for_date(d)
+            per_date.append(stat)
+            for k in ("rows", "patched", "already_present", "no_bars", "errors", "strong_count"):
+                if k in stat and isinstance(stat[k], int):
+                    totals[k] += stat[k]
+        return {"mode": "all_days", "dates_processed": len(dates), "totals": totals, "per_date": per_date}
+
+    target = date or datetime.now(config.ET).strftime("%Y-%m-%d")
+    return _backfill_strong_for_date(target)
 
 
 @app.post("/api/analyze/trigger", response_class=JSONResponse)

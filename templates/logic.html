@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.1</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.2</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.1</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.2</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,58 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.2 ───── -->
+        <div class="release current" id="v3-7-0-2">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.2</span>
+                <span class="release-date">Released 2026-05-11</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title">Batch backfill of <code>strong_signal</code> across every historical day + STRONG-only gate on the Resend email notifier.</div>
+
+            <div class="release-rationale">
+                <strong>Why:</strong> v3.7.0.1 fixed the persistence layer for <em>new</em> picks and shipped a per-date backfill endpoint, but every pick file from before that deploy (Apr&nbsp;22 – May&nbsp;11 inclusive) was still missing the flag. Calling the endpoint once per date is annoying, so this release adds an <code>all_days=true</code> mode that walks the whole data volume in one call. Separately, the operator's daily email had been firing on every Cat-A/B "strong-signal-strength" pick (~30/day) — that's louder than the new precision target needs. Restricting the inbox to STRONG-tagged picks aligns the email channel with the 38–53% historical 2.5R hit rate and roughly halves the volume.
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-added">Added</span>
+                <ul>
+                    <li><strong><code>POST /api/backfill_strong?all_days=true</code></strong> — refactored handler now walks every <code>data/YYYY-MM-DD.json</code> in the volume. One bar-fetch round per date, idempotent within and across calls. Returns per-date stats <em>and</em> aggregated totals.</li>
+                    <li><strong><code>NOTIFY_STRONG_ONLY</code> env var (default <code>1</code>)</strong> — when on (the default), the Resend notifier additionally filters its already-Cat-A/B-narrowed strong set to only picks where <code>strong_signal == True</code>. Set <code>NOTIFY_STRONG_ONLY=0</code> in Railway → Variables to revert to v3.7.0.1 behaviour without a redeploy.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-changed">Changed</span>
+                <ul>
+                    <li><strong>Notifier filter chain</strong>: now {market hours} → {<code>signal_strength == "strong"</code>} → {Cat A/B} → {STRONG-only, if enabled}. The new gate sits last so the existing <code>NOTIFY_MIN_SIGNALS</code> threshold applies to the STRONG-only count. If fewer than <code>NOTIFY_MIN_SIGNALS</code> STRONG picks survive, the whole scan emits no email — same skip path as the older filters.</li>
+                    <li><strong><code>/api/notify/test</code> still bypasses every filter</strong> (including the new STRONG one), because that endpoint is for round-trip verification of Resend creds and domain auth, not for filter validation.</li>
+                </ul>
+            </div>
+
+            <div class="change-group">
+                <span class="change-tag tag-research">Operational</span>
+                <ul>
+                    <li><strong>Expected email volume after deploy</strong>: in the 13-day research window, STRONG-stacked picks were ~10% of all emitted picks. At the prior baseline of ~1–3 emails/day surviving the Cat-A/B + market-hours filters, the new STRONG gate typically cuts that to ~0–1 emails/day. Quiet inbox, loud signal.</li>
+                    <li><strong>To run the all-days backfill</strong>: <code>curl -X POST 'https://momentum-scanner-production-20b1.up.railway.app/api/backfill_strong?all_days=true'</code> — single command, returns aggregated totals. Old days where FMP's 5-min history window has rolled off will simply report <code>no_bars</code>; the file is left untouched, no harm done.</li>
+                </ul>
+            </div>
+
+            <div class="release-verification">
+                <strong>Verification:</strong>
+                (1) Single-day mode unchanged: <code>POST /api/backfill_strong?date=2026-05-11</code> returns the same shape as v3.7.0.1.
+                (2) Batch mode: <code>POST /api/backfill_strong?all_days=true</code> returns <code>{mode:"all_days", dates_processed:N, totals:{...}, per_date:[...]}</code>.
+                (3) Notifier: with <code>NOTIFY_STRONG_ONLY=1</code> (default), a scan that produces 12 Cat-A/B strong-signal-strength picks but only 0 STRONG-tagged picks emits zero emails and logs <code>STRONG filter (&lt; NOTIFY_MIN_SIGNALS)</code>. Setting <code>NOTIFY_STRONG_ONLY=0</code> in env restores prior behaviour without a redeploy.
+                (4) Exactly one <code>pill-current</code> on a release header (this card); v3.7.0.1 demoted.
+            </div>
+        </div>
+
         <!-- ───── v3.7.0.1 ───── -->
-        <div class="release current" id="v3-7-0-1">
+        <div class="release" id="v3-7-0-1">
             <div class="release-header">
                 <span class="release-version">v3.7.0.1</span>
                 <span class="release-date">Released 2026-05-11</span>
-                <span class="release-pill pill-current">Current</span>
+                <span class="release-pill pill-previous">Previous</span>
             </div>
             <div class="release-title">Hotfix — persist <code>strong_signal</code> on the slim daily record + add a STRONG-only filter chip on <code>/today</code> + a one-shot <code>/api/backfill_strong</code> endpoint to retroactively tag picks emitted before this hotfix.</div>
 
