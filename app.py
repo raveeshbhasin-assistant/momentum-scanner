@@ -671,6 +671,99 @@ async def api_regime():
     return get_regime() if config.MARKET_REGIME_ENABLED else {"label": "DISABLED"}
 
 
+@app.get("/api/diagnose/strong", response_class=JSONResponse)
+async def api_diagnose_strong():
+    """
+    v3.7.0.8: report exactly what the STRONG backfill sees on this server.
+
+    Useful when the backfill returns 0 patched and we need to know which
+    of these is the cause:
+      • override file not deployed
+      • override file at unexpected path
+      • override map loads empty (parse error)
+      • override key format mismatches what _ft_to_hhmm produces
+      • picks file has unexpected found_time format
+    """
+    import os as _os, sys as _sys
+    out: dict = {
+        "app_root": str(_APP_ROOT),
+        "cwd": _os.getcwd(),
+        "python": _sys.version.split()[0],
+    }
+
+    # 1. File existence on both candidate paths
+    paths = {
+        "volume_copy": _APP_ROOT / "data" / "strong_overrides.json",
+        "seed_copy":   _APP_ROOT / "data_seed" / "strong_overrides.json",
+    }
+    out["override_files"] = {}
+    for name, p in paths.items():
+        out["override_files"][name] = {
+            "path": str(p),
+            "exists": p.exists(),
+            "size_bytes": p.stat().st_size if p.exists() else None,
+        }
+
+    # Also list both directories for context
+    for name, root in {"data_dir": _APP_ROOT / "data", "data_seed_dir": _APP_ROOT / "data_seed"}.items():
+        try:
+            out[name + "_listing"] = sorted(p.name for p in root.iterdir())[:25] if root.exists() else "MISSING"
+        except Exception as e:
+            out[name + "_listing"] = f"ERR: {e}"
+
+    # 2. _load_strong_overrides result
+    try:
+        ov = _load_strong_overrides()
+        out["override_load"] = {
+            "ok": True,
+            "dates": len(ov),
+            "date_keys": sorted(ov.keys())[:20],
+            "todays_entries": len(ov.get(datetime.now(config.ET).strftime("%Y-%m-%d"), {})),
+        }
+        # Sample first 5 keys + values for today
+        today_key = datetime.now(config.ET).strftime("%Y-%m-%d")
+        today_map = ov.get(today_key, {})
+        sample = list(today_map.items())[:5]
+        out["override_sample_today"] = [
+            {"key": k, "strong": v.get("strong_signal")} for k, v in sample
+        ]
+    except Exception as e:
+        out["override_load"] = {"ok": False, "error": str(e)}
+
+    # 3. Today's picks + key-match attempt for each row (limit 10 for brevity)
+    try:
+        from history import load_daily_finds
+        today_str = datetime.now(config.ET).strftime("%Y-%m-%d")
+        rows = load_daily_finds(today_str)
+        out["picks_today"] = {"date": today_str, "count": len(rows)}
+        ov_today = (_load_strong_overrides() or {}).get(today_str, {})
+        sample_rows = rows[:10]
+        out["match_attempts"] = []
+        match_count = 0
+        for r in rows:
+            hhmm = _ft_to_hhmm(r.get("found_time", ""))
+            key = f'{r.get("ticker")}|{hhmm}' if hhmm else None
+            if key and key in ov_today:
+                match_count += 1
+        out["match_count_total"] = match_count
+        for r in sample_rows:
+            hhmm = _ft_to_hhmm(r.get("found_time", ""))
+            key = f'{r.get("ticker")}|{hhmm}' if hhmm else None
+            out["match_attempts"].append({
+                "ticker": r.get("ticker"),
+                "found_time": r.get("found_time"),
+                "parsed_hhmm": hhmm,
+                "key": key,
+                "has_strong_signal_field": "strong_signal" in r,
+                "match_in_override": key in ov_today if key else False,
+                "override_strong_value": ov_today.get(key, {}).get("strong_signal") if key else None,
+            })
+    except Exception as e:
+        out["picks_load_error"] = str(e)
+
+    return out
+
+
 @app.get("/api/diagnose/egress", response_class=JSONResponse)
 async def api_diagnose_egress():
     """
