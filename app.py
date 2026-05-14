@@ -475,12 +475,30 @@ def scheduled_scan():
 # ── Scheduler Setup ───────────────────────────────────────────
 scheduler = BackgroundScheduler(timezone=config.ET)
 
-# Main momentum scan: every 30 min during market hours
+# Main momentum scan: every 30 min during market hours.
+# v3.7.0.17: the 09:30 scan was dropped. At clock-time 09:30:00 the first
+# 5-min bar is still partial, so compute_strong_signal can't evaluate
+# STRONG (it falls back to a pre-market bar) — every 09:30 emission was
+# strong=False structurally. The 09:35 verification scan below is a full
+# scan that emits picks normally AND can compute STRONG against the
+# now-closed 09:30 bar, so it cleanly replaces the 09:30 fire. The 09:00
+# pre-market fire is kept (separate, non-persisted behavior).
 scheduler.add_job(
     scheduled_scan,
     "cron",
     day_of_week="mon-fri",
-    hour="9-16",
+    hour="9",
+    minute="0",
+    timezone=config.ET,
+    id="momentum_scan_premarket_0900",
+    max_instances=1,
+    misfire_grace_time=300,
+)
+scheduler.add_job(
+    scheduled_scan,
+    "cron",
+    day_of_week="mon-fri",
+    hour="10-16",
     minute="0,30",
     timezone=config.ET,
     id="momentum_scan",
@@ -490,11 +508,12 @@ scheduler.add_job(
 
 # v3.7.0.16: STRONG verification scans at :05 and :35 past the hour during
 # market hours. At a :00 or :30 scan, compute_strong_signal evaluates
-# against the most-recent COMPLETE bar — but at clock-time 09:30:00, the
-# 09:30 bar is partial (still building) so ref_idx falls back to a pre-
-# market bar where pm_high_hold is structurally False. By 09:35:00, the
-# 09:30 bar has closed AND the 09:35 bar is freshly partial, so ref_idx
-# resolves to the 09:30 bar and STRONG can evaluate correctly.
+# against the most-recent COMPLETE bar — but at clock-time HH:30:00, the
+# HH:30 bar is partial (still building) so ref_idx falls back to a stale
+# bar. By HH:35:00, the HH:30 bar has closed AND the HH:35 bar is freshly
+# partial, so ref_idx resolves to the HH:30 bar and STRONG evaluates
+# correctly. The 09:35 fire is also the first RTH scan of the day
+# (v3.7.0.17 dropped the 09:30 fire).
 #
 # Re-entry suppression has an exception: a ticker already emitted today
 # can re-emit IF this scan upgrades it from non-STRONG → STRONG

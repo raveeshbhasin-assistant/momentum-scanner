@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.16</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.17</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.16</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.17</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,21 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.17 ───── -->
+        <div class="release current" id="v3-7-0-17">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.17</span>
+                <span class="release-date">Released 2026-05-13</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>Dropped the 09:30 scan.</strong> At clock-time 09:30:00 ET the first 5-min bar is still partial, so <code>compute_strong_signal</code> always fell back to a pre-market bar — every 09:30 emission was structurally <code>strong=False</code>. The 09:35 verification scan (added in v3.7.0.16) is a full scan that emits picks normally <em>and</em> can evaluate STRONG against the now-closed 09:30 bar, so it cleanly replaces the 09:30 fire as the first RTH scan of the day. The 09:00 pre-market fire is unchanged. Net effect: STRONG picks are no longer double-emitted (a strong=False 09:30 row plus an upgraded 09:35 row) — they appear once, correctly, at 09:35. Tagged: <span class="pill pill-changed">changed</span>.</div>
+        </div>
+
         <!-- ───── v3.7.0.16 ───── -->
-        <div class="release current" id="v3-7-0-16">
+        <div class="release" id="v3-7-0-16">
             <div class="release-header">
                 <span class="release-version">v3.7.0.16</span>
                 <span class="release-date">Released 2026-05-13</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>STRONG-upgrade re-entry carve-out + live diagnostic + :05/:35 verification scans.</strong> Today's 83 live picks all had <code>strong_signal=False</code> even though 6 were legitimately STRONG. Root cause: scheduler fires at :00/:30 when the corresponding 5-min bar is still partial, so <code>compute_strong_signal</code> falls back to the prior bar — usually a pre-market bar (where <code>pm_high_hold</code> is structurally False) or a retraced RTH bar. Three changes: (1) added scheduled scans at hour:05 and hour:35 ET — at those times the just-closed :00 or :30 bar IS the correct ref bar, so STRONG evaluates correctly; (2) re-entry suppression now allows a ticker to re-emit if THIS scan upgrades it to STRONG and no prior scan today did (operator-approved); (3) <code>compute_strong_signal_at</code> takes a session_date and slices df to that day before searching for the target bar — earlier versions found day-1's bar in a 5-day df. Adds <code>/api/diagnose/strong_live?ticker=X</code> to dump the live df shape + components. Verified end-to-end against today's data: simulated :05/:35 scans on all 83 picks produce EXACTLY the 6 STRONG picks the override map identified (ARM, CME, EW, MMM, NVDA, SYK). 16 unit tests pass. Tagged: <span class="pill pill-fixed">fixed</span>.</div>
         </div>
