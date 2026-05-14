@@ -206,12 +206,26 @@ def _seed_data_volume():
         # No seed files bundled — nothing to do.
         return
 
+    # v3.7.0.14: files in this set are SHIPPED truth (override maps, model
+    # weights, etc.) and should ALWAYS be refreshed from data_seed/ on
+    # startup, overwriting any stale volume copy. Other files (the daily
+    # bootstrap performance_log.json) use the legacy "only if missing"
+    # behaviour so operator runtime state isn't clobbered.
+    ALWAYS_REFRESH = {"strong_overrides.json"}
     seeded = 0
     skipped = 0
+    refreshed = 0
     for src in _DATA_SEED_DIR.iterdir():
         if not src.is_file():
             continue
         dst = _DATA_DIR / src.name
+        if src.name in ALWAYS_REFRESH:
+            try:
+                dst.write_bytes(src.read_bytes())
+                refreshed += 1
+            except OSError as e:
+                logger.warning(f"Data volume seed: failed to refresh {src.name}: {e}")
+            continue
         if dst.exists():
             skipped += 1
             continue
@@ -221,10 +235,10 @@ def _seed_data_volume():
         except OSError as e:
             logger.warning(f"Data volume seed: failed to copy {src.name}: {e}")
 
-    if seeded or skipped:
+    if seeded or skipped or refreshed:
         logger.info(
-            f"Data volume seed: copied {seeded}, skipped {skipped} "
-            f"(from {_DATA_SEED_DIR} → {_DATA_DIR})"
+            f"Data volume seed: copied {seeded}, refreshed {refreshed}, "
+            f"skipped {skipped} (from {_DATA_SEED_DIR} → {_DATA_DIR})"
         )
 
 
@@ -450,6 +464,24 @@ scheduler.add_job(
     id="momentum_scan",
     max_instances=1,
     misfire_grace_time=300,
+)
+
+# v3.7.0.14: Additional 09:40 ET scan. The regular 09:30 scan fires while
+# the first 5-min bar (09:30-09:35) is in-progress, so compute_strong_signal
+# falls back to ref_idx=-2 (the last pre-market bar) and STRONG rarely
+# fires correctly for early-session emissions. By 09:40 the 09:30 and 09:35
+# bars are both closed — STRONG can evaluate against a real regular-session
+# bar with the first 10 minutes of post-open price action incorporated.
+scheduler.add_job(
+    scheduled_scan,
+    "cron",
+    day_of_week="mon-fri",
+    hour="9",
+    minute="40",
+    timezone=config.ET,
+    id="momentum_scan_0940",
+    max_instances=1,
+    misfire_grace_time=120,
 )
 
 # Pre-market catalyst scan: 8:00 AM and 9:00 AM ET
@@ -865,14 +897,24 @@ def _load_strong_overrides() -> dict:
     in the backfill so we don't depend on FMP / yfinance / Yahoo for days
     we already have the answer for.
 
+    v3.7.0.14: PRIORITY FIX — read data_seed/ FIRST (shipped truth), then
+    fall back to data/ (operator overlay). Previously read data/ first,
+    which meant a stale volume copy would shadow the freshly-shipped file
+    after a deploy (since _seed_data_volume only copies when data/X is
+    missing). May 12+13 STRONG values weren't visible because the volume
+    held the v3.7.0.12 version while data_seed/ had the v3.7.0.13 version.
+
     Format: { "YYYY-MM-DD": { "TICKER|HH:MM": {strong_signal, strong_components}, ... }, ... }
     """
     global _STRONG_OVERRIDES_CACHE
     if _STRONG_OVERRIDES_CACHE is not None:
         return _STRONG_OVERRIDES_CACHE
+    # v3.7.0.14: data_seed/ takes priority over data/. The seed file is the
+    # shipped source of truth; the data/ copy is for operator runtime edits
+    # (rare). Reading seed first guarantees every deploy sees the latest map.
     candidates = [
-        _APP_ROOT / "data" / "strong_overrides.json",
         _APP_ROOT / "data_seed" / "strong_overrides.json",
+        _APP_ROOT / "data" / "strong_overrides.json",
     ]
     for p in candidates:
         if p.exists():
