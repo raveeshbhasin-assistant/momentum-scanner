@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.15</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.16</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.15</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.16</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,21 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.16 ───── -->
+        <div class="release current" id="v3-7-0-16">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.16</span>
+                <span class="release-date">Released 2026-05-13</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>STRONG-upgrade re-entry carve-out + live diagnostic.</strong> Today's recorded picks all had <code>strong_signal=False</code> live even though the offline override correctly identified 6 STRONG. Root cause: the 09:30 scheduler fires while the first 5-min bar is in progress so <code>compute_strong_signal</code> falls back to the last pre-market bar, where <code>pm_high_hold</code> is structurally False. The 09:40 catch-up scan can evaluate STRONG correctly against the closed 09:30 bar — but the re-entry suppression was killing the re-emit. This release lets a ticker re-emit if THIS scan flags it STRONG and no prior scan today already did (operator-approved 2026-05-13). Adds <code>/api/diagnose/strong_live?ticker=X</code> to dump the exact df shape + components the live compute sees. Tagged: <span class="pill pill-fixed">fixed</span>.</div>
+        </div>
+
         <!-- ───── v3.7.0.15 ───── -->
-        <div class="release current" id="v3-7-0-15">
+        <div class="release" id="v3-7-0-15">
             <div class="release-header">
                 <span class="release-version">v3.7.0.15</span>
                 <span class="release-date">Released 2026-05-13</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>Bucket-rounded join key on STRONG enrichment.</strong> Production diagnose proved the override map keys are bucket-rounded (<code>HON|09:30</code>) but the perf-log <code>batch_time</code> and the today-page <code>found_time</code> are exact minutes (<code>09:33</code>) — so the override-map join silently produced zero matches on every recent day. <code>_enrich_perf_entries_with_strong</code>, <code>_backfill_strong_for_date</code>, and <code>/api/diagnose/strong</code> now bucket-round to the nearest 5-min bucket before the lookup, with a defensive exact-minute fallback. Tagged: <span class="pill pill-fixed">fixed</span>.</div>
         </div>

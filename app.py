@@ -73,6 +73,7 @@ last_scan_time: str = "Never"
 scan_history: list[dict] = []  # History of past scans
 is_scanning: bool = False
 _today_tickers_seen: set = set()  # For re-entry suppression
+_today_tickers_strong: set = set()  # v3.7.0.16: tickers that have already fired STRONG today (block only re-entries that don't upgrade)
 _last_reset_date: str = ""        # Track daily reset
 _sector_priority: list[str] = []  # Current hot-sector tickers
 
@@ -83,10 +84,11 @@ _sector_priority: list[str] = []  # Current hot-sector tickers
 
 def _reset_daily_state():
     """Reset daily tracking state at start of each trading day."""
-    global _today_tickers_seen, _last_reset_date
+    global _today_tickers_seen, _today_tickers_strong, _last_reset_date
     today = datetime.now(config.ET).strftime("%Y-%m-%d")
     if today != _last_reset_date:
         _today_tickers_seen = set()
+        _today_tickers_strong = set()
         _last_reset_date = today
         reset_premarket()
         logger.info(f"Daily state reset for {today}")
@@ -370,19 +372,39 @@ def scheduled_scan():
         # at least one emission during regular session.
         in_rth = _in_regular_session(now)
         if config.SUPPRESS_REENTRIES and results and in_rth:
+            # v3.7.0.16: allow a ticker to re-emit if THIS scan flags it
+            # STRONG and no prior emission today was already STRONG. This
+            # is the "STRONG-upgrade" path: when the 09:30 scan fires while
+            # the first 5-min bar is still in progress, compute_strong_signal
+            # falls back to a pre-market bar where pm_high_hold/new_hod can't
+            # both be true. The 09:40 or 10:00 scan sees the closed 09:30
+            # bar and CAN evaluate STRONG. Without this carve-out, dedup
+            # kills that second emission. Authorized by the operator on
+            # 2026-05-13: it's OK to re-emit anything that ever becomes
+            # STRONG, because the value of the STRONG signal far outweighs
+            # the cost of a duplicate emission for the same ticker.
             filtered = []
             for signal in results:
                 ticker = signal["ticker"]
-                if ticker in _today_tickers_seen:
+                is_strong_now = bool(signal.get("strong_signal"))
+                already_seen = ticker in _today_tickers_seen
+                already_strong = ticker in _today_tickers_strong
+                if already_seen and not (is_strong_now and not already_strong):
                     signal["is_reentry"] = True
-                    logger.info(f"RE-ENTRY suppressed: {ticker} (already signaled today)")
-                    # Still record it but don't show in top signals
+                    logger.info(
+                        f"RE-ENTRY suppressed: {ticker} "
+                        f"(seen=Y strong_now={is_strong_now} already_strong={already_strong})"
+                    )
                     continue
-                else:
-                    signal["is_reentry"] = False
-                    _today_tickers_seen.add(ticker)
-                    filtered.append(signal)
-            # Log what was filtered
+                # Allow through. Mark as upgrade if this is a STRONG re-emit.
+                signal["is_reentry"] = False
+                if already_seen and is_strong_now and not already_strong:
+                    signal["is_strong_upgrade"] = True
+                    logger.info(f"STRONG-UPGRADE re-emit allowed: {ticker}")
+                _today_tickers_seen.add(ticker)
+                if is_strong_now:
+                    _today_tickers_strong.add(ticker)
+                filtered.append(signal)
             suppressed = len(results) - len(filtered)
             if suppressed > 0:
                 logger.info(f"Re-entry filter: {suppressed} signals suppressed, {len(filtered)} kept")
@@ -799,6 +821,89 @@ async def api_diagnose_strong():
         out["picks_load_error"] = str(e)
 
     return out
+
+
+@app.get("/api/diagnose/strong_live", response_class=JSONResponse)
+async def api_diagnose_strong_live(ticker: str = "EW"):
+    """
+    v3.7.0.16: dump exactly what the LIVE scan sees when computing STRONG
+    for a single ticker, RIGHT NOW. Uses the same fetcher (fetch_intraday_data
+    → FMP → yfinance fallback) and same compute_strong_signal helper.
+    """
+    from scanner import fetch_intraday_data, compute_strong_signal, calculate_indicators
+    import pandas as _pd
+    ticker = (ticker or "").upper().strip()
+    out = {"ticker": ticker, "now_et": datetime.now(config.ET).isoformat()}
+    try:
+        data = fetch_intraday_data([ticker], interval=config.CANDLE_INTERVAL,
+                                   days=config.CANDLE_LOOKBACK_DAYS)
+        df = data.get(ticker)
+        if df is None or df.empty:
+            out["error"] = "fetcher returned no df for ticker"
+            out["fetcher_keys"] = list(data.keys())
+            return out
+        df = calculate_indicators(df)
+        out["bars_total"] = int(len(df))
+        try:
+            out["first_ts"] = str(df.index[0])
+            out["last_ts"] = str(df.index[-1])
+            out["index_tz"] = str(getattr(df.index, "tz", None))
+        except Exception as e:
+            out["index_err"] = str(e)
+        try:
+            today = _pd.Timestamp.now(tz=config.ET).date()
+            today_mask = df.index.date == today
+            df_today = df[today_mask]
+            hours = df_today.index.hour
+            mins = df_today.index.minute
+            pm_mask = (hours < 9) | ((hours == 9) & (mins < 30))
+            rth_mask = ~pm_mask
+            out["bars_today_total"] = int(len(df_today))
+            out["bars_today_premarket"] = int(pm_mask.sum())
+            out["bars_today_rth"] = int(rth_mask.sum())
+            if len(df_today) > 0:
+                out["today_first_ts"] = str(df_today.index[0])
+                out["today_last_ts"] = str(df_today.index[-1])
+                if pm_mask.any():
+                    out["today_pm_high"] = float(df_today["High"][pm_mask].max())
+                if rth_mask.any():
+                    out["today_rth_high"] = float(df_today["High"][rth_mask].max())
+        except Exception as e:
+            out["today_slice_err"] = str(e)
+        try:
+            last_ts = df.index[-1]
+            now_ref = _pd.Timestamp.now(tz=last_ts.tz) if getattr(last_ts, "tz", None) else _pd.Timestamp.utcnow()
+            bar_end = last_ts + _pd.Timedelta(minutes=5)
+            is_partial = bool(now_ref < bar_end)
+            out["partial_check"] = {
+                "last_ts": str(last_ts),
+                "bar_end": str(bar_end),
+                "now_ref": str(now_ref),
+                "is_partial": is_partial,
+                "ref_idx": -2 if (is_partial and len(df) >= 2) else -1,
+            }
+        except Exception as e:
+            out["partial_err"] = str(e)
+        info = compute_strong_signal(df)
+        out["compute_strong_signal"] = info
+        try:
+            ri = -2 if out["partial_check"]["is_partial"] else -1
+            bar = df.iloc[ri]
+            out["ref_bar"] = {
+                "ts": str(df.index[ri]),
+                "Open": float(bar["Open"]) if _pd.notna(bar["Open"]) else None,
+                "High": float(bar["High"]) if _pd.notna(bar["High"]) else None,
+                "Low":  float(bar["Low"])  if _pd.notna(bar["Low"])  else None,
+                "Close": float(bar["Close"]) if _pd.notna(bar["Close"]) else None,
+                "Volume": float(bar["Volume"]) if _pd.notna(bar["Volume"]) else None,
+                "VWAP": float(bar["VWAP"]) if "VWAP" in df.columns and _pd.notna(bar["VWAP"]) else None,
+            }
+        except Exception as e:
+            out["ref_bar_err"] = str(e)
+        return out
+    except Exception as e:
+        out["error"] = f"{type(e).__name__}: {e}"
+        return out
 
 
 @app.get("/api/diagnose/egress", response_class=JSONResponse)
