@@ -856,9 +856,28 @@ async def api_diagnose_strong_live(ticker: str = "EW"):
                                    days=config.CANDLE_LOOKBACK_DAYS)
         df = data.get(ticker)
         if df is None or df.empty:
-            out["error"] = "fetcher returned no df for ticker"
-            out["fetcher_keys"] = list(data.keys())
-            return out
+            # v3.7.0.16: fallback to direct yfinance (with prepost=True) so the
+            # diagnostic still produces results when FMP returns empty (which
+            # happens after-hours on Starter plans).
+            out["fetcher_empty"] = True
+            try:
+                import yfinance as yf
+                df = yf.download(ticker, period="5d", interval="5m",
+                                 prepost=True, progress=False, threads=False,
+                                 auto_adjust=False)
+                import pandas as _pd2
+                if isinstance(df.columns, _pd2.MultiIndex):
+                    df.columns = df.columns.get_level_values(0)
+                df = df.dropna(subset=["Close"])
+                if not df.empty:
+                    df.index = df.index.tz_convert(config.ET) if df.index.tz else df.index.tz_localize(config.ET)
+                    out["fallback_used"] = "yfinance_direct"
+            except Exception as _fe:
+                out["error"] = f"fetcher empty and yfinance fallback failed: {_fe}"
+                return out
+            if df is None or df.empty:
+                out["error"] = "both FMP and yfinance returned no data"
+                return out
         df = calculate_indicators(df)
         out["bars_total"] = int(len(df))
         try:
