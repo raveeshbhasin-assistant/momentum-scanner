@@ -488,20 +488,37 @@ scheduler.add_job(
     misfire_grace_time=300,
 )
 
-# v3.7.0.14: Additional 09:40 ET scan. The regular 09:30 scan fires while
-# the first 5-min bar (09:30-09:35) is in-progress, so compute_strong_signal
-# falls back to ref_idx=-2 (the last pre-market bar) and STRONG rarely
-# fires correctly for early-session emissions. By 09:40 the 09:30 and 09:35
-# bars are both closed — STRONG can evaluate against a real regular-session
-# bar with the first 10 minutes of post-open price action incorporated.
+# v3.7.0.16: STRONG verification scans at :05 and :35 past the hour during
+# market hours. At a :00 or :30 scan, compute_strong_signal evaluates
+# against the most-recent COMPLETE bar — but at clock-time 09:30:00, the
+# 09:30 bar is partial (still building) so ref_idx falls back to a pre-
+# market bar where pm_high_hold is structurally False. By 09:35:00, the
+# 09:30 bar has closed AND the 09:35 bar is freshly partial, so ref_idx
+# resolves to the 09:30 bar and STRONG can evaluate correctly.
+#
+# Re-entry suppression has an exception: a ticker already emitted today
+# can re-emit IF this scan upgrades it from non-STRONG → STRONG
+# (see scheduled_scan filter, v3.7.0.16). So these :05/:35 fires either
+# emit NEW tickers (normal path) or upgrade existing emissions to STRONG.
 scheduler.add_job(
     scheduled_scan,
     "cron",
     day_of_week="mon-fri",
-    hour="9",
-    minute="40",
+    hour="9-15",
+    minute="35",
     timezone=config.ET,
-    id="momentum_scan_0940",
+    id="momentum_scan_verify_35",
+    max_instances=1,
+    misfire_grace_time=120,
+)
+scheduler.add_job(
+    scheduled_scan,
+    "cron",
+    day_of_week="mon-fri",
+    hour="10-15",
+    minute="5",
+    timezone=config.ET,
+    id="momentum_scan_verify_05",
     max_instances=1,
     misfire_grace_time=120,
 )

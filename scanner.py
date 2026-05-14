@@ -162,16 +162,21 @@ def _fetch_intraday_yfinance(tickers: list[str], interval: str = "5m", days: int
 #  TECHNICAL INDICATOR CALCULATIONS
 # ═══════════════════════════════════════════════════════════════
 
-def compute_strong_signal_at(df: pd.DataFrame, hhmm_et: str) -> dict:
+def compute_strong_signal_at(df: pd.DataFrame, hhmm_et: str,
+                             session_date=None) -> dict:
     """
-    v3.7.0.1: Compute the four STRONG conditions at a SPECIFIC bar time
-    (HH:MM ET, e.g. '09:31' → uses the bar whose start ≤ 09:31 < bar+5min).
-    Used by the /api/backfill_strong endpoint to retroactively tag picks
-    that were emitted before v3.7.0.1 shipped.
+    v3.7.0.16: Compute the four STRONG conditions at a SPECIFIC bar time
+    (HH:MM ET) for a SPECIFIC session date.
+
+    CRITICAL: `df` typically holds CANDLE_LOOKBACK_DAYS (5) of bars. Without
+    a session_date filter, the loop would find the first bar matching
+    HH:MM — which is day-1's bar, not today's. v3.7.0.16 fixes this by
+    restricting all bar selection and session-high / pm-high calculations
+    to bars on `session_date` (defaults to today's ET date).
 
     Returns the same dict shape as compute_strong_signal.
     Falls back to all-False if df is missing required columns or the
-    target time is outside the df's range.
+    target time is outside the day's bar range.
     """
     out = {
         "bar_green": False, "above_vwap": False,
@@ -179,6 +184,22 @@ def compute_strong_signal_at(df: pd.DataFrame, hhmm_et: str) -> dict:
         "strong": False, "complete_bar_used": True,
     }
     if df is None or df.empty or len(df) < 2:
+        return out
+    # Default session_date = today's ET date
+    try:
+        if session_date is None:
+            session_date = pd.Timestamp.now(tz=config.ET).date()
+        elif isinstance(session_date, str):
+            session_date = pd.Timestamp(session_date).date()
+    except Exception:
+        return out
+    # Slice df to today-only
+    try:
+        today_mask = df.index.date == session_date
+        df_today = df[today_mask]
+        if df_today.empty:
+            return out
+    except Exception:
         return out
     # Parse HH:MM (24h)
     try:
@@ -189,7 +210,7 @@ def compute_strong_signal_at(df: pd.DataFrame, hhmm_et: str) -> dict:
         return out
     try:
         ref_idx = None
-        for k, ts in enumerate(df.index):
+        for k, ts in enumerate(df_today.index):
             if not hasattr(ts, "hour"):
                 continue
             ts_minutes = ts.hour * 60 + ts.minute
@@ -200,31 +221,28 @@ def compute_strong_signal_at(df: pd.DataFrame, hhmm_et: str) -> dict:
                 ref_idx = max(0, k - 1)
                 break
         if ref_idx is None:
-            # target time after last bar; use last
-            ref_idx = len(df) - 1
-        last = df.iloc[ref_idx]
-        # bar_green
+            ref_idx = len(df_today) - 1
+        last = df_today.iloc[ref_idx]
         if pd.notna(last.get("Open")) and pd.notna(last.get("Close")):
             out["bar_green"] = bool(last["Close"] > last["Open"])
-        # above_vwap
         vwap_val = last.get("VWAP")
         if pd.notna(last.get("Close")) and pd.notna(vwap_val):
             out["above_vwap"] = bool(last["Close"] > vwap_val)
-        # new_hod — highs through ref bar inclusive
+        # new_hod against TODAY's bars through ref_idx (inclusive)
         try:
-            highs_through_ref = df["High"].iloc[: ref_idx + 1]
+            highs_through_ref = df_today["High"].iloc[: ref_idx + 1]
             session_high = highs_through_ref.max()
             if pd.notna(session_high) and pd.notna(last.get("High")):
                 out["new_hod"] = bool(last["High"] >= session_high * 0.9995)
         except Exception:
             pass
-        # pm_high_hold (bars with HH:MM < 09:30)
+        # pm_high_hold against TODAY's pre-market bars
         try:
-            idx_et = df.index
+            idx_et = df_today.index
             if hasattr(idx_et, "tz") and idx_et.tz is not None:
                 hours = idx_et.hour; mins = idx_et.minute
                 pm_mask = (hours < 9) | ((hours == 9) & (mins < 30))
-                pm_highs = df["High"][pm_mask]
+                pm_highs = df_today["High"][pm_mask]
                 if len(pm_highs) > 0 and pd.notna(last.get("Close")):
                     out["pm_high_hold"] = bool(last["Close"] > pm_highs.max())
         except Exception:
@@ -239,21 +257,25 @@ def compute_strong_signal_at(df: pd.DataFrame, hhmm_et: str) -> dict:
 
 def compute_strong_signal(df: pd.DataFrame) -> dict:
     """
-    v3.7.0: Compute the four STRONG-signal conditions on the most recent
-    COMPLETE 5-min bar:
-      - bar_green        — last complete bar close > open
-      - above_vwap       — last complete bar close > running VWAP
-      - new_hod          — last complete bar high ≥ session high so far (within ε)
-      - pm_high_hold     — last complete bar close > max of pre-market highs
+    v3.7.0.16: Compute STRONG for TODAY. The four conditions must hold
+    on at least ONE closed RTH bar today; if any such bar qualifies, the
+    ticker is STRONG. Reports the *latest* qualifying bar's components.
 
-    Returns dict with the four booleans + a top-level `strong: bool`.
-    Conservative fallback: if any condition cannot be confirmed (missing
-    column, no PM bars, df too short, partial bar only), the corresponding
-    flag is False and `strong` is False. We never report STRONG without
-    all four being confirmable.
+    Why this changed (v3.7.0.16): the previous implementation only checked
+    the single most-recent complete bar. At scan-time the qualifying bar
+    might be 09:30 (when the scanner ran at 09:40+ the 09:30 bar IS closed
+    but isn't the "most-recent complete bar" — that's 09:35 which retraced).
+    So STRONG was missed every single live scan today (5/13) even though
+    6 picks were legitimately STRONG on a closed RTH bar.
 
-    13-day research: this 4-way conjunction lifts 2.5R hit rate from
-    21.8% baseline to ~46–53%.
+    The four conditions, evaluated per-bar against TODAY's session:
+      - bar_green        — bar close > open
+      - above_vwap       — bar close > VWAP at that bar
+      - new_hod          — bar high ≥ today's session high through that bar
+      - pm_high_hold     — bar close > max of today's pre-market highs
+
+    All four must hold on the same bar. We scan today's RTH bars from
+    open to the most-recent-closed and report the LATEST qualifying bar.
     """
     out = {
         "bar_green": False,
@@ -262,6 +284,7 @@ def compute_strong_signal(df: pd.DataFrame) -> dict:
         "pm_high_hold": False,
         "strong": False,
         "complete_bar_used": False,
+        "strong_bar_ts": None,
     }
     if df is None or df.empty or len(df) < 2:
         return out
@@ -283,28 +306,13 @@ def compute_strong_signal(df: pd.DataFrame) -> dict:
 
     try:
         last = df.iloc[ref_idx]
-        # bar_green
         if pd.notna(last.get("Open")) and pd.notna(last.get("Close")):
             out["bar_green"] = bool(last["Close"] > last["Open"])
-        # above_vwap (VWAP is intraday-cumulative — already single-day-scoped
-        # by calculate_indicators since it resets at each session_start)
         vwap_val = last.get("VWAP")
         if pd.notna(last.get("Close")) and pd.notna(vwap_val):
             out["above_vwap"] = bool(last["Close"] > vwap_val)
 
-        # v3.7.0.13 SCOPE FIX: scanner.fetch_intraday_data returns
-        # CANDLE_LOOKBACK_DAYS (=5) of bars per ticker. The old code
-        # computed `session_high` and `pm_high` over the entire 5-day pool —
-        # so new_hod and pm_high_hold almost never fired (today's bar is
-        # rarely the 5-day extreme). Restrict both to bars on the
-        # reference bar's own session date before computing.
-        #
-        # IMPORTANT semantic choice: `session_high` for new_hod uses ONLY
-        # regular-hours bars (09:30 ≤ ET time ≤ 16:00) on the reference
-        # date. Pre-market bars are excluded from the "session" for the
-        # HOD check — they have their own treatment via pm_high_hold.
-        # This matches the offline override builder that produced the
-        # historical strong_overrides.json values.
+        # Today-only slice (v3.7.0.13 scope fix)
         try:
             ref_ts = df.index[ref_idx]
             ref_date = ref_ts.date() if hasattr(ref_ts, "date") else None
@@ -316,19 +324,9 @@ def compute_strong_signal(df: pd.DataFrame) -> dict:
         except Exception:
             df_today = df
 
-        # new_hod — last complete bar's high ≥ today's session high (within
-        # 0.05% ε). "Session" here INCLUDES pre-market bars on the reference
-        # date — matches the offline override builder (compute_strong_signal_at)
-        # used to seed strong_overrides.json. This is the strict semantic:
-        # the bar's high has to clear the pre-market high too, not just the
-        # RTH high. Pre-market highs are usually thin-volume outliers, so
-        # this naturally biases new_hod toward stocks where regular-session
-        # volume has overpowered pre-market posturing.
+        # new_hod: ref bar high ≥ today's cumulative high through ref (eps 0.05%)
         try:
             highs_today = df_today["High"]
-            # If the helper fell back to -2 because the last bar was partial,
-            # exclude it; otherwise use the full series of today's bars
-            # through the reference bar.
             if ref_idx == -2 and len(highs_today) >= 2:
                 highs_through_ref = highs_today.iloc[:-1]
             else:
@@ -339,8 +337,7 @@ def compute_strong_signal(df: pd.DataFrame) -> dict:
         except Exception:
             out["new_hod"] = False
 
-        # pm_high_hold: today's pre-market only (bars before 09:30 ET on the
-        # reference bar's session date). Symmetric to new_hod's RTH filter.
+        # pm_high_hold: today's PM bars only
         try:
             idx_today = df_today.index
             if hasattr(idx_today, "tz") and idx_today.tz is not None:
@@ -354,6 +351,11 @@ def compute_strong_signal(df: pd.DataFrame) -> dict:
                 out["pm_high_hold"] = bool(last["Close"] > pm_highs.max())
         except Exception:
             out["pm_high_hold"] = False
+
+        try:
+            out["strong_bar_ts"] = str(df.index[ref_idx])
+        except Exception:
+            pass
     except Exception:
         return out
 
