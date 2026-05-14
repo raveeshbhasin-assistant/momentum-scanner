@@ -841,7 +841,7 @@ async def api_diagnose_strong():
 
 
 @app.get("/api/diagnose/strong_live", response_class=JSONResponse)
-async def api_diagnose_strong_live(ticker: str = "EW"):
+async def api_diagnose_strong_live(ticker: str = "EW", as_of: str | None = None):
     """
     v3.7.0.16: dump exactly what the LIVE scan sees when computing STRONG
     for a single ticker, RIGHT NOW. Uses the same fetcher (fetch_intraday_data
@@ -851,6 +851,18 @@ async def api_diagnose_strong_live(ticker: str = "EW"):
     import pandas as _pd
     ticker = (ticker or "").upper().strip()
     out = {"ticker": ticker, "now_et": datetime.now(config.ET).isoformat()}
+    # v3.7.0.16: optional as_of (YYYY-MM-DD HH:MM, ET) lets us simulate what
+    # compute_strong_signal would return at any past moment by trimming df
+    # to bars ≤ as_of and reporting the partial/complete decision for that
+    # time. Used to verify the morning live path against today's recorded
+    # behavior.
+    as_of_ts = None
+    if as_of:
+        try:
+            as_of_ts = _pd.Timestamp(as_of, tz=config.ET)
+            out["as_of_et"] = str(as_of_ts)
+        except Exception as _e:
+            out["as_of_parse_error"] = str(_e)
     try:
         data = fetch_intraday_data([ticker], interval=config.CANDLE_INTERVAL,
                                    days=config.CANDLE_LOOKBACK_DAYS)
@@ -920,8 +932,47 @@ async def api_diagnose_strong_live(ticker: str = "EW"):
             }
         except Exception as e:
             out["partial_err"] = str(e)
-        info = compute_strong_signal(df)
-        out["compute_strong_signal"] = info
+        if as_of_ts is not None:
+            # Trim df to bars at-or-before as_of, then recompute manually
+            df_trim = df[df.index <= as_of_ts]
+            out["bars_at_as_of"] = int(len(df_trim))
+            if len(df_trim) >= 2:
+                last_ts2 = df_trim.index[-1]
+                bar_end2 = last_ts2 + _pd.Timedelta(minutes=5)
+                is_partial2 = as_of_ts < bar_end2
+                ref_idx2 = -2 if is_partial2 else -1
+                last2 = df_trim.iloc[ref_idx2]
+                ref_ts2 = df_trim.index[ref_idx2]
+                # today-slice
+                today2 = as_of_ts.date()
+                df_today2 = df_trim[df_trim.index.date == today2]
+                bg = bool(_pd.notna(last2.get("Open")) and _pd.notna(last2.get("Close")) and last2["Close"] > last2["Open"])
+                vwap2 = last2.get("VWAP")
+                av = bool(_pd.notna(vwap2) and _pd.notna(last2.get("Close")) and last2["Close"] > vwap2)
+                highs_today2 = df_today2["High"]
+                if ref_idx2 == -2 and len(highs_today2) >= 2:
+                    htr2 = highs_today2.iloc[:-1]
+                else:
+                    htr2 = highs_today2
+                sh2 = htr2.max() if len(htr2) else None
+                nh = bool(sh2 is not None and _pd.notna(sh2) and _pd.notna(last2.get("High")) and last2["High"] >= sh2 * 0.9995)
+                hours2 = df_today2.index.hour; mins2 = df_today2.index.minute
+                pm_mask2 = (hours2 < 9) | ((hours2 == 9) & (mins2 < 30))
+                pm_highs2 = df_today2["High"][pm_mask2]
+                pmhh = bool(len(pm_highs2) > 0 and _pd.notna(last2.get("Close")) and last2["Close"] > pm_highs2.max())
+                strong2 = bool(bg and av and nh and pmhh)
+                out["compute_strong_signal"] = {
+                    "bar_green": bg, "above_vwap": av, "new_hod": nh,
+                    "pm_high_hold": pmhh, "strong": strong2,
+                    "complete_bar_used": ref_idx2 == -2,
+                    "ref_ts": str(ref_ts2),
+                    "as_of_mode": True,
+                }
+            else:
+                out["compute_strong_signal"] = {"error": "insufficient bars at as_of"}
+        else:
+            info = compute_strong_signal(df)
+            out["compute_strong_signal"] = info
         try:
             ri = -2 if out["partial_check"]["is_partial"] else -1
             bar = df.iloc[ri]
