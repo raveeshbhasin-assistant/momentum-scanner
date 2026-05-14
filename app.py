@@ -775,17 +775,21 @@ async def api_diagnose_strong():
         match_count = 0
         for r in rows:
             hhmm = _ft_to_hhmm(r.get("found_time", ""))
-            key = f'{r.get("ticker")}|{hhmm}' if hhmm else None
+            # v3.7.0.15: bucket-round to 5-min override key
+            hhmm_b = _bucket_hhmm(hhmm) if hhmm else None
+            key = f'{r.get("ticker")}|{hhmm_b}' if hhmm_b else None
             if key and key in ov_today:
                 match_count += 1
         out["match_count_total"] = match_count
         for r in sample_rows:
             hhmm = _ft_to_hhmm(r.get("found_time", ""))
-            key = f'{r.get("ticker")}|{hhmm}' if hhmm else None
+            hhmm_b = _bucket_hhmm(hhmm) if hhmm else None
+            key = f'{r.get("ticker")}|{hhmm_b}' if hhmm_b else None
             out["match_attempts"].append({
                 "ticker": r.get("ticker"),
                 "found_time": r.get("found_time"),
                 "parsed_hhmm": hhmm,
+                "bucket_hhmm": hhmm_b,
                 "key": key,
                 "has_strong_signal_field": "strong_signal" in r,
                 "match_in_override": key in ov_today if key else False,
@@ -953,8 +957,15 @@ def _enrich_perf_entries_with_strong(entries: list) -> int:
         day_map = overrides_all.get(date_str, {})
         if not day_map:
             continue
-        key = f"{ticker}|{bt}"
+        # v3.7.0.15: bucket-round the exact-minute batch_time before lookup —
+        # perf_log stores '09:33' but override keys are '09:30' (5-min buckets).
+        bt_bucket = _bucket_hhmm(bt)
+        key = f"{ticker}|{bt_bucket}"
         ov = day_map.get(key)
+        if ov is None and bt_bucket != bt:
+            # Defensive fallback: also try the raw exact-minute key in case a
+            # future override file is generated with exact minutes.
+            ov = day_map.get(f"{ticker}|{bt}")
         if ov is None:
             continue
         e["strong_signal"] = bool(ov.get("strong_signal"))
@@ -993,6 +1004,25 @@ def _ft_to_hhmm(found_time: str) -> str | None:
         return f"{h:02d}:{m:02d}"
     except Exception:
         return None
+
+
+def _bucket_hhmm(hhmm: str | None) -> str | None:
+    """
+    v3.7.0.15: round an 'HH:MM' string DOWN to the nearest 5-minute bucket.
+    The override map keys (built from compute_strong_signal_at) are
+    bucket-rounded (09:30, 09:35, ...) while perf_log batch_time and the
+    today endpoint's parsed found_time are EXACT minutes (09:32, 09:33, ...).
+    Production diagnose proved match_count_total=0 on 5/13 because of this
+    exact-minute vs bucket mismatch. This helper fixes the join key.
+    """
+    if not hhmm or len(hhmm) < 5 or hhmm[2] != ":":
+        return hhmm
+    try:
+        h = int(hhmm[:2])
+        m = int(hhmm[3:5])
+        return f"{h:02d}:{(m // 5) * 5:02d}"
+    except Exception:
+        return hhmm
 
 
 def _fetch_yahoo_chart_direct(ticker: str, date_str: str, http_timeout: int = 12) -> "pd.DataFrame|None":
@@ -1099,8 +1129,12 @@ def _backfill_strong_for_date(target: str) -> dict:
             hhmm = _ft_to_hhmm(r.get("found_time", ""))
             if hhmm is None:
                 continue
-            key = f"{r['ticker']}|{hhmm}"
+            # v3.7.0.15: bucket-round exact minute → 5-min override key.
+            hhmm_bucket = _bucket_hhmm(hhmm)
+            key = f"{r['ticker']}|{hhmm_bucket}"
             ov = overrides.get(key)
+            if ov is None and hhmm_bucket != hhmm:
+                ov = overrides.get(f"{r['ticker']}|{hhmm}")
             if ov is None:
                 continue
             override_keys_present.add(key)
