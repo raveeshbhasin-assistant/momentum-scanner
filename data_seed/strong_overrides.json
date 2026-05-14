@@ -7287,5 +7287,1659 @@
     "complete_bar_used": true
    }
   }
+ },
+ "2026-05-12": {
+  "BRK-B|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CAT|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SOFI|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MTZ|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "TER|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "PM|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "INTC|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MCHP|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "AAOI|09:30": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "UNH|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CB|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "FTNT|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "REGN|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CSCO|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "DE|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "APD|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ICE|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "COIN|09:30": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "HOOD|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CRWD|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MDB|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ANET|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "MDT|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "TJX|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "LITE|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SCHW|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "LLY|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "WMT|10:30": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "APP|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "PCG|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "AFRM|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "INSM|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "TMUS|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "FIVE|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "IDXX|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "TXN|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SBUX|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "URI|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "PG|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "DHR|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "DOCU|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "DT|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CI|12:20": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EBAY|12:20": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MO|12:20": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "USB|12:20": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "HAL|12:30": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "ABT|12:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ZTS|12:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "FANG|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SLB|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CME|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "AR|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EW|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "AMGN|13:00": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "MLM|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "BLK|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SYK|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "UNP|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "GLW|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "LEN|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EMR|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "TLN|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "HUBB|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ON|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MU|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CRH|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "GS|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EXC|14:00": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "WSM|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ULTA|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ADP|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MRK|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "IREN|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ZS|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EOSE|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "FN|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "BURL|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ORCL|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CHWY|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "OKLO|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "STM|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  }
+ },
+ "2026-05-13": {
+  "HON|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "LRCX|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SBUX|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ENPH|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "WAT|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EW|09:30": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "HOOD|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "APLD|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "NVT|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "APD|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "COIN|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "BE|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "UNH|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SOFI|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "NVDA|09:30": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "AMGN|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MU|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "COST|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SNOW|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "IREN|09:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "FN|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EOSE|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "INSM|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "LITE|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "NBIS|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MMM|10:00": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "REGN|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "AAOI|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "RKLB|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SNDK|10:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CI|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "MRVL|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "DOCN|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EMR|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "PANW|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "LLY|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "STM|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "ENTG|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "AR|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MTZ|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ISRG|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "BKR|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "JNJ|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "GS|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "QCOM|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "BA|10:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SMR|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MO|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "VRTX|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "SATS|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EBAY|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "PM|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "LII|11:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CME|12:30": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "SYK|12:30": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "PYPL|12:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "OKLO|12:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "APP|12:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "PATH|12:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MA|12:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ZS|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "MRK|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "ULTA|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CEG|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "VST|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "USB|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "TLN|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "EME|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "FDX|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "PINS|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "DT|13:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "URI|13:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ON|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "CL|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "FANG|14:00": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "ARM|14:30": {
+   "strong_signal": true,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": true,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "CRWD|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": true,
+    "complete_bar_used": true
+   }
+  },
+  "BURL|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": true,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "CRDO|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "WSM|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "WDAY|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "AVAV|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": true,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  },
+  "PHM|14:30": {
+   "strong_signal": false,
+   "strong_components": {
+    "bar_green": false,
+    "above_vwap": false,
+    "new_hod": false,
+    "pm_high_hold": false,
+    "complete_bar_used": true
+   }
+  }
  }
 }
