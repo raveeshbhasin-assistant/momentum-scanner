@@ -92,10 +92,16 @@ def fetch_intraday_candles(ticker: str, interval: str = "5min", days: int = 5,
     to_date = now.strftime("%Y-%m-%d")
 
     url = f"{FMP_STABLE_URL}/historical-chart/{interval}"
+    # v3.7.0.13: request pre/post-market bars. FMP's stable endpoint historically
+    # returned regular-hours-only by default; without this parameter the live
+    # scanner's compute_strong_signal saw no pre-market bars in df, so
+    # pm_high_hold was structurally False on every pick (proven by Yahoo /v8
+    # comparison showing 132 pre-market bars for AAPL where FMP returned 0).
     params = {
         "symbol": ticker,
         "from": from_date,
         "to": to_date,
+        "extended_hours": "true",
         "apikey": config.FMP_API_KEY,
     }
 
@@ -173,6 +179,31 @@ def fetch_intraday_data(tickers: list[str], interval: str = "5min", days: int = 
             logger.warning("FMP connectivity test failed — falling back to yfinance")
             from scanner import _fetch_intraday_yfinance
             return _fetch_intraday_yfinance(tickers, interval, days)
+
+        # v3.7.0.13: sanity-check that FMP returned pre-market bars on a
+        # trading day. If not, the operator's FMP plan probably doesn't honor
+        # extended_hours=true — fall back to yfinance (which honors prepost=True
+        # universally). Without pre-market bars, STRONG-signal pm_high_hold
+        # is structurally False on every pick.
+        try:
+            import pandas as _pd
+            today_et = _pd.Timestamp.now(tz=config.ET).date()
+            test_idx = test_df.index
+            today_mask = test_idx.date == today_et
+            pm_mask = ((test_idx.hour < 9) |
+                       ((test_idx.hour == 9) & (test_idx.minute < 30)))
+            has_pm_today = bool((today_mask & pm_mask).any())
+            is_weekday = _pd.Timestamp.now(tz=config.ET).dayofweek < 5
+            if is_weekday and not has_pm_today:
+                logger.warning(
+                    "FMP returned no pre-market bars on today's trading session "
+                    "even with extended_hours=true — falling back to yfinance "
+                    "(STRONG-signal pm_high_hold needs pre-market data)."
+                )
+                from scanner import _fetch_intraday_yfinance
+                return _fetch_intraday_yfinance(tickers, interval, days)
+        except Exception as _e:
+            logger.debug(f"FMP pre-market sanity check raised (proceeding): {_e}")
 
         data[tickers[0]] = test_df
         logger.info(f"FMP connected — fetching {len(tickers)} tickers ({interval} candles)...")

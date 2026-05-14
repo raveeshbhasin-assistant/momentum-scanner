@@ -7304,7 +7304,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7314,7 +7314,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7324,7 +7324,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7334,7 +7334,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7344,7 +7344,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7354,7 +7354,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7364,7 +7364,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7394,7 +7394,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7404,7 +7404,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7414,7 +7414,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7424,7 +7424,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7434,7 +7434,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7484,7 +7484,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7514,7 +7514,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7544,7 +7544,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7614,7 +7614,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7714,7 +7714,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7764,7 +7764,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7784,7 +7784,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7794,7 +7794,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7804,7 +7804,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -7854,7 +7854,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8116,7 +8116,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8156,7 +8156,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8176,7 +8176,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8186,7 +8186,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8196,7 +8196,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8206,7 +8206,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8216,7 +8216,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8226,7 +8226,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8246,7 +8246,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8266,7 +8266,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8276,7 +8276,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8296,7 +8296,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8306,7 +8306,7 @@
    "strong_components": {
     "bar_green": false,
     "above_vwap": false,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8516,7 +8516,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8526,7 +8526,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8566,7 +8566,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8606,7 +8606,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8666,7 +8666,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }
@@ -8716,7 +8716,7 @@
    "strong_components": {
     "bar_green": true,
     "above_vwap": true,
-    "new_hod": true,
+    "new_hod": false,
     "pm_high_hold": false,
     "complete_bar_used": true
    }

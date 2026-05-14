@@ -102,10 +102,14 @@ def _fetch_intraday_yfinance(tickers: list[str], interval: str = "5m", days: int
     """
     data = {}
 
+    # v3.7.0.13: prepost=True is REQUIRED to get pre-market bars. yfinance's
+    # default is prepost=False, which returned 0 pre-market bars in testing
+    # vs 132 with prepost=True (AAPL, 2 days). STRONG-signal pm_high_hold
+    # is structurally False without pre-market data.
     # Quick connectivity test with first 2 tickers
     test_batch = tickers[:2]
     try:
-        test_df = yf.download(test_batch, period="1d", interval="5m", progress=False, threads=False)
+        test_df = yf.download(test_batch, period="1d", interval="5m", prepost=True, progress=False, threads=False)
         if test_df.empty:
             logger.warning("Yahoo Finance connectivity test failed — no data returned")
             return {}
@@ -122,6 +126,7 @@ def _fetch_intraday_yfinance(tickers: list[str], interval: str = "5m", days: int
                 tickers=batch,
                 period=f"{days}d",
                 interval=interval,
+                prepost=True,    # v3.7.0.13: include pre-market bars
                 group_by="ticker",
                 progress=False,
                 threads=True,
@@ -281,29 +286,68 @@ def compute_strong_signal(df: pd.DataFrame) -> dict:
         # bar_green
         if pd.notna(last.get("Open")) and pd.notna(last.get("Close")):
             out["bar_green"] = bool(last["Close"] > last["Open"])
-        # above_vwap
+        # above_vwap (VWAP is intraday-cumulative — already single-day-scoped
+        # by calculate_indicators since it resets at each session_start)
         vwap_val = last.get("VWAP")
         if pd.notna(last.get("Close")) and pd.notna(vwap_val):
             out["above_vwap"] = bool(last["Close"] > vwap_val)
-        # new_hod — last complete bar's high ≥ session high (within 0.05% ε).
-        # Slice highs through the reference bar inclusive, ignoring any later
-        # partial bar so we don't compare against a still-forming high.
+
+        # v3.7.0.13 SCOPE FIX: scanner.fetch_intraday_data returns
+        # CANDLE_LOOKBACK_DAYS (=5) of bars per ticker. The old code
+        # computed `session_high` and `pm_high` over the entire 5-day pool —
+        # so new_hod and pm_high_hold almost never fired (today's bar is
+        # rarely the 5-day extreme). Restrict both to bars on the
+        # reference bar's own session date before computing.
+        #
+        # IMPORTANT semantic choice: `session_high` for new_hod uses ONLY
+        # regular-hours bars (09:30 ≤ ET time ≤ 16:00) on the reference
+        # date. Pre-market bars are excluded from the "session" for the
+        # HOD check — they have their own treatment via pm_high_hold.
+        # This matches the offline override builder that produced the
+        # historical strong_overrides.json values.
         try:
-            highs_through_ref = df["High"] if ref_idx == -1 else df["High"].iloc[:-1]
+            ref_ts = df.index[ref_idx]
+            ref_date = ref_ts.date() if hasattr(ref_ts, "date") else None
+            if ref_date is not None:
+                today_mask = df.index.date == ref_date
+                df_today = df[today_mask]
+            else:
+                df_today = df
+        except Exception:
+            df_today = df
+
+        # new_hod — last complete bar's high ≥ today's session high (within
+        # 0.05% ε). "Session" here INCLUDES pre-market bars on the reference
+        # date — matches the offline override builder (compute_strong_signal_at)
+        # used to seed strong_overrides.json. This is the strict semantic:
+        # the bar's high has to clear the pre-market high too, not just the
+        # RTH high. Pre-market highs are usually thin-volume outliers, so
+        # this naturally biases new_hod toward stocks where regular-session
+        # volume has overpowered pre-market posturing.
+        try:
+            highs_today = df_today["High"]
+            # If the helper fell back to -2 because the last bar was partial,
+            # exclude it; otherwise use the full series of today's bars
+            # through the reference bar.
+            if ref_idx == -2 and len(highs_today) >= 2:
+                highs_through_ref = highs_today.iloc[:-1]
+            else:
+                highs_through_ref = highs_today
             session_high = highs_through_ref.max()
             if pd.notna(session_high) and pd.notna(last.get("High")):
                 out["new_hod"] = bool(last["High"] >= session_high * 0.9995)
         except Exception:
             out["new_hod"] = False
-        # pm_high_hold: max of bars whose ET timestamp < 09:30
+
+        # pm_high_hold: today's pre-market only (bars before 09:30 ET on the
+        # reference bar's session date). Symmetric to new_hod's RTH filter.
         try:
-            idx_et = df.index
-            if hasattr(idx_et, "tz") and idx_et.tz is not None:
-                # idx is timezone-aware. Determine local hour:minute per row
-                hours = idx_et.hour
-                mins  = idx_et.minute
+            idx_today = df_today.index
+            if hasattr(idx_today, "tz") and idx_today.tz is not None:
+                hours = idx_today.hour
+                mins = idx_today.minute
                 pm_mask = (hours < 9) | ((hours == 9) & (mins < 30))
-                pm_highs = df["High"][pm_mask]
+                pm_highs = df_today["High"][pm_mask]
             else:
                 pm_highs = pd.Series(dtype=float)
             if len(pm_highs) > 0 and pd.notna(last.get("Close")):
