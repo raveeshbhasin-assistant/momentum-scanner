@@ -618,6 +618,21 @@ def _write_performance_log(picks: list[dict], date_str: str):
             "appearance": p.get("appearance_num", 1),
             "post_close": False,  # POSTCLOSE picks are already filtered upstream
             "note": p.get("note", ""),
+            # v3.7.0.18: thread the STRONG flag + component breakdown from the
+            # raw scanner pick into the normalized perf entry. WITHOUT this,
+            # normalize_entry's raw.get("strong_signal", False) always
+            # defaulted to False — so the 4:15 PM EOD cron silently zeroed
+            # every STRONG pick when writing performance_log.json, and the
+            # /performance STRONG filter showed nothing. (data/{date}.json
+            # had the correct values all along; they just weren't carried
+            # into the perf log.) The override-map enrichment was masking
+            # this for past days but has no data for current/future days.
+            "strong_signal": bool(p.get("strong_signal", False)),
+            "strong_components": p.get("strong_components") or {
+                "bar_green": False, "above_vwap": False,
+                "new_hod": False, "pm_high_hold": False,
+                "complete_bar_used": False,
+            },
         }))
 
     upsert_day(date_str, entries)

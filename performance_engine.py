@@ -207,6 +207,14 @@ def normalize_entry(raw: dict) -> dict:
         "note": raw.get("note", ""),
         # v3.7.0.3: carry STRONG flag through so /performance can filter on it
         "strong_signal": bool(raw.get("strong_signal", False)),
+        # v3.7.0.18: carry the four-component breakdown too, so the
+        # /performance page can show *why* a pick was STRONG (or which
+        # condition was missing). Defaults to all-False when absent.
+        "strong_components": raw.get("strong_components") or {
+            "bar_green": False, "above_vwap": False,
+            "new_hod": False, "pm_high_hold": False,
+            "complete_bar_used": False,
+        },
     }
 
 
