@@ -952,43 +952,14 @@ async def api_diagnose_strong_live(ticker: str = "EW", as_of: str | None = None)
         except Exception as e:
             out["partial_err"] = str(e)
         if as_of_ts is not None:
-            # Trim df to bars at-or-before as_of, then recompute manually
-            df_trim = df[df.index <= as_of_ts]
-            out["bars_at_as_of"] = int(len(df_trim))
-            if len(df_trim) >= 2:
-                last_ts2 = df_trim.index[-1]
-                bar_end2 = last_ts2 + _pd.Timedelta(minutes=5)
-                is_partial2 = as_of_ts < bar_end2
-                ref_idx2 = -2 if is_partial2 else -1
-                last2 = df_trim.iloc[ref_idx2]
-                ref_ts2 = df_trim.index[ref_idx2]
-                # today-slice
-                today2 = as_of_ts.date()
-                df_today2 = df_trim[df_trim.index.date == today2]
-                bg = bool(_pd.notna(last2.get("Open")) and _pd.notna(last2.get("Close")) and last2["Close"] > last2["Open"])
-                vwap2 = last2.get("VWAP")
-                av = bool(_pd.notna(vwap2) and _pd.notna(last2.get("Close")) and last2["Close"] > vwap2)
-                highs_today2 = df_today2["High"]
-                if ref_idx2 == -2 and len(highs_today2) >= 2:
-                    htr2 = highs_today2.iloc[:-1]
-                else:
-                    htr2 = highs_today2
-                sh2 = htr2.max() if len(htr2) else None
-                nh = bool(sh2 is not None and _pd.notna(sh2) and _pd.notna(last2.get("High")) and last2["High"] >= sh2 * 0.9995)
-                hours2 = df_today2.index.hour; mins2 = df_today2.index.minute
-                pm_mask2 = (hours2 < 9) | ((hours2 == 9) & (mins2 < 30))
-                pm_highs2 = df_today2["High"][pm_mask2]
-                pmhh = bool(len(pm_highs2) > 0 and _pd.notna(last2.get("Close")) and last2["Close"] > pm_highs2.max())
-                strong2 = bool(bg and av and nh and pmhh)
-                out["compute_strong_signal"] = {
-                    "bar_green": bg, "above_vwap": av, "new_hod": nh,
-                    "pm_high_hold": pmhh, "strong": strong2,
-                    "complete_bar_used": ref_idx2 == -2,
-                    "ref_ts": str(ref_ts2),
-                    "as_of_mode": True,
-                }
-            else:
-                out["compute_strong_signal"] = {"error": "insufficient bars at as_of"}
+            # v3.7.0.19: compute_strong_signal now accepts a now_ref override,
+            # so the as_of simulation just calls the real function with the
+            # simulated clock time. No more inline re-implementation that
+            # could drift from production logic.
+            out["bars_at_as_of"] = int(len(df[df.index <= as_of_ts]))
+            info = compute_strong_signal(df, now_ref=as_of_ts)
+            info["as_of_mode"] = True
+            out["compute_strong_signal"] = info
         else:
             info = compute_strong_signal(df)
             out["compute_strong_signal"] = info

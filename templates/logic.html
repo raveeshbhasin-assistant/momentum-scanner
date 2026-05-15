@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.18</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.0.19</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.18</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.0.19</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,21 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.0.19 ───── -->
+        <div class="release current" id="v3-7-0-19">
+            <div class="release-header">
+                <span class="release-version">v3.7.0.19</span>
+                <span class="release-date">Released 2026-05-14</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>Unified the live and backfill STRONG paths onto one bar-selection rule + per-session VWAP.</strong> Investigation of 2026-05-14 found the live STRONG path and the backfill path disagreed on 14 of 29 picks — they were evaluating bars one 5-min step apart. Two root causes, both fixed: <strong>(1) Bar offset.</strong> Live <code>compute_strong_signal</code> used <code>df.iloc[-2]</code> whenever the last row was a partial bar, which — when the scan ran a few minutes into a bar — reached back to the bar <em>before</em> the most-recently-closed one. Both <code>compute_strong_signal</code> and <code>compute_strong_signal_at</code> now share one helper (<code>_most_recent_closed_rth_pos</code>) that selects the most-recently-closed regular-hours bar as of a reference time, and one evaluator (<code>_evaluate_strong_on_bar</code>). <code>compute_strong_signal</code> gained a <code>now_ref</code> parameter so live and backfill resolve the identical bar for a pick found at the same clock time. <strong>(2) VWAP scope.</strong> <code>calculate_indicators</code> computed VWAP as a single <code>cumsum()</code> over the whole DataFrame — a 5-day rolling VWAP for the live path (5-day df) vs a true 1-day VWAP for the backfill path (1-day df). VWAP now resets per session day, so it is identical regardless of how many days of history are in the frame. Verified: post-fix, live and backfill agree on all 128 of 2026-05-14's picks (0 disagreements), and both correctly flag all six 2026-05-13 STRONGs under the current scan schedule. Note: this is a consistency fix — it does not change that 2026-05-14 STRONG win rate was ~17%, in line with that day's weak ~18% all-picks baseline. Tagged: <span class="pill pill-fixed">fixed</span>.</div>
+        </div>
+
         <!-- ───── v3.7.0.18 ───── -->
-        <div class="release current" id="v3-7-0-18">
+        <div class="release" id="v3-7-0-18">
             <div class="release-header">
                 <span class="release-version">v3.7.0.18</span>
                 <span class="release-date">Released 2026-05-14</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>STRONG flag now survives the EOD analysis cron.</strong> The /performance STRONG filter showed nothing for 2026-05-14 even though the scanner produced 29 genuine STRONG picks. Root cause: the 4:15 PM <code>analyze_day</code> cron reads raw picks from <code>data/{date}.json</code> (which has correct STRONG values) and rebuilds them via <code>normalize_entry</code> — but the dict it passed in never included <code>strong_signal</code>, so <code>normalize_entry</code>'s <code>raw.get("strong_signal", False)</code> defaulted to False for every entry written to <code>performance_log.json</code>. The override-map enrichment (v3.7.0.10/.15) was masking this for past days, but it's a static hand-built file with no entries for current/future dates. Fix: <code>analyze_day</code> now threads <code>strong_signal</code> + <code>strong_components</code> from the raw pick into <code>normalize_entry</code>, and <code>normalize_entry</code> carries <code>strong_components</code> in its output. The EOD cron now writes correct STRONG values permanently, with zero dependency on the override file. Tagged: <span class="pill pill-fixed">fixed</span>.</div>
         </div>
