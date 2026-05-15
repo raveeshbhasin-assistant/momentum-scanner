@@ -1,6 +1,6 @@
 {
   "version": "v3.5",
-  "updated": "2026-05-14T20:15:29.895157Z",
+  "updated": "2026-05-15T01:21:06.071891Z",
   "entries": [
     {
       "date": "2026-04-20",
@@ -29957,7 +29957,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -29982,7 +29989,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30000,14 +30014,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 72.41,
-      "pnl_dollar": 0.55,
-      "pnl_pct": 0.765,
-      "r_realized": 1.2222,
+      "resolve_price": 72.4,
+      "pnl_dollar": 0.54,
+      "pnl_pct": 0.751,
+      "r_realized": 1.2,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30032,7 +30053,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30057,7 +30085,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30082,7 +30117,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30100,14 +30142,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 968.79,
-      "pnl_dollar": 3.79,
-      "pnl_pct": 0.393,
-      "r_realized": 0.7317,
+      "resolve_price": 969.25,
+      "pnl_dollar": 4.25,
+      "pnl_pct": 0.44,
+      "r_realized": 0.8205,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30132,7 +30181,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30157,7 +30213,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30182,7 +30245,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -30207,7 +30277,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30232,7 +30309,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30250,14 +30334,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 218.82,
-      "pnl_dollar": 0.19,
-      "pnl_pct": 0.087,
-      "r_realized": 0.1027,
+      "resolve_price": 218.81,
+      "pnl_dollar": 0.18,
+      "pnl_pct": 0.082,
+      "r_realized": 0.0973,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30282,7 +30373,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30307,7 +30405,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30332,7 +30437,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30357,7 +30469,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30382,7 +30501,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30407,7 +30533,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30432,7 +30565,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30457,7 +30597,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30482,7 +30629,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30507,7 +30661,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30532,7 +30693,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30557,7 +30725,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30582,7 +30757,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30607,7 +30789,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30632,7 +30821,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30657,7 +30853,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30682,7 +30885,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30707,7 +30917,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30732,7 +30949,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30757,7 +30981,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30782,7 +31013,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30800,14 +31038,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 320.09,
-      "pnl_dollar": 1.79,
-      "pnl_pct": 0.562,
-      "r_realized": 1.1258,
+      "resolve_price": 320.13,
+      "pnl_dollar": 1.83,
+      "pnl_pct": 0.575,
+      "r_realized": 1.1509,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30832,7 +31077,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -30850,14 +31102,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 269.34,
-      "pnl_dollar": 3.79,
-      "pnl_pct": 1.427,
-      "r_realized": 1.8309,
+      "resolve_price": 269.39,
+      "pnl_dollar": 3.84,
+      "pnl_pct": 1.446,
+      "r_realized": 1.8551,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -30875,14 +31134,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 195.61,
-      "pnl_dollar": 0.67,
-      "pnl_pct": 0.344,
-      "r_realized": 0.2713,
+      "resolve_price": 195.67,
+      "pnl_dollar": 0.73,
+      "pnl_pct": 0.374,
+      "r_realized": 0.2955,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30907,7 +31173,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -30932,7 +31205,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30957,7 +31237,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -30982,7 +31269,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31007,7 +31301,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31032,7 +31333,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31057,7 +31365,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31075,14 +31390,21 @@
       "result": "EOD",
       "effective_result": "LOSS",
       "resolve_time": "",
-      "resolve_price": 218.37,
-      "pnl_dollar": -0.93,
-      "pnl_pct": -0.424,
-      "r_realized": -0.6327,
+      "resolve_price": 218.45,
+      "pnl_dollar": -0.85,
+      "pnl_pct": -0.388,
+      "r_realized": -0.5782,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31100,14 +31422,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 155.72,
-      "pnl_dollar": 0.34,
-      "pnl_pct": 0.219,
-      "r_realized": 0.3864,
+      "resolve_price": 155.7,
+      "pnl_dollar": 0.32,
+      "pnl_pct": 0.206,
+      "r_realized": 0.3636,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31132,7 +31461,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31157,7 +31493,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31182,7 +31525,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31207,7 +31557,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31232,7 +31589,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -31257,7 +31621,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31282,7 +31653,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31307,7 +31685,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31332,7 +31717,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31350,14 +31742,21 @@
       "result": "EOD",
       "effective_result": "LOSS",
       "resolve_time": "",
-      "resolve_price": 80.45,
-      "pnl_dollar": -0.12,
-      "pnl_pct": -0.149,
-      "r_realized": -0.375,
+      "resolve_price": 80.48,
+      "pnl_dollar": -0.09,
+      "pnl_pct": -0.112,
+      "r_realized": -0.2813,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31382,7 +31781,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31407,7 +31813,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31432,7 +31845,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31457,7 +31877,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31482,7 +31909,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31507,7 +31941,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31532,7 +31973,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31550,14 +31998,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 90.5,
-      "pnl_dollar": 0.25,
-      "pnl_pct": 0.277,
-      "r_realized": 0.2315,
+      "resolve_price": 90.52,
+      "pnl_dollar": 0.27,
+      "pnl_pct": 0.299,
+      "r_realized": 0.25,
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31582,7 +32037,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31607,7 +32069,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31625,14 +32094,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 434.77,
-      "pnl_dollar": 6.87,
-      "pnl_pct": 1.606,
-      "r_realized": 1.5866,
+      "resolve_price": 434.86,
+      "pnl_dollar": 6.96,
+      "pnl_pct": 1.627,
+      "r_realized": 1.6074,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -31657,7 +32133,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31682,7 +32165,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31707,7 +32197,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -31732,7 +32229,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31757,7 +32261,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -31782,7 +32293,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31807,7 +32325,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31832,7 +32357,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31850,14 +32382,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 37.08,
-      "pnl_dollar": 0.05,
-      "pnl_pct": 0.135,
-      "r_realized": 0.2273,
+      "resolve_price": 37.1,
+      "pnl_dollar": 0.07,
+      "pnl_pct": 0.189,
+      "r_realized": 0.3182,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31882,7 +32421,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31907,7 +32453,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31932,7 +32485,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31957,7 +32517,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -31982,7 +32549,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32007,7 +32581,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32032,7 +32613,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32057,7 +32645,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32082,7 +32677,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32107,7 +32709,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32132,7 +32741,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32157,7 +32773,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32182,7 +32805,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32207,7 +32837,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32232,7 +32869,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32257,7 +32901,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32275,14 +32926,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 269.34,
-      "pnl_dollar": 2.63,
-      "pnl_pct": 0.986,
-      "r_realized": 1.9481,
+      "resolve_price": 269.39,
+      "pnl_dollar": 2.68,
+      "pnl_pct": 1.005,
+      "r_realized": 1.9852,
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32307,7 +32965,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32332,7 +32997,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32357,7 +33029,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32382,7 +33061,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32407,7 +33093,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32432,7 +33125,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32457,7 +33157,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32482,7 +33189,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32507,7 +33221,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32532,7 +33253,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32557,7 +33285,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32575,14 +33310,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 780.08,
-      "pnl_dollar": 4.7,
-      "pnl_pct": 0.606,
-      "r_realized": 1.2368,
+      "resolve_price": 780.54,
+      "pnl_dollar": 5.16,
+      "pnl_pct": 0.665,
+      "r_realized": 1.3579,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32607,7 +33349,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32632,7 +33381,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32657,7 +33413,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32675,14 +33438,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 514.38,
-      "pnl_dollar": 2.14,
-      "pnl_pct": 0.418,
-      "r_realized": 0.9469,
+      "resolve_price": 514.54,
+      "pnl_dollar": 2.3,
+      "pnl_pct": 0.449,
+      "r_realized": 1.0177,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32707,7 +33477,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32732,7 +33509,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32757,7 +33541,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32782,7 +33573,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32807,7 +33605,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32832,7 +33637,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32850,14 +33662,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 141.9,
-      "pnl_dollar": 1.3,
-      "pnl_pct": 0.925,
-      "r_realized": 1.9118,
+      "resolve_price": 141.89,
+      "pnl_dollar": 1.29,
+      "pnl_pct": 0.917,
+      "r_realized": 1.8971,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32882,7 +33701,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32900,14 +33726,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 43.04,
-      "pnl_dollar": 0.63,
-      "pnl_pct": 1.485,
-      "r_realized": 1.0328,
+      "resolve_price": 43.05,
+      "pnl_dollar": 0.64,
+      "pnl_pct": 1.509,
+      "r_realized": 1.0492,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32925,14 +33758,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 930.03,
-      "pnl_dollar": 5.25,
-      "pnl_pct": 0.568,
-      "r_realized": 1.3963,
+      "resolve_price": 930.1,
+      "pnl_dollar": 5.32,
+      "pnl_pct": 0.575,
+      "r_realized": 1.4149,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -32957,7 +33797,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -32982,7 +33829,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -33007,7 +33861,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -33025,14 +33886,21 @@
       "result": "EOD",
       "effective_result": "WIN",
       "resolve_time": "",
-      "resolve_price": 158.4,
-      "pnl_dollar": 1.01,
-      "pnl_pct": 0.642,
-      "r_realized": 0.4612,
+      "resolve_price": 158.37,
+      "pnl_dollar": 0.98,
+      "pnl_pct": 0.623,
+      "r_realized": 0.4475,
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -33057,7 +33925,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": false,
+        "above_vwap": false,
+        "new_hod": false,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -33082,7 +33957,14 @@
       "appearance": 2,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": true,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": true,
+        "pm_high_hold": true,
+        "complete_bar_used": true
+      }
     },
     {
       "date": "2026-05-14",
@@ -33107,7 +33989,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": false
+      }
     },
     {
       "date": "2026-05-14",
@@ -33132,7 +34021,14 @@
       "appearance": 1,
       "post_close": false,
       "note": "",
-      "strong_signal": false
+      "strong_signal": false,
+      "strong_components": {
+        "bar_green": true,
+        "above_vwap": true,
+        "new_hod": false,
+        "pm_high_hold": false,
+        "complete_bar_used": true
+      }
     }
   ]
 }
