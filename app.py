@@ -475,14 +475,8 @@ def scheduled_scan():
 # ── Scheduler Setup ───────────────────────────────────────────
 scheduler = BackgroundScheduler(timezone=config.ET)
 
-# Main momentum scan: every 30 min during market hours.
-# v3.7.0.17: the 09:30 scan was dropped. At clock-time 09:30:00 the first
-# 5-min bar is still partial, so compute_strong_signal can't evaluate
-# STRONG (it falls back to a pre-market bar) — every 09:30 emission was
-# strong=False structurally. The 09:35 verification scan below is a full
-# scan that emits picks normally AND can compute STRONG against the
-# now-closed 09:30 bar, so it cleanly replaces the 09:30 fire. The 09:00
-# pre-market fire is kept (separate, non-persisted behavior).
+# Pre-market scan at 09:00 ET — separate, non-persisted behavior
+# (data/{date}.json only stores RTH emissions; see scheduled_scan).
 scheduler.add_job(
     scheduled_scan,
     "cron",
@@ -494,53 +488,46 @@ scheduler.add_job(
     max_instances=1,
     misfire_grace_time=300,
 )
-scheduler.add_job(
-    scheduled_scan,
-    "cron",
-    day_of_week="mon-fri",
-    hour="10-16",
-    minute="0,30",
-    timezone=config.ET,
-    id="momentum_scan",
-    max_instances=1,
-    misfire_grace_time=300,
-)
 
-# v3.7.0.16: STRONG verification scans at :05 and :35 past the hour during
-# market hours. At a :00 or :30 scan, compute_strong_signal evaluates
-# against the most-recent COMPLETE bar — but at clock-time HH:30:00, the
-# HH:30 bar is partial (still building) so ref_idx falls back to a stale
-# bar. By HH:35:00, the HH:30 bar has closed AND the HH:35 bar is freshly
-# partial, so ref_idx resolves to the HH:30 bar and STRONG evaluates
-# correctly. The 09:35 fire is also the first RTH scan of the day
-# (v3.7.0.17 dropped the 09:30 fire).
+# Main momentum scan: every 15 min on the :05/:20/:35/:50 offsets,
+# 09:35 ET through 16:05 ET.
 #
-# Re-entry suppression has an exception: a ticker already emitted today
-# can re-emit IF this scan upgrades it from non-STRONG → STRONG
-# (see scheduled_scan filter, v3.7.0.16). So these :05/:35 fires either
-# emit NEW tickers (normal path) or upgrade existing emissions to STRONG.
-scheduler.add_job(
-    scheduled_scan,
-    "cron",
-    day_of_week="mon-fri",
-    hour="9-15",
-    minute="35",
-    timezone=config.ET,
-    id="momentum_scan_verify_35",
-    max_instances=1,
-    misfire_grace_time=120,
-)
-scheduler.add_job(
-    scheduled_scan,
-    "cron",
-    day_of_week="mon-fri",
-    hour="10-15",
-    minute="5",
-    timezone=config.ET,
-    id="momentum_scan_verify_05",
-    max_instances=1,
-    misfire_grace_time=120,
-)
+# v3.7.0.20: collapsed the three overlapping scan jobs (the old :00/:30
+# `momentum_scan` plus the :05 and :35 verification jobs) into ONE clean
+# 15-minute cadence. The old layout double-fired — 10:00 then 10:05,
+# 10:30 then 10:35 — which is wasteful and clusters scans 5 minutes apart.
+#
+# Why the :05/:20/:35/:50 offsets (not :00/:15/:30/:45):
+#   compute_strong_signal evaluates the most-recently-CLOSED 5-min RTH
+#   bar as of scan time. Firing 5 minutes PAST each bar boundary means
+#   the bar that just closed (e.g. the 09:30 bar at the 09:35 fire) is
+#   the reference bar — so STRONG can evaluate correctly. Firing AT the
+#   boundary (09:30:00) would catch only a partial bar. This is the same
+#   reason v3.7.0.17 dropped the old 09:30 fire.
+#
+# Three cron entries bound the schedule to RTH so it doesn't fire at
+# 09:05/09:20 (pre-open) or 16:20+ (post-close):
+#   - 09:35, 09:50               (hour 9, minutes 35 & 50)
+#   - 10:05 .. 15:50 every 15m   (hours 10-15, minutes 5/20/35/50)
+#   - 16:05                      (hour 16, minute 5 — catches final 15:55 bar)
+# 09:35 is the first RTH scan of the day. The 09:00 pre-market fire above
+# is unchanged.
+for _scan_hour, _scan_minute, _scan_id in (
+    ("9", "35,50", "momentum_scan_open"),
+    ("10-15", "5,20,35,50", "momentum_scan"),
+    ("16", "5", "momentum_scan_close"),
+):
+    scheduler.add_job(
+        scheduled_scan,
+        "cron",
+        day_of_week="mon-fri",
+        hour=_scan_hour,
+        minute=_scan_minute,
+        timezone=config.ET,
+        id=_scan_id,
+        max_instances=1,
+        misfire_grace_time=120,
+    )
 
 # Pre-market catalyst scan: 8:00 AM and 9:00 AM ET
 scheduler.add_job(
