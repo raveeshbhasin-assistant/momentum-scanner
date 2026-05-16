@@ -281,7 +281,7 @@ def refresh_tracker_live(theme: str) -> dict:
         "trade_date": datetime.now().strftime("%Y-%m-%d"),
         "ticker_count": len(tickers),
         "data_sources": {
-            "13f": "fmp" if config.FMP_API_KEY else "none",
+            "13f": "yfinance",  # institutional_holders endpoint — no plan limits, quarterly cadence
             "earnings": "fmp" if config.FMP_API_KEY else "none",
             "news": "finnhub" if config.FINNHUB_API_KEY else "none",
         },
