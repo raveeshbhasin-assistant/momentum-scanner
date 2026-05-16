@@ -52,6 +52,31 @@ MIN_COMPOSITE_SCORE = 60            # Strong signal threshold (0-100)
 WEAK_SIGNAL_FLOOR = 40              # v3.4.2: show down to this, label <MIN as weak
 MAX_SIGNALS_PER_SCAN = 20           # v3.4.2: bumped from 10 to show weak tier too
 
+
+# ── v3.7.1: ELITE tier (subset of STRONG) ─────────────────────
+# ELITE is a precision-refinement layer on top of STRONG. A pick is
+# ELITE iff it is STRONG AND its post-hoc category is "D" (no sector
+# leadership classification — the idiosyncratic-breakout group) AND
+# its RVOL is at or above ELITE_MIN_RVOL.
+#
+# 19-day diagnostic (2026-04-20 -> 2026-05-15, 188 STRONG picks):
+#   STRONG baseline: 59.0% WR, +0.74R, +0.67% per pick
+#   STRONG + cat=D:  72.0% WR, +1.30R, +1.03% per pick (TIGHT)
+#   ELITE rule:      75.8% WR, +1.42R, +1.11% per pick — profitable 16/17 days fired.
+# See diagnostics_STRONG_2026-05-16.md for the full tradeoff curve.
+#
+# Derived post-hoc by every consumer using identical logic:
+#   • scanner.scan       — sort priority (ELITE picks float to top)
+#   • notifier._is_elite — subject prefix + email row styling
+#   • templates/today.html, history.html, performance.html — badge + filter chips
+# No new field is persisted on the pick payload — every consumer derives
+# the flag on read from strong_signal + leadership.label + rvol (three
+# fields already stored on every pick row since v3.7.0). Set
+# ELITE_ENABLED=False to short-circuit every site.
+ELITE_ENABLED = True
+ELITE_REQUIRES_CATEGORY = "D"
+ELITE_MIN_RVOL = 2.0
+
 # ── Risk Parameters (Aggressive Profile) ─────────────────────
 ATR_STOP_MULTIPLIER = 2.0           # Stop-loss = Entry - (ATR × this)
 RISK_REWARD_RATIO = 2.5             # Target = Entry + (stop_distance × this)

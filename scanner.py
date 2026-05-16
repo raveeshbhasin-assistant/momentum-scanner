@@ -1062,9 +1062,28 @@ def run_scan(tickers: Optional[list[str]] = None,
             logger.warning(f"Error scanning {ticker}: {e}")
             continue
 
-    # Sort: STRONG signals first, then by composite score (v3.7.0)
+    # Sort: ELITE first, then STRONG, then by composite score (v3.7.1)
+    # ELITE is derived post-hoc from (strong_signal AND leadership.label not in
+    # the 4 classified labels AND rvol >= config.ELITE_MIN_RVOL). Same rule
+    # used by today.html / history.html / performance.html templates and by
+    # notifier.py — no new field is persisted on the signal dict.
+    _CLASSIFIED = ("LEADER", "FOLLOWER", "LAGGARD", "SOLO_MOVER")
+    def _is_elite(x):
+        if not getattr(config, "ELITE_ENABLED", True):
+            return False
+        if not x.get("strong_signal"):
+            return False
+        lbl = ((x.get("leadership") or {}).get("label") or "").upper()
+        if lbl in _CLASSIFIED:
+            return False
+        try:
+            return float(x.get("rvol", 0)) >= float(getattr(config, "ELITE_MIN_RVOL", 2.0))
+        except (TypeError, ValueError):
+            return False
     signals.sort(
-        key=lambda x: (1 if x.get("strong_signal") else 0, x.get("composite_score", 0)),
+        key=lambda x: (1 if _is_elite(x) else 0,
+                       1 if x.get("strong_signal") else 0,
+                       x.get("composite_score", 0)),
         reverse=True,
     )
     signals = signals[:config.MAX_SIGNALS_PER_SCAN]

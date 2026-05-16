@@ -147,6 +147,27 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 /* v3.7.0: STRONG row gets a left-edge gold accent */
 tr.strong-row td:first-child { box-shadow: inset 3px 0 0 var(--gold, #facc15); }
 
+/* v3.7.1: ELITE-signal badge — STRONG + category=D + RVOL >= 2.0
+   Cyan accent so it visually stacks alongside the gold STRONG pill
+   when both apply (every ELITE pick is also STRONG).
+   Historical: 76% WR, +1.11% avg, profitable on 16/17 days fired. */
+.tier-pill.elite {
+    background: rgba(34,211,238,0.18);
+    color: var(--cyan, #22d3ee);
+    border-color: rgba(34,211,238,0.6);
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}
+/* ELITE row: brighter left-edge accent overrides the gold STRONG accent. */
+tr.elite-row td:first-child { box-shadow: inset 3px 0 0 var(--cyan, #22d3ee); }
+
+/* ── Visibility toggles for ELITE-only and STRONG-only filters ── */
+table.elite-only tbody tr[data-elite="0"] { display: none; }
+
+/* ELITE-tagged chip used in /today, /history, /performance toolbars. */
+.chip.elite-chip { border-color: rgba(34,211,238,0.55); color: var(--cyan, #22d3ee); }
+.chip.elite-chip.active { background: rgba(34,211,238,0.10); border-color: rgba(34,211,238,0.85); color: var(--cyan, #22d3ee); font-weight: 800; }
+
 /* ── Shared numeric alignment for data tables ─────────────────── */
 th.num, td.num { text-align: right; }
 th.center, td.center { text-align: center; }

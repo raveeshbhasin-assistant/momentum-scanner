@@ -435,8 +435,18 @@
             equityMetric: "r",       // "r" | "pnl"
             equityShape: "cum",      // "cum" | "day"
             strongOnly: false,       // v3.7.0.3 — STRONG-only filter toggle
+            eliteOnly: false,        // v3.7.1 — ELITE-only filter toggle (STRONG ∩ cat=D ∩ RVOL≥2)
         };
         const resultField = () => state.resultMode === "effective" ? "effective_result" : "result";
+
+        // v3.7.1: pure post-hoc derivation, mirrors templates/scanner/notifier.
+        function _isElite(p) {
+            if (!p || !p.strong_signal) return false;
+            if ((p.category || '').toUpperCase() !== 'D') return false;
+            const r = parseFloat(p.rvol);
+            if (!isFinite(r)) return false;
+            return r >= 2.0;
+        }
 
         // ── Setup controls ─────────────────────────────────────
         const dateSel = document.getElementById("dateSel");
@@ -556,10 +566,31 @@
         });
 
         // v3.7.0.3: STRONG-only toggle on /performance
+        const eliteChip = document.getElementById("eliteOnlyChip");
+        if (eliteChip) {
+            eliteChip.addEventListener("click", () => {
+                state.eliteOnly = !state.eliteOnly;
+                eliteChip.classList.toggle("active", state.eliteOnly);
+                // STRONG-only and ELITE-only are mutually exclusive
+                if (state.eliteOnly && state.strongOnly) {
+                    state.strongOnly = false;
+                    const sc = document.getElementById("strongOnlyChip");
+                    if (sc) sc.classList.remove("active");
+                }
+                render();
+            });
+        }
+
         const strongChip = document.getElementById("strongOnlyChip");
         if (strongChip) {
             strongChip.addEventListener("click", () => {
                 state.strongOnly = !state.strongOnly;
+                // STRONG-only and ELITE-only are mutually exclusive
+                if (state.strongOnly && state.eliteOnly) {
+                    state.eliteOnly = false;
+                    const ec = document.getElementById("eliteOnlyChip");
+                    if (ec) ec.classList.remove("active");
+                }
                 if (state.strongOnly) {
                     strongChip.classList.add("active");
                     strongChip.style.background = "rgba(250,204,21,0.10)";
@@ -630,14 +661,18 @@
             const passCat    = (e) => state.cats.has(e.category);
             const passRes    = (e) => state.results.has(e[rk]);
             const passStrong = (e) => !state.strongOnly || !!e.strong_signal;
-            const filter     = (e) => passCat(e) && passRes(e) && passStrong(e);
+            const passElite  = (e) => !state.eliteOnly  || _isElite(e);
+            const filter     = (e) => passCat(e) && passRes(e) && passStrong(e) && passElite(e);
 
             const hasRows = Array.isArray(bucket.picks);
             const picks = hasRows ? bucket.picks.filter(filter) : null;
             // v3.7.0.3: update STRONG count badge (regardless of toggle state)
             if (hasRows) {
                 const totalStrong = bucket.picks.filter(e => !!e.strong_signal).length;
+                const totalElite  = bucket.picks.filter(_isElite).length;
                 const cntEl = document.getElementById("strongOnlyCount");
+                const eCntEl = document.getElementById("eliteOnlyCount");
+                if (eCntEl) eCntEl.textContent = totalElite ? `(${totalElite})` : '(0)';
                 if (cntEl) cntEl.textContent = totalStrong > 0 ? `(${totalStrong})` : "";
             }
             const dailySeries = bucket.daily_series || null;
@@ -1114,7 +1149,7 @@
                     ${dateCell}
                     <td data-label="Time">${p.batch_time}</td>
                     <td class="ticker-cell" data-label="Ticker"><span class="ticker">${p.ticker}</span></td>
-                    <td data-label="Cat"><span class="cat-badge ${p.category}">${p.category}</span></td>
+                    <td data-label="Cat"><span class="cat-badge ${p.category}">${p.category}</span>${_isElite(p) ? '<span class="tier-pill elite" style="margin-left:6px;" title="ELITE (v3.7.1)">ELITE</span>' : (p.strong_signal ? '<span class="tier-pill strong" style="margin-left:6px;" title="STRONG (v3.7.0)">STRONG</span>' : '')}</td>
                     <td data-label="Leader">${p.leadership_label || "—"}</td>
                     <td data-label="Score">${p.score}</td>
                     <td data-label="RSI">${p.rsi ?? "—"}</td>

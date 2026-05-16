@@ -174,6 +174,26 @@ def _signal_category(s: Dict) -> str:
     return assign_category(s.get("composite_score"), lbl)
 
 
+def _is_elite(s: Dict) -> bool:
+    """
+    v3.7.1: ELITE = STRONG + category == ELITE_REQUIRES_CATEGORY ("D")
+    + rvol >= ELITE_MIN_RVOL (2.0). Pure post-hoc derivation, identical
+    rule to the one in scanner.scan (sort priority) and the templates
+    (today.html, history.html, performance.html).
+    Honours config.ELITE_ENABLED for runtime kill-switch.
+    """
+    if not getattr(config, "ELITE_ENABLED", True):
+        return False
+    if not bool(s.get("strong_signal")):
+        return False
+    if _signal_category(s) != getattr(config, "ELITE_REQUIRES_CATEGORY", "D"):
+        return False
+    try:
+        return float(s.get("rvol") or 0) >= float(getattr(config, "ELITE_MIN_RVOL", 2.0))
+    except (TypeError, ValueError):
+        return False
+
+
 # ── Rendering ────────────────────────────────────────────────────────
 _TIER_COLOR = {
     "primary": "#22c55e",       # green — LEADER/SOLO
@@ -224,11 +244,21 @@ def _render_html(
             lvl = earn.get("badge_level", "")
             if lvl in ("today_amc", "tomorrow"):
                 earn_text = f'<span style="color:#ef4444; font-size:11px; margin-left:4px;">⚡ {earn["badge_text"]}</span>'
+        is_elite_pick = _is_elite(s)
+        elite_badge = (
+            ' <span style="background:rgba(34,211,238,0.15); color:#22d3ee; '
+            'padding:1px 5px; border-radius:3px; font-size:9px; font-weight:800; '
+            'letter-spacing:0.5px; vertical-align:middle; margin-left:4px;'
+            '">ELITE</span>'
+        ) if is_elite_pick else ""
+        row_style = (
+            ' style="border-left:3px solid #22d3ee;"' if is_elite_pick else ""
+        )
         rows_html.append(
             f"""
-            <tr>
+            <tr{row_style}>
                 <td style="padding:10px 8px; border-bottom:1px solid #2a3148;">
-                    <div style="font-weight:700; color:{color}; font-size:16px; font-family:'SF Mono', Menlo, monospace;">{s.get('ticker', '—')}</div>
+                    <div style="font-weight:700; color:{color}; font-size:16px; font-family:'SF Mono', Menlo, monospace;">{s.get('ticker', '—')}{elite_badge}</div>
                     <div style="font-size:10px; color:#94a3b8; letter-spacing:0.5px; margin-top:2px;">{tier_label} · {lead_label}{earn_text}</div>
                 </td>
                 <td style="padding:10px 8px; border-bottom:1px solid #2a3148; text-align:right; font-family:'SF Mono', Menlo, monospace; color:#e2e8f0;">
@@ -348,7 +378,11 @@ def _build_subject(signals: List[Dict], scan_time: str) -> str:
     top = ", ".join(s.get("ticker", "?") for s in signals[:5])
     if n > 5:
         top += f", +{n - 5} more"
-    return f"[MScan] {n} strong signal{'s' if n != 1 else ''} @ {scan_time} — {top}"
+    # v3.7.1: prepend "[ELITE]" to the subject if any signal in the batch is ELITE.
+    # Quick visual scan in the inbox without breaking the existing [MScan] prefix.
+    has_elite = any(_is_elite(s) for s in signals)
+    prefix = "[ELITE]" if has_elite else "[MScan]"
+    return f"{prefix} {n} strong signal{'s' if n != 1 else ''} @ {scan_time} — {top}"
 
 
 # ── Resend HTTP send ─────────────────────────────────────────────────

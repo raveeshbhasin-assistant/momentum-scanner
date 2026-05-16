@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.0.20</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.1</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.0.20</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.1</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,44 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.1 ───── -->
+        <div class="release current" id="v3-7-1">
+            <div class="release-header">
+                <span class="release-version">v3.7.1</span>
+                <span class="release-date">Released 2026-05-16</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>ELITE tier — a precision-refinement layer on top of STRONG.</strong>
+                A pick is <strong>ELITE</strong> iff it is <strong>STRONG</strong> AND its post-hoc <strong>category is "D"</strong> (no sector-leadership classification — the idiosyncratic-breakout group) AND its <strong>RVOL is at or above 2.0</strong>. Pure post-hoc derivation, mirrored across <code>scanner.py</code> (sort priority), <code>templates/today.html</code> + <code>templates/history.html</code> + <code>templates/performance.html</code> (visual badge + filter chip), and <code>notifier.py</code> (subject prefix + row styling). No new field is persisted on the pick payload — every consumer derives the flag on read, so existing <code>data/{date}.json</code> and <code>performance_log.json</code> files Just Work.
+                <br><br>
+                <strong>Why.</strong> 19-day diagnostic over 188 STRONG picks (2026-04-20 → 2026-05-15) showed STRONG WR collapsed from 63% (pre-2026-05-14) to 50% on the last two live days as STRONG volume tripled. Root cause traced to two compounding effects: <em>(1)</em> pre-2026-05-12, <code>compute_strong_signal</code> silently no-op'd on every scan after 13:00 ET, so afternoon STRONG fires were structurally invisible; <em>(2)</em> 2026-05-14 was a continuation-day SPY tape (+0.79%, VIX 17.26) where the four-way conjunction fires ~2x more often. Both effects are real and they compounded. Within STRONG, the dominant precision driver was leadership category: <strong>category D = 72% WR vs LEADER/SOLO 50% vs LAGGARD 17%</strong> — idiosyncratic catalyst-driven breakouts outperform sector-beta breakouts that wobble when SPY hiccups. Adding RVOL ≥ 2 lifts WR to 76% on 35% of STRONG volume. Backed by 16/17 profitable days fired.
+                Tagged: <span class="pill pill-added">added</span>.</div>
+            <div class="release-details">
+                <p><strong>What changed (additive — no breaking shape changes):</strong></p>
+                <ul>
+                    <li><strong>Three new config constants in <code>config.py</code></strong> — <code>ELITE_ENABLED</code> (kill switch, default True), <code>ELITE_REQUIRES_CATEGORY</code> (default "D"), <code>ELITE_MIN_RVOL</code> (default 2.0). Tunable without redeploy if the rule needs revisiting.</li>
+                    <li><strong>Sort priority change in <code>scanner.scan</code></strong> — final signal sort is now <code>(elite, strong, composite_score)</code> descending. ELITE picks float to the very top of <code>/today</code>; STRONG-but-not-ELITE picks sit below; the rest sort by composite score as before. <code>MAX_SIGNALS_PER_SCAN</code> cap unchanged.</li>
+                    <li><strong>ELITE badge in the Tier cell on <code>/today</code> and <code>/history</code></strong> — cyan <code>.tier-pill.elite</code> chip, stacks alongside the existing gold STRONG chip (every ELITE pick is also STRONG). Row class becomes <code>elite-row</code> with a cyan left-edge accent that overrides the gold STRONG accent. Tooltip lists the rule and the 19-day WR.</li>
+                    <li><strong>ELITE-only filter chip on <code>/today</code> and <code>/history</code> and <code>/performance</code></strong> — cyan chip alongside the existing STRONG-only chip. Mutually exclusive with STRONG-only — clicking one clears the other. <code>/today</code> count badge updates from the rendered DOM; <code>/performance</code> count updates inside the renderer as filters change.</li>
+                    <li><strong>Notifier visual treatment in <code>notifier.py</code></strong> — subject is now <code>[ELITE] N strong signals @ HH:MM — …</code> when any pick in the batch is ELITE (otherwise the existing <code>[MScan]</code> prefix). ELITE picks in the HTML body get a 3px cyan left-border and a small <code>ELITE</code> tag next to the ticker. The Cat-A/B gate is unchanged — ELITE is purely a visual enhancement inside the existing email flow.</li>
+                    <li><strong>ELITE CSS in <code>static/css/base.css</code></strong> — <code>.tier-pill.elite</code> (cyan), <code>tr.elite-row</code> (cyan left-edge), <code>table.elite-only tbody tr[data-elite="0"] { display: none }</code> (filter rule), <code>.chip.elite-chip</code> (toolbar chip).</li>
+                </ul>
+                <p><strong>Why no backfill of <code>elite_signal</code>:</strong> Every consumer (templates, notifier, scanner sort) derives ELITE on read from <code>strong_signal</code> + <code>leadership.label</code> + <code>rvol</code> — three fields already persisted on every pick row since v3.7.0. So <code>/history</code> pages render the ELITE badge correctly all the way back to the first day STRONG was computed (2026-04-22), no migration needed. If we ever want to persist the flag, the derivation rule is centralized in <code>config</code> so a one-shot script can add it without ambiguity.</p>
+                <p><strong>Where to override behaviour:</strong></p>
+                <ul>
+                    <li>Disable ELITE entirely: set <code>config.ELITE_ENABLED = False</code> — the sort key, the templates, and the notifier all early-exit.</li>
+                    <li>Loosen the RVOL floor (more picks, less precision): drop <code>config.ELITE_MIN_RVOL</code> to 1.5 — projected 93 picks, ~72% WR per the 19-day curve. The TIGHT level.</li>
+                    <li>Tighten further (fewer picks, more precision): raise to 3.0 — projected 43 picks, ~79% WR. The ULTRA level.</li>
+                </ul>
+                <p><strong>Verification:</strong> 19-day replay over <code>data/performance_log.json</code> (1,497 picks total, 188 STRONG): 66 ELITE picks, <strong>75.8% WR</strong>, <strong>+1.11% avg per pick</strong>, +1.42R avg, profitable on <strong>16 of 17 days</strong> it fired. Cross-checked: <code>scanner.scan</code> sort key now emits a 3-tuple; templates derive identical flag with the same threshold constants; notifier subject prefix and row styling switch on the same boolean. Diagnostic source: <code>diagnostics_STRONG_2026-05-16.md</code>.</p>
+            </div>
+        </div>
+
         <!-- ───── v3.7.0.20 ───── -->
-        <div class="release current" id="v3-7-0-20">
+        <div class="release" id="v3-7-0-20">
             <div class="release-header">
                 <span class="release-version">v3.7.0.20</span>
                 <span class="release-date">Released 2026-05-14</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>Clean 15-minute scan cadence.</strong> The scan schedule was three overlapping cron jobs — the old <code>:00/:30</code> <code>momentum_scan</code> plus separate <code>:05</code> and <code>:35</code> verification jobs — which double-fired (10:00 then 10:05, 10:30 then 10:35) and clustered scans 5 minutes apart. Collapsed into one clean 15-minute cadence: <strong>09:35, 09:50, 10:05, 10:20, 10:35, 10:50 … 15:50, 16:05</strong> (27 scans/day, evenly spaced). The <code>:05/:20/:35/:50</code> offsets are deliberate — firing 5 minutes past each 5-min bar boundary means the bar that just closed is the reference bar, so <code>compute_strong_signal</code> evaluates STRONG correctly (same reasoning that dropped the 09:30 fire in v3.7.0.17). 09:35 remains the first RTH scan; 16:05 catches the final 15:55 bar; the 09:00 pre-market fire is unchanged. Tagged: <span class="pill pill-changed">changed</span>.</div>
         </div>
