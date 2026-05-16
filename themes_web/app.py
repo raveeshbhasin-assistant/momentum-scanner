@@ -173,6 +173,27 @@ def root():
     return RedirectResponse(url=f"/themes/{themes[0]['slug']}/tracker")
 
 
+@app.get("/how-it-works", response_class=HTMLResponse)
+def how_it_works(request: Request):
+    """Standalone methodology page. Theme-agnostic."""
+    md_path = _HERE / "HOW_IT_WORKS.md"
+    if not md_path.exists():
+        raise HTTPException(status_code=404, detail="HOW_IT_WORKS.md not found")
+    body_html, toc_html = render_markdown(md_path.read_text(encoding="utf-8"))
+    return templates.TemplateResponse(
+        request=request,
+        name="how_it_works.html",
+        context={
+            "active_slug": None,
+            "active_page": "how-it-works",
+            "tracker": None,  # no per-theme header
+            "all_themes": discover_themes_full(),
+            "body_html": body_html,
+            "toc_html": toc_html,
+        },
+    )
+
+
 @app.get("/themes/{slug}/tracker", response_class=HTMLResponse)
 def tracker_page(request: Request, slug: str):
     view = _compute_tracker_view(slug)

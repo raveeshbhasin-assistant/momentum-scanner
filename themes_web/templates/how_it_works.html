@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}How this works · Themes{% endblock %}
+
+{% block content %}
+<div class="article-layout">
+  <article class="article">
+    {{ body_html | safe }}
+  </article>
+  <aside class="toc-wrap" aria-label="Table of contents">
+    <div class="toc-head">Contents</div>
+    {{ toc_html | safe }}
+  </aside>
+</div>
+
+<div class="footnote">
+  Source: <code>themes_web/HOW_IT_WORKS.md</code> · Editable in markdown.
+</div>
+{% endblock %}
