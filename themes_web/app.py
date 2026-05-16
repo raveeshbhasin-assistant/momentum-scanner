@@ -15,6 +15,7 @@ the deployed scanner doesn't see it.
 from __future__ import annotations
 
 import logging
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -348,6 +349,34 @@ def api_refresh(slug: Optional[str] = None):
         return {"ok": True, "result": result}
     except Exception as e:
         logger.exception("Manual refresh failed")
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/rescore/{slug}", response_class=JSONResponse)
+def api_rescore(slug: str):
+    """
+    Run the theme's _score_run.py to regenerate scoring_log.json from the
+    current candidates.json. Safe to call after a refresh to see updated scores.
+    """
+    import subprocess
+    from pathlib import Path
+    script = Path(__file__).parent.parent / "themes" / slug / "_score_run.py"
+    if not script.exists():
+        raise HTTPException(status_code=404, detail=f"_score_run.py not found for theme {slug}")
+    try:
+        r = subprocess.run(
+            [sys.executable, str(script)],
+            cwd=str(script.parent.parent.parent),
+            capture_output=True, text=True, timeout=120,
+        )
+        return {
+            "ok": r.returncode == 0,
+            "returncode": r.returncode,
+            "stdout_tail": (r.stdout or "")[-1000:],
+            "stderr_tail": (r.stderr or "")[-500:],
+        }
+    except Exception as e:
+        logger.exception(f"Rescore failed for {slug}")
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 

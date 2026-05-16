@@ -56,6 +56,20 @@ def _run_refresh_for_theme(theme: str) -> dict:
         logger.exception(f"[scheduler] tracker_live refresh failed for {theme}: {e}")
         result["tracker_live"] = {"error": str(e)}
 
+    # Re-score using the freshly refreshed candidates + tracker_live data
+    score_script = _PROJECT_ROOT / "themes" / theme / "_score_run.py"
+    if score_script.exists():
+        logger.info(f"[scheduler] Re-scoring {theme}")
+        try:
+            r3 = subprocess.run([_PYTHON, str(score_script)],
+                                  cwd=_PROJECT_ROOT, capture_output=True, text=True, timeout=120)
+            result["rescore"] = {"returncode": r3.returncode, "tail": (r3.stdout + r3.stderr)[-300:]}
+            if r3.returncode != 0:
+                logger.warning(f"[scheduler] rescore non-zero for {theme}: {r3.returncode}")
+        except Exception as e:
+            logger.exception(f"[scheduler] rescore failed for {theme}: {e}")
+            result["rescore"] = {"error": str(e)}
+
     return result
 
 
