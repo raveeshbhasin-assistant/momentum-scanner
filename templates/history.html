@@ -52,6 +52,7 @@
         /* Hide outside-RTH rows in every day panel when the filter is active */
         .main.rth-only table tbody tr[data-rth="false"] { display: none; }
         .main.elite-only table tbody tr[data-elite="0"] { display: none; }
+        .main.strong-only table tbody tr[data-strong="0"] { display: none; }
 
         /* ── Day Tabs ──────────────────────────────────────────── */
         .day-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
@@ -214,6 +215,7 @@
                     <span>Market hours only</span>
                     <span class="rth-count" id="rthCount"></span>
                 </button>
+                <button type="button" class="chip strong-chip" id="strongOnly" title="v3.7.0: STRONG-only — picks with bar_green + above_vwap + new_hod + pm_high_hold. Historical 2.5R hit rate ~46–53% vs ~22% baseline.">STRONG only <span class="chip-n" id="chipN-STRONG-history"></span></button>
                 <button type="button" class="chip elite-chip" id="eliteOnly" title="v3.7.1: ELITE-only — STRONG + category=D + RVOL≥2.0. 19-day diagnostic: 76% WR, +1.11% avg per pick, profitable on 16/17 days fired.">ELITE only <span class="chip-n" id="chipN-ELITE-history"></span></button>
             </div>
         </div>
@@ -482,6 +484,15 @@
             return { elite, total };
         }
 
+        function _strongTotal() {
+            let strong = 0, total = 0;
+            document.querySelectorAll('#dayPanels table tbody tr').forEach(r => {
+                total += 1;
+                if (r.getAttribute('data-strong') === '1') strong += 1;
+            });
+            return { strong, total };
+        }
+
         function _updateEliteChip() {
             const chip = document.getElementById('eliteOnly');
             const countEl = document.getElementById('chipN-ELITE-history');
@@ -491,6 +502,15 @@
             if (!elite) chip.style.cursor = 'not-allowed';
         }
 
+        function _updateStrongChip() {
+            const chip = document.getElementById('strongOnly');
+            const countEl = document.getElementById('chipN-STRONG-history');
+            if (!chip || !countEl) return;
+            const { strong } = _strongTotal();
+            countEl.textContent = strong > 0 ? `(${strong})` : '(0)';
+            if (!strong) chip.style.cursor = 'not-allowed';
+        }
+
         function toggleElite() {
             const main = document.getElementById('historyMain');
             const chip = document.getElementById('eliteOnly');
@@ -498,6 +518,27 @@
             const nowActive = !main.classList.contains('elite-only');
             main.classList.toggle('elite-only', nowActive);
             chip.classList.toggle('active', nowActive);
+            // Mutual exclusion with STRONG-only
+            if (nowActive) {
+                main.classList.remove('strong-only');
+                const sChip = document.getElementById('strongOnly');
+                if (sChip) sChip.classList.remove('active');
+            }
+        }
+
+        function toggleStrong() {
+            const main = document.getElementById('historyMain');
+            const chip = document.getElementById('strongOnly');
+            if (!main || !chip) return;
+            const nowActive = !main.classList.contains('strong-only');
+            main.classList.toggle('strong-only', nowActive);
+            chip.classList.toggle('active', nowActive);
+            // Mutual exclusion with ELITE-only
+            if (nowActive) {
+                main.classList.remove('elite-only');
+                const eChip = document.getElementById('eliteOnly');
+                if (eChip) eChip.classList.remove('active');
+            }
         }
 
         // ── Date picker (loads archived days via API) ─────────────
@@ -729,7 +770,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             const eChip = document.getElementById('eliteOnly');
             if (eChip) eChip.addEventListener('click', toggleElite);
+            const sChip = document.getElementById('strongOnly');
+            if (sChip) sChip.addEventListener('click', toggleStrong);
             _updateEliteChip();
+            _updateStrongChip();
             bindSortHeaders(document);
             bindColToggles(document);
             _computeRTHCounts();

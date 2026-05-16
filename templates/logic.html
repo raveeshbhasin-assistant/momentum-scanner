@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.2</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.3</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.2</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.3</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,30 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.3 ───── -->
+        <div class="release current" id="v3-7-3">
+            <div class="release-header">
+                <span class="release-version">v3.7.3</span>
+                <span class="release-date">Released 2026-05-16</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>STRONG + ELITE chip consistency across /today, /history, /performance.</strong> The v3.7.2 hotfix promoted <code>.chip</code> base styles to <code>base.css</code> so <code>history.html</code> could use them, but two more gaps remained: <em>(1)</em> <code>history.html</code> still didn't have a STRONG-only chip (only <code>/today</code> and <code>/performance</code> did), so the three pages were inconsistent; <em>(2)</em> the <code>.chip.strong-chip</code> variant lived only inline in <code>today.html</code>, so even if you added the button to <code>history.html</code> it wouldn't pick up the gold-accent styling. Both fixed here, plus a CSS cache-bust to force browsers off the stale stylesheet. Tagged: <span class="pill pill-changed">changed</span> <span class="pill pill-added">added</span>.</div>
+            <div class="release-details">
+                <p><strong>Changes:</strong></p>
+                <ul>
+                    <li><strong><code>templates/history.html</code> — added STRONG-only chip</strong> in the <code>filter-bar-right</code> next to the existing RTH toggle and ELITE-only chip. Same gold accent as on <code>/today</code>. Mutual exclusion with ELITE-only: clicking one clears the other (matches the <code>/today</code> and <code>/performance</code> behaviour).</li>
+                    <li><strong><code>static/css/base.css</code> — promoted <code>.chip.strong-chip</code> styles</strong> alongside the existing <code>.chip.elite-chip</code> rules. The page-specific copies in <code>today.html</code> still override at equal specificity (because the inline <code>&lt;style&gt;</code> block loads after <code>base.css</code>), so nothing changes on <code>/today</code> — but <code>/history</code> now has a styled chip without needing its own copy.</li>
+                    <li><strong><code>templates/_head.html</code> — added <code>?v=3.7.3</code> cache-bust query string</strong> on the <code>tokens.css</code> and <code>base.css</code> stylesheet links. Forces browsers to re-fetch the stylesheet on first load of any v3.7.3 page, which fixes the stale-cache rendering that was making the ELITE chip on <code>/history</code> still look like raw inverted text after v3.7.2 shipped.</li>
+                </ul>
+                <p><strong>Verification:</strong> <code>/history</code> filter-bar now shows: RSI · Res. · Market hours only · STRONG only · ELITE only. Click toggles each filter; mutual exclusion confirmed between STRONG and ELITE. Day-tab counts unchanged. <code>/today</code> and <code>/performance</code> unaffected.</p>
+            </div>
+        </div>
+
         <!-- ───── v3.7.2 ───── -->
-        <div class="release current" id="v3-7-2">
+        <div class="release" id="v3-7-2">
             <div class="release-header">
                 <span class="release-version">v3.7.2</span>
                 <span class="release-date">Released 2026-05-16</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>ELITE chip rendering hotfix.</strong> v3.7.1 added the ELITE filter chip to <code>/today</code>, <code>/history</code>, and <code>/performance</code>, but two surfaces shipped broken: <em>(1)</em> on <code>/history</code> the chip rendered as raw inverted text — the <code>.chip</code> base styles lived inline in <code>today.html</code>'s <code>&lt;style&gt;</code> block, never imported by <code>history.html</code>; <em>(2)</em> on <code>/performance</code> the chip didn't render at all — the patch that inserted the <code>&lt;div class="ctrl-group"&gt;</code> failed silently in the build, leaving the JS hook (<code>eliteOnlyChip</code>) referencing an element that never existed in the DOM. Both fixed in this release. Tagged: <span class="pill pill-fixed">fixed</span>.</div>
             <div class="release-details">
