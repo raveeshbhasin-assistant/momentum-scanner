@@ -157,6 +157,57 @@ def _fetch_fmp_income_growth(ticker: str, client: httpx.Client) -> Optional[dict
         return None
 
 
+def _fetch_fmp_financial_growth(ticker: str, client: httpx.Client) -> Optional[dict]:
+    """Fetch /stable/financial-growth for shares-out and debt growth YoY."""
+    try:
+        resp = client.get(
+            f"https://financialmodelingprep.com/stable/financial-growth",
+            params={"symbol": ticker, "period": "annual", "limit": 1, "apikey": config.FMP_API_KEY},
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        if isinstance(data, list) and len(data) > 0:
+            return data[0]
+        return None
+    except Exception as e:
+        logger.debug(f"FMP financial-growth failed for {ticker}: {e}")
+        return None
+
+
+def _fetch_fmp_cash_flow(ticker: str, client: httpx.Client) -> Optional[dict]:
+    """Fetch latest annual cash flow statement for SBC + FCF + revenue."""
+    try:
+        resp = client.get(
+            f"https://financialmodelingprep.com/stable/cash-flow-statement",
+            params={"symbol": ticker, "period": "annual", "limit": 1, "apikey": config.FMP_API_KEY},
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        if isinstance(data, list) and len(data) > 0:
+            return data[0]
+        return None
+    except Exception as e:
+        logger.debug(f"FMP cash-flow failed for {ticker}: {e}")
+        return None
+
+
+def _fetch_fmp_income_statement(ticker: str, client: httpx.Client) -> Optional[dict]:
+    """Fetch latest annual income statement for revenue (for SBC% calc)."""
+    try:
+        resp = client.get(
+            f"https://financialmodelingprep.com/stable/income-statement",
+            params={"symbol": ticker, "period": "annual", "limit": 1, "apikey": config.FMP_API_KEY},
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        if isinstance(data, list) and len(data) > 0:
+            return data[0]
+        return None
+    except Exception as e:
+        logger.debug(f"FMP income-statement failed for {ticker}: {e}")
+        return None
+
+
 def _fetch_daily_bars(tickers: list[str]) -> dict[str, pd.DataFrame]:
     """Pull 1Y of daily bars from yfinance for return calculations."""
     out: dict[str, pd.DataFrame] = {}
@@ -350,6 +401,27 @@ def refresh_ticker(ticker: str, meta: dict, client: httpx.Client,
         ig = _fetch_fmp_income_growth(ticker, client)
         if ig:
             out["revenue_growth_yoy"] = ig.get("growthRevenue")
+
+        # ── Capital structure inputs ──
+        fg = _fetch_fmp_financial_growth(ticker, client)
+        if fg:
+            # FMP returns these as decimals (0.05 = 5%)
+            out["shares_growth_yoy"] = fg.get("weightedAverageSharesDilutedGrowth")
+            out["debt_growth_yoy"] = fg.get("debtGrowth")
+            out["fcf_growth_yoy"] = fg.get("freeCashFlowGrowth")
+
+        cf = _fetch_fmp_cash_flow(ticker, client)
+        inc = _fetch_fmp_income_statement(ticker, client)
+        if cf and inc:
+            try:
+                sbc = float(cf.get("stockBasedCompensation") or 0)
+                fcf = float(cf.get("freeCashFlow") or 0)
+                rev = float(inc.get("revenue") or 0)
+                if rev > 0:
+                    out["sbc_pct_revenue"] = round(sbc / rev, 4)
+                    out["fcf_margin"] = round(fcf / rev, 4)
+            except Exception as e:
+                logger.debug(f"capital structure calc failed for {ticker}: {e}")
 
     # ── yfinance fill — covers what FMP missed or runs solo when no key ──
     _fill_from_yfinance_info(ticker, out)

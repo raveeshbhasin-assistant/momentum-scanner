@@ -22,7 +22,8 @@ WEIGHTS = {
     "margin_durability":      10,
     "valuation_runway":       15,
     "institutional_13f":       5,
-    "catalyst_proximity":      5,
+    "capital_structure":       5,   # added v2 — share dilution + leverage + SBC + FCF
+    "catalyst_proximity":      0,   # zeroed v2 — weakest signal, mostly redundant with earnings cadence
 }
 assert sum(WEIGHTS.values()) == 100
 
@@ -34,7 +35,8 @@ SCORE_TYPE = {
     "revenue_growth":         "quantitative",
     "margin_durability":      "mixed",
     "valuation_runway":       "quantitative",
-    "institutional_13f":      "auto-from-13f",  # computed below from tracker_live.json
+    "institutional_13f":      "auto-from-13f",     # from tracker_live.json
+    "capital_structure":      "auto-from-fmp",     # from candidates.json fields
     "catalyst_proximity":     "judgment",
 }
 
@@ -78,6 +80,92 @@ def compute_13f_score(ticker: str) -> tuple[int, str]:
     if net_pp >= -1.0:
         return 2, f"Modest trimming: net {net_pp:+.1f}pp"
     return 1, f"Sustained outflows: net {net_pp:+.1f}pp across {negatives} funds"
+
+
+def compute_capital_structure_score(ticker: str, cand: dict) -> tuple[int, str]:
+    """
+    1-5 score based on 4 components, averaged. Higher = healthier capital structure.
+
+    The bet: companies that grow revenue without diluting shareholders and without
+    leveraging up deliver more per-share value over a 12-24 month horizon. Companies
+    that fund growth via heavy SBC, equity raises, or debt issuance get penalized
+    even when revenue looks fine.
+
+    Components (each scored 1-5):
+      1. Shares outstanding YoY growth  — lower is better (buybacks = 5)
+      2. Total debt YoY growth          — lower is better
+      3. SBC as % of revenue            — lower is better
+      4. Free cash flow margin          — higher is better
+
+    Returns (avg_score, rationale_string).
+    """
+    shares_yoy = cand.get("shares_growth_yoy")
+    debt_yoy = cand.get("debt_growth_yoy")
+    sbc_pct = cand.get("sbc_pct_revenue")
+    fcf_margin = cand.get("fcf_margin")
+
+    parts = []
+
+    # 1. Shares outstanding YoY
+    if shares_yoy is not None:
+        s = float(shares_yoy)
+        if s <= 0:        score_s, lbl_s = 5, "buyback"
+        elif s <= 0.02:   score_s, lbl_s = 4, "minimal"
+        elif s <= 0.05:   score_s, lbl_s = 3, "moderate"
+        elif s <= 0.10:   score_s, lbl_s = 2, "significant"
+        else:             score_s, lbl_s = 1, "heavy"
+        parts.append(("Shares", score_s, f"{s*100:+.1f}% {lbl_s}"))
+    else:
+        score_s = 3
+        parts.append(("Shares", 3, "n/a"))
+
+    # 2. Total debt YoY
+    if debt_yoy is not None:
+        d = float(debt_yoy)
+        if d <= -0.10:    score_d, lbl_d = 5, "paying down"
+        elif d <= 0:      score_d, lbl_d = 4, "flat"
+        elif d <= 0.10:   score_d, lbl_d = 3, "moderate"
+        elif d <= 0.25:   score_d, lbl_d = 2, "significant"
+        else:             score_d, lbl_d = 1, "heavy"
+        parts.append(("Debt", score_d, f"{d*100:+.1f}% {lbl_d}"))
+    else:
+        score_d = 3
+        parts.append(("Debt", 3, "n/a"))
+
+    # 3. SBC as % of revenue
+    if sbc_pct is not None:
+        p = float(sbc_pct)
+        if p <= 0.02:     score_sbc, lbl_sbc = 5, "minimal"
+        elif p <= 0.05:   score_sbc, lbl_sbc = 4, "modest"
+        elif p <= 0.10:   score_sbc, lbl_sbc = 3, "moderate"
+        elif p <= 0.15:   score_sbc, lbl_sbc = 2, "high"
+        else:             score_sbc, lbl_sbc = 1, "very high"
+        parts.append(("SBC", score_sbc, f"{p*100:.1f}% rev {lbl_sbc}"))
+    else:
+        score_sbc = 3
+        parts.append(("SBC", 3, "n/a"))
+
+    # 4. FCF margin (higher is better)
+    if fcf_margin is not None:
+        f = float(fcf_margin)
+        if f >= 0.20:     score_f, lbl_f = 5, "strong"
+        elif f >= 0.10:   score_f, lbl_f = 4, "healthy"
+        elif f >= 0.05:   score_f, lbl_f = 3, "modest"
+        elif f >= 0:      score_f, lbl_f = 2, "thin"
+        else:             score_f, lbl_f = 1, "negative"
+        parts.append(("FCF margin", score_f, f"{f*100:.1f}% {lbl_f}"))
+    else:
+        score_f = 3
+        parts.append(("FCF margin", 3, "n/a"))
+
+    avg = round((score_s + score_d + score_sbc + score_f) / 4)
+    rationale = " · ".join(f"{name} {s}/5 ({lbl})" for name, s, lbl in parts)
+
+    # If no component data was available at all (all neutral 3s), flag it
+    if all(p[1] == 3 for p in parts) and shares_yoy is None and debt_yoy is None and sbc_pct is None and fcf_margin is None:
+        rationale = "Capital structure data unavailable — neutral fallback"
+
+    return avg, rationale
 
 
 # Hand-scored 13F fallback values per ticker (the original v1 scores).
@@ -384,12 +472,16 @@ def compute(scores: dict) -> dict:
     for ticker, s in scores.items():
         components = {}
         raw_total = 0
-        # Compute 13F score from live data (falls back to hand-scored if unavailable)
+        # Auto-computed criteria — read from the live data files
         auto_13f, auto_13f_rationale = compute_13f_score(ticker)
+        auto_cap, auto_cap_rationale = compute_capital_structure_score(ticker, meta_by_ticker.get(ticker, {}))
         for crit, weight in WEIGHTS.items():
             if crit == "institutional_13f":
                 score = auto_13f
                 rationale = auto_13f_rationale
+            elif crit == "capital_structure":
+                score = auto_cap
+                rationale = auto_cap_rationale
             else:
                 score = s.get(crit)
                 rationale = s.get(f"_{crit_short(crit)}", "")
@@ -460,8 +552,9 @@ def render_md(results: dict) -> str:
         "revenue_growth":         "YoY revenue growth, accelerating > flat > declining",
         "margin_durability":      "Pricing power and gross margin trend",
         "valuation_runway":       "P/E and P/S vs growth rate — re-rating room left",
-        "institutional_13f":      "PLACEHOLDER — real 13F overlay deferred to tracker build (DEFERRED.md D1)",
-        "catalyst_proximity":     "Near-term events that could re-rate the stock",
+        "institutional_13f":      "Auto-computed from quarterly 13F fund deltas (yfinance.Ticker.institutional_holders)",
+        "capital_structure":      "Auto-computed from FMP: shares-out growth + debt growth + SBC/revenue + FCF margin",
+        "catalyst_proximity":     "Zeroed v2 — weakest signal; mostly redundant with earnings cadence and 13F flow",
     }
     for crit, weight in WEIGHTS.items():
         lines.append(f"| {crit.replace('_', ' ').title()} | {weight} | {SCORE_TYPE[crit]} | {notes[crit]} |")
