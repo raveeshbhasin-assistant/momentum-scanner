@@ -66,7 +66,9 @@ Apply a rubric — eight criteria, each weighted, totaling 100 points per stock:
 | Margin durability | 10 | Pricing power, not just volume |
 | Valuation runway | 15 | Cheap relative to growth — room to re-rate |
 | Institutional 13F | 5 | Are smart-money funds adding or trimming |
-| Catalyst proximity | 5 | Near-term events that could re-rate |
+| **Capital structure** | **5** | Buybacks + low debt growth + minimal SBC + healthy FCF = good. Heavy dilution / leverage = bad |
+
+The capital structure criterion catches a specific failure mode: a company can grow revenue 30% with a perfectly correct thesis and still deliver poor per-share returns if it's funding growth via equity raises, debt issuance, or heavy stock-based compensation. We pull four metrics from FMP — shares-outstanding growth YoY, total-debt growth YoY, SBC as % of revenue, and free-cash-flow margin — score each 1-5, average them.
 
 The math runs, every candidate gets a score 0-100, top ~7 get promoted to a tracker. Importantly: the scoring favors **boring asymmetric setups over flashy momentum names**. A stock at relative-strength rank 22 with positive recent action scores higher than one at rank 99 — because the rank-99 names have already moved.
 
@@ -74,7 +76,7 @@ The math runs, every candidate gets a score 0-100, top ~7 get promoted to a trac
 
 A live dashboard for the promoted names. Shows entry price vs current price, performance vs SPY, real news headlines, upcoming earnings dates, the top institutional holders for each name with their quarter-over-quarter change. Plus a strip at the top showing the four falsifiers from the thesis — green/yellow/red based on whether any of them are firing.
 
-## The seven things we evaluate
+## The eight things we evaluate
 
 Pull this out for any conversation about a specific name:
 
@@ -85,8 +87,7 @@ Pull this out for any conversation about a specific name:
 5. **Is it cheap relative to its growth?** (Avoid priced-for-perfection)
 6. **Has it already run, or is it just starting to wake up?** (We want the latter)
 7. **Are large funds adding or trimming this quarter?**
-
-Plus a soft eighth: any near-term catalyst that could re-rate it (earnings beat, deal close, contract win)?
+8. **Is it funding growth from retained earnings, or diluting shareholders?** (Buybacks + low SBC + healthy FCF = good. Heavy share issuance, leverage spikes, or 15%+ SBC-to-revenue = bad — even if the thesis is right, per-share returns get eaten away)
 
 ## What this system is *not*
 
