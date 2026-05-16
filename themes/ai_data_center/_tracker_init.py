@@ -32,22 +32,28 @@ PLAIN_SUMMARY = (
 )
 
 # ─── The 7 promoted names ─────────────────────────────────
-# 2026-05-16: Swapped GEV → ECL based on supply_chain.md addendum R3+R4 findings.
-# GEV is only ~28% AI-relevant revenue (gas turbines dominate). ECL is acquiring CoolIT
-# for $4.75B (Q3 2026 close), becoming the cleanest direct-to-chip cooling vehicle.
-PROMOTED = ["ETN", "CRDO", "ECL", "ANET", "FN", "MOD", "VRT"]
+# 2026-05-16 (v3 rubric): Reshuffled after adding capital_structure criterion (weight 10).
+# Dropped VRT (slipped to #8 / watching) — still healthy CS 4/5 but got out-ranked.
+# Added GEV (now #6) — CS 4/5 from aggressive debt paydown + buyback, compensates
+# for the lower AI-purity flagged in supply_chain.md addendum R3.
+# CRDO stays at #3 but with conviction Lean Trim — heavy dilution (+16.8% shares) +
+# high SBC (17.7% rev) is exactly the failure mode capital_structure is meant to catch.
+PROMOTED = ["ETN", "FN", "CRDO", "ECL", "ANET", "GEV", "MOD"]
 
 # Optional per-name conviction overrides. Default = 3 (hold/normal).
 # Use 5 (increase) or 1 (trim) only when there's a specific reason at entry.
-CONVICTION_OVERRIDES = {}
+CONVICTION_OVERRIDES = {
+    "CRDO": 2,  # Lean Trim — capital structure 2/5 (heavy dilution + 17.7% SBC)
+}
 
 # Optional per-name notes at entry — captures the "why this one specifically"
 # beyond what's in scoring.md
 ENTRY_NOTES = {
     "ETN":  "Thesis flagship. Low RS (22) + positive 1M = exactly the asymmetric setup the thesis was built to find. Watch backlog disclosures each quarter as the key re-check trigger.",
-    "CRDO": "201% YoY revenue growth + RS inflection sweet spot (RS 57 + positive 1M). High valuation is the main risk — would trim aggressively if growth decelerates.",
+    "CRDO": "201% YoY revenue growth + RS inflection sweet spot (RS 57 + positive 1M). BUT capital structure 2/5 — heavy share dilution (+16.8% YoY) and 17.7% SBC-to-revenue is exactly the 'thesis right, vehicles wrong' pattern. Conviction Lean Trim at entry. Watch next earnings for whether dilution pace continues.",
     "ANET": "Pure-play DC switching + RS 17 (low) creates asymmetric setup, but 1M -11.8% means we're entering during a breakdown. Position should be smaller until 1M turns positive.",
     "ECL":  "Becoming the cleanest public-market direct-to-chip cooling play via $4.75B CoolIT acquisition (closes Q3 2026). Entered at -19.7% off 52w high after deal-related sell-off — asymmetric setup. RS 0 looks bad but is deal-mechanics noise, not thesis breakdown. Watch for deal close + first-quarter integration commentary.",
+    "GEV":  "Re-promoted v3 on capital structure strength: 4/5 score from aggressive debt paydown (-100% YoY on certain lines), buyback (-0.7% shares), zero SBC. Mix is only ~28% AI-relevant (gas turbines dominate per supply_chain.md R3) but per-share return quality compensates. Watch gas turbine cycle as a separate moving piece.",
     "FN":   "Optical contract manufacturer; high theme purity but margin structure is thin. RS 61 + positive 1M. Customer concentration (NVDA, CIEN) is the key risk.",
     "MOD":  "Thermal management bucket coverage. Airedale DC pure-play growing fast; rest is HVAC. RS 35 + 1M +15.3% = classic inflection. Smallest cap in the tracker — size accordingly.",
     "VRT":  "Highest theme exposure in the entire cohort + spans buckets 2 and 3. Highest concentration risk. Already extended (RS 74, 1M +26%) — entered at near 52w highs. Trim if it gives back >15% from entry.",

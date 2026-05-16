@@ -94,3 +94,26 @@ I revisit this thesis if:
 
 **Signed.** Raveesh / Claude, 2026-05-16.
 
+### 2026-05-16 (later) — Rubric v3: added capital_structure criterion, dropped VRT, added GEV
+
+**Trigger:** User question — "would heavy share dilution be captured?" — surfaced that the v1/v2 rubric had no capital-structure criterion. A company can fund growth via equity raises, debt issuance, or heavy SBC and still look fine on revenue + margins, while per-share returns erode. This is the "thesis right, vehicles wrong" failure mode written as a number.
+
+**Change to rubric (v2 → v3):**
+- Added `capital_structure` criterion: 4-component average of shares-outstanding YoY, debt YoY, SBC-to-revenue, and FCF margin. Initially weighted 5, bumped to 10 once we saw the weight needed to be high enough to differentiate the worst offenders.
+- Reduced `margin_durability` from 10 → 5 (FCF margin already captured inside `capital_structure`, so meaningful overlap).
+- Zeroed `catalyst_proximity` from 5 → 0 (weakest signal; mostly redundant with earnings cadence and 13F flow).
+- Total weights still sum to 100.
+
+**Change to tracker (7 names → 7 names):**
+- **Dropped VRT** (slipped to #8 watching) — still healthy CS 4/5 but out-ranked. The concentrated bet on VRT remains valid; just not in the top 7 by v3 scoring.
+- **Added GEV** (now #6) — paid down debt aggressively + buyback + zero SBC pushed its CS to 4/5, compensating for the lower AI-purity flagged in `supply_chain.md` addendum R3.
+- **CRDO conviction downgraded to Lean Trim** (kept at #3) — capital_structure 2/5 from +16.8% shares dilution and 17.7% SBC. This is exactly the failure mode the new criterion catches. Keeping in tracker because growth + theme exposure are still elite, but smaller position size and tighter trigger for exit.
+
+**Resulting tracker (7 names, v3 rubric):** ETN · FN · CRDO (Lean Trim) · ECL · ANET · GEV · MOD. Bucket distribution: 3 Optical · 2 Heavy Electrical · 2 Thermal.
+
+**Watching list:** VRT (76), AVGO (73), NVT (73), TT (72 — best CS 5/5).
+
+**No change to the locked thesis or supply chain.** The bet remains the same; we just got more rigorous about which vehicles best express it.
+
+**Signed.** Raveesh / Claude, 2026-05-16.
+

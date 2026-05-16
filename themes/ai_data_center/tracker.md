@@ -23,13 +23,13 @@
 
 | Ticker | Company | Bucket | Added | Entry $ | Score | RS 3M @ entry | Conviction | Thesis |
 |--------|---------|--------|-------|---------|-------|---------------|------------|--------|
-| **ETN** | Eaton | Heavy Electrical | 2026-05-16 | $399.44 | 83.0 | 27 | 3 | Intact |
-| **CRDO** | Credo Technology | Optical Networking | 2026-05-16 | $172.17 | 81.0 | 58 | 3 | Intact |
-| **ECL** | Ecolab | Thermal Management | 2026-05-16 | $247.62 | 79.0 | 0 | 3 | Intact |
-| **ANET** | Arista Networks | Optical Networking | 2026-05-16 | $141.97 | 78.0 | 19 | 3 | Intact |
-| **FN** | Fabrinet | Optical Networking | 2026-05-16 | $722.04 | 77.0 | 62 | 3 | Intact |
+| **ETN** | Eaton | Heavy Electrical | 2026-05-16 | $399.44 | 81.0 | 27 | 3 | Intact |
+| **FN** | Fabrinet | Optical Networking | 2026-05-16 | $722.04 | 80.0 | 62 | 3 | Intact |
+| **CRDO** | Credo Technology | Optical Networking | 2026-05-16 | $172.17 | 82.0 | 58 | 2 | Intact |
+| **ECL** | Ecolab | Thermal Management | 2026-05-16 | $247.62 | 77.0 | 0 | 3 | Intact |
+| **ANET** | Arista Networks | Optical Networking | 2026-05-16 | $141.97 | 76.0 | 19 | 3 | Intact |
+| **GEV** | GE Vernova | Heavy Electrical | 2026-05-16 | $1049.23 | 76.0 | 46 | 3 | Intact |
 | **MOD** | Modine Manufacturing | Thermal Management | 2026-05-16 | $271.26 | 76.0 | 38 | 3 | Intact |
-| **VRT** | Vertiv | Heavy Electrical | 2026-05-16 | $370.94 | 76.0 | 73 | 3 | Intact |
 
 _Conviction: 5 = increase / 4 = lean increase / 3 = hold / 2 = lean trim / 1 = trim._  
 _Thesis status: Intact / Watching (a falsifier is showing early signs) / Broken (a falsifier has fired — sell or addendum)._  
@@ -42,7 +42,7 @@ _Thesis status: Intact / Watching (a falsifier is showing early signs) / Broken 
 
 **Bucket:** Heavy Electrical · **Sub:** MV Transformers / Switchgear / UPS  
 **Date added:** 2026-05-16 at **$399.44**  
-**Scoring rank:** 83.0 / 100
+**Scoring rank:** 81.0 / 100
 
 **Why this name:**  
 _Thesis flagship. Low RS (22) + positive 1M = exactly the asymmetric setup the thesis was built to find. Watch backlog disclosures each quarter as the key re-check trigger._
@@ -56,14 +56,32 @@ Mkt cap: $155.1B · P/E 39.045944 · P/S 5.4379973 · 1Y 22.79% · 3M 3.22% · 1
 
 ---
 
+### FN — Fabrinet
+
+**Bucket:** Optical Networking · **Sub:** Optical Contract Mfg  
+**Date added:** 2026-05-16 at **$722.04**  
+**Scoring rank:** 80.0 / 100
+
+**Why this name:**  
+_Optical contract manufacturer; high theme purity but margin structure is thin. RS 61 + positive 1M. Customer concentration (NVDA, CIEN) is the key risk._
+
+**Entry-day snapshot:**  
+Mkt cap: $25.9B · P/E 62.13769 · P/S 6.108736 · 1Y 214.55% · 3M 45.7% · 1M 7.34% · RS 3M 62.0 · Δ 52wH -3.59%
+
+**Event log:**
+
+- _No events yet. First post-entry update goes here._
+
+---
+
 ### CRDO — Credo Technology
 
 **Bucket:** Optical Networking · **Sub:** AECs / SerDes  
 **Date added:** 2026-05-16 at **$172.17**  
-**Scoring rank:** 81.0 / 100
+**Scoring rank:** 82.0 / 100
 
 **Why this name:**  
-_201% YoY revenue growth + RS inflection sweet spot (RS 57 + positive 1M). High valuation is the main risk — would trim aggressively if growth decelerates._
+_201% YoY revenue growth + RS inflection sweet spot (RS 57 + positive 1M). BUT capital structure 2/5 — heavy share dilution (+16.8% YoY) and 17.7% SBC-to-revenue is exactly the 'thesis right, vehicles wrong' pattern. Conviction Lean Trim at entry. Watch next earnings for whether dilution pace continues._
 
 **Entry-day snapshot:**  
 Mkt cap: $31.8B · P/E 94.08196 · P/S 29.730938 · 1Y 186.33% · 3M 41.77% · 1M 8.33% · RS 3M 58.0 · Δ 52wH -19.47%
@@ -78,7 +96,7 @@ Mkt cap: $31.8B · P/E 94.08196 · P/S 29.730938 · 1Y 186.33% · 3M 41.77% · 1
 
 **Bucket:** Thermal Management · **Sub:** Direct-to-Chip Cooling (via CoolIT)  
 **Date added:** 2026-05-16 at **$247.62**  
-**Scoring rank:** 79.0 / 100
+**Scoring rank:** 77.0 / 100
 
 **Why this name:**  
 _Becoming the cleanest public-market direct-to-chip cooling play via $4.75B CoolIT acquisition (closes Q3 2026). Entered at -19.7% off 52w high after deal-related sell-off — asymmetric setup. RS 0 looks bad but is deal-mechanics noise, not thesis breakdown. Watch for deal close + first-quarter integration commentary._
@@ -96,7 +114,7 @@ Mkt cap: $69.7B · P/E 33.552845 · P/S 4.235855 · 1Y -3.43% · 3M -17.01% · 1
 
 **Bucket:** Optical Networking · **Sub:** Switches  
 **Date added:** 2026-05-16 at **$141.97**  
-**Scoring rank:** 78.0 / 100
+**Scoring rank:** 76.0 / 100
 
 **Why this name:**  
 _Pure-play DC switching + RS 17 (low) creates asymmetric setup, but 1M -11.8% means we're entering during a breakdown. Position should be smaller until 1M turns positive._
@@ -110,17 +128,17 @@ Mkt cap: $178.8B · P/E 48.78694 · P/S 18.410519 · 1Y 47.24% · 3M 0.27% · 1M
 
 ---
 
-### FN — Fabrinet
+### GEV — GE Vernova
 
-**Bucket:** Optical Networking · **Sub:** Optical Contract Mfg  
-**Date added:** 2026-05-16 at **$722.04**  
-**Scoring rank:** 77.0 / 100
+**Bucket:** Heavy Electrical · **Sub:** Power Equipment  
+**Date added:** 2026-05-16 at **$1049.23**  
+**Scoring rank:** 76.0 / 100
 
 **Why this name:**  
-_Optical contract manufacturer; high theme purity but margin structure is thin. RS 61 + positive 1M. Customer concentration (NVDA, CIEN) is the key risk._
+_Re-promoted v3 on capital structure strength: 4/5 score from aggressive debt paydown (-100% YoY on certain lines), buyback (-0.7% shares), zero SBC. Mix is only ~28% AI-relevant (gas turbines dominate per supply_chain.md R3) but per-share return quality compensates. Watch gas turbine cycle as a separate moving piece._
 
 **Entry-day snapshot:**  
-Mkt cap: $25.9B · P/E 62.13769 · P/S 6.108736 · 1Y 214.55% · 3M 45.7% · 1M 7.34% · RS 3M 62.0 · Δ 52wH -3.59%
+Mkt cap: $281.9B · P/E 30.67924 · P/S 7.1606116 · 1Y 145.65% · 3M 30.88% · 1M 7.25% · RS 3M 46.0 · Δ 52wH -11.23%
 
 **Event log:**
 
@@ -139,24 +157,6 @@ _Thermal management bucket coverage. Airedale DC pure-play growing fast; rest is
 
 **Entry-day snapshot:**  
 Mkt cap: $14.3B · P/E 149.04396 · P/S 4.9771614 · 1Y 159.5% · 3M 25.29% · 1M 15.31% · RS 3M 38.0 · Δ 52wH -7.75%
-
-**Event log:**
-
-- _No events yet. First post-entry update goes here._
-
----
-
-### VRT — Vertiv
-
-**Bucket:** Heavy Electrical · **Sub:** UPS / Switchgear / Thermal  
-**Date added:** 2026-05-16 at **$370.94**  
-**Scoring rank:** 76.0 / 100
-
-**Why this name:**  
-_Highest theme exposure in the entire cohort + spans buckets 2 and 3. Highest concentration risk. Already extended (RS 74, 1M +26%) — entered at near 52w highs. Trim if it gives back >15% from entry._
-
-**Entry-day snapshot:**  
-Mkt cap: $142.5B · P/E 93.43577 · P/S 13.139913 · 1Y 250.24% · 3M 58.2% · 1M 26.11% · RS 3M 73.0 · Δ 52wH -2.37%
 
 **Event log:**
 
