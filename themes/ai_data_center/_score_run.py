@@ -19,11 +19,11 @@ WEIGHTS = {
     "rs_inflection":          15,
     "theme_exposure":         15,
     "revenue_growth":         15,
-    "margin_durability":      10,
+    "margin_durability":       5,   # reduced v3 — FCF margin already captured inside capital_structure
     "valuation_runway":       15,
     "institutional_13f":       5,
-    "capital_structure":       5,   # added v2 — share dilution + leverage + SBC + FCF
-    "catalyst_proximity":      0,   # zeroed v2 — weakest signal, mostly redundant with earnings cadence
+    "capital_structure":      10,   # bumped v3 — give the signal real teeth so the worst offenders feel it
+    "catalyst_proximity":      0,
 }
 assert sum(WEIGHTS.values()) == 100
 
