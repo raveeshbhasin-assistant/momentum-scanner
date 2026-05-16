@@ -1,0 +1,307 @@
+{
+  "theme": "ai_data_center",
+  "generated_at": "2026-05-16T21:00:09.543564Z",
+  "trade_date": "2026-05-16",
+  "ticker_count": 7,
+  "data_sources": {
+    "13f": "none",
+    "earnings": "none",
+    "news": "finnhub"
+  },
+  "per_ticker": {
+    "ETN": {
+      "ticker": "ETN",
+      "13f_holders": [],
+      "upcoming_earnings": [],
+      "recent_news": [
+        {
+          "date": "2026-05-15",
+          "headline": "Eaton Refocuses On Electrical And Aerospace As AI Power Bet Grows",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=2275c61bbb3f992233ea3d9fd9ef80165e6d99e47ddc09f530a9533e3797bd76",
+          "summary": "Eaton (NYSE:ETN) plans to fully spin off its Mobility division, repositioning the company as a focused electrical and aerospace business. The company is committing major U.S. manufacturing investments"
+        },
+        {
+          "date": "2026-05-15",
+          "headline": "Powell Rises 52.3% in Three Months: Should You Buy the Stock Now or Wait?",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=d1a5428190d2cd46c913588c69dba6df43ceaf0355f826d878f989a18904bcc8",
+          "summary": "POWL surges on strong backlog growth and data center demand, but rising costs and premium valuation may limit near-term upside."
+        },
+        {
+          "date": "2026-05-15",
+          "headline": "Is Wall Street Bullish or Bearish on Eaton Stock?",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=0ceba5ecbab1d6f33edf064d7f47afd388ec2dd87fb9a81e7958aede12a32528",
+          "summary": "While Eaton has lagged the broader market over the past year, Wall Street analysts remain moderately optimistic about the company\u2019s long-term growth prospects."
+        },
+        {
+          "date": "2026-05-14",
+          "headline": "Here's How Much You Would Have Made Owning Eaton Corp Stock In The Last 10 Years",
+          "source": "Benzinga",
+          "url": "https://finnhub.io/api/news?id=d216d3835e04530709885c6099fffd12f42cc7bbcfa77f8e96e93b998ae28128",
+          "summary": " "
+        },
+        {
+          "date": "2026-05-14",
+          "headline": "Eaton Corporation, PLC (ETN) is Attracting Investor Attention: Here is What You Should Know",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=5c924955cd74c10c3709e00addd57720b4d4473b4609ed07ff5993eefe667e75",
+          "summary": "Zacks.com users have recently been watching Eaton (ETN) quite a bit. Thus, it is worth knowing the facts that could determine the stock's prospects."
+        }
+      ]
+    },
+    "CRDO": {
+      "ticker": "CRDO",
+      "13f_holders": [],
+      "upcoming_earnings": [],
+      "recent_news": [
+        {
+          "date": "2026-05-14",
+          "headline": "Bloom Energy, SanDisk Are Powering A MEME ETF Surge That Tripled Nasdaq 100 Returns",
+          "source": "Benzinga",
+          "url": "https://finnhub.io/api/news?id=5904787145da92508a400d07826e7d5d3f6d6ed9b33f84a3ca3cbc4516fe4f4b",
+          "summary": "The Roundhill MEME ETF is up 75% since April. Goldman says retail trading volumes have jumped 28% as margin debt hits a record $1.3 trillion."
+        },
+        {
+          "date": "2026-05-14",
+          "headline": "Credo Schedules Fourth Quarter and Fiscal Year 2026 Financial Results Conference Call",
+          "source": "Finnhub",
+          "url": "https://finnhub.io/api/news?id=2c92fc7c80ecde4b870399d2195dbf8519de74944ca6fc3684c368f3261571f3",
+          "summary": "Credo Technology Group Holding Ltd an innovator in providing connectivity at scale through fast, reliable, and energy-efficient system solutions, today announced it will hold a conference call on..."
+        },
+        {
+          "date": "2026-05-14",
+          "headline": "Credo's Next Growth Phase Looks Much Bigger",
+          "source": "SeekingAlpha",
+          "url": "https://finnhub.io/api/news?id=0770735d6a43a011687a6744ca6f75ba7189cb9fc71555107ccc39a68a294c82",
+          "summary": "Credo\u00e2\u0080\u0099s Q3 surge highlights an AI reliability platform for hyperscalers, ZeroFlap optics, copper & telemetry driving durable margins. Learn more on CRDO stock here."
+        },
+        {
+          "date": "2026-05-13",
+          "headline": "Fundamentals Over Everything",
+          "source": "SeekingAlpha",
+          "url": "https://finnhub.io/api/news?id=a81b8fe593a82a3f6a9e1a748ba6a204a881ce101428733b2e1d850871eb0075",
+          "summary": "Sara Awad from Tech Contrarians\u00c2\u00a0discusses semi momentum. Nvidia earnings; Marvell and Broadcom; Micron, Credo, AMD, Intel, Arm, Apple and Nebius."
+        },
+        {
+          "date": "2026-05-13",
+          "headline": "Credo: The Market Is Missing What Meta And CoreWeave Just Confirmed",
+          "source": "SeekingAlpha",
+          "url": "https://finnhub.io/api/news?id=20e840bbf3a08614d5e95e0c197623b3cc870495c4ce4bc013a663186ee17db1",
+          "summary": "AI capex inflation and ROI scrutiny boost demand for efficient networking, helping Credo Technology Group Holding Ltd. Click for this updated look at CRDO stock."
+        }
+      ]
+    },
+    "ECL": {
+      "ticker": "ECL",
+      "13f_holders": [],
+      "upcoming_earnings": [],
+      "recent_news": [
+        {
+          "date": "2026-05-15",
+          "headline": "Earnings And Positive Analyst Sentiment Make Ecolab Inc. (ECL) Attractive For Second Half Of 2026",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=6e88fb0ae5dd8de093855c6ce5d5dce6049b6c1891eae6fa0e217be8518af7d2",
+          "summary": "Ecolab Inc. (NYSE:ECL) is one of the Best 52-Week Low Stocks to Buy According to Hedge Funds. On May 5, RBC Capital analyst Ashish Sabadra reaffirmed a Buy rating on Ecolab Inc. (NYSE:ECL) and assigne"
+        },
+        {
+          "date": "2026-05-13",
+          "headline": "Ecolab (ECL) Among BofA\u2019s List of Companies Set to Benefit from AI Data Center Buildout",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=12960defe61b5b62bdf9d18ce23d1a17f7774c62098b27109d30719ca1cc1f8a",
+          "summary": "\u200bEcolab Inc. (NYSE:ECL) ranks among our Best Liquid Cooling Stocks to Buy for AI Data Centers. The company acts as a global provider of water, hygiene, and infection\u2011prevention solutions that protect "
+        },
+        {
+          "date": "2026-05-13",
+          "headline": "Ecolab Report Links Sustainability Progress Digital Growth And Valuation Debate",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=e9455109386c82dfbbd71498015e9df0e69b5e458a62bdcca6488129b2768195",
+          "summary": "Ecolab (NYSE:ECL) has released its 2025 Growth & Impact Report. The report highlights sustainability progress, including reductions in emissions and water use, and continued digital development across"
+        },
+        {
+          "date": "2026-05-12",
+          "headline": "Assessing Ecolab (ECL) Valuation After Strong Q1 Results And New Bioprocessing Expansion",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=e6163bd4392f3669c8a7d2d7c6e6d2d27cbfac28b4810dea503c7b5bf16e3677",
+          "summary": "Ecolab (ECL) is back in focus after reporting first quarter results with higher revenue and earnings, issuing 2026 sales guidance, and expanding its life sciences footprint through a new bioprocessing"
+        },
+        {
+          "date": "2026-05-12",
+          "headline": "Ecolab Delivers Strong Performance and Impact",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=235770d3d4575ec5c045c70aa81de4755e3c9d31e3e0d6e0924b5f2869e4ed82",
+          "summary": "ST. PAUL, Minn., May 12, 2026--The world is entering a period of historic growth, complexity and opportunity. As artificial intelligence reshapes industries and demand for energy, food and water accel"
+        }
+      ]
+    },
+    "ANET": {
+      "ticker": "ANET",
+      "13f_holders": [],
+      "upcoming_earnings": [],
+      "recent_news": [
+        {
+          "date": "2026-05-16",
+          "headline": "Arista Networks, Inc. (ANET) Well-positioned for Inference-based Use Cases, Says Piper Sandler",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=7c9aca2ced51dbb226ae85faeaebae2acb59ba2a11b393d1d77a27024d8eb96c",
+          "summary": "Arista Networks, Inc. (NYSE:ANET) is among the stocks with the best earnings growth for the next 10 years. On May 7, Piper Sandler lifted the price target on Arista Networks, Inc. (NYSE:ANET) to $181 "
+        },
+        {
+          "date": "2026-05-16",
+          "headline": "Barclays Maintains an Overweight Rating on Arista Networks, Inc. (ANET)",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=3e7f34ac5e2f2c356e2e04d1cb39f386205a0ad1bd4366be4af7ce48a86ffea3",
+          "summary": "Arista Networks, Inc. (NYSE:ANET) is one of the 9 Most Profitable Tech Stocks to Buy Right Now. On May 7, Barclays bumped up the price target for Arista Networks, Inc. (NYSE:ANET) to $195 from $184. I"
+        },
+        {
+          "date": "2026-05-15",
+          "headline": "Is It Too Late To Consider Arista Networks (ANET) After Strong Multi Year Share Gains?",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=ae1545c7d6e491440f05e1a71632f1c1cac922a0edc969bf15c8502ac1fd4076",
+          "summary": "Wondering if Arista Networks at about US$147.81 per share still offers fair value, or if the best part of the opportunity has already passed you by. The stock has gained 4.3% over the past week, is do"
+        },
+        {
+          "date": "2026-05-15",
+          "headline": "Here's How Much $1000 Invested In Arista Networks 10 Years Ago Would Be Worth Today",
+          "source": "Benzinga",
+          "url": "https://finnhub.io/api/news?id=9fc9a4702c94184b4227cb1d7bdab0d909a79afe1e1f3c49745f5f7b2dd13843",
+          "summary": " "
+        },
+        {
+          "date": "2026-05-15",
+          "headline": "Institutional investors boosted holdings of AI infrastructure plays during first quarter",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=6490aa23072bf6651efa9e1645b8b47867c3a867852d896f705695a27ec200cb",
+          "summary": "Institutional investors were eager buyers of stocks in companies whose fate hinges on the rollout and adoption of artificial intelligence during the first quarter of 2026, \u200caccording to a Reuters over"
+        }
+      ]
+    },
+    "FN": {
+      "ticker": "FN",
+      "13f_holders": [],
+      "upcoming_earnings": [],
+      "recent_news": [
+        {
+          "date": "2026-05-15",
+          "headline": "Exploring US High Growth Tech Stocks This May 2026",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=1a11615e0cf595d3b1d3f58980c0f2f255e09cea81b4a012a593ed252900d7c9",
+          "summary": "Over the last 7 days, the United States market has risen by 1.1% and is up 27% over the past year, with earnings forecasted to grow by 17% annually. In this favorable environment, identifying high gro"
+        },
+        {
+          "date": "2026-05-14",
+          "headline": "Innoviz Technologies Ltd. Q1 2026 Earnings Call Summary",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=e49cd4c449e17529d118997ee562936f10955aafeb58f5b2392a5d02261e932a",
+          "summary": "Moby summary of Innoviz Technologies Ltd.'s Q1 2026 earnings call"
+        },
+        {
+          "date": "2026-05-13",
+          "headline": "FN vs. AAOI: Which Stock Is Worth Buying Post Latest Earnings Results?",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=89b841760dcbd3e3a1cadcfcb92cfab7e20c8fe65826e8a6da864844fd7ee03a",
+          "summary": "Fabrinet's Q3 FY26 blowout and upbeat Q4 outlook outshine Applied Optoelectronics' margin-hit loss in this post-earnings faceoff."
+        },
+        {
+          "date": "2026-05-13",
+          "headline": "High Growth Tech Stocks In The US For May 2026",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=22f702d3f106b50abe484a27439967e96223102c66cd54bed6a17d22728e8e58",
+          "summary": "The United States market has experienced a 1.5% increase over the last week and a substantial 26% rise over the past year, with earnings projected to grow by 17% annually. In this thriving environment"
+        },
+        {
+          "date": "2026-05-12",
+          "headline": "Photonics: The AI Bottleneck Beyond Memory",
+          "source": "SeekingAlpha",
+          "url": "https://finnhub.io/api/news?id=8ad5eb5a58002a924538d4e550d245b51773f79b7fff9528f3aab29de2ea8efd",
+          "summary": "Tech investors: discover the indium phosphide (InP) bottleneck trade driving optical laser/transceiver winners\u00e2\u0080\u0094what\u00e2\u0080\u0099s already surged and what to watch next."
+        }
+      ]
+    },
+    "MOD": {
+      "ticker": "MOD",
+      "13f_holders": [],
+      "upcoming_earnings": [],
+      "recent_news": [
+        {
+          "date": "2026-05-13",
+          "headline": "Modine to Host Fourth Quarter Fiscal 2026 Earnings Conference Call on May 27, 2026",
+          "source": "Finnhub",
+          "url": "https://finnhub.io/api/news?id=2599710a28b06649357762896fbbf1d74244de6ad26e6b4cc1d918bed04fc7aa",
+          "summary": "RACINE, Wis., May 13, 2026 /PRNewswire/ -- Modine , a diversified global leader in thermal management technology and solutions, announced today that it will host a conference call and webcast to..."
+        },
+        {
+          "date": "2026-05-07",
+          "headline": "Modine: This Powerhouse Stock Can Keep Going",
+          "source": "SeekingAlpha",
+          "url": "https://finnhub.io/api/news?id=3d711ea753511f012b8060759009aa0f12c4ea55f4082c3a9e387a66cf088153",
+          "summary": ""
+        },
+        {
+          "date": "2026-05-06",
+          "headline": "Carillon Eagle Small Cap Growth Fund Q1 2026 Portfolio Review",
+          "source": "SeekingAlpha",
+          "url": "https://finnhub.io/api/news?id=95c4749aa474d110f5739a58704fd6cf0bbaeef2bf551d1e7529e4d9ff206551",
+          "summary": "Applied Optoelectronics reported a healthy quarter and discussed winning major new orders from large hyperscale customers. Read more here."
+        },
+        {
+          "date": "2026-05-06",
+          "headline": "You Just Missed The SanDisk And Micron Memory Trade: These 10 Stocks Could Ride The Next AI Wave",
+          "source": "Benzinga",
+          "url": "https://finnhub.io/api/news?id=324e770f112f0e160ef4dac33732b0864926ecbe8f24423ef4dab5e8cf9f1da4",
+          "summary": "Memory is yesterday&#39;s trade. Liquid cooling is the next AI backlog story \u2014 Carrier orders up 500%, Trane lead times doubled. Here are 10 stocks."
+        },
+        {
+          "date": "2026-05-04",
+          "headline": "Modine to Participate in Upcoming Oppenheimer Virtual Conference on May 5, 2026",
+          "source": "Finnhub",
+          "url": "https://finnhub.io/api/news?id=79bd2907c7be7a2c92a16956233e955382e33179a483889866793e6e0766344c",
+          "summary": "RACINE, Wis., May 4, 2026 /PRNewswire/ -- Modine , a diversified global leader in thermal management technology and solutions, announced today that it will participate in the Oppenheimer 21st Annual.."
+        }
+      ]
+    },
+    "VRT": {
+      "ticker": "VRT",
+      "13f_holders": [],
+      "upcoming_earnings": [],
+      "recent_news": [
+        {
+          "date": "2026-05-16",
+          "headline": "Vertiv Holdings Co (NYSE:VRT): A Perfect Fit for the Little Book That Makes You Rich Strategy",
+          "source": "ChartMill",
+          "url": "https://finnhub.io/api/news?id=cade7b467d89ed47889f4b8e59d57666d49ba7fb14f9c3e08d2b03867b4ccbed",
+          "summary": "The \"Little Book That Makes You Rich\" strategy targets high-potential growth stocks using 8 rules. Vertiv (VRT) fits nearly all criteria with 29% sales growth, 54% EPS growth, strong ROE, and positive"
+        },
+        {
+          "date": "2026-05-16",
+          "headline": "Morgan Stanley Raises Vertiv (VRT) Target by $65",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=301ad524379efccf5e8d8aeaef3fdf10f47648991ab514c9118e8963fe69120a",
+          "summary": "Vertiv Holdings Co (NYSE:VRT) is one of the Top 10 Stocks That Will Profit from AI. As 2026 AI chips generate unprecedented heat, the company\u2019s advanced liquid cooling and power management solutions f"
+        },
+        {
+          "date": "2026-05-16",
+          "headline": "Our Top 10 High Growth Dividend Stocks - May 2026",
+          "source": "SeekingAlpha",
+          "url": "https://finnhub.io/api/news?id=a297031e8aed285a2d54fbdd24859c5cbc71972f59525a292ef9e1f3823fba9c",
+          "summary": "We use our proprietary models to rate both quantitatively and qualitatively and select the top 10 names from an initial list of nearly 400 dividend stocks. Read the full list here."
+        },
+        {
+          "date": "2026-05-16",
+          "headline": "Tecogen Q1 Earnings Call Highlights",
+          "source": "Yahoo",
+          "url": "https://finnhub.io/api/news?id=a23662b1a76190b3c60a0d3783af729437a71951d7ba9895f7e95574a41ba242",
+          "summary": "Tecogen (OTCMKTS:TGEN) reported lower first-quarter revenue and a wider loss as management said the company is investing in research, marketing and manufacturing capacity tied to its push into the dat"
+        },
+        {
+          "date": "2026-05-15",
+          "headline": "Loop Capital Initiates Coverage of Vertiv Holdings (VRT) with Buy Recommendation",
+          "source": "Fintel",
+          "url": "https://finnhub.io/api/news?id=bc7e1c7f4bc3df99f00dde8b0e1753ed70321977af77ed3e5901bdd57ae83ade",
+          "summary": ""
+        }
+      ]
+    }
+  }
+}

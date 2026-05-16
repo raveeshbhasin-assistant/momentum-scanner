@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}{{ tracker.theme_display_name }} · Scoring{% endblock %}
+
+{% block extra_css %}
+  .score-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  .score-card { background: var(--bg-elev); padding: 12px 16px; border-radius: var(--radius-md); }
+  .score-card .lbl { font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+  .score-card .v { font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .score-card .v .unit { font-size: 12px; color: var(--text-secondary); margin-left: 3px; font-weight: 400; }
+  .rubric-card { background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 22px; }
+  .rubric-card h3 { font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.05em; text-transform: uppercase; margin: 0 0 12px; }
+  table.rubric { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.rubric th { text-align: left; padding: 8px 10px; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; border-bottom: 0.5px solid var(--border); }
+  table.rubric th.num { text-align: right; }
+  table.rubric td { padding: 10px; border-top: 0.5px solid var(--border); }
+  table.rubric td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .type-pill { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 4px; background: var(--bg-elev-2); color: var(--text-secondary); font-weight: 500; }
+  .type-pill.quantitative { background: var(--text-info-bg); color: var(--text-info); }
+  .type-pill.judgment { background: var(--text-warning-bg); color: var(--text-warning); }
+  .type-pill.placeholder { background: var(--bg-elev-2); color: var(--text-tertiary); font-style: italic; }
+  .type-pill.mixed { background: var(--bg-elev-2); color: var(--text-secondary); }
+
+  .ranked-wrap { border: 0.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  table.ranked { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.ranked th { background: var(--bg-elev); padding: 10px 12px; font-size: 11px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.05em; text-transform: uppercase; text-align: left; border-bottom: 0.5px solid var(--border); }
+  table.ranked th.num { text-align: right; }
+  table.ranked th.ctr { text-align: center; }
+  table.ranked td { padding: 12px; border-top: 0.5px solid var(--border); font-variant-numeric: tabular-nums; }
+  table.ranked td.num { text-align: right; }
+  table.ranked td.ctr { text-align: center; }
+  .rank-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 22px; padding: 0 6px; border-radius: 6px; font-size: 11px; font-weight: 500; background: var(--bg-elev-2); color: var(--text-secondary); }
+  .rank-badge.tracker { background: var(--text-success-bg); color: var(--text-success); }
+  .rank-badge.watching { background: var(--text-warning-bg); color: var(--text-warning); }
+  .total-score { font-size: 14px; font-weight: 500; }
+  .total-score.tracker { color: var(--text-success); }
+  .tk-name { font-weight: 500; }
+  .tk-co { font-size: 11px; color: var(--text-tertiary); }
+  .bucket-pill { font-size: 10.5px; padding: 2px 8px; border-radius: 4px; background: var(--bg-elev-2); color: var(--text-secondary); font-weight: 500; white-space: nowrap; }
+  .breakdown-cell { display: inline-block; min-width: 16px; text-align: right; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+
+  .scoring-detail { margin-top: 30px; }
+  .scoring-detail h2 { font-family: var(--font-serif); font-size: 22px; font-weight: 500; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .pick-card { background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 14px; }
+  .pick-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+  .pick-tk { font-size: 18px; font-weight: 500; }
+  .pick-tk .co { font-size: 14px; color: var(--text-secondary); font-weight: 400; margin-left: 6px; }
+  .pick-meta { font-size: 12px; color: var(--text-tertiary); }
+  .pick-score { font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .pick-score.tracker { color: var(--text-success); }
+  table.pick-breakdown { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 12px; }
+  table.pick-breakdown td { padding: 6px 10px 6px 0; border-top: 0.5px solid var(--border); vertical-align: top; }
+  table.pick-breakdown td.crit { color: var(--text-secondary); width: 180px; }
+  table.pick-breakdown td.s { text-align: center; font-variant-numeric: tabular-nums; font-weight: 500; width: 32px; }
+  table.pick-breakdown td.r { color: var(--text-primary); font-size: 12px; line-height: 1.5; }
+
+  @media (max-width: 700px) {
+    .score-summary { grid-template-columns: 1fr 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+
+<div class="score-summary">
+  <div class="score-card">
+    <div class="lbl">Rubric version</div>
+    <div class="v">{{ scoring.rubric_version or 'v1' }}</div>
+  </div>
+  <div class="score-card">
+    <div class="lbl">Scored</div>
+    <div class="v">{{ ranked|length }}<span class="unit">candidates</span></div>
+  </div>
+  <div class="score-card">
+    <div class="lbl">Promoted</div>
+    <div class="v">{{ promoted_count }}<span class="unit">to tracker</span></div>
+  </div>
+  <div class="score-card">
+    <div class="lbl">Date</div>
+    <div class="v">{{ scoring.trade_date }}</div>
+  </div>
+</div>
+
+<div class="rubric-card">
+  <h3>Rubric · weights total 100</h3>
+  <table class="rubric">
+    <thead><tr><th>Criterion</th><th class="num">Weight</th><th>Type</th></tr></thead>
+    <tbody>
+      {% for crit, weight in scoring.weights.items() %}
+      <tr>
+        <td>{{ crit.replace('_', ' ') | capitalize }}</td>
+        <td class="num">{{ weight }}</td>
+        <td><span class="type-pill {{ scoring.score_types[crit] }}">{{ scoring.score_types[crit] }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2 style="font-family: var(--font-serif); font-size: 22px; font-weight: 500; margin: 24px 0 12px; letter-spacing: -0.01em;">Ranked candidates</h2>
+
+<div class="ranked-wrap">
+  <table class="ranked">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Ticker</th>
+        <th>Bucket</th>
+        <th class="num">Score</th>
+        <th class="num">B</th>
+        <th class="num">RS</th>
+        <th class="num">TE</th>
+        <th class="num">RG</th>
+        <th class="num">M</th>
+        <th class="num">V</th>
+        <th class="num">13F</th>
+        <th class="num">Cat</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in ranked %}
+      <tr>
+        <td>
+          {% set rank_class = 'tracker' if r.rank <= top_n else ('watching' if r.rank <= top_n + 3 else '') %}
+          <span class="rank-badge {{ rank_class }}">{{ r.rank }}</span>
+        </td>
+        <td><div class="tk-name">{{ r.ticker }}</div><div class="tk-co">{{ r.company }}</div></td>
+        <td><span class="bucket-pill">{% if r.bucket == 'Heavy Electrical' %}HE{% elif r.bucket == 'Optical Networking' %}Opt{% elif r.bucket == 'Thermal Management' %}Therm{% else %}{{ r.bucket }}{% endif %}</span></td>
+        <td class="num"><span class="total-score {{ rank_class }}">{{ '%.0f'|format(r.normalized_100) }}</span></td>
+        {% for crit in scoring_criteria_order %}
+        <td class="num">{{ r.components.get(crit, {}).get('score', '—') }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div style="margin-top:14px; font-size:11px; color:var(--text-tertiary); display:flex; gap:18px; flex-wrap:wrap;">
+  <span><span class="rank-badge tracker" style="min-width:14px;height:14px;padding:0 4px;font-size:9px;">●</span> Promoted to tracker</span>
+  <span><span class="rank-badge watching" style="min-width:14px;height:14px;padding:0 4px;font-size:9px;">●</span> Next 3 watching</span>
+  <span>B = Bottleneck · RS = RS inflection · TE = Theme exposure · RG = Revenue growth · M = Margin · V = Valuation · 13F = Institutional · Cat = Catalyst</span>
+</div>
+
+<div class="scoring-detail">
+  <h2>Top {{ top_n }} — promoted to tracker</h2>
+  {% for r in ranked[:top_n] %}
+  <div class="pick-card">
+    <div class="pick-head">
+      <div>
+        <div class="pick-tk">{{ r.rank }}. {{ r.ticker }} <span class="co">{{ r.company }}</span></div>
+        <div class="pick-meta">{{ r.bucket }} · {{ r.sub or '' }}</div>
+      </div>
+      <div class="pick-score tracker">{{ '%.0f'|format(r.normalized_100) }}<span style="font-size:11px;color:var(--text-tertiary);font-weight:400;"> /100</span></div>
+    </div>
+    <table class="pick-breakdown">
+      {% for crit in scoring_criteria_order %}
+        {% set c = r.components.get(crit, {}) %}
+        <tr>
+          <td class="crit">{{ crit.replace('_', ' ') | capitalize }}</td>
+          <td class="s">{{ c.get('score', '—') }}</td>
+          <td class="r">{{ c.get('rationale', '') }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="footnote">
+  Source: <code>themes/{{ active_slug }}/scoring_log.json</code> · Saved {{ scoring.scored_at }} · Rubric weights are theme-specific. To re-score with different weights, edit <code>_score_run.py</code> and re-run.
+</div>
+{% endblock %}

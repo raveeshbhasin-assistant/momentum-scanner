@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ tracker.theme_display_name }} · Thesis{% endblock %}
+
+{% block content %}
+<div class="article-layout">
+  <article class="article">
+    {{ body_html | safe }}
+  </article>
+  <aside class="toc-wrap" aria-label="Table of contents">
+    <div class="toc-head">Contents</div>
+    {{ toc_html | safe }}
+  </aside>
+</div>
+
+<div class="footnote">
+  Source: <code>themes/{{ active_slug }}/thesis.md</code> · Locked {{ tracker.theme_locked_at }} · contract — append dated addenda only.
+</div>
+{% endblock %}

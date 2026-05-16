@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ tracker.theme_display_name }} · Supply chain{% endblock %}
+
+{% block content %}
+<div class="article-layout">
+  <article class="article">
+    {{ body_html | safe }}
+  </article>
+  <aside class="toc-wrap" aria-label="Table of contents">
+    <div class="toc-head">Contents</div>
+    {{ toc_html | safe }}
+  </aside>
+</div>
+
+<div class="footnote">
+  Source: <code>themes/{{ active_slug }}/supply_chain.md</code> · Mermaid renders client-side · Interactive D3 version planned for Stage 3.
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: isDark ? 'dark' : 'neutral',
+      themeVariables: {
+        fontFamily: '-apple-system, BlinkMacSystemFont, Inter, Helvetica Neue, sans-serif',
+        fontSize: '14px',
+      },
+      flowchart: { useMaxWidth: true, htmlLabels: true },
+    });
+  }
+</script>
+{% endblock %}

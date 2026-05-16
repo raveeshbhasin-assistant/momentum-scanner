@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+{% block title %}{{ tracker.theme_display_name }} · Tracker{% endblock %}
+
+{% block extra_css %}
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 22px; }
+  .kpi { background: var(--bg-elev); border-radius: var(--radius-md); padding: 14px 18px; }
+  .kpi-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .kpi-value { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .kpi-value .unit { font-size: 13px; color: var(--text-secondary); margin-left: 4px; font-weight: 400; }
+  .kpi-value.positive { color: var(--text-success); }
+  .kpi-value.negative { color: var(--text-danger); }
+  .falsifiers { border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 28px; }
+  .falsifier-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+  .falsifier-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 22px; font-size: 13px; }
+  .falsifier-grid > div { display: flex; align-items: center; gap: 10px; }
+  .falsifier-grid .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--text-success); }
+  .falsifier-grid .dot.warning { background: var(--text-warning); }
+  .falsifier-grid .dot.danger { background: var(--text-danger); }
+  .controls { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+  .controls .lbl { font-size: 12px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .controls select { font-family: var(--font-sans); font-size: 13px; padding: 6px 28px 6px 10px; background: var(--bg-surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23888' fill='none' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 10px center; border: 0.5px solid var(--border-strong); border-radius: var(--radius-md); color: var(--text-primary); appearance: none; cursor: pointer; }
+  .controls .spacer { flex: 1; }
+  .controls .row-count { font-size: 11px; color: var(--text-tertiary); }
+  .table-wrap { border: 0.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  table.holdings { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.holdings th { background: var(--bg-elev); padding: 11px 14px; font-size: 11px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.05em; text-transform: uppercase; text-align: left; border-bottom: 0.5px solid var(--border); }
+  table.holdings th.num { text-align: right; }
+  table.holdings th.ctr { text-align: center; }
+  table.holdings td { padding: 14px; border-top: 0.5px solid var(--border); font-variant-numeric: tabular-nums; }
+  table.holdings td.num { text-align: right; }
+  table.holdings td.ctr { text-align: center; }
+  table.holdings tr.row { cursor: pointer; transition: background 0.08s ease; }
+  table.holdings tr.row:hover { background: var(--bg-elev); }
+  table.holdings tr.row.active { background: var(--bg-elev); }
+  .tk { font-weight: 500; font-size: 14px; }
+  .co { font-size: 11.5px; color: var(--text-tertiary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+  .bucket-pill { font-size: 10.5px; padding: 2px 8px; border-radius: 4px; background: var(--bg-elev-2); color: var(--text-secondary); font-weight: 500; letter-spacing: 0.02em; white-space: nowrap; }
+  .pos { color: var(--text-success); }
+  .neg { color: var(--text-danger); }
+  .muted { color: var(--text-secondary); font-size: 12px; }
+  .thesis-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; }
+  .thesis-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-success); }
+  .thesis-pill.watching .dot { background: var(--text-warning); }
+  .thesis-pill.broken .dot { background: var(--text-danger); }
+  .detail { margin-top: 22px; background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 22px 26px; }
+  .detail-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; gap: 16px; }
+  .detail-tk { font-size: 22px; font-weight: 500; letter-spacing: -0.01em; }
+  .detail-tk .co { font-size: 15px; color: var(--text-secondary); font-weight: 400; margin-left: 8px; display: inline; max-width: none; }
+  .detail-meta { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+  .detail-meta .sep { margin: 0 8px; opacity: 0.6; }
+  .detail-price { text-align: right; font-variant-numeric: tabular-nums; }
+  .detail-chg { font-size: 22px; font-weight: 500; }
+  .detail-px-arrow { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+  .rationale { margin: 18px 0; padding: 14px 18px; background: var(--bg-elev); border-radius: var(--radius-md); font-size: 14px; line-height: 1.65; color: var(--text-secondary); }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 18px; }
+  .panel-head { font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; }
+  .event-row, .upcoming-row, .f13-row { display: grid; padding: 8px 0; border-top: 0.5px solid var(--border); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .event-row { grid-template-columns: 92px 70px 1fr; gap: 10px; }
+  .upcoming-row { grid-template-columns: 92px 1fr; gap: 10px; }
+  .f13-row { grid-template-columns: 1fr 64px 64px 80px; gap: 8px; }
+  .event-row .date, .upcoming-row .date { color: var(--text-tertiary); }
+  .event-row .type, .f13-row .head { color: var(--text-secondary); text-transform: capitalize; }
+  .empty { font-size: 12.5px; color: var(--text-tertiary); padding: 8px 0; }
+  .conv-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; letter-spacing: 0.02em; background: var(--bg-elev-2); color: var(--text-secondary); }
+  .conv-tag.trim { color: var(--text-warning); }
+  .conv-tag.inc { color: var(--text-success); }
+  @media (max-width: 700px) {
+    .kpis { grid-template-columns: 1fr; }
+    .falsifier-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+    table.holdings { font-size: 12.5px; }
+    table.holdings td, table.holdings th { padding: 10px 8px; }
+    .co { display: none; }
+  }
+{% endblock %}
+
+{% block content %}
+  <div class="kpis">
+    <div class="kpi">
+      <div class="kpi-label">Tracker since lock</div>
+      <div class="kpi-value {% if aggregate.tracker_chg_pct > 0 %}positive{% elif aggregate.tracker_chg_pct < 0 %}negative{% endif %}">
+        {{ '%+.2f'|format(aggregate.tracker_chg_pct) }}%
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">vs SPY since lock</div>
+      <div class="kpi-value {% if aggregate.tracker_vs_spy_pp > 0 %}positive{% elif aggregate.tracker_vs_spy_pp < 0 %}negative{% endif %}">
+        {{ '%+.2f'|format(aggregate.tracker_vs_spy_pp) }}<span class="unit">pp</span>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Falsifiers active</div>
+      <div class="kpi-value">
+        {{ aggregate.active_falsifiers }}<span class="unit">of {{ aggregate.total_falsifiers }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="falsifiers">
+    <div class="falsifier-label">Falsifier status</div>
+    <div class="falsifier-grid">
+      <div><span class="dot"></span>Algorithmic efficiency leaps</div>
+      <div><span class="dot"></span>AI bubble bursts</div>
+      <div><span class="dot"></span>Thesis right, vehicles wrong</div>
+      <div><span class="dot"></span>Supply chain snarls terminal</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <span class="lbl">Sort</span>
+    <select id="sort-by">
+      <option value="score">Score</option>
+      <option value="chg">Δ% since entry</option>
+      <option value="vsSpy">vs SPY</option>
+      <option value="rs">RS rank (low→high)</option>
+      <option value="bucket">Bucket</option>
+      <option value="ticker">Ticker</option>
+    </select>
+    <span class="lbl">Filter</span>
+    <select id="filter-bucket">
+      <option value="all">All buckets</option>
+      <option value="Optical Networking">Optical</option>
+      <option value="Heavy Electrical">Heavy electrical</option>
+      <option value="Thermal Management">Thermal</option>
+    </select>
+    <span class="spacer"></span>
+    <span class="row-count" id="row-count">{{ aggregate.holdings_count }} holdings</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="holdings" id="holdings-table">
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th class="num">Score</th>
+          <th>Bucket</th>
+          <th class="num">Entry</th>
+          <th class="num">Now</th>
+          <th class="num">Δ%</th>
+          <th class="num">vs SPY</th>
+          <th class="ctr">Thesis</th>
+        </tr>
+      </thead>
+      <tbody id="holdings-body"></tbody>
+    </table>
+  </div>
+
+  <div id="detail-panel"></div>
+
+  <div class="footnote">
+    Anchor data <code>tracker.json</code> · Prices <code>candidates.json</code> ·
+    13F / earnings / news <code>tracker_live.json</code>
+    {% if live_meta.trade_date %}(refreshed {{ live_meta.trade_date }}, sources: {% for k, v in live_meta.data_sources.items() %}{{ k }}={{ v }}{% if not loop.last %} · {% endif %}{% endfor %}){% else %}(not yet refreshed){% endif %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const HOLDINGS = {{ holdings | tojson }};
+const AGG = {{ aggregate | tojson }};
+const ACTIVE_SLUG = {{ active_slug | tojson }};
+
+function fmtMoney(v) { if (v == null) return '—'; return '$' + Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtPct(v) { if (v == null) return '—'; return (v >= 0 ? '+' : '') + Number(v).toFixed(2) + '%'; }
+function fmtPp(v) { if (v == null) return '—'; return (v >= 0 ? '+' : '') + Number(v).toFixed(2); }
+function bucketShort(b) { if (b === 'Heavy Electrical') return 'HE'; if (b === 'Optical Networking') return 'Opt'; if (b === 'Thermal Management') return 'Therm'; return b; }
+function convClass(c) { if (!c) return ''; if (typeof c === 'number') c = c >= 4 ? 'Lean inc' : c <= 2 ? 'Lean trim' : 'Hold'; if (c.toLowerCase().includes('inc')) return 'inc'; if (c.toLowerCase().includes('trim')) return 'trim'; return ''; }
+function convLabel(c) { if (typeof c === 'number') return { 5: 'Increase', 4: 'Lean inc', 3: 'Hold', 2: 'Lean trim', 1: 'Trim' }[c] || 'Hold'; return c || 'Hold'; }
+
+function renderRows() {
+  const sortBy = document.getElementById('sort-by').value;
+  const filterB = document.getElementById('filter-bucket').value;
+  let rows = HOLDINGS.slice();
+  if (filterB !== 'all') rows = rows.filter(r => r.bucket === filterB);
+  const sorters = {
+    score:  (a, b) => (b.scoring_total || 0) - (a.scoring_total || 0),
+    chg:    (a, b) => (b.chg_pct || 0) - (a.chg_pct || 0),
+    vsSpy:  (a, b) => (b.chg_vs_spy_pp || 0) - (a.chg_vs_spy_pp || 0),
+    rs:     (a, b) => (a.entry_rs_3m || 999) - (b.entry_rs_3m || 999),
+    bucket: (a, b) => (a.bucket || '').localeCompare(b.bucket || '') || (b.scoring_total || 0) - (a.scoring_total || 0),
+    ticker: (a, b) => (a.ticker || '').localeCompare(b.ticker || ''),
+  };
+  rows.sort(sorters[sortBy]);
+
+  const tbody = document.getElementById('holdings-body');
+  tbody.innerHTML = rows.map(r => {
+    const chgClass = r.chg_pct > 0 ? 'pos' : (r.chg_pct < 0 ? 'neg' : 'muted');
+    const vsClass = r.chg_vs_spy_pp > 0 ? 'pos' : (r.chg_vs_spy_pp < 0 ? 'neg' : 'muted');
+    const thesisCls = (r.thesis_status || '').toLowerCase();
+    return `<tr class="row" data-tk="${r.ticker}">
+      <td><div class="tk">${r.ticker}</div><div class="co">${r.company || ''}</div></td>
+      <td class="num">${(r.scoring_total != null) ? r.scoring_total.toFixed(0) : '—'}</td>
+      <td><span class="bucket-pill">${bucketShort(r.bucket)}</span></td>
+      <td class="num muted">${fmtMoney(r.entry_price)}</td>
+      <td class="num"><b>${fmtMoney(r.current_price)}</b></td>
+      <td class="num ${chgClass}">${fmtPct(r.chg_pct)}</td>
+      <td class="num ${vsClass}" style="font-size:12px;">${fmtPp(r.chg_vs_spy_pp)}</td>
+      <td class="ctr"><span class="thesis-pill ${thesisCls === 'watching' ? 'watching' : thesisCls === 'broken' ? 'broken' : ''}"><span class="dot"></span>${r.thesis_status || 'Intact'}</span></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('row-count').textContent =
+    rows.length === HOLDINGS.length ? `${rows.length} holdings` : `${rows.length} of ${HOLDINGS.length} holdings`;
+
+  tbody.querySelectorAll('tr.row').forEach(tr => {
+    tr.addEventListener('click', () => {
+      tbody.querySelectorAll('tr.row').forEach(t => t.classList.remove('active'));
+      tr.classList.add('active');
+      showDetail(tr.dataset.tk);
+    });
+  });
+  if (rows.length > 0) {
+    const first = rows[0];
+    tbody.querySelector(`tr[data-tk="${first.ticker}"]`)?.classList.add('active');
+    showDetail(first.ticker);
+  } else {
+    document.getElementById('detail-panel').innerHTML = '';
+  }
+}
+
+function showDetail(tk) {
+  const r = HOLDINGS.find(h => h.ticker === tk);
+  if (!r) return;
+
+  // News — from Finnhub via tracker_live.json (real data when available)
+  const news = r.recent_news || [];
+  const eventsHtml = news.length === 0
+    ? '<div class="empty">No recent news in window</div>'
+    : news.map(n => {
+        const link = n.url ? `<a href="${n.url}" target="_blank" rel="noopener">${n.headline}</a>` : n.headline;
+        return `<div class="event-row"><span class="date">${n.date || '—'}</span><span class="type">${(n.source || '').toLowerCase()}</span><span>${link}</span></div>`;
+      }).join('');
+
+  // Upcoming earnings — from FMP via tracker_live.json (real data when available)
+  const earnings = r.upcoming_earnings || [];
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = earnings.filter(e => (e.date || '') >= today);
+  const upcomingHtml = upcoming.length === 0
+    ? '<div class="empty">No upcoming earnings in window</div>'
+    : upcoming.slice(0, 5).map(u => {
+        const est = u.eps_estimate != null ? ` · EPS est $${u.eps_estimate.toFixed(2)}` : '';
+        return `<div class="upcoming-row"><span class="date">${u.date}</span><span>Earnings${est}</span></div>`;
+      }).join('');
+
+  // 13F — from FMP via tracker_live.json (real data when available)
+  const f13 = r.f13_holders || [];
+  const f13Html = f13.length === 0
+    ? '<div class="empty">13F data unavailable — deploys with FMP key</div>'
+    : f13.map(f => {
+        const now = f.now_pct != null ? f.now_pct : 0;
+        const prev = f.prev_pct != null ? f.prev_pct : (now - (f.delta_pp || 0));
+        const delta = f.delta_pp != null ? f.delta_pp : (now - prev);
+        const cls = delta > 0 ? 'pos' : (delta < 0 ? 'neg' : 'muted');
+        return `<div class="f13-row"><span>${f.fund}</span><span class="num muted">${prev.toFixed(1)}%</span><span class="num"><b>${now.toFixed(1)}%</b></span><span class="num ${cls}">${(delta >= 0 ? '+' : '') + delta.toFixed(1)}pp</span></div>`;
+      }).join('');
+  const chgClass = r.chg_pct > 0 ? 'pos' : (r.chg_pct < 0 ? 'neg' : 'muted');
+
+  document.getElementById('detail-panel').innerHTML = `
+    <div class="detail">
+      <div class="detail-head">
+        <div>
+          <div class="detail-tk">${r.ticker} <span class="co">${r.company || ''}</span></div>
+          <div class="detail-meta">${r.bucket}<span class="sep">·</span>Sub: ${r.sub || '—'}<span class="sep">·</span>Score ${(r.scoring_total != null) ? r.scoring_total.toFixed(0) : '—'}<span class="sep">·</span>Conviction <span class="conv-tag ${convClass(r.conviction)}">${convLabel(r.conviction)}</span></div>
+        </div>
+        <div class="detail-price">
+          <div class="detail-chg ${chgClass}">${fmtPct(r.chg_pct)}</div>
+          <div class="detail-px-arrow">${fmtMoney(r.entry_price)} → ${fmtMoney(r.current_price)}</div>
+        </div>
+      </div>
+      <div class="rationale">${r.scoring_rationale || ''}</div>
+      <div class="detail-grid">
+        <div><div class="panel-head">Recent events</div>${eventsHtml}</div>
+        <div><div class="panel-head">Upcoming</div>${upcomingHtml}</div>
+      </div>
+      <div style="margin-top: 18px;">
+        <div class="panel-head">Top 13F holders <span style="color:var(--text-tertiary); font-weight:400; text-transform:none; letter-spacing:0; margin-left:6px;">last quarter delta</span></div>
+        <div class="f13-row" style="border-top: 0.5px solid var(--border); padding-top: 6px; padding-bottom: 4px; color: var(--text-tertiary); font-size: 11px;">
+          <span class="head">Fund</span><span class="num head">Prev</span><span class="num head">Now</span><span class="num head">Δ</span>
+        </div>
+        ${f13Html}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('sort-by').addEventListener('change', renderRows);
+document.getElementById('filter-bucket').addEventListener('change', renderRows);
+renderRows();
+
+// ── Live price overlay ─────────────────────────────────────
+// On load, fetch live quotes and update prices + chg%. If FMP key is absent
+// on the server, the API returns the cached candidates.json values (no-op).
+(async function liveOverlay() {
+  try {
+    const res = await fetch(`/api/themes/${ACTIVE_SLUG}/quotes`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const quotes = data.quotes || {};
+    const spyLive = data.spy;
+    let spyChgFromLock = 0;
+    if (spyLive && AGG && AGG.spy_chg_pct != null) {
+      // Recompute SPY since-lock change if we have an updated SPY price.
+      // (server already does this if it has FMP — for now just use the served value).
+    }
+    let updated = 0;
+    let aggSum = 0;
+    let aggCount = 0;
+    HOLDINGS.forEach(h => {
+      const q = quotes[h.ticker];
+      if (!q || q.price == null) return;
+      const newPrice = Number(q.price);
+      if (Math.abs(newPrice - h.current_price) < 0.005) return;  // no change
+      h.current_price = Math.round(newPrice * 100) / 100;
+      h.chg_pct = h.entry_price > 0 ? Math.round((newPrice / h.entry_price - 1) * 10000) / 100 : 0;
+      h.chg_vs_spy_pp = Math.round((h.chg_pct - (AGG.spy_chg_pct || 0)) * 100) / 100;
+      updated++;
+    });
+    if (updated > 0) {
+      // Recompute aggregate
+      HOLDINGS.forEach(h => { aggSum += h.chg_pct || 0; aggCount++; });
+      const avgChg = aggCount > 0 ? aggSum / aggCount : 0;
+      AGG.tracker_chg_pct = Math.round(avgChg * 100) / 100;
+      AGG.tracker_vs_spy_pp = Math.round((avgChg - (AGG.spy_chg_pct || 0)) * 100) / 100;
+      // Update KPI cards in place
+      const kpiCards = document.querySelectorAll('.kpi-value');
+      if (kpiCards[0]) {
+        const v = AGG.tracker_chg_pct;
+        kpiCards[0].textContent = (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+        kpiCards[0].classList.remove('positive', 'negative');
+        if (v > 0) kpiCards[0].classList.add('positive');
+        else if (v < 0) kpiCards[0].classList.add('negative');
+      }
+      if (kpiCards[1]) {
+        const v = AGG.tracker_vs_spy_pp;
+        kpiCards[1].innerHTML = (v >= 0 ? '+' : '') + v.toFixed(2) + '<span class="unit">pp</span>';
+        kpiCards[1].classList.remove('positive', 'negative');
+        if (v > 0) kpiCards[1].classList.add('positive');
+        else if (v < 0) kpiCards[1].classList.add('negative');
+      }
+      renderRows();
+      // Add a small "live" indicator to the footnote
+      const fn = document.querySelector('.footnote');
+      if (fn && data.source === 'fmp') {
+        const dot = document.createElement('span');
+        dot.style.cssText = 'display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--text-success); margin-right:4px; vertical-align:middle;';
+        fn.insertBefore(dot, fn.firstChild);
+        fn.insertBefore(document.createTextNode(`Live · ${updated}/${HOLDINGS.length} updated · `), dot.nextSibling);
+      }
+    }
+  } catch (e) {
+    // Silent — overlay is best-effort
+    console.debug('Live overlay failed:', e);
+  }
+})();
+</script>
+{% endblock %}

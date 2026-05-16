@@ -1,0 +1,2161 @@
+{
+  "theme": "ai_data_center",
+  "scored_at": "2026-05-16T20:59:21.528023Z",
+  "trade_date": "2026-05-16",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 15,
+    "theme_exposure": 15,
+    "revenue_growth": 15,
+    "margin_durability": 10,
+    "valuation_runway": 15,
+    "institutional_13f": 5,
+    "catalyst_proximity": 5
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "AVGO": {
+      "company": "Broadcom",
+      "bucket": "Optical Networking",
+      "sub": "Switch Silicon",
+      "note": "Tomahawk merchant silicon \u2014 duopoly with MRVL",
+      "specificity_meta": 5,
+      "raw_total": 370,
+      "normalized_100": 74.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Switch silicon duopoly with MRVL; Tomahawk dominant"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "RS 48 mid-cohort, 1M +6.7% positive \u2014 healthy"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Only ~30% AI/networking after VMware acquisition; diversified"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "~30% YoY, sustained"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 50,
+          "rationale": "Best-in-class gross margin, expanding"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 82, P/S 29 \u2014 priced for continued AI tailwind"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "Earnings cadence; new Tomahawk/Jericho generations"
+        }
+      },
+      "snapshot": {
+        "price": 425.19,
+        "market_cap": 2013133668352,
+        "pe": 82.721794,
+        "ps": 29.482641,
+        "1y_pct": 87.5,
+        "3m_pct": 31.03,
+        "1m_pct": 6.71,
+        "dist_from_52w_high_pct": -3.88,
+        "rs_3m": 50.0,
+        "revenue_growth_yoy": 0.295
+      }
+    },
+    "ANET": {
+      "company": "Arista Networks",
+      "bucket": "Optical Networking",
+      "sub": "Switches",
+      "note": "Hyperscaler customer moat; software differentiation",
+      "specificity_meta": 4,
+      "raw_total": 390,
+      "normalized_100": 78.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Hyperscaler moat + software differentiation"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "RS 17 LOW but 1M -11.8% (breakdown risk)"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Data center switching is the entire business"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "~35% YoY"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 50,
+          "rationale": "High and durable; capital-light"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 49 / P/S 18 \u2014 reasonable given growth"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Hyperscaler capex commentary on each earnings call"
+        }
+      },
+      "snapshot": {
+        "price": 141.97,
+        "market_cap": 178764283904,
+        "pe": 48.78694,
+        "ps": 18.410519,
+        "1y_pct": 47.24,
+        "3m_pct": 0.27,
+        "1m_pct": -11.83,
+        "dist_from_52w_high_pct": -21.04,
+        "rs_3m": 19.0,
+        "revenue_growth_yoy": 0.351
+      }
+    },
+    "CLS": {
+      "company": "Celestica",
+      "bucket": "Optical Networking",
+      "sub": "Switch Manufacturing",
+      "note": "Contract manufacturer; HPS division picks up white-box share",
+      "specificity_meta": 3,
+      "raw_total": 345,
+      "normalized_100": 69.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Contract manufacturer \u2014 less moat"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "RS 39 mid, 1M -6.2% (cooling)"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "HPS division is DC-relevant; rest is broader EMS"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "53% YoY \u2014 fastest in cohort outside CRDO"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 30,
+          "rationale": "EMS-thin but expanding via HPS mix shift"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 44 / P/S 3.0 \u2014 cheap relative to growth"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "HPS revenue disclosure improving"
+        }
+      },
+      "snapshot": {
+        "price": 358.55,
+        "market_cap": 41223606272,
+        "pe": 43.460606,
+        "ps": 2.9895358,
+        "1y_pct": 216.6,
+        "3m_pct": 27.75,
+        "1m_pct": -6.22,
+        "dist_from_52w_high_pct": -17.57,
+        "rs_3m": 42.0,
+        "revenue_growth_yoy": 0.528
+      }
+    },
+    "AAOI": {
+      "company": "Applied Optoelectronics",
+      "bucket": "Optical Networking",
+      "sub": "Transceivers",
+      "note": "800G hyperscaler wins; share-gain thesis",
+      "specificity_meta": 3,
+      "raw_total": 275,
+      "normalized_100": 55.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Mid-tier transceiver player; share-gain dependent"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS 96 EXTENDED after 918% 1Y run"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "DC optics core but business has pivoted before"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "51% YoY \u2014 recent acceleration"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Historically volatile; thin"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E 40, P/S 30, after 918% 1Y \u2014 priced for perfection"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Big hyperscaler program wins are episodic"
+        }
+      },
+      "snapshot": {
+        "price": 190.36,
+        "market_cap": 15275013120,
+        "pe": 39.891033,
+        "ps": 30.128231,
+        "1y_pct": 918.51,
+        "3m_pct": 328.16,
+        "1m_pct": 21.0,
+        "dist_from_52w_high_pct": -18.53,
+        "rs_3m": 96.0,
+        "revenue_growth_yoy": 0.514
+      }
+    },
+    "LITE": {
+      "company": "Lumentum",
+      "bucket": "Optical Networking",
+      "sub": "Transceivers / Lasers",
+      "note": "Vertically integrated; InP laser exposure",
+      "specificity_meta": 4,
+      "raw_total": 325,
+      "normalized_100": 65.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Vertically integrated lasers + InP"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 78 \u2014 high; 1M +8.9%"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Datacom + telecom; majority datacom now"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "90% YoY \u2014 extreme"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 30,
+          "rationale": "Cyclical historically, currently expanding"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E 169 / P/S 30 \u2014 extreme"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "CPO risk over multi-year horizon"
+        }
+      },
+      "snapshot": {
+        "price": 970.7,
+        "market_cap": 75520458752,
+        "pe": 169.40663,
+        "ps": 30.349005,
+        "1y_pct": 1145.29,
+        "3m_pct": 72.5,
+        "1m_pct": 8.92,
+        "dist_from_52w_high_pct": -10.59,
+        "rs_3m": 77.0,
+        "revenue_growth_yoy": 0.901
+      }
+    },
+    "COHR": {
+      "company": "Coherent",
+      "bucket": "Optical Networking",
+      "sub": "Lasers / Datacom",
+      "note": "Post-II-VI merger scale; some commodity exposure",
+      "specificity_meta": 3,
+      "raw_total": 250,
+      "normalized_100": 50.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Broad portfolio post II-VI merger; less specific"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS 83 \u2014 high"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Datacom is one of multiple segments"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "20% YoY \u2014 moderate"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Improving post-merger"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E 182 \u2014 extreme"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Merger integration milestones"
+        }
+      },
+      "snapshot": {
+        "price": 382.45,
+        "market_cap": 74822262784,
+        "pe": 182.11906,
+        "ps": 11.333128,
+        "1y_pct": 386.58,
+        "3m_pct": 76.06,
+        "1m_pct": 16.6,
+        "dist_from_52w_high_pct": -7.4,
+        "rs_3m": 81.0,
+        "revenue_growth_yoy": 0.205
+      }
+    },
+    "FN": {
+      "company": "Fabrinet",
+      "bucket": "Optical Networking",
+      "sub": "Optical Contract Mfg",
+      "note": "Picks-and-shovels for LITE, COHR; high revenue concentration",
+      "specificity_meta": 4,
+      "raw_total": 385,
+      "normalized_100": 77.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Concentrated optical CM; few global peers at scale"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "RS 61, 1M +7.3% \u2014 exactly the middle-range + positive 1M sweet spot"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure-play optical contract manufacturer"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "39% YoY"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "CM margins are structurally thin"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 62 / P/S 6 \u2014 fair given growth"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Customer concentration (NVDA, CIEN) is also a risk"
+        }
+      },
+      "snapshot": {
+        "price": 722.04,
+        "market_cap": 25870503936,
+        "pe": 62.13769,
+        "ps": 6.108736,
+        "1y_pct": 214.55,
+        "3m_pct": 45.7,
+        "1m_pct": 7.34,
+        "dist_from_52w_high_pct": -3.59,
+        "rs_3m": 62.0,
+        "revenue_growth_yoy": 0.393
+      }
+    },
+    "MRVL": {
+      "company": "Marvell",
+      "bucket": "Optical Networking",
+      "sub": "DSPs / SerDes",
+      "note": "PAM4 DSPs for 800G + custom silicon programs",
+      "specificity_meta": 5,
+      "raw_total": 340,
+      "normalized_100": 68.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "PAM4 DSP duopoly; custom silicon programs"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS 91 \u2014 extended"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Large DC silicon exposure; auto + storage still meaningful"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "22% YoY \u2014 solid not stunning"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Improving as DC mix grows"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 57 \u2014 reasonable for the tier"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Custom silicon program ramps"
+        }
+      },
+      "snapshot": {
+        "price": 176.89,
+        "market_cap": 154876592128,
+        "pe": 57.43182,
+        "ps": 18.899836,
+        "1y_pct": 178.18,
+        "3m_pct": 125.13,
+        "1m_pct": 32.63,
+        "dist_from_52w_high_pct": -7.94,
+        "rs_3m": 92.0,
+        "revenue_growth_yoy": 0.221
+      }
+    },
+    "CRDO": {
+      "company": "Credo Technology",
+      "bucket": "Optical Networking",
+      "sub": "AECs / SerDes",
+      "note": "Smaller cap, fastest growth, AEC narrative",
+      "specificity_meta": 4,
+      "raw_total": 405,
+      "normalized_100": 81.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "AEC + SerDes; specialized niche, smaller competition"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "RS 57, 1M +8.3% \u2014 middle range with positive momentum"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Essentially all DC connectivity"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "201% YoY \u2014 highest in cohort"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Improving rapidly as scale builds"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 94 \u2014 priced for continued growth"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Customer wins are the catalyst signal"
+        }
+      },
+      "snapshot": {
+        "price": 172.17,
+        "market_cap": 31756744704,
+        "pe": 94.08196,
+        "ps": 29.730938,
+        "1y_pct": 186.33,
+        "3m_pct": 41.77,
+        "1m_pct": 8.33,
+        "dist_from_52w_high_pct": -19.47,
+        "rs_3m": 58.0,
+        "revenue_growth_yoy": 2.015
+      }
+    },
+    "ALAB": {
+      "company": "Astera Labs",
+      "bucket": "Optical Networking",
+      "sub": "PCIe/CXL Retimers",
+      "note": "Inside-rack connectivity; recent IPO",
+      "specificity_meta": 4,
+      "raw_total": 335,
+      "normalized_100": 67.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "PCIe/CXL retimers; specialized"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS 87 \u2014 extended"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure DC connectivity play"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "93% YoY"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Improving as recent IPO scales"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E 156 \u2014 extreme; recent IPO premium"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "Lockup expirations + earnings cadence"
+        }
+      },
+      "snapshot": {
+        "price": 232.68,
+        "market_cap": 39883198464,
+        "pe": 156.16107,
+        "ps": 39.82569,
+        "1y_pct": 156.93,
+        "3m_pct": 79.93,
+        "1m_pct": 36.22,
+        "dist_from_52w_high_pct": -11.49,
+        "rs_3m": 85.0,
+        "revenue_growth_yoy": 0.934
+      }
+    },
+    "AXTI": {
+      "company": "AXT Inc.",
+      "bucket": "Optical Networking",
+      "sub": "InP Substrates \u2191",
+      "note": "Extreme upstream bottleneck; few global suppliers",
+      "specificity_meta": 5,
+      "raw_total": 275,
+      "normalized_100": 55.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Upstream InP substrates \u2014 extreme physical bottleneck"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS 100 \u2014 most extended in cohort after +8207% 1Y"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "InP is one of multiple substrate businesses (GaAs, Ge)"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "39% YoY"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Historically thin; quality issues in past"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E 165, P/S 84 \u2014 extreme"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 10,
+          "rationale": "Quality and supply ramp execution"
+        }
+      },
+      "snapshot": {
+        "price": 123.78,
+        "market_cap": 8098081792,
+        "pe": 164.60107,
+        "ps": 84.448265,
+        "1y_pct": 8207.38,
+        "3m_pct": 410.64,
+        "1m_pct": 51.36,
+        "dist_from_52w_high_pct": -7.63,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": 0.391
+      }
+    },
+    "ETN": {
+      "company": "Eaton",
+      "bucket": "Heavy Electrical",
+      "sub": "MV Transformers / Switchgear / UPS",
+      "note": "Flagship of heavy-electrical bet; massive backlogs",
+      "specificity_meta": 5,
+      "raw_total": 415,
+      "normalized_100": 83.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "MV transformer + switchgear flagship; 128w lead times"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "RS 22 LOW, 1M +2.0% positive \u2014 the asymmetry the thesis targets"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Eaton is a giant industrial; DC + utility is ~40-50%"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "17% YoY \u2014 steady not stunning"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 50,
+          "rationale": "Strong, expanding margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 39, P/S 5.4 \u2014 reasonable given pricing power + backlog"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Backlog updates each quarter"
+        }
+      },
+      "snapshot": {
+        "price": 399.44,
+        "market_cap": 155102560256,
+        "pe": 39.045944,
+        "ps": 5.4379973,
+        "1y_pct": 22.79,
+        "3m_pct": 3.22,
+        "1m_pct": 1.99,
+        "dist_from_52w_high_pct": -8.01,
+        "rs_3m": 27.0,
+        "revenue_growth_yoy": 0.168
+      }
+    },
+    "GEV": {
+      "company": "GE Vernova",
+      "bucket": "Heavy Electrical",
+      "sub": "Power Equipment",
+      "note": "Transformers + gas turbines + grid; spin-off 2024",
+      "specificity_meta": 4,
+      "raw_total": 390,
+      "normalized_100": 78.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Transformers + turbines + grid software \u2014 real exposure"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "RS 43, 1M +7.2% \u2014 middle-range with positive momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Multi-segment; DC-relevant pieces are part of mix"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "16% YoY"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Improving post-spin"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 31, P/S 7.2 \u2014 fair given the re-rating opportunity"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "Post-spin re-rating + capex cycle commentary"
+        }
+      },
+      "snapshot": {
+        "price": 1049.23,
+        "market_cap": 281949077504,
+        "pe": 30.67924,
+        "ps": 7.1606116,
+        "1y_pct": 145.65,
+        "3m_pct": 30.88,
+        "1m_pct": 7.25,
+        "dist_from_52w_high_pct": -11.23,
+        "rs_3m": 46.0,
+        "revenue_growth_yoy": 0.163
+      }
+    },
+    "HUBB": {
+      "company": "Hubbell",
+      "bucket": "Heavy Electrical",
+      "sub": "Electrical Components",
+      "note": "Diversified electrical; smaller transformer exposure",
+      "specificity_meta": 3,
+      "raw_total": 285,
+      "normalized_100": 57.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Diversified electrical components"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 9 very low, 1M -8% \u2014 broken near-term"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Grid hardware; DC exposure secondary"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "11% YoY \u2014 slower"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 30,
+          "rationale": "Stable"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 28 \u2014 reasonable given the recent pullback"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 10,
+          "rationale": "No specific near-term"
+        }
+      },
+      "snapshot": {
+        "price": 479.97,
+        "market_cap": 25362466816,
+        "pe": 28.333529,
+        "ps": 4.229827,
+        "1y_pct": 23.89,
+        "3m_pct": -8.17,
+        "1m_pct": -8.0,
+        "dist_from_52w_high_pct": -15.12,
+        "rs_3m": 12.0,
+        "revenue_growth_yoy": 0.111
+      }
+    },
+    "VRT": {
+      "company": "Vertiv",
+      "bucket": "Heavy Electrical",
+      "sub": "UPS / Switchgear / Thermal",
+      "note": "ALSO Bucket 3 \u2014 spans power + thermal; highest concentration risk",
+      "specificity_meta": 5,
+      "raw_total": 380,
+      "normalized_100": 76.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Spans Bucket 2 + Bucket 3 \u2014 single most concentrated thesis name"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 74, 1M +26.1% \u2014 strongly trending but extended"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure-play data center power + thermal"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "30% YoY"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Expanding"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 93 / P/S 13 \u2014 priced"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "Liquid cooling product cycle, capex disclosures"
+        }
+      },
+      "snapshot": {
+        "price": 370.94,
+        "market_cap": 142481326080,
+        "pe": 93.43577,
+        "ps": 13.139913,
+        "1y_pct": 250.24,
+        "3m_pct": 58.2,
+        "1m_pct": 26.11,
+        "dist_from_52w_high_pct": -2.37,
+        "rs_3m": 73.0,
+        "revenue_growth_yoy": 0.301
+      }
+    },
+    "POWL": {
+      "company": "Powell Industries",
+      "bucket": "Heavy Electrical",
+      "sub": "Custom Switchgear",
+      "note": "Industrial/utility switchgear; narrower customer base",
+      "specificity_meta": 3,
+      "raw_total": 285,
+      "normalized_100": 57.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Custom switchgear, narrower customer base"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "RS 70, 1M +25.7% \u2014 high but momentum"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Industrial + DC switchgear"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "6.5% YoY \u2014 slow"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 30,
+          "rationale": "Cyclical"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 57 / P/S 9.4 \u2014 extended for the growth"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Order book disclosures"
+        }
+      },
+      "snapshot": {
+        "price": 292.65,
+        "market_cap": 10661721088,
+        "pe": 57.158203,
+        "ps": 9.418024,
+        "1y_pct": 381.16,
+        "3m_pct": 50.13,
+        "1m_pct": 25.7,
+        "dist_from_52w_high_pct": -10.78,
+        "rs_3m": 69.0,
+        "revenue_growth_yoy": 0.065
+      }
+    },
+    "NVT": {
+      "company": "nVent Electric",
+      "bucket": "Heavy Electrical",
+      "sub": "PDUs / Containment / Liquid Cooling",
+      "note": "ALSO Bucket 3 \u2014 spans containment + liquid cooling",
+      "specificity_meta": 3,
+      "raw_total": 360,
+      "normalized_100": 72.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Cross-bucket but less concentrated than VRT"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "RS 65, 1M +30.5% \u2014 high but strong"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Containment + liquid cooling integration"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "54% YoY"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Expanding via ECM acquisition"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 57 / P/S 6.3 \u2014 reasonable given growth"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Liquid cooling product launches"
+        }
+      },
+      "snapshot": {
+        "price": 169.01,
+        "market_cap": 27332372480,
+        "pe": 57.486393,
+        "ps": 6.318455,
+        "1y_pct": 152.16,
+        "3m_pct": 49.46,
+        "1m_pct": 30.5,
+        "dist_from_52w_high_pct": -3.42,
+        "rs_3m": 65.0,
+        "revenue_growth_yoy": 0.535
+      }
+    },
+    "ATKR": {
+      "company": "Atkore",
+      "bucket": "Heavy Electrical",
+      "sub": "Conduit / Busbars",
+      "note": "Commoditized; high data-center volume exposure",
+      "specificity_meta": 2,
+      "raw_total": 295,
+      "normalized_100": 59.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Commoditized conduit / busbars"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "RS 30, 1M +10.9% \u2014 low/mid with positive momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "DC conduit is meaningful but secondary"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "4.2% YoY \u2014 slow"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Margins under pressure"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E 12, P/S 0.9 \u2014 cheapest in cohort"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 10,
+          "rationale": "No specific near-term"
+        }
+      },
+      "snapshot": {
+        "price": 74.27,
+        "market_cap": 2507894528,
+        "pe": 12.197004,
+        "ps": 0.87262046,
+        "1y_pct": 9.48,
+        "3m_pct": 11.97,
+        "1m_pct": 10.87,
+        "dist_from_52w_high_pct": -6.02,
+        "rs_3m": 35.0,
+        "revenue_growth_yoy": 0.042
+      }
+    },
+    "CLF": {
+      "company": "Cleveland-Cliffs",
+      "bucket": "Heavy Electrical",
+      "sub": "GOES Steel \u2191",
+      "note": "Largest US producer of grain-oriented electrical steel",
+      "specificity_meta": 5,
+      "raw_total": 345,
+      "normalized_100": 69.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "GOES steel \u2014 upstream physical bottleneck"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "RS 13 very low, 1M +6.1% positive \u2014 asymmetry"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Electrical steel is small % of overall business"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "6.3% YoY \u2014 slow"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Cyclical commodity exposure"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E 22, P/S 0.3 \u2014 very cheap"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Tariff news, transformer-demand pricing"
+        }
+      },
+      "snapshot": {
+        "price": 10.31,
+        "market_cap": 5880975360,
+        "pe": 22.274073,
+        "ps": 0.31111336,
+        "1y_pct": 35.48,
+        "3m_pct": -0.67,
+        "1m_pct": 6.07,
+        "dist_from_52w_high_pct": -38.26,
+        "rs_3m": 15.0,
+        "revenue_growth_yoy": 0.063
+      }
+    },
+    "CRS": {
+      "company": "Carpenter Technology",
+      "bucket": "Heavy Electrical",
+      "sub": "Specialty Alloys \u2191",
+      "note": "Some GOES grades; broader specialty steel exposure",
+      "specificity_meta": 3,
+      "raw_total": 245,
+      "normalized_100": 49.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Specialty alloys; less GOES-specific than CLF"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 26, 1M -4% \u2014 mid-low with negative momentum"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "DC exposure is small slice of broader specialty"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "12% YoY"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Improving via aerospace + specialty mix"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 43 / P/S 6.7 \u2014 full"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 10,
+          "rationale": "No specific near-term"
+        }
+      },
+      "snapshot": {
+        "price": 408.93,
+        "market_cap": 20317937664,
+        "pe": 43.090622,
+        "ps": 6.7082467,
+        "1y_pct": 76.83,
+        "3m_pct": 7.72,
+        "1m_pct": -4.0,
+        "dist_from_52w_high_pct": -14.03,
+        "rs_3m": 31.0,
+        "revenue_growth_yoy": 0.116
+      }
+    },
+    "ECL": {
+      "company": "Ecolab",
+      "bucket": "Thermal Management",
+      "sub": "Direct-to-Chip Cooling (via CoolIT)",
+      "note": "Acquiring CoolIT for $4.75B, closes Q3 2026; emerging as pure-play DTC cooling owner",
+      "specificity_meta": 5,
+      "raw_total": 395,
+      "normalized_100": 79.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Becoming pure-play DTC cooling owner via $4.75B CoolIT acquisition (closes Q3 2026)"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "RS 0, 1M -8%: but driven by deal-related sell-off, not thesis breakdown \u2014 classic asymmetric setup"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "CoolIT will add ~$700M-1B to a $15B specialty chemicals base; material but not majority"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "10% YoY base + accretive CoolIT \u2014 solid not stunning"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Best-in-class margins for industrials; CoolIT integration could pressure short-term"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 33, P/S 4.2 after -20% drawdown \u2014 reasonable for the catalyst"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 5,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 25,
+          "rationale": "Q3 2026 deal close is the catalyst; quarterly updates between now and then"
+        }
+      },
+      "snapshot": {
+        "price": 247.62,
+        "market_cap": 69689556992,
+        "pe": 33.552845,
+        "ps": 4.235855,
+        "1y_pct": -3.43,
+        "3m_pct": -17.01,
+        "1m_pct": -8.03,
+        "dist_from_52w_high_pct": -19.72,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": 0.1
+      }
+    },
+    "TT": {
+      "company": "Trane Technologies",
+      "bucket": "Thermal Management",
+      "sub": "Immersion (via LiquidStack)",
+      "note": "Acquired LiquidStack Feb 2026; building immersion cooling portfolio inside HVAC giant",
+      "specificity_meta": 4,
+      "raw_total": 350,
+      "normalized_100": 70.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "LiquidStack acquisition adds immersion cooling; rest is large HVAC base"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "RS 23 low, 1M +1.4% positive \u2014 mid-low with steady momentum"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "LiquidStack is small slice; bulk is commercial/residential HVAC"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "High-single-digit organic growth; LiquidStack adds optionality"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 50,
+          "rationale": "Strong margins, expanding pricing power"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E in low 30s \u2014 fair for the quality, no special discount"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "LiquidStack integration milestones over next 2-3 quarters"
+        }
+      },
+      "snapshot": {
+        "price": 466.6,
+        "market_cap": 103144480768,
+        "pe": 35.591152,
+        "ps": 4.7745886,
+        "1y_pct": 9.49,
+        "3m_pct": 0.53,
+        "1m_pct": 1.38,
+        "dist_from_52w_high_pct": -7.32,
+        "rs_3m": 23.0,
+        "revenue_growth_yoy": 0.06
+      }
+    },
+    "FLEX": {
+      "company": "Flex",
+      "bucket": "Thermal Management",
+      "sub": "Micro-Convective (via JetCool)",
+      "note": "Acquired JetCool late 2024; small slice of broad EMS business",
+      "specificity_meta": 3,
+      "raw_total": 235,
+      "normalized_100": 47.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "JetCool acquisition adds micro-convective cooling; broad EMS otherwise"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS 88 extended, 1M +72% \u2014 way past entry window"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "JetCool tiny slice of broad EMS; not a focused bet"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "Strong recent results driven by AI/cloud customer wins"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 30,
+          "rationale": "EMS-thin margins, slowly improving"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "After 228% 1Y run, valuation no longer cheap"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 10,
+          "rationale": "No specific near-term catalyst beyond earnings cadence"
+        }
+      },
+      "snapshot": {
+        "price": 137.86,
+        "market_cap": 50687524864,
+        "pe": 59.167385,
+        "ps": 1.8888588,
+        "1y_pct": 228.08,
+        "3m_pct": 114.6,
+        "1m_pct": 72.5,
+        "dist_from_52w_high_pct": -6.43,
+        "rs_3m": 88.0,
+        "revenue_growth_yoy": 0.169
+      }
+    },
+    "MOD": {
+      "company": "Modine Manufacturing",
+      "bucket": "Thermal Management",
+      "sub": "Heat Exchangers / CDUs",
+      "note": "Airedale brand; fastest-growing thermal pure-play",
+      "specificity_meta": 4,
+      "raw_total": 380,
+      "normalized_100": 76.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "CDU + heat exchanger leader (Airedale)"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "RS 35, 1M +15.3% \u2014 low-mid with strong positive momentum, classic inflection"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Airedale is DC pure-play; rest is auto + HVAC"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "31% YoY"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Expanding as DC mix grows"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 149 \u2014 high; P/S 5 \u2014 moderate"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "Airedale order book disclosures; product launches"
+        }
+      },
+      "snapshot": {
+        "price": 271.26,
+        "market_cap": 14303864832,
+        "pe": 149.04396,
+        "ps": 4.9771614,
+        "1y_pct": 159.5,
+        "3m_pct": 25.29,
+        "1m_pct": 15.31,
+        "dist_from_52w_high_pct": -7.75,
+        "rs_3m": 38.0,
+        "revenue_growth_yoy": 0.305
+      }
+    },
+    "AAON": {
+      "company": "AAON",
+      "bucket": "Thermal Management",
+      "sub": "Custom HVAC",
+      "note": "Industrial HVAC; limited liquid cooling exposure",
+      "specificity_meta": 2,
+      "raw_total": 290,
+      "normalized_100": 58.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Industrial HVAC, broad"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "RS 52, 1M +48% \u2014 strong momentum but mid RS"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Limited DC exposure"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "54% YoY \u2014 fast"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 40,
+          "rationale": "Solid HVAC margins"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 95 \u2014 high"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "DC order disclosures (if any)"
+        }
+      },
+      "snapshot": {
+        "price": 135.49,
+        "market_cap": 11098218496,
+        "pe": 95.4155,
+        "ps": 6.863641,
+        "1y_pct": 27.37,
+        "3m_pct": 34.26,
+        "1m_pct": 48.11,
+        "dist_from_52w_high_pct": -9.07,
+        "rs_3m": 54.0,
+        "revenue_growth_yoy": 0.543
+      }
+    },
+    "MMM": {
+      "company": "3M",
+      "bucket": "Thermal Management",
+      "sub": "Dielectric Fluids \u2191",
+      "note": "PFAS exit completed Mar 2025 \u2014 DECLINING exposure, replaced by Syensqo / Chemours / Honeywell",
+      "specificity_meta": 3,
+      "raw_total": 190,
+      "normalized_100": 38.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "DECLINING \u2014 PFAS exit by end-2025"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS 0 \u2014 worst in cohort, broken"
+        },
+        "theme_exposure": {
+          "score": 1,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Novec was small % of revenue + exiting"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "1.3% YoY"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Weak; restructuring"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 28 \u2014 reasonable absolute but no growth"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 1,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 5,
+          "rationale": "Legal overhang dominates"
+        }
+      },
+      "snapshot": {
+        "price": 146.22,
+        "market_cap": 76263563264,
+        "pe": 28.17341,
+        "ps": 3.0476167,
+        "1y_pct": -2.74,
+        "3m_pct": -14.9,
+        "1m_pct": -2.88,
+        "dist_from_52w_high_pct": -17.21,
+        "rs_3m": 4.0,
+        "revenue_growth_yoy": 0.013
+      }
+    },
+    "HON": {
+      "company": "Honeywell",
+      "bucket": "Thermal Management",
+      "sub": "Thermal Materials",
+      "note": "Watch-list: potential PFAS alternative supplier",
+      "specificity_meta": 2,
+      "raw_total": 190,
+      "normalized_100": 38.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Potential PFAS alternative supplier (speculative)"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS 4 \u2014 broken"
+        },
+        "theme_exposure": {
+          "score": 1,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Massive multi-segment industrial; thermal materials is tiny"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "2.4% YoY \u2014 slow"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 10,
+          "type": "mixed",
+          "contribution": 30,
+          "rationale": "Stable"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 34 \u2014 fair absolute"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F empty (likely no FMP key at refresh time) \u2014 hand-scored fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 10,
+          "rationale": "No specific near-term related to thesis"
+        }
+      },
+      "snapshot": {
+        "price": 213.24,
+        "market_cap": 135120191488,
+        "pe": 34.00957,
+        "ps": 3.5878968,
+        "1y_pct": 3.73,
+        "3m_pct": -10.73,
+        "1m_pct": -6.53,
+        "dist_from_52w_high_pct": -13.61,
+        "rs_3m": 8.0,
+        "revenue_growth_yoy": 0.024
+      }
+    }
+  }
+}

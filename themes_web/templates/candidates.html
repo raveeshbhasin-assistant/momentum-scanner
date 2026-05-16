@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}{{ tracker.theme_display_name }} · Candidates{% endblock %}
+
+{% block extra_css %}
+  .controls { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+  .controls .lbl { font-size: 12px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .controls select, .controls input { font-family: var(--font-sans); font-size: 13px; padding: 6px 10px; background: var(--bg-surface); border: 0.5px solid var(--border-strong); border-radius: var(--radius-md); color: var(--text-primary); }
+  .controls select { padding-right: 28px; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23888' fill='none' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; cursor: pointer; }
+  .controls .spacer { flex: 1; }
+  .controls .row-count { font-size: 11px; color: var(--text-tertiary); }
+  .table-wrap { border: 0.5px solid var(--border); border-radius: var(--radius-md); overflow-x: auto; }
+  table.cands { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 920px; }
+  table.cands th { background: var(--bg-elev); padding: 10px 12px; font-size: 11px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.05em; text-transform: uppercase; text-align: left; border-bottom: 0.5px solid var(--border); cursor: pointer; user-select: none; white-space: nowrap; }
+  table.cands th.num { text-align: right; }
+  table.cands th .arr { font-size: 9px; margin-left: 4px; opacity: 0.5; }
+  table.cands th.sorted .arr { opacity: 1; color: var(--text-primary); }
+  table.cands td { padding: 12px; border-top: 0.5px solid var(--border); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.cands td.num { text-align: right; }
+  table.cands tr.row { cursor: pointer; transition: background 0.08s ease; }
+  table.cands tr.row:hover { background: var(--bg-elev); }
+  table.cands tr.row.active { background: var(--bg-elev); }
+  .tk { font-weight: 500; }
+  .co { font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
+  .bucket-pill { font-size: 10.5px; padding: 2px 8px; border-radius: 4px; background: var(--bg-elev-2); color: var(--text-secondary); font-weight: 500; }
+  .promoted-flag { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--text-success); margin-right: 4px; vertical-align: middle; }
+  .pos { color: var(--text-success); }
+  .neg { color: var(--text-danger); }
+  .muted { color: var(--text-secondary); }
+  .detail { margin-top: 22px; background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 22px 26px; }
+  .detail-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
+  .detail-tk { font-size: 22px; font-weight: 500; letter-spacing: -0.01em; }
+  .detail-tk .co { font-size: 15px; color: var(--text-secondary); font-weight: 400; margin-left: 8px; }
+  .detail-meta { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+  .detail-meta .sep { margin: 0 8px; opacity: 0.6; }
+  .detail-note { margin: 14px 0; padding: 12px 16px; background: var(--bg-elev); border-radius: var(--radius-md); font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 16px; }
+  .panel-head { font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; }
+  .kv-row { display: grid; grid-template-columns: 1fr auto; padding: 6px 0; font-size: 13px; border-top: 0.5px solid var(--border); }
+  .kv-row .k { color: var(--text-tertiary); }
+  .kv-row .v { font-variant-numeric: tabular-nums; font-weight: 500; }
+  .promoted-banner { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 10px; border-radius: 999px; background: var(--text-success-bg); color: var(--text-success); font-weight: 500; margin-left: 10px; }
+  @media (max-width: 700px) { .detail-grid { grid-template-columns: 1fr; } }
+{% endblock %}
+
+{% block content %}
+<div class="controls">
+  <span class="lbl">Sort</span>
+  <select id="sort-by">
+    <option value="bucket">Bucket / 3M%</option>
+    <option value="1y_pct">1Y %</option>
+    <option value="3m_pct">3M %</option>
+    <option value="1m_pct">1M %</option>
+    <option value="rs_3m">RS 3M (cohort)</option>
+    <option value="market_cap">Market cap</option>
+    <option value="pe">P/E (low first)</option>
+    <option value="ps">P/S (low first)</option>
+    <option value="revenue_growth_yoy">Revenue growth</option>
+    <option value="dist_from_52w_high_pct">Distance from 52w high</option>
+    <option value="ticker">Ticker</option>
+  </select>
+  <span class="lbl">Filter</span>
+  <select id="filter-bucket">
+    <option value="all">All buckets</option>
+    <option value="Optical Networking">Optical</option>
+    <option value="Heavy Electrical">Heavy electrical</option>
+    <option value="Thermal Management">Thermal</option>
+  </select>
+  <select id="filter-promoted">
+    <option value="all">All candidates</option>
+    <option value="promoted">Promoted only (tracker)</option>
+    <option value="not-promoted">Not promoted</option>
+  </select>
+  <input type="text" id="filter-text" placeholder="Search ticker or company…" style="min-width:200px;">
+  <span class="spacer"></span>
+  <span class="row-count" id="row-count">— candidates</span>
+</div>
+
+<div class="table-wrap">
+  <table class="cands">
+    <thead>
+      <tr>
+        <th data-sort="bucket">Ticker</th>
+        <th data-sort="bucket">Bucket</th>
+        <th class="num" data-sort="market_cap">Mkt cap <span class="arr">↕</span></th>
+        <th class="num" data-sort="price">Price</th>
+        <th class="num" data-sort="1y_pct">1Y % <span class="arr">↕</span></th>
+        <th class="num" data-sort="3m_pct">3M % <span class="arr">↕</span></th>
+        <th class="num" data-sort="1m_pct">1M % <span class="arr">↕</span></th>
+        <th class="num" data-sort="dist_from_52w_high_pct">Δ 52wH</th>
+        <th class="num" data-sort="rs_3m">RS 3M</th>
+        <th class="num" data-sort="pe">P/E</th>
+        <th class="num" data-sort="ps">P/S</th>
+        <th class="num" data-sort="revenue_growth_yoy">Rev YoY</th>
+      </tr>
+    </thead>
+    <tbody id="cands-body"></tbody>
+  </table>
+</div>
+
+<div id="detail-panel"></div>
+
+<div class="footnote">
+  Source: <code>themes/{{ active_slug }}/candidates.json</code> · Refreshed {{ candidates_meta.trade_date }} · Data via {{ candidates_meta.data_source }}.
+  {{ candidates_meta.universe_size }} tickers in the universe; {{ promoted_count }} promoted to the tracker.
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const CANDS = {{ candidates | tojson }};
+const PROMOTED_TICKERS = {{ promoted_tickers | tojson }};
+const PROMOTED_SET = new Set(PROMOTED_TICKERS);
+
+function fmtMoney(v, dec) { if (v == null) return '—'; dec = dec == null ? 2 : dec; return '$' + Number(v).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }); }
+function fmtPct(v) { if (v == null) return '—'; return (v >= 0 ? '+' : '') + Number(v).toFixed(2) + '%'; }
+function fmtMcap(v) { if (v == null) return '—'; if (v >= 1e12) return '$' + (v/1e12).toFixed(2) + 'T'; if (v >= 1e9) return '$' + (v/1e9).toFixed(1) + 'B'; if (v >= 1e6) return '$' + (v/1e6).toFixed(0) + 'M'; return '$' + v.toLocaleString(); }
+function fmtNum(v, dec) { if (v == null) return '—'; dec = dec == null ? 1 : dec; return Number(v).toFixed(dec); }
+function bucketShort(b) { if (b === 'Heavy Electrical') return 'HE'; if (b === 'Optical Networking') return 'Opt'; if (b === 'Thermal Management') return 'Therm'; return b; }
+
+let _sortKey = 'bucket';
+let _sortDir = 'desc';
+const BUCKET_ORDER = ['Optical Networking', 'Heavy Electrical', 'Thermal Management'];
+
+function applySort(rows) {
+  if (_sortKey === 'bucket') {
+    rows.sort((a, b) => {
+      const ai = BUCKET_ORDER.indexOf(a.bucket); const bi = BUCKET_ORDER.indexOf(b.bucket);
+      if (ai !== bi) return ai - bi;
+      return (b['3m_pct'] || 0) - (a['3m_pct'] || 0);
+    });
+  } else if (_sortKey === 'ticker') {
+    rows.sort((a, b) => (a.ticker || '').localeCompare(b.ticker || ''));
+  } else if (_sortKey === 'pe' || _sortKey === 'ps') {
+    // Low-first for valuation metrics
+    rows.sort((a, b) => {
+      const av = a[_sortKey]; const bv = b[_sortKey];
+      if (av == null) return 1; if (bv == null) return -1;
+      return av - bv;
+    });
+  } else {
+    rows.sort((a, b) => {
+      const av = a[_sortKey] == null ? -Infinity : a[_sortKey];
+      const bv = b[_sortKey] == null ? -Infinity : b[_sortKey];
+      return _sortDir === 'desc' ? (bv - av) : (av - bv);
+    });
+  }
+}
+
+function render() {
+  const filterB = document.getElementById('filter-bucket').value;
+  const filterP = document.getElementById('filter-promoted').value;
+  const filterT = document.getElementById('filter-text').value.trim().toLowerCase();
+  let rows = CANDS.slice();
+  if (filterB !== 'all') rows = rows.filter(r => r.bucket === filterB);
+  if (filterP === 'promoted') rows = rows.filter(r => PROMOTED_SET.has(r.ticker));
+  if (filterP === 'not-promoted') rows = rows.filter(r => !PROMOTED_SET.has(r.ticker));
+  if (filterT) rows = rows.filter(r => (r.ticker || '').toLowerCase().includes(filterT) || (r.company || '').toLowerCase().includes(filterT));
+  applySort(rows);
+
+  const tbody = document.getElementById('cands-body');
+  tbody.innerHTML = rows.map(r => {
+    const promoted = PROMOTED_SET.has(r.ticker);
+    const colorFor = (v) => v == null ? 'muted' : (v > 0 ? 'pos' : 'neg');
+    return `<tr class="row" data-tk="${r.ticker}">
+      <td><div class="tk">${promoted ? '<span class="promoted-flag" title="In tracker"></span>' : ''}${r.ticker}</div><div class="co">${(r.company || '').substring(0, 30)}</div></td>
+      <td><span class="bucket-pill">${bucketShort(r.bucket)}</span></td>
+      <td class="num">${fmtMcap(r.market_cap)}</td>
+      <td class="num">${fmtMoney(r.price)}</td>
+      <td class="num ${colorFor(r['1y_pct'])}">${fmtPct(r['1y_pct'])}</td>
+      <td class="num ${colorFor(r['3m_pct'])}">${fmtPct(r['3m_pct'])}</td>
+      <td class="num ${colorFor(r['1m_pct'])}">${fmtPct(r['1m_pct'])}</td>
+      <td class="num ${colorFor(r.dist_from_52w_high_pct)}">${fmtPct(r.dist_from_52w_high_pct)}</td>
+      <td class="num">${r.rs_3m != null ? r.rs_3m.toFixed(0) : '—'}</td>
+      <td class="num">${r.pe != null ? r.pe.toFixed(1) : '—'}</td>
+      <td class="num">${r.ps != null ? r.ps.toFixed(1) : '—'}</td>
+      <td class="num ${colorFor(r.revenue_growth_yoy ? r.revenue_growth_yoy * 100 : null)}">${r.revenue_growth_yoy != null ? fmtPct(r.revenue_growth_yoy * 100) : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('row-count').textContent =
+    rows.length === CANDS.length ? `${rows.length} candidates` : `${rows.length} of ${CANDS.length} candidates`;
+
+  // Header sort indicator
+  document.querySelectorAll('table.cands th[data-sort]').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.sort === _sortKey);
+  });
+  // Sync select
+  const sel = document.getElementById('sort-by');
+  if ([...sel.options].some(o => o.value === _sortKey)) sel.value = _sortKey;
+
+  tbody.querySelectorAll('tr.row').forEach(tr => {
+    tr.addEventListener('click', () => {
+      tbody.querySelectorAll('tr.row').forEach(t => t.classList.remove('active'));
+      tr.classList.add('active');
+      showDetail(tr.dataset.tk);
+    });
+  });
+  if (rows.length > 0) {
+    const first = rows[0];
+    tbody.querySelector(`tr[data-tk="${first.ticker}"]`)?.classList.add('active');
+    showDetail(first.ticker);
+  } else {
+    document.getElementById('detail-panel').innerHTML = '';
+  }
+}
+
+function showDetail(tk) {
+  const r = CANDS.find(h => h.ticker === tk);
+  if (!r) return;
+  const promoted = PROMOTED_SET.has(r.ticker);
+  document.getElementById('detail-panel').innerHTML = `
+    <div class="detail">
+      <div class="detail-head">
+        <div>
+          <div class="detail-tk">${r.ticker} <span class="co">${r.company || ''}</span>${promoted ? '<span class="promoted-banner"><span style="width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block;"></span>In tracker</span>' : ''}</div>
+          <div class="detail-meta">${r.bucket}<span class="sep">·</span>${r.sub || '—'}<span class="sep">·</span>Specificity ${r.specificity || '—'}/5<span class="sep">·</span>${r.sector || ''} · ${r.industry || ''}</div>
+        </div>
+      </div>
+      <div class="detail-note">${r.note || ''}</div>
+      <div class="detail-grid">
+        <div>
+          <div class="panel-head">Valuation</div>
+          <div class="kv-row"><span class="k">Price</span><span class="v">${fmtMoney(r.price)}</span></div>
+          <div class="kv-row"><span class="k">Market cap</span><span class="v">${fmtMcap(r.market_cap)}</span></div>
+          <div class="kv-row"><span class="k">P/E</span><span class="v">${r.pe != null ? r.pe.toFixed(1) : '—'}</span></div>
+          <div class="kv-row"><span class="k">P/S</span><span class="v">${r.ps != null ? r.ps.toFixed(1) : '—'}</span></div>
+          <div class="kv-row"><span class="k">EPS</span><span class="v">${r.eps != null ? r.eps.toFixed(2) : '—'}</span></div>
+          <div class="kv-row"><span class="k">Beta</span><span class="v">${r.beta != null ? r.beta.toFixed(2) : '—'}</span></div>
+        </div>
+        <div>
+          <div class="panel-head">Momentum &amp; growth</div>
+          <div class="kv-row"><span class="k">1Y %</span><span class="v">${fmtPct(r['1y_pct'])}</span></div>
+          <div class="kv-row"><span class="k">6M %</span><span class="v">${fmtPct(r['6m_pct'])}</span></div>
+          <div class="kv-row"><span class="k">3M %</span><span class="v">${fmtPct(r['3m_pct'])}</span></div>
+          <div class="kv-row"><span class="k">1M %</span><span class="v">${fmtPct(r['1m_pct'])}</span></div>
+          <div class="kv-row"><span class="k">Δ 52w high</span><span class="v">${fmtPct(r.dist_from_52w_high_pct)}</span></div>
+          <div class="kv-row"><span class="k">RS 3M (cohort)</span><span class="v">${r.rs_3m != null ? r.rs_3m.toFixed(0) : '—'}</span></div>
+          <div class="kv-row"><span class="k">Revenue YoY</span><span class="v">${r.revenue_growth_yoy != null ? fmtPct(r.revenue_growth_yoy * 100) : '—'}</span></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Column-header sort
+document.querySelectorAll('table.cands th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const k = th.dataset.sort;
+    if (_sortKey === k) {
+      _sortDir = _sortDir === 'desc' ? 'asc' : 'desc';
+    } else {
+      _sortKey = k; _sortDir = 'desc';
+    }
+    render();
+  });
+});
+document.getElementById('sort-by').addEventListener('change', (e) => { _sortKey = e.target.value; _sortDir = 'desc'; render(); });
+document.getElementById('filter-bucket').addEventListener('change', render);
+document.getElementById('filter-promoted').addEventListener('change', render);
+document.getElementById('filter-text').addEventListener('input', render);
+render();
+</script>
+{% endblock %}
