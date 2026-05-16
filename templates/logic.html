@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.1</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.2</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.1</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.2</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,29 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.2 ───── -->
+        <div class="release current" id="v3-7-2">
+            <div class="release-header">
+                <span class="release-version">v3.7.2</span>
+                <span class="release-date">Released 2026-05-16</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>ELITE chip rendering hotfix.</strong> v3.7.1 added the ELITE filter chip to <code>/today</code>, <code>/history</code>, and <code>/performance</code>, but two surfaces shipped broken: <em>(1)</em> on <code>/history</code> the chip rendered as raw inverted text — the <code>.chip</code> base styles lived inline in <code>today.html</code>'s <code>&lt;style&gt;</code> block, never imported by <code>history.html</code>; <em>(2)</em> on <code>/performance</code> the chip didn't render at all — the patch that inserted the <code>&lt;div class="ctrl-group"&gt;</code> failed silently in the build, leaving the JS hook (<code>eliteOnlyChip</code>) referencing an element that never existed in the DOM. Both fixed in this release. Tagged: <span class="pill pill-fixed">fixed</span>.</div>
+            <div class="release-details">
+                <p><strong>Changes:</strong></p>
+                <ul>
+                    <li><strong>Promoted <code>.chip</code> + <code>.chip-n</code> + <code>.chip:hover</code> + <code>.chip.active</code> to <code>static/css/base.css</code>.</strong> Was previously inline in <code>today.html</code>, where <code>history.html</code> couldn't reach them. The page-specific chip variants (<code>.cat-A</code>, <code>.strong-chip</code>, <code>.res-W</code>, etc.) still live in their respective templates — only the base primitive moves.</li>
+                    <li><strong>Inserted the missing ELITE ctrl-group in <code>templates/performance.html</code>.</strong> Sits immediately after the STRONG ctrl-group inside the Filters toolbar row. JS hook in v3.7.1 was already wired — this release just adds the DOM element it expected to find.</li>
+                </ul>
+                <p><strong>Verification:</strong> <code>/history</code> ELITE chip now matches the visual style of the RTH toggle next to it (rounded pill, cyan border in active state). <code>/performance</code> shows STRONG + ELITE chips side-by-side in the Filters row; clicking ELITE filters the picks table to the ~35% subset and shows the inline ELITE pill on each Cat cell. Mutual exclusion with STRONG-only confirmed.</p>
+            </div>
+        </div>
+
         <!-- ───── v3.7.1 ───── -->
-        <div class="release current" id="v3-7-1">
+        <div class="release" id="v3-7-1">
             <div class="release-header">
                 <span class="release-version">v3.7.1</span>
                 <span class="release-date">Released 2026-05-16</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>ELITE tier — a precision-refinement layer on top of STRONG.</strong>
                 A pick is <strong>ELITE</strong> iff it is <strong>STRONG</strong> AND its post-hoc <strong>category is "D"</strong> (no sector-leadership classification — the idiosyncratic-breakout group) AND its <strong>RVOL is at or above 2.0</strong>. Pure post-hoc derivation, mirrored across <code>scanner.py</code> (sort priority), <code>templates/today.html</code> + <code>templates/history.html</code> + <code>templates/performance.html</code> (visual badge + filter chip), and <code>notifier.py</code> (subject prefix + row styling). No new field is persisted on the pick payload — every consumer derives the flag on read, so existing <code>data/{date}.json</code> and <code>performance_log.json</code> files Just Work.
