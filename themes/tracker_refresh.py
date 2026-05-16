@@ -44,69 +44,90 @@ ACTIVE_THEMES = ["ai_data_center"]
 #  13F — Institutional holders
 # ═══════════════════════════════════════════════════════════════
 
-def fetch_13f_holders(ticker: str, client: httpx.Client, top_n: int = 5) -> list[dict]:
+def fetch_13f_holders(ticker: str, client: httpx.Client = None, top_n: int = 5) -> list[dict]:
     """
-    Pull top institutional holders from FMP. The /stable endpoint returns
-    a list of fund positions; we sort by % held and take the top N.
+    Pull top institutional holders. Source: yfinance.Ticker.institutional_holders.
 
-    Returns [{fund, now_pct, prev_pct, delta_pp, shares}, ...]
+    yfinance returns a DataFrame with columns:
+      Date Reported · Holder · pctHeld (fraction) · Shares · Value · pctChange (fraction)
+
+    Where pctChange is the change in SHARES held by that fund vs prior 13F filing.
+    1.0000 means "new position" (no prior holding).
+
+    We convert to the schema the tracker page expects:
+      {fund, now_pct, prev_pct, delta_pp, shares, value, date_reported, status}
+
+    Sources beyond yfinance considered and rejected:
+    - FMP institutional-ownership endpoints: require higher plan tier (returned empty)
+    - Finnhub /stock/ownership: 403 Forbidden on standard plan
+    - SEC EDGAR direct XML parsing: works but heavyweight; revisit if yfinance breaks
+
+    The `client` arg is unused (kept for signature compatibility with the call site).
     """
-    if not config.FMP_API_KEY:
-        return []
-
+    import yfinance as yf
     try:
-        # Current institutional holders
-        resp = client.get(
-            "https://financialmodelingprep.com/stable/institutional-ownership/symbol-positions-summary",
-            params={"symbol": ticker, "apikey": config.FMP_API_KEY},
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        t = yf.Ticker(ticker)
+        df = t.institutional_holders
     except Exception as e:
-        logger.debug(f"FMP 13F summary failed for {ticker}: {e}")
-        # Fall back to alternate endpoint format
-        try:
-            resp = client.get(
-                "https://financialmodelingprep.com/stable/institutional-ownership/holder/list",
-                params={"symbol": ticker, "apikey": config.FMP_API_KEY},
-            )
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as e2:
-            logger.debug(f"FMP 13F list fallback failed for {ticker}: {e2}")
-            return []
-
-    if not isinstance(data, list) or not data:
+        logger.debug(f"yfinance institutional_holders failed for {ticker}: {e}")
+        return []
+    if df is None or df.empty:
         return []
 
-    # Each entry has different shapes depending on endpoint. Normalize.
     holders: list[dict] = []
-    for entry in data:
-        # Try several known FMP field names
-        fund_name = (entry.get("investorName") or entry.get("holder")
-                      or entry.get("ownerName") or entry.get("filerName"))
-        if not fund_name:
+    for _, row in df.iterrows():
+        fund = str(row.get("Holder") or "").strip()
+        if not fund:
             continue
-        now_pct = (entry.get("ownership") or entry.get("ownershipPercent")
-                    or entry.get("percentOwned") or entry.get("pctHeld"))
-        change_pp = (entry.get("change") or entry.get("changeInOwnership")
-                      or entry.get("changeOfShareValue"))
-        shares = entry.get("shares") or entry.get("sharesNumber") or entry.get("currentShares")
+        # pctHeld is a fraction (0.0787 = 7.87%); convert to percentage
+        pct_held = row.get("pctHeld")
+        now_pct = round(float(pct_held) * 100, 2) if pct_held is not None and not _is_nan(pct_held) else None
+        # pctChange is the change in SHARES held — convert to delta percentage points
+        pct_change = row.get("pctChange")
+        prev_pct = None
+        delta_pp = None
+        status = None
+        if now_pct is not None and pct_change is not None and not _is_nan(pct_change):
+            pc = float(pct_change)
+            if pc >= 0.9999:
+                # yfinance marks brand-new positions as pctChange = 1.0
+                status = "new"
+                prev_pct = 0.0
+                delta_pp = round(now_pct, 2)
+            elif pc <= -0.9999:
+                status = "closed"
+                prev_pct = round(now_pct / 0.0001, 2) if pc != -1 else None
+                delta_pp = round(-(prev_pct or 0), 2)
+            else:
+                # prev shares = current / (1 + pctChange); assume float ≈ constant
+                prev_pct = round(now_pct / (1 + pc), 2)
+                delta_pp = round(now_pct - prev_pct, 2)
 
-        if now_pct is None and change_pp is None:
-            continue
-        prev_pct = (now_pct - change_pp) if (now_pct is not None and change_pp is not None) else None
+        shares = row.get("Shares")
+        value = row.get("Value")
+        date_rep = row.get("Date Reported")
         holders.append({
-            "fund": str(fund_name)[:60],
-            "now_pct": round(float(now_pct), 2) if now_pct is not None else None,
-            "prev_pct": round(float(prev_pct), 2) if prev_pct is not None else None,
-            "delta_pp": round(float(change_pp), 2) if change_pp is not None else None,
-            "shares": int(shares) if shares is not None else None,
+            "fund": fund[:60],
+            "now_pct": now_pct,
+            "prev_pct": prev_pct,
+            "delta_pp": delta_pp,
+            "shares": int(shares) if shares is not None and not _is_nan(shares) else None,
+            "value": int(value) if value is not None and not _is_nan(value) else None,
+            "date_reported": str(date_rep) if date_rep is not None else None,
+            "status": status,
         })
 
-    # Sort by current % held desc, take top N
-    holders.sort(key=lambda h: -(h["now_pct"] or 0))
+    holders.sort(key=lambda h: -(h.get("now_pct") or 0))
     return holders[:top_n]
+
+
+def _is_nan(v) -> bool:
+    """True for NaN floats; safe for ints and strings."""
+    try:
+        import math
+        return isinstance(v, float) and math.isnan(v)
+    except Exception:
+        return False
 
 
 # ═══════════════════════════════════════════════════════════════
