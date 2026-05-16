@@ -44,7 +44,12 @@ _STATIC_DIR = _HERE / "static"
 
 app = FastAPI(title="Themes Web — Long-term thesis tracker")
 templates = Jinja2Templates(directory=str(_TEMPLATES_DIR))
-app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
+# Static mount is optional — only mount if the directory exists and has files.
+# Empty dirs don't get committed to git, so this avoids crashing on Railway
+# when themes_web/static/ wasn't tracked. Add files (and .gitkeep) when we start
+# serving CSS/JS that doesn't live inline in the templates.
+if _STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
 
 @app.on_event("startup")
