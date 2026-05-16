@@ -21,7 +21,7 @@ _Single source of truth for everything we've consciously punted on. Each item ha
 
 | # | Item | Status | Notes |
 |---|------|--------|-------|
-| D1 | **13F overlay** | ✅ Code done; needs FMP key to flow | tracker_refresh.py pulls /stable/institutional-ownership; scoring auto-uses real deltas; hand-scored fallback when no data |
+| D1 | **13F overlay** | ✅ Live as of 2026-05-16 | Source: yfinance.Ticker.institutional_holders (FMP endpoint required higher plan, Finnhub returned 403). Quarterly cadence. 5 holders per tracker ticker with quarterly delta in % held |
 | D2 | **Earnings calendar overlay** | ✅ Code done; needs FMP key to flow | tracker_refresh.py pulls /stable/earnings; tracker page Upcoming section renders when present |
 | D3 | **Insider transactions overlay** | Deferred — phase 2 | Lower priority than 13F; revisit after deploy |
 | D4 | **News headlines per tracker name** | ✅ Done 2026-05-16 | Finnhub /company-news with 30-day window; works in sandbox AND deployed env |
