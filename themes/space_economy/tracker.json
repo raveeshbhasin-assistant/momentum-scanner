@@ -1,0 +1,18 @@
+{
+  "theme": "space_economy",
+  "theme_display_name": "Space Economy",
+  "theme_status": "Active",
+  "theme_locked_at": "2026-05-16",
+  "tracker_initialized_at": null,
+  "last_reviewed_at": null,
+  "plain_summary": "Boring global subsystem suppliers with real revenue and clean balance sheets will outperform US pure-play space SPACs over 3-5 years, anchored by Space Force / NRO procurement. Cheap heavy-lift launch shifts the bottleneck from getting things into orbit to building, connecting, and supporting them once they're there — radiation-hardened chips, optical inter-satellite links, ground stations, and component suppliers capture that durable value, not the headline-grabbing launch and applications layer.",
+  "benchmarks_at_init": {
+    "spy_at_theme_lock": 739.17,
+    "ita_at_theme_lock": 217.27,
+    "lmt_at_theme_lock": 516.01,
+    "irdm_at_theme_lock": 41.62
+  },
+  "holdings": [],
+  "review_cadence": "monthly first 3 months, quarterly thereafter",
+  "_pending": "Supply chain mapping and candidates next. Tracker will be initialized once scoring promotes the top 5-7 names."
+}
