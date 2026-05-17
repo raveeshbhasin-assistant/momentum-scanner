@@ -95,11 +95,43 @@ UNIVERSES: dict[str, dict[str, dict[str, Any]]] = {
         "MMM":  {"company": "3M",                 "bucket": "Thermal Management", "sub": "Dielectric Fluids ↑", "specificity": 3, "note": "PFAS exit completed Mar 2025 — DECLINING exposure, replaced by Syensqo / Chemours / Honeywell"},
         "HON":  {"company": "Honeywell",          "bucket": "Thermal Management", "sub": "Thermal Materials",  "specificity": 2, "note": "Watch-list: potential PFAS alternative supplier"},
     },
+
+    "space_economy": {
+        # Bucket 1: Mission-Critical Subsystems & Components (HIGH PRIORITY)
+        "MRCY":  {"company": "Mercury Systems",       "bucket": "Components",       "sub": "Rad-hard chips / secure processors", "specificity": 4, "note": "~5 global competitors at this tier; specialized defense electronics"},
+        "CW":    {"company": "Curtiss-Wright",        "bucket": "Components",       "sub": "Defense electronics / sensors / nuclear", "specificity": 3, "note": "Broad portfolio; real but diluted space exposure"},
+        "HEI":   {"company": "Heico",                 "bucket": "Components",       "sub": "Specialty aerospace parts compounder", "specificity": 3, "note": "Exceptional execution + pricing power; space is one slice"},
+        "MOG-A": {"company": "Moog",                  "bucket": "Components",       "sub": "Precision motion / propulsion components", "specificity": 4, "note": "Specialized aerospace-grade actuators + valves"},
+        "KTOS":  {"company": "Kratos Defense",        "bucket": "Components",       "sub": "Small sats / drones / defense electronics", "specificity": 3, "note": "Real revenue, small cap, growing"},
+        "BAESY": {"company": "BAE Systems (ADR)",     "bucket": "Components",       "sub": "UK defense prime (ADR)",         "specificity": 3, "note": "Diluted but real space exposure; recent US acquisitions"},
+        "THLEY": {"company": "Thales (ADR)",          "bucket": "Components",       "sub": "French prime + Thales Alenia Space JV", "specificity": 4, "note": "Major EU satellite OEM via Thales Alenia"},
+        "SAFRY": {"company": "Safran (ADR)",          "bucket": "Components",       "sub": "Propulsion + actuators (ADR)",   "specificity": 3, "note": "Aerospace propulsion + small-sat platforms; engines dominate"},
+
+        # Bucket 2: Space Comms & Ground Infrastructure (HIGH PRIORITY)
+        "IRDM":  {"company": "Iridium Communications","bucket": "Comms / Ground",    "sub": "L-band satellite comms pure-play", "specificity": 5, "note": "Cleanest public pure-play in entire space supply chain; ~$800M rev"},
+        "VSAT":  {"company": "Viasat",                "bucket": "Comms / Ground",    "sub": "Broadband + IFC + maritime + gov", "specificity": 3, "note": "Post-Inmarsat acquisition; execution challenged"},
+        "LHX":   {"company": "L3Harris Technologies", "bucket": "Comms / Ground",    "sub": "Space comms + tactical communications", "specificity": 4, "note": "More pure-play comms than other defense primes"},
+        "GILT":  {"company": "Gilat Satellite Networks", "bucket": "Comms / Ground", "sub": "Israeli ground systems / VSAT terminals / IFC", "specificity": 3, "note": "$300M+ rev specialized; narrow but real"},
+        "CMTL":  {"company": "Comtech Telecommunications", "bucket": "Comms / Ground", "sub": "Modems / ground systems / microwave", "specificity": 2, "note": "Small cap, troubled execution — turnaround story"},
+        "MYNA":  {"company": "Mynaric",               "bucket": "Comms / Ground",    "sub": "Optical inter-satellite links pure-play", "specificity": 4, "note": "OPEN RESEARCH: financial health uncertain (cash burn concerns)"},
+
+        # Bucket 3: Payload Data & Defense Analytics (MEDIUM PRIORITY)
+        "LDOS":  {"company": "Leidos Holdings",       "bucket": "Analytics",         "sub": "Defense IT + space mission support", "specificity": 3, "note": "Largest defense IT; deep NRO/Space Force relationships"},
+        "CACI":  {"company": "CACI International",    "bucket": "Analytics",         "sub": "Defense IT / intelligence community / EW", "specificity": 3, "note": "Real revenue + clean balance sheet"},
+        "BAH":   {"company": "Booz Allen Hamilton",   "bucket": "Analytics",         "sub": "Government consulting / space mission support", "specificity": 3, "note": "Highest quality balance sheet of the three"},
+        "PLTR":  {"company": "Palantir Technologies", "bucket": "Analytics",         "sub": "Foundry for defense / NRO / Maven", "specificity": 3, "note": "Broad applicability; high SBC likely caps CS score"},
+
+        # Bucket 4: In-Space Logistics & Satellite Architecture (LOW / SPECULATIVE)
+        "RKLB":  {"company": "Rocket Lab USA",        "bucket": "In-Space Logistics","sub": "Small launch + space systems (Photon bus)", "specificity": 4, "note": "Graduated from SPAC to real biz: $350M+ rev; Space Force/NASA customers"},
+        "NOC":   {"company": "Northrop Grumman",      "bucket": "In-Space Logistics","sub": "SpaceLogistics MEV + B-21 + strategic systems", "specificity": 4, "note": "Only operating commercial in-orbit servicer; otherwise diluted"},
+        "BWXT":  {"company": "BWX Technologies",      "bucket": "In-Space Logistics","sub": "Nuclear propulsion for space (DARPA DRACO) + navy reactors", "specificity": 4, "note": "Extreme nuclear regulatory moat; space rev is small slice"},
+        "ASTSF": {"company": "Astroscale Holdings (JP)","bucket": "In-Space Logistics","sub": "Active debris removal / life extension (JP ADR)", "specificity": 5, "note": "Pure-play but PRE-REVENUE — will struggle on CS criterion"},
+    },
 }
 
 
 # Themes whose data this script refreshes. Theme dir must exist under themes/.
-ACTIVE_THEMES = ["ai_data_center"]
+ACTIVE_THEMES = ["ai_data_center", "space_economy"]
 
 
 # ═══════════════════════════════════════════════════════════════
