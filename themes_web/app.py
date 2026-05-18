@@ -26,6 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from themes_web.render import (
+    aggregate_portfolio,
     discover_themes_full,
     load_tracker_json,
     load_tracker_live_json,
@@ -172,6 +173,28 @@ def root():
     if not themes:
         return HTMLResponse("<h1>No themes found</h1><p>Add a theme directory under <code>themes/</code> with a <code>tracker.json</code>.</p>", status_code=404)
     return RedirectResponse(url=f"/themes/{themes[0]['slug']}/tracker")
+
+
+@app.get("/portfolio", response_class=HTMLResponse)
+def portfolio_page(request: Request):
+    """Top-level cross-theme portfolio view. Aggregates every Active theme."""
+    portfolio = aggregate_portfolio()
+    return templates.TemplateResponse(
+        request=request,
+        name="portfolio.html",
+        context={
+            "active_slug": None,
+            "active_page": "portfolio",
+            "tracker": None,
+            "all_themes": discover_themes_full(),
+            "portfolio": portfolio,
+        },
+    )
+
+
+@app.get("/api/portfolio", response_class=JSONResponse)
+def api_portfolio():
+    return aggregate_portfolio()
 
 
 @app.get("/how-it-works", response_class=HTMLResponse)

@@ -232,6 +232,158 @@ def theme_dir(slug: str) -> Path:
     return _THEMES_DIR / slug
 
 
+# ─────────────────────────────────────────────────────────────
+# Portfolio aggregation — merge holdings across all active themes
+# ─────────────────────────────────────────────────────────────
+
+def aggregate_portfolio() -> dict:
+    """
+    Walk every Active theme with a tracker.json + read its candidates.json for
+    current prices, return a portfolio-level view:
+
+        {
+            "themes":    [ {slug, display_name, locked_at, holdings_count,
+                            tracker_chg_pct, spy_chg_pct, vs_spy_pp,
+                            spy_at_lock, plain_summary} ... ],
+            "holdings":  [ {ticker, company, bucket, sub, theme_slug,
+                            theme_display_name, theme_count, entry_price,
+                            current_price, chg_pct, chg_vs_spy_pp, conviction,
+                            scoring_total, thesis_status, scoring_rationale,
+                            spy_chg_pct_for_theme} ... ],
+            "overlaps":  [ {ticker, company, themes: [{slug, display_name,
+                            conviction, scoring_total, entry_price}],
+                            count} ... ],
+            "summary":   {unique_positions, tracker_lines, overlap_count,
+                          themes_count, avg_chg_pct, avg_vs_spy_pp,
+                          best_performer, worst_performer},
+        }
+
+    Notes:
+    - Per-holding chg_pct uses *that theme's* SPY-at-lock as the benchmark.
+      That keeps each holding's vs-SPY comparison faithful to its own theme
+      timeline, even when themes were locked on different dates.
+    - Aggregate "avg_vs_spy_pp" is the mean of per-holding chg_vs_spy_pp
+      values — a simple equal-weight average across tracker lines. Overlap
+      tickers count once per theme (intentional, since they're 2x positions).
+    """
+    themes_meta: list[dict] = []
+    all_holdings: list[dict] = []
+    by_ticker: dict[str, list[dict]] = {}
+
+    for t in discover_themes_full():
+        if not t.get("has_tracker"):
+            continue
+        if t.get("status") != "Active":
+            continue
+        slug = t["slug"]
+        tracker = load_tracker_json(slug) or {}
+        cands_doc = load_candidates_json(slug) or {}
+        candidates_map = {c["ticker"]: c for c in cands_doc.get("candidates", [])}
+
+        bench = tracker.get("benchmarks_at_init") or {}
+        spy_lock = float(bench.get("spy_at_theme_lock") or 0)
+        # No live SPY fetch in aggregation; treat current SPY = lock SPY for
+        # now (same simplification the tracker page makes). Live overlay can
+        # update on the client side later.
+        spy_now = spy_lock
+        spy_chg_pct = ((spy_now / spy_lock - 1) * 100) if spy_lock > 0 else 0.0
+
+        per_theme_chg_sum = 0.0
+        per_theme_n = 0
+
+        for h in tracker.get("holdings") or []:
+            tk = h["ticker"]
+            entry = float(h.get("entry_price") or 0)
+            cand = candidates_map.get(tk) or {}
+            now = float(cand.get("price") or entry)
+            chg_pct = ((now / entry - 1) * 100) if entry > 0 else 0.0
+            chg_vs_spy = chg_pct - spy_chg_pct
+
+            row = {
+                **h,
+                "theme_slug": slug,
+                "theme_display_name": tracker.get("theme_display_name") or slug,
+                "current_price": round(now, 2),
+                "chg_pct": round(chg_pct, 2),
+                "chg_vs_spy_pp": round(chg_vs_spy, 2),
+                "spy_chg_pct_for_theme": round(spy_chg_pct, 2),
+            }
+            all_holdings.append(row)
+            by_ticker.setdefault(tk, []).append(row)
+            per_theme_chg_sum += chg_pct
+            per_theme_n += 1
+
+        avg_per_theme = (per_theme_chg_sum / per_theme_n) if per_theme_n else 0.0
+        themes_meta.append({
+            "slug": slug,
+            "display_name": tracker.get("theme_display_name") or slug,
+            "locked_at": tracker.get("theme_locked_at"),
+            "tracker_initialized_at": tracker.get("tracker_initialized_at"),
+            "holdings_count": per_theme_n,
+            "tracker_chg_pct": round(avg_per_theme, 2),
+            "spy_chg_pct": round(spy_chg_pct, 2),
+            "vs_spy_pp": round(avg_per_theme - spy_chg_pct, 2),
+            "spy_at_lock": spy_lock,
+            "plain_summary": tracker.get("plain_summary") or "",
+        })
+
+    # Cross-theme overlap detection — any ticker appearing in >1 theme
+    overlaps: list[dict] = []
+    for tk, rows in by_ticker.items():
+        if len(rows) > 1:
+            overlaps.append({
+                "ticker": tk,
+                "company": rows[0].get("company"),
+                "count": len(rows),
+                "themes": [
+                    {
+                        "slug": r["theme_slug"],
+                        "display_name": r["theme_display_name"],
+                        "conviction": r.get("conviction"),
+                        "scoring_total": r.get("scoring_total"),
+                        "entry_price": r.get("entry_price"),
+                        "bucket": r.get("bucket"),
+                    }
+                    for r in rows
+                ],
+            })
+    overlaps.sort(key=lambda o: (-o["count"], o["ticker"]))
+
+    # Annotate each holding with its theme_count (1 or 2+) so the table can
+    # surface the 2x positions inline.
+    for row in all_holdings:
+        row["theme_count"] = len(by_ticker.get(row["ticker"], []))
+
+    # Summary
+    avg_chg = sum(h["chg_pct"] for h in all_holdings) / len(all_holdings) if all_holdings else 0.0
+    avg_vs_spy = sum(h["chg_vs_spy_pp"] for h in all_holdings) / len(all_holdings) if all_holdings else 0.0
+    best = max(all_holdings, key=lambda h: h["chg_pct"]) if all_holdings else None
+    worst = min(all_holdings, key=lambda h: h["chg_pct"]) if all_holdings else None
+    summary = {
+        "themes_count": len(themes_meta),
+        "unique_positions": len(by_ticker),
+        "tracker_lines": len(all_holdings),
+        "overlap_count": len(overlaps),
+        "avg_chg_pct": round(avg_chg, 2),
+        "avg_vs_spy_pp": round(avg_vs_spy, 2),
+        "best_performer": {
+            "ticker": best["ticker"], "chg_pct": best["chg_pct"],
+            "theme_display_name": best["theme_display_name"],
+        } if best else None,
+        "worst_performer": {
+            "ticker": worst["ticker"], "chg_pct": worst["chg_pct"],
+            "theme_display_name": worst["theme_display_name"],
+        } if worst else None,
+    }
+
+    return {
+        "themes": themes_meta,
+        "holdings": all_holdings,
+        "overlaps": overlaps,
+        "summary": summary,
+    }
+
+
 def base_context(slug: str, active_page: str) -> dict:
     """Common context every page template needs."""
     tracker = load_tracker_json(slug)

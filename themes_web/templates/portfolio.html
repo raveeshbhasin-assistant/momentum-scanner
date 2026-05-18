@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% block title %}Portfolio · Themes{% endblock %}
+
+{% block extra_css %}
+  .pf-header { margin-bottom: 24px; }
+  .pf-title { font-family: var(--font-serif); font-size: 32px; line-height: 1.15; font-weight: 500; letter-spacing: -0.015em; margin: 0 0 4px; }
+  .pf-sub { font-size: 13px; color: var(--text-tertiary); }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 26px; }
+  .kpi { background: var(--bg-elev); border-radius: var(--radius-md); padding: 14px 18px; }
+  .kpi-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .kpi-value { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .kpi-value .unit { font-size: 13px; color: var(--text-secondary); margin-left: 4px; font-weight: 400; }
+  .kpi-value.positive { color: var(--text-success); }
+  .kpi-value.negative { color: var(--text-danger); }
+  .kpi-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+
+  .section-head { font-family: var(--font-sans); font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin: 28px 0 12px; }
+
+  /* ── Per-theme cards ─── */
+  .theme-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 4px; }
+  .theme-card { background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 16px 18px; text-decoration: none; color: inherit; transition: border-color 0.1s ease, transform 0.1s ease; display: flex; flex-direction: column; gap: 8px; }
+  .theme-card:hover { border-color: var(--border-strong); transform: translateY(-1px); text-decoration: none; }
+  .tc-name { font-family: var(--font-serif); font-size: 16.5px; font-weight: 500; line-height: 1.25; color: var(--text-primary); }
+  .tc-meta { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-tertiary); }
+  .tc-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-tertiary); }
+  .tc-perf { display: flex; align-items: baseline; gap: 12px; margin-top: 2px; }
+  .tc-perf-main { font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .tc-perf-main.positive { color: var(--text-success); }
+  .tc-perf-main.negative { color: var(--text-danger); }
+  .tc-perf-spy { font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .tc-perf-spy.positive { color: var(--text-success); }
+  .tc-perf-spy.negative { color: var(--text-danger); }
+  .tc-summary { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* ── Overlap callout ─── */
+  .overlap-card { background: var(--bg-elev); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 4px; }
+  .overlap-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .overlap-head .badge { font-size: 10.5px; padding: 2px 8px; border-radius: 4px; background: var(--text-warning-bg); color: var(--text-warning); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .overlap-head .title { font-family: var(--font-serif); font-size: 16px; font-weight: 500; }
+  .overlap-note { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px; }
+  .overlap-list { display: flex; flex-direction: column; gap: 8px; }
+  .overlap-row { display: grid; grid-template-columns: 110px 1fr 60px; align-items: center; gap: 12px; padding: 10px 0; border-top: 0.5px solid var(--border); }
+  .overlap-row:first-child { border-top: none; padding-top: 4px; }
+  .overlap-tk { font-weight: 500; font-size: 14px; font-family: var(--font-mono); }
+  .overlap-tk .co { font-family: var(--font-sans); font-size: 11.5px; color: var(--text-tertiary); margin-left: 6px; font-weight: 400; }
+  .overlap-themes { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; }
+  .overlap-theme-pill { padding: 2px 8px; border-radius: 4px; background: var(--bg-surface); border: 0.5px solid var(--border); color: var(--text-secondary); white-space: nowrap; }
+  .overlap-theme-pill .score { color: var(--text-tertiary); margin-left: 4px; }
+  .overlap-count { font-size: 12px; color: var(--text-secondary); font-weight: 500; text-align: right; }
+  .overlap-count .x { color: var(--text-warning); font-weight: 500; }
+
+  /* ── Holdings table ─── */
+  .controls { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+  .controls .lbl { font-size: 12px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .controls select { font-family: var(--font-sans); font-size: 13px; padding: 6px 28px 6px 10px; background: var(--bg-surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23888' fill='none' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 10px center; border: 0.5px solid var(--border-strong); border-radius: var(--radius-md); color: var(--text-primary); appearance: none; cursor: pointer; }
+  .controls .spacer { flex: 1; }
+  .controls .row-count { font-size: 11px; color: var(--text-tertiary); }
+
+  .table-wrap { border: 0.5px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  table.pf { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.pf th { background: var(--bg-elev); padding: 11px 12px; font-size: 11px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.05em; text-transform: uppercase; text-align: left; border-bottom: 0.5px solid var(--border); }
+  table.pf th.num { text-align: right; }
+  table.pf td { padding: 12px; border-top: 0.5px solid var(--border); font-variant-numeric: tabular-nums; }
+  table.pf td.num { text-align: right; }
+  table.pf tr.row { cursor: pointer; transition: background 0.08s ease; }
+  table.pf tr.row:hover { background: var(--bg-elev); }
+  .tk { font-weight: 500; font-size: 14px; font-family: var(--font-mono); }
+  .co { font-size: 11.5px; color: var(--text-tertiary); margin-top: 2px; }
+  .theme-pill { font-size: 10.5px; padding: 2px 7px; border-radius: 4px; background: var(--bg-elev-2); color: var(--text-secondary); font-weight: 500; white-space: nowrap; text-decoration: none; }
+  .theme-pill:hover { background: var(--border-strong); color: var(--text-primary); text-decoration: none; }
+  .twin-pill { font-size: 10px; padding: 1px 5px; border-radius: 3px; background: var(--text-warning-bg); color: var(--text-warning); font-weight: 500; margin-left: 4px; vertical-align: middle; }
+  .pos { color: var(--text-success); }
+  .neg { color: var(--text-danger); }
+  .muted { color: var(--text-secondary); }
+  .conv-tag { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 500; letter-spacing: 0.02em; background: var(--bg-elev-2); color: var(--text-secondary); }
+  .conv-tag.trim { color: var(--text-warning); }
+  .conv-tag.inc { color: var(--text-success); }
+
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .theme-cards { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 700px) {
+    .pf-title { font-size: 26px; }
+    .overlap-row { grid-template-columns: 1fr; gap: 4px; }
+    .overlap-count { text-align: left; }
+    table.pf { font-size: 12.5px; }
+    table.pf td, table.pf th { padding: 9px 8px; }
+    .co { display: none; }
+  }
+{% endblock %}
+
+{% block content %}
+{% set s = portfolio.summary %}
+
+<div class="pf-header">
+  <h1 class="pf-title">Portfolio</h1>
+  <div class="pf-sub">All active themes, merged into one view. Cross-theme overlaps are intentional 2x positions.</div>
+</div>
+
+<div class="kpis">
+  <div class="kpi">
+    <div class="kpi-label">Unique positions</div>
+    <div class="kpi-value">{{ s.unique_positions }}</div>
+    <div class="kpi-sub">{{ s.tracker_lines }} tracker lines · {{ s.themes_count }} themes</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Aggregate since lock</div>
+    <div class="kpi-value {% if s.avg_chg_pct > 0 %}positive{% elif s.avg_chg_pct < 0 %}negative{% endif %}">
+      {{ '%+.2f'|format(s.avg_chg_pct) }}%
+    </div>
+    <div class="kpi-sub">equal-weight across {{ s.tracker_lines }} lines</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">vs SPY</div>
+    <div class="kpi-value {% if s.avg_vs_spy_pp > 0 %}positive{% elif s.avg_vs_spy_pp < 0 %}negative{% endif %}">
+      {{ '%+.2f'|format(s.avg_vs_spy_pp) }}<span class="unit">pp</span>
+    </div>
+    <div class="kpi-sub">each holding vs its own theme's SPY-at-lock</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Cross-theme overlaps</div>
+    <div class="kpi-value">{{ s.overlap_count }}</div>
+    <div class="kpi-sub">2x intentional positions</div>
+  </div>
+</div>
+
+<div class="section-head">Themes</div>
+<div class="theme-cards">
+  {% for t in portfolio.themes %}
+    <a class="theme-card" href="/themes/{{ t.slug }}/tracker">
+      <div>
+        <div class="tc-name">{{ t.display_name }}</div>
+        <div class="tc-meta">
+          <span>Locked {{ t.locked_at }}</span>
+          <span class="dot"></span>
+          <span>{{ t.holdings_count }} holdings</span>
+        </div>
+      </div>
+      <div class="tc-perf">
+        <span class="tc-perf-main {% if t.tracker_chg_pct > 0 %}positive{% elif t.tracker_chg_pct < 0 %}negative{% endif %}">
+          {{ '%+.2f'|format(t.tracker_chg_pct) }}%
+        </span>
+        <span class="tc-perf-spy {% if t.vs_spy_pp > 0 %}positive{% elif t.vs_spy_pp < 0 %}negative{% endif %}">
+          {{ '%+.2f'|format(t.vs_spy_pp) }} pp vs SPY
+        </span>
+      </div>
+      <div class="tc-summary">{{ t.plain_summary }}</div>
+    </a>
+  {% endfor %}
+</div>
+
+{% if portfolio.overlaps %}
+<div class="section-head">Cross-theme overlaps</div>
+<div class="overlap-card">
+  <div class="overlap-head">
+    <span class="badge">2x</span>
+    <span class="title">{{ portfolio.overlaps | length }} name{{ 's' if portfolio.overlaps|length != 1 else '' }} held in multiple themes</span>
+  </div>
+  <div class="overlap-note">These tickers scored top-7 in more than one theme. Per the workflow each tracker is true to itself — overlaps are accepted as natural 2x positions, not deduped.</div>
+  <div class="overlap-list">
+    {% for o in portfolio.overlaps %}
+    <div class="overlap-row">
+      <div class="overlap-tk">{{ o.ticker }}<span class="co">{{ o.company or '' }}</span></div>
+      <div class="overlap-themes">
+        {% for th in o.themes %}
+          <a class="overlap-theme-pill" href="/themes/{{ th.slug }}/tracker">
+            {{ th.display_name }}<span class="score">· {{ th.scoring_total|int if th.scoring_total else '—' }}</span>
+          </a>
+        {% endfor %}
+      </div>
+      <div class="overlap-count"><span class="x">{{ o.count }}×</span> position</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="section-head">All holdings</div>
+<div class="controls">
+  <span class="lbl">Sort</span>
+  <select id="sort-by">
+    <option value="theme">Theme</option>
+    <option value="score">Score</option>
+    <option value="chg">Δ% since entry</option>
+    <option value="vsSpy">vs SPY</option>
+    <option value="ticker">Ticker</option>
+    <option value="conviction">Conviction</option>
+  </select>
+  <span class="lbl">Theme</span>
+  <select id="filter-theme">
+    <option value="all">All themes</option>
+    {% for t in portfolio.themes %}
+      <option value="{{ t.slug }}">{{ t.display_name }}</option>
+    {% endfor %}
+  </select>
+  <span class="lbl">Show</span>
+  <select id="filter-overlap">
+    <option value="all">All positions</option>
+    <option value="overlap">Cross-theme only</option>
+    <option value="single">Single-theme only</option>
+  </select>
+  <span class="spacer"></span>
+  <span class="row-count" id="row-count">{{ s.tracker_lines }} lines</span>
+</div>
+
+<div class="table-wrap">
+  <table class="pf">
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Theme</th>
+        <th>Bucket</th>
+        <th class="num">Score</th>
+        <th class="num">Entry</th>
+        <th class="num">Now</th>
+        <th class="num">Δ%</th>
+        <th class="num">vs SPY</th>
+        <th>Conviction</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+
+<div class="footnote" style="margin-top:18px;">
+  Aggregated from each theme's <code>tracker.json</code> (anchor) + <code>candidates.json</code> (current price).
+  Best: <b>{{ s.best_performer.ticker if s.best_performer else '—' }}</b>
+  ({{ '%+.2f'|format(s.best_performer.chg_pct) if s.best_performer else '0' }}%) ·
+  Worst: <b>{{ s.worst_performer.ticker if s.worst_performer else '—' }}</b>
+  ({{ '%+.2f'|format(s.worst_performer.chg_pct) if s.worst_performer else '0' }}%).
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const HOLDINGS = {{ portfolio.holdings | tojson }};
+
+function fmtMoney(v) { if (v == null) return '—'; return '$' + Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtPct(v) { if (v == null) return '—'; return (v >= 0 ? '+' : '') + Number(v).toFixed(2) + '%'; }
+function fmtPp(v) { if (v == null) return '—'; return (v >= 0 ? '+' : '') + Number(v).toFixed(2); }
+function convClass(c) { if (c == null) return ''; if (typeof c === 'number') return c <= 2 ? 'trim' : (c >= 4 ? 'inc' : ''); const s = String(c).toLowerCase(); return s.includes('inc') ? 'inc' : (s.includes('trim') ? 'trim' : ''); }
+function convLabel(c) { if (typeof c === 'number') return { 5: 'Increase', 4: 'Lean inc', 3: 'Hold', 2: 'Lean trim', 1: 'Trim' }[c] || 'Hold'; return c || 'Hold'; }
+
+function render() {
+  const sortBy = document.getElementById('sort-by').value;
+  const fTheme = document.getElementById('filter-theme').value;
+  const fOver  = document.getElementById('filter-overlap').value;
+
+  let rows = HOLDINGS.slice();
+  if (fTheme !== 'all') rows = rows.filter(r => r.theme_slug === fTheme);
+  if (fOver === 'overlap') rows = rows.filter(r => (r.theme_count || 1) > 1);
+  else if (fOver === 'single') rows = rows.filter(r => (r.theme_count || 1) === 1);
+
+  const sorters = {
+    theme:      (a, b) => (a.theme_display_name || '').localeCompare(b.theme_display_name || '') || (b.scoring_total || 0) - (a.scoring_total || 0),
+    score:      (a, b) => (b.scoring_total || 0) - (a.scoring_total || 0),
+    chg:        (a, b) => (b.chg_pct || 0) - (a.chg_pct || 0),
+    vsSpy:      (a, b) => (b.chg_vs_spy_pp || 0) - (a.chg_vs_spy_pp || 0),
+    ticker:     (a, b) => (a.ticker || '').localeCompare(b.ticker || ''),
+    conviction: (a, b) => ((b.conviction || 3) - (a.conviction || 3)) || (b.scoring_total || 0) - (a.scoring_total || 0),
+  };
+  rows.sort(sorters[sortBy]);
+
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = rows.map(r => {
+    const chgClass = r.chg_pct > 0 ? 'pos' : (r.chg_pct < 0 ? 'neg' : 'muted');
+    const vsClass  = r.chg_vs_spy_pp > 0 ? 'pos' : (r.chg_vs_spy_pp < 0 ? 'neg' : 'muted');
+    const twin = (r.theme_count || 1) > 1 ? `<span class="twin-pill" title="Held in ${r.theme_count} themes">2x</span>` : '';
+    return `<tr class="row" onclick="location.href='/themes/${r.theme_slug}/tracker'">
+      <td><div class="tk">${r.ticker}${twin}</div><div class="co">${r.company || ''}</div></td>
+      <td><a class="theme-pill" href="/themes/${r.theme_slug}/tracker" onclick="event.stopPropagation()">${r.theme_display_name}</a></td>
+      <td class="muted" style="font-size:12px;">${r.bucket || '—'}</td>
+      <td class="num">${(r.scoring_total != null) ? Number(r.scoring_total).toFixed(0) : '—'}</td>
+      <td class="num muted">${fmtMoney(r.entry_price)}</td>
+      <td class="num"><b>${fmtMoney(r.current_price)}</b></td>
+      <td class="num ${chgClass}">${fmtPct(r.chg_pct)}</td>
+      <td class="num ${vsClass}" style="font-size:12px;">${fmtPp(r.chg_vs_spy_pp)}</td>
+      <td><span class="conv-tag ${convClass(r.conviction)}">${convLabel(r.conviction)}</span></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('row-count').textContent =
+    rows.length === HOLDINGS.length ? `${rows.length} lines` : `${rows.length} of ${HOLDINGS.length} lines`;
+}
+
+document.getElementById('sort-by').addEventListener('change', render);
+document.getElementById('filter-theme').addEventListener('change', render);
+document.getElementById('filter-overlap').addEventListener('change', render);
+render();
+</script>
+{% endblock %}
