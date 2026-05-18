@@ -127,11 +127,49 @@ UNIVERSES: dict[str, dict[str, dict[str, Any]]] = {
         "BWXT":  {"company": "BWX Technologies",      "bucket": "In-Space Logistics","sub": "Nuclear propulsion for space (DARPA DRACO) + navy reactors", "specificity": 4, "note": "Extreme nuclear regulatory moat; space rev is small slice"},
         "ASTSF": {"company": "Astroscale Holdings (JP)","bucket": "In-Space Logistics","sub": "Active debris removal / life extension (JP ADR)", "specificity": 5, "note": "Pure-play but PRE-REVENUE — will struggle on CS criterion"},
     },
+
+    "modern_defense": {
+        # Bucket 1: Counter-Drone / EW (Highest weight — Structural)
+        "LHX":   {"company": "L3Harris Technologies", "bucket": "Counter-Drone / EW", "sub": "Tactical EW + space comms (cross-theme)", "specificity": 4, "note": "Most EW pure-play among defense primes; also Space tracker"},
+        "MRCY":  {"company": "Mercury Systems",       "bucket": "Counter-Drone / EW", "sub": "Rad-hard edge compute for autonomous systems", "specificity": 4, "note": "Cross-theme with Space; specialized defense electronics"},
+        "BAESY": {"company": "BAE Systems (ADR)",     "bucket": "Counter-Drone / EW", "sub": "EW + targeting + radar (UK ADR)", "specificity": 3, "note": "Cross-theme with Space; UK prime with real EW capability"},
+        "DRS":   {"company": "Leonardo DRS",          "bucket": "Counter-Drone / EW", "sub": "Counter-UAS + force protection + ISR", "specificity": 4, "note": "US arm of Leonardo; narrower pure-play C-UAS"},
+        "RTX":   {"company": "RTX Corp",              "bucket": "Counter-Drone / EW", "sub": "Patriot/NASAMS (over-hyped per thesis)", "specificity": 2, "note": "Legacy kinetic — thesis explicitly says uneconomic vs cheap drones"},
+        "HII":   {"company": "Huntington Ingalls",    "bucket": "Counter-Drone / EW", "sub": "Ship-based defense (over-hyped per thesis)", "specificity": 2, "note": "Thesis-misaligned; diluted into legacy shipbuilding"},
+
+        # Bucket 2: Munitions & Restocking (Highest weight — Structural)
+        "RNMBY": {"company": "Rheinmetall (ADR)",     "bucket": "Munitions",          "sub": "German artillery + 155mm + propellants", "specificity": 5, "note": "Flagship pure-play; massive Europe restocking ramp with multi-year backlogs"},
+        "NOC":   {"company": "Northrop Grumman",      "bucket": "Munitions",          "sub": "Propellants + ammo + strategic systems", "specificity": 4, "note": "Cross-theme with Space; munitions slice is real but diluted"},
+        "GD":    {"company": "General Dynamics",      "bucket": "Munitions",          "sub": "Abrams + Stryker + ordnance + subs", "specificity": 3, "note": "Broad portfolio dilutes munitions exposure"},
+        "LMT":   {"company": "Lockheed Martin",       "bucket": "Munitions",          "sub": "Javelin + HIMARS + GMLRS (also vehicles-wrong anchor)", "specificity": 3, "note": "Benchmark anchor — diluted by F-35; thesis-skeptical on legacy aero"},
+
+        # Bucket 3: Drones & Autonomous Platforms (Moderate weight — Catalyst)
+        "AVAV":  {"company": "AeroVironment",         "bucket": "Drones",             "sub": "Switchblade + Puma (fielded DoD)", "specificity": 4, "note": "The ONE battle-tested US pure-play; explicitly exempt from over-hype"},
+        "ESLT":  {"company": "Elbit Systems (ADR)",   "bucket": "Drones",             "sub": "Israeli — Hermes UAVs + EW + ground", "specificity": 4, "note": "Battle-tested allied pure-play; high thesis fit"},
+        "SAABY": {"company": "Saab AB (ADR)",         "bucket": "Drones",             "sub": "Swedish — NLAW + Carl-Gustaf + Gripen", "specificity": 4, "note": "Europe rearmament beneficiary"},
+        "KTOS":  {"company": "Kratos Defense",        "bucket": "Drones",             "sub": "Target drones + Valkyrie XQ-58", "specificity": 3, "note": "Cross-theme with Space; smaller customer base"},
+        "TXT":   {"company": "Textron",               "bucket": "Drones",             "sub": "Bell + AAI Shadow drones + Cessna", "specificity": 2, "note": "Diluted — drones are small slice of industrial conglomerate"},
+        "ONDS":  {"company": "Ondas Holdings",        "bucket": "Drones",             "sub": "Small drones + Replicator participant", "specificity": 2, "note": "Pre-profitable + heavy dilution — likely fails CS bar"},
+        "RCAT":  {"company": "Red Cat Holdings",      "bucket": "Drones",             "sub": "Small drone manufacturer (SRR Tranche 2)", "specificity": 2, "note": "Real but small revenue; SPAC-origin dilution"},
+
+        # Bucket 4: Defense Software & C2 (Lightest weight — 15%)
+        "PLTR":  {"company": "Palantir Technologies", "bucket": "Software / C2",      "sub": "Foundry + Maven program + DoD C2", "specificity": 3, "note": "Pinned to Defense only (not Space); broad applicability"},
+        "CACI":  {"company": "CACI International",    "bucket": "Software / C2",      "sub": "Defense IT + intelligence community + EW services", "specificity": 3, "note": "Cross-theme with Space; flagged for acquisition-funded debt growth"},
+        "LDOS":  {"company": "Leidos Holdings",       "bucket": "Software / C2",      "sub": "Largest defense IT contractor", "specificity": 3, "note": "Diluted but high quality; cross-theme with Space"},
+        "BAH":   {"company": "Booz Allen Hamilton",   "bucket": "Software / C2",      "sub": "Government consulting + mission support", "specificity": 3, "note": "Cross-theme with Space; cleanest BS of the three IT names"},
+    },
 }
+
+# Cross-theme tickers (LHX, MRCY, BAESY, NOC, KTOS, CACI, BAH, LDOS) intentionally appear in
+# both Space and Defense universes — they have legitimate exposure to both themes. The nested
+# dict structure means no key collision (UNIVERSES["space_economy"]["NOC"] and
+# UNIVERSES["modern_defense"]["NOC"] are distinct entries). At tracker init time we explicitly
+# decide whether names ending up in both trackers should be held 2x or pinned to one.
+# PLTR is the exception — explicitly Defense-only per locked thesis.
 
 
 # Themes whose data this script refreshes. Theme dir must exist under themes/.
-ACTIVE_THEMES = ["ai_data_center", "space_economy"]
+ACTIVE_THEMES = ["ai_data_center", "space_economy", "modern_defense"]
 
 
 # ═══════════════════════════════════════════════════════════════
