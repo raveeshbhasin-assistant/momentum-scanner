@@ -1,0 +1,19 @@
+{
+  "theme": "modern_defense",
+  "theme_display_name": "Modern Defense & Drones",
+  "theme_status": "Active",
+  "theme_locked_at": "2026-05-16",
+  "tracker_initialized_at": null,
+  "last_reviewed_at": null,
+  "plain_summary": "Allied defense buyers (NATO Europe + Israel + Indo-PACOM partners) will procure cheap autonomous platforms and the EW/HPM systems to defeat them faster than the slower-moving US doctrine shift — and the global subsystem suppliers with multi-year locked munitions backlogs (Rheinmetall-style) plus the EW pure-plays (LHX) will capture more durable per-share value than the headline-grabbing US drone pure-plays (AVAV/KTOS) over the 2-4 year horizon. Cheap autonomous systems are out-killing exquisite platforms by 10-100x on cost; legacy F-35/destroyer doctrine is what this thesis says is threatened. Carries unique geopolitical sensitivity — can gap down 40-50% on peace.",
+  "benchmarks_at_init": {
+    "spy_at_theme_lock": 739.17,
+    "ita_at_theme_lock": 217.27,
+    "lmt_at_theme_lock": 516.01,
+    "rnmby_at_theme_lock": 260.40,
+    "avav_at_theme_lock": 158.00
+  },
+  "holdings": [],
+  "review_cadence": "monthly first 3 months, quarterly thereafter — plus immediate review on any geopolitical de-escalation signal",
+  "_pending": "Supply chain mapping and candidates next. Tracker will be initialized once scoring promotes the top 5-7 names. Per-bucket weighting: ~60% structural (CUAS+Munitions), ~25% catalyst (Platforms), ~15% software."
+}
