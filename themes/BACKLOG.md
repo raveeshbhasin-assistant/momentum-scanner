@@ -7,18 +7,22 @@ Active and queued themes for the long-term growth research workflow. Items move 
 ## Active (in flight)
 
 1. **AI Data Center Build-Out** — power, cooling, optical interconnect, networking, heavy electrical equipment for the AI compute layer. The bet is that physical infrastructure suppliers capture disproportionate value as hyperscalers race to bring multi-gigawatt campuses online.
-   - Status: Thesis in refinement (2026-05-11)
+   - Status: Locked 2026-05-11, tracker active (7 holdings, v3 rubric)
    - Folder: `ai_data_center/`
+
+2. **Space Economy** — launch deflation triggers infrastructure buildout. Defense-anchored 70/30. Boring global subsystem suppliers with real revenue and clean balance sheets outperforming SPACs over 3-5 years.
+   - Status: Locked 2026-05-16, tracker active (7 holdings)
+   - Folder: `space_economy/`
+
+3. **Modern Defense & Drones** — allied buyers procure cheap autonomous platforms + EW/HPM faster than slow US doctrine shift. Munitions backlog suppliers + counter-drone EW capture durable value. Geopolitically sensitive (can gap down 40-50% on peace).
+   - Status: Locked 2026-05-16, supply chain mapping next
+   - Folder: `modern_defense/`
 
 ## On Deck (next)
 
-2. **Space Economy** — launch, satellites (especially LEO constellations), in-space manufacturing, space-based comms and sensing, defense applications. SpaceX-driven launch cost collapse opens new markets that need new infrastructure.
+4. **Nuclear Renaissance** — SMRs, uranium supply chain, restart of decommissioned reactors driven by AI power demand. Adjacent to AI DC but with its own supply chain (fuel cycle, enrichment, regulatory).
 
 ## Backlog (prioritized — top of list is next-up after On Deck)
-
-3. **Modern Defense / Drones & Counter-Drones** — autonomous weapons systems, drone swarms, counter-drone tech, defense electronics. Catalyst: Ukraine and Israel restructured how militaries think about cheap autonomous warfare. Multi-year capex cycle now starting in NATO budgets.
-
-4. **Nuclear Renaissance** — SMRs, uranium supply chain, restart of decommissioned reactors driven by AI power demand. Adjacent to (1) but with its own supply chain (fuel cycle, enrichment, regulatory).
 
 5. **AI in Healthcare — Disease Diagnosis & Treatment** — AI-driven drug discovery, diagnostics, clinical decision support. Companies positioned to apply AI to legacy healthcare workflows.
 
