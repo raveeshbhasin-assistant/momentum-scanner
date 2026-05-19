@@ -140,6 +140,21 @@ def _strong_only() -> bool:
     return _env("NOTIFY_STRONG_ONLY", "1") not in ("0", "false", "False", "")
 
 
+def _elite_only() -> bool:
+    """
+    v3.7.4: gate the email notifier to ELITE-tagged picks only — the
+    tier added in v3.7.1 (STRONG + category=D + RVOL ≥ 2.0). When
+    enabled (default), the notifier short-circuits the Cat A/B gate
+    and the STRONG-only gate because every ELITE pick is by definition
+    Cat D and STRONG, and the Cat A/B gate would otherwise drop them.
+
+    Toggle with NOTIFY_ELITE_ONLY env var ("0" to disable). Default ON
+    since the 19-day diagnostic showed ELITE picks hit 75.8% WR vs the
+    STRONG baseline's 59% — much higher signal-to-noise for the inbox.
+    """
+    return _env("NOTIFY_ELITE_ONLY", "1") not in ("0", "false", "False", "")
+
+
 def _market_hours_only() -> bool:
     return _env("NOTIFY_MARKET_HOURS_ONLY", "true").lower() in ("1", "true", "yes", "on")
 
@@ -447,8 +462,10 @@ def send_scan_email(
       - the scan fired during US equity regular session (Mon–Fri 09:30–
         16:00 ET) — skipped by setting NOTIFY_MARKET_HOURS_ONLY=false
       - RESEND_API_KEY is set and at least one recipient is configured
-      - at least one strong signal (composite_score ≥ 60) is in an
-        allowed category (NOTIFY_CATEGORIES, default "A,B")
+      - at least one ELITE pick survives, where ELITE = STRONG +
+        category=D + RVOL ≥ 2.0 (NOTIFY_ELITE_ONLY=1, the default).
+        Set NOTIFY_ELITE_ONLY=0 to fall back to the v3.7.0.2 path
+        (Cat A/B + STRONG-only).
       - that surviving set contains ≥ NOTIFY_MIN_SIGNALS entries
 
     This function returns immediately; the HTTP call runs on a daemon
@@ -473,32 +490,50 @@ def send_scan_email(
         logger.debug("notifier: no strong signals, skipping")
         return
 
-    # Category filter — drop Cat C/D (low-score / unclassified) by default
-    allowed = _allowed_categories()
-    filtered = [s for s in strong if _signal_category(s) in allowed]
-    if len(filtered) < _min_signals():
-        logger.info(
-            f"notifier: {len(strong)} strong → {len(filtered)} after category "
-            f"filter {sorted(allowed)} (< NOTIFY_MIN_SIGNALS={_min_signals()}), skipping"
-        )
-        return
-
-    # v3.7.0.2: STRONG-only gate — when enabled (default), restrict the
-    # notifier to picks where bar_green + above_vwap + new_hod + pm_high_hold
-    # all hold. 13-day research: STRONG picks hit 2.5R at ~46–53% vs ~22%
-    # baseline; May 11 production: 38.5% vs 9.5% non-STRONG. Toggle via
-    # NOTIFY_STRONG_ONLY=0 env var to fall back to the prior behaviour
-    # (any strong-signal-strength pick in an allowed category).
-    if _strong_only():
-        before = len(filtered)
-        filtered = [s for s in filtered if bool(s.get("strong_signal"))]
+    # v3.7.4: ELITE-only gate (NOTIFY_ELITE_ONLY=1 by default). When on,
+    # the notifier fires ONLY on ELITE picks (STRONG + category=D +
+    # RVOL ≥ 2.0). The Cat A/B and STRONG-only gates below are skipped
+    # because every ELITE pick is by definition Cat D and STRONG —
+    # running Cat A/B over the ELITE set would always drop everything.
+    # Disable with NOTIFY_ELITE_ONLY=0 to fall back to the v3.7.0.2
+    # Cat-A/B + STRONG-only behaviour.
+    if _elite_only():
+        filtered = [s for s in strong if _is_elite(s)]
         if len(filtered) < _min_signals():
             logger.info(
-                f"notifier: {before} cat-allowed → {len(filtered)} after STRONG "
+                f"notifier: {len(strong)} strong → {len(filtered)} after ELITE "
                 f"filter (< NOTIFY_MIN_SIGNALS={_min_signals()}), skipping"
             )
             return
-        logger.info(f"notifier: STRONG-only narrowed {before} → {len(filtered)} picks")
+        logger.info(f"notifier: ELITE-only narrowed {len(strong)} → {len(filtered)} picks")
+    else:
+        # Legacy v3.7.0.2 path: Cat A/B + STRONG-only.
+        # Category filter — drop Cat C/D (low-score / unclassified) by default
+        allowed = _allowed_categories()
+        filtered = [s for s in strong if _signal_category(s) in allowed]
+        if len(filtered) < _min_signals():
+            logger.info(
+                f"notifier: {len(strong)} strong → {len(filtered)} after category "
+                f"filter {sorted(allowed)} (< NOTIFY_MIN_SIGNALS={_min_signals()}), skipping"
+            )
+            return
+
+        # v3.7.0.2: STRONG-only gate — when enabled (default), restrict the
+        # notifier to picks where bar_green + above_vwap + new_hod + pm_high_hold
+        # all hold. 13-day research: STRONG picks hit 2.5R at ~46–53% vs ~22%
+        # baseline; May 11 production: 38.5% vs 9.5% non-STRONG. Toggle via
+        # NOTIFY_STRONG_ONLY=0 env var to fall back to the prior behaviour
+        # (any strong-signal-strength pick in an allowed category).
+        if _strong_only():
+            before = len(filtered)
+            filtered = [s for s in filtered if bool(s.get("strong_signal"))]
+            if len(filtered) < _min_signals():
+                logger.info(
+                    f"notifier: {before} cat-allowed → {len(filtered)} after STRONG "
+                    f"filter (< NOTIFY_MIN_SIGNALS={_min_signals()}), skipping"
+                )
+                return
+            logger.info(f"notifier: STRONG-only narrowed {before} → {len(filtered)} picks")
 
     if not _is_configured():
         logger.warning(

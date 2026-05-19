@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.3</title>
+    <title>Algorithm Logic — Momentum Scanner v3.7.4</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.3</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v3.7.4</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,34 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.7.4 ───── -->
+        <div class="release current" id="v3-7-4">
+            <div class="release-header">
+                <span class="release-version">v3.7.4</span>
+                <span class="release-date">Released 2026-05-16</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>Notifier now gates on ELITE-only, not Cat A/B + STRONG.</strong> The Resend email notifier previously fired on any STRONG pick that landed in Cat A or B (default since v3.5.8 / v3.7.0.2). v3.7.1 introduced the ELITE tier — STRONG + category=D + RVOL ≥ 2.0, 75.8% WR over 19 days. v3.7.4 makes that the default email gate: the notifier short-circuits the Cat A/B + STRONG-only filters and fires only when at least one ELITE pick is in the scan. The Cat A/B gate would have dropped every ELITE pick anyway (ELITE is by definition Cat D), so this isn't a stacked filter — it's a replacement. Tagged: <span class="pill pill-changed">changed</span>.</div>
+            <div class="release-details">
+                <p><strong>Why:</strong> 19-day diagnostic (1,497 picks, 188 STRONG) showed the Cat A/B gate selected the wrong half of STRONG. Cat A/B-gated STRONG picks hit 50–52% WR; the Cat D-only subset hit 72%. Adding RVOL ≥ 2 raised that to 76% on the ~35% volume slice. The Cat A/B email gate was therefore <em>actively selecting against</em> the picks that work — sector leaders that wobble when SPY hiccups, vs idiosyncratic catalyst-driven breakouts that don't. The notifier had to be flipped to fix that.</p>
+                <p><strong>What changed:</strong></p>
+                <ul>
+                    <li><strong><code>NOTIFY_ELITE_ONLY</code> env var (default <code>1</code>)</strong>. When on, the notifier filter chain becomes: market-hours → strong-signal-strength → ELITE → min-signals → send. When off, falls back exactly to the v3.7.0.2 chain (Cat A/B + STRONG-only). Toggle without redeploy by flipping the variable in Railway's UI.</li>
+                    <li><strong>Cat A/B gate is now <em>conditional</em>, not always-on</strong>. Under <code>NOTIFY_ELITE_ONLY=1</code> it is skipped entirely (running it over an ELITE-only list would always drop every pick, since every ELITE is Cat D). Under <code>NOTIFY_ELITE_ONLY=0</code> it runs as before.</li>
+                    <li><strong>STRONG-only gate is also conditional</strong>. Same reason — every ELITE pick is by definition STRONG, so the gate is a no-op inside the ELITE path. Outside the ELITE path it runs as before.</li>
+                    <li><strong>Subject prefix unchanged.</strong> v3.7.1's <code>[ELITE]</code> prefix logic still applies: any ELITE pick in the surviving set → <code>[ELITE]</code>, else <code>[MScan]</code>. Under the new default gate, every email by definition contains at least one ELITE pick, so the subject will read <code>[ELITE]</code> every time the notifier fires.</li>
+                </ul>
+                <p><strong>Volume expectation:</strong> 19-day diagnostic averaged ~3.5 ELITE picks/day; it fires on 17/19 days. So emails should drop from ~3–5 per day to roughly 1–2 per day (a single email per scan with all ELITE picks in it), with each email carrying picks that historically win 76% of the time.</p>
+                <p><strong>Rollback:</strong> set <code>NOTIFY_ELITE_ONLY=0</code> in Railway → falls back to v3.7.0.2 behaviour without a redeploy.</p>
+                <p><strong>Verification:</strong> <code>notifier.py</code> compiles. The new <code>_elite_only()</code> helper mirrors <code>_strong_only()</code> exactly in env-var parsing. The conditional branch is set up so that under <code>NOTIFY_ELITE_ONLY=1</code> the legacy Cat A/B + STRONG-only block is structurally unreachable; under <code>NOTIFY_ELITE_ONLY=0</code> the legacy path runs identical to v3.7.3 (no behaviour change). Test-email endpoint <code>POST /api/notify/test</code> still bypasses all filters, including ELITE-only.</p>
+            </div>
+        </div>
+
         <!-- ───── v3.7.3 ───── -->
-        <div class="release current" id="v3-7-3">
+        <div class="release" id="v3-7-3">
             <div class="release-header">
                 <span class="release-version">v3.7.3</span>
                 <span class="release-date">Released 2026-05-16</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>STRONG + ELITE chip consistency across /today, /history, /performance.</strong> The v3.7.2 hotfix promoted <code>.chip</code> base styles to <code>base.css</code> so <code>history.html</code> could use them, but two more gaps remained: <em>(1)</em> <code>history.html</code> still didn't have a STRONG-only chip (only <code>/today</code> and <code>/performance</code> did), so the three pages were inconsistent; <em>(2)</em> the <code>.chip.strong-chip</code> variant lived only inline in <code>today.html</code>, so even if you added the button to <code>history.html</code> it wouldn't pick up the gold-accent styling. Both fixed here, plus a CSS cache-bust to force browsers off the stale stylesheet. Tagged: <span class="pill pill-changed">changed</span> <span class="pill pill-added">added</span>.</div>
             <div class="release-details">
