@@ -732,6 +732,69 @@ def _render_markdown(result: dict) -> str:
 #  CLI
 # ═══════════════════════════════════════════════════════════════
 
+# ═══════════════════════════════════════════════════════════════
+#  Benchmarks file — index reference prices for vs-SPY math
+# ═══════════════════════════════════════════════════════════════
+
+# Index tickers the trackers reference in their `benchmarks_at_init` blocks.
+# Add new ones here when a new theme locks against a new benchmark.
+BENCHMARK_TICKERS = ["SPY", "ITA", "XLU", "SMH", "LMT"]
+
+
+def refresh_benchmarks() -> dict:
+    """
+    Fetch current prices for benchmark indexes. Tries FMP first, falls back
+    to yfinance. Writes themes/_benchmarks.json which the web app reads to
+    compute SPY-since-lock for each tracker.
+    """
+    out = {"trade_date": datetime.now().strftime("%Y-%m-%d"),
+           "fetched_at": datetime.now().isoformat(),
+           "source": None,
+           "prices": {}}
+
+    # Try FMP first
+    if config.FMP_API_KEY:
+        try:
+            quotes = fetch_batch_quotes(BENCHMARK_TICKERS)
+            for tk in BENCHMARK_TICKERS:
+                q = quotes.get(tk)
+                if q and q.get("price"):
+                    out["prices"][tk] = float(q["price"])
+            if out["prices"]:
+                out["source"] = "fmp"
+        except Exception as e:
+            logger.warning(f"FMP benchmark fetch failed: {e}")
+
+    # Fallback to yfinance for any missing ones
+    missing = [t for t in BENCHMARK_TICKERS if t not in out["prices"]]
+    if missing:
+        try:
+            data = yf.download(missing, period="5d", progress=False, auto_adjust=False)
+            close = data["Close"] if "Close" in data.columns.get_level_values(0) else data
+            for tk in missing:
+                try:
+                    px = float(close[tk].dropna().iloc[-1])
+                    out["prices"][tk] = px
+                except Exception:
+                    pass
+            if out["prices"] and not out["source"]:
+                out["source"] = "yf"
+            elif out["source"] == "fmp":
+                out["source"] = "fmp+yf"
+        except Exception as e:
+            logger.warning(f"yfinance benchmark fallback failed: {e}")
+
+    return out
+
+
+def save_benchmarks(result: dict):
+    """Write themes/_benchmarks.json. Leading underscore so it sorts above
+    theme dirs and discover_themes_full() skips it."""
+    path = _HERE / "_benchmarks.json"
+    path.write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
+    logger.info(f"Wrote {path} — {len(result['prices'])} prices from {result['source']}")
+
+
 def main():
     logging.basicConfig(
         level=logging.INFO,
@@ -747,6 +810,16 @@ def main():
             logger.info(f"[{theme}] OK — {n_with_price}/{result['universe_size']} candidates with price data")
         except Exception as e:
             logger.exception(f"Theme {theme} failed: {e}")
+
+    # Refresh benchmark prices once per run — used by web app for vs-SPY math.
+    # Cheap (~5 API calls) and refreshing it on every theme-refresh keeps it
+    # in sync with the trade_date stamped on candidates.json.
+    logger.info("━━━━━ Refreshing benchmarks (SPY/ITA/XLU/SMH/LMT) ━━━━━")
+    try:
+        bench = refresh_benchmarks()
+        save_benchmarks(bench)
+    except Exception as e:
+        logger.exception(f"Benchmark refresh failed: {e}")
 
 
 if __name__ == "__main__":

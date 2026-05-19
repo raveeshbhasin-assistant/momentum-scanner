@@ -228,6 +228,33 @@ def load_tracker_live_json(slug: str) -> Optional[dict]:
         return None
 
 
+def load_benchmarks() -> dict:
+    """
+    Read themes/_benchmarks.json — current prices for SPY/ITA/XLU/SMH/LMT
+    that refresh_data.py writes once per refresh run. Used to compute
+    spy_now (and any other index) for vs-benchmark math.
+
+    Returns {} if the file is missing — callers must fall back to spy_lock.
+    """
+    path = _THEMES_DIR / "_benchmarks.json"
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def benchmark_price(symbol: str) -> Optional[float]:
+    """Convenience: return current price for one benchmark, or None if absent."""
+    b = load_benchmarks()
+    p = (b.get("prices") or {}).get(symbol)
+    try:
+        return float(p) if p is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
 def theme_dir(slug: str) -> Path:
     return _THEMES_DIR / slug
 
@@ -270,6 +297,11 @@ def aggregate_portfolio() -> dict:
     all_holdings: list[dict] = []
     by_ticker: dict[str, list[dict]] = {}
 
+    # Single benchmarks read for the whole aggregation — refresh_data.py
+    # rewrites this file once per refresh run.
+    bench_now = (load_benchmarks().get("prices") or {})
+    spy_now_global = bench_now.get("SPY")
+
     for t in discover_themes_full():
         if not t.get("has_tracker"):
             continue
@@ -282,10 +314,9 @@ def aggregate_portfolio() -> dict:
 
         bench = tracker.get("benchmarks_at_init") or {}
         spy_lock = float(bench.get("spy_at_theme_lock") or 0)
-        # No live SPY fetch in aggregation; treat current SPY = lock SPY for
-        # now (same simplification the tracker page makes). Live overlay can
-        # update on the client side later.
-        spy_now = spy_lock
+        # Use live SPY from _benchmarks.json when present, else fall back to
+        # spy_lock (renders 0% — surfaces the staleness rather than faking it).
+        spy_now = float(spy_now_global) if spy_now_global else spy_lock
         spy_chg_pct = ((spy_now / spy_lock - 1) * 100) if spy_lock > 0 else 0.0
 
         per_theme_chg_sum = 0.0

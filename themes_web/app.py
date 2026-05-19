@@ -27,6 +27,7 @@ from fastapi.templating import Jinja2Templates
 
 from themes_web.render import (
     aggregate_portfolio,
+    benchmark_price,
     discover_themes_full,
     load_tracker_json,
     load_tracker_live_json,
@@ -108,7 +109,11 @@ def _compute_tracker_view(slug: str) -> Optional[dict]:
 
     bench_anchor = tracker.get("benchmarks_at_init") or {}
     spy_lock = float(bench_anchor.get("spy_at_theme_lock") or 0)
-    spy_now = spy_lock  # placeholder; live SPY fetch is Stage 4
+    # Live SPY from themes/_benchmarks.json (refreshed daily). Falls back to
+    # spy_lock when the file is missing — keeps the page rendering and
+    # surfaces the staleness as 0% instead of fabricating a vs-SPY value.
+    live_spy = benchmark_price("SPY")
+    spy_now = float(live_spy) if live_spy else spy_lock
     spy_chg_pct = ((spy_now / spy_lock - 1) * 100) if spy_lock > 0 else 0
 
     holdings = []
