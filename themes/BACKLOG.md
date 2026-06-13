@@ -18,23 +18,28 @@ Active and queued themes for the long-term growth research workflow. Items move 
    - Status: Locked 2026-05-16, supply chain mapping next
    - Folder: `modern_defense/`
 
+4. **Robotics & Industrial Automation** — embodied-AI value accrues to mature automation + logistics integrators upgraded by VLA vision models, plus high-moat machine-vision/sensor suppliers. 80/20 structural split. Humanoid OEMs avoided. Moat shifts up-stack from mechanicals (commoditized by China) to sensing. Geopolitically sensitive (US-China component tariff war).
+   - Status: **Locked 2026-06-13**, supply chain mapping next
+   - Folder: `robotics/`
+   - Anchors: SPY $738.52, BOTZ $36.24, CGNX ~$64.18. Vehicles-wrong ref: TSLA.
+
+5. **GLP-1 Second-Order Effects** — not the obesity drugs themselves, but the supply chain (CDMOs, peptide synthesis, delivery devices) and second-order impact on adjacent industries (food, beverage, surgical). The interesting bet is downstream of LLY/NVO, not on them.
+   - Status: **Promoted to Active 2026-06-13 — thesis elicitation in progress** (awaiting Raveesh's answers). Live tension: orforglipron oral approval (Apr 2026) threatens the peptide-CDMO bottleneck half.
+   - Folder: `glp1/` _(to scaffold once thesis direction locked)_
+
 ## On Deck (next)
 
-4. **Nuclear Renaissance** — SMRs, uranium supply chain, restart of decommissioned reactors driven by AI power demand. Adjacent to AI DC but with its own supply chain (fuel cycle, enrichment, regulatory).
+6. **Nuclear Renaissance** — SMRs, uranium supply chain, restart of decommissioned reactors driven by AI power demand. Adjacent to AI DC but with its own supply chain (fuel cycle, enrichment, regulatory).
 
 ## Backlog (prioritized — top of list is next-up after On Deck)
 
-5. **AI in Healthcare — Disease Diagnosis & Treatment** — AI-driven drug discovery, diagnostics, clinical decision support. Companies positioned to apply AI to legacy healthcare workflows.
+7. **AI in Healthcare — Disease Diagnosis & Treatment** — AI-driven drug discovery, diagnostics, clinical decision support. Companies positioned to apply AI to legacy healthcare workflows.
 
-6. **Personalized Medicine & Genomics** — sequencing, CRISPR/gene therapy, mRNA platform extensions beyond vaccines. Cost of sequencing has fallen below $200; what new markets does that open?
+8. **Personalized Medicine & Genomics** — sequencing, CRISPR/gene therapy, mRNA platform extensions beyond vaccines. Cost of sequencing has fallen below $200; what new markets does that open?
 
-7. **GLP-1 Second-Order Effects** — not the obesity drugs themselves, but the supply chain (CDMOs, peptide synthesis, delivery devices) and second-order impact on adjacent industries (food, beverage, surgical). The interesting bet is downstream of LLY/NVO, not on them.
+9. **Rare Earth & Critical Minerals Independence** — US/allied supply chains being rebuilt outside China for defense, EV, and AI. Politically charged but real industrial policy behind it (Defense Production Act, IRA tax credits, DoD direct investment).
 
-8. **Rare Earth & Critical Minerals Independence** — US/allied supply chains being rebuilt outside China for defense, EV, and AI. Politically charged but real industrial policy behind it (Defense Production Act, IRA tax credits, DoD direct investment).
-
-9. **Power Grid Modernization** — grid-edge equipment, transmission, smart meters. Adjacent to (1) but broader — also driven by electrification, EVs, renewables. Sub-theme: long-distance HVDC transmission for renewables.
-
-10. **Robotics & Industrial Automation** — humanoid robots, warehouse automation, automation-as-labor-substitute as demographics shift. Watch for the transition from "warehouse automation" (mature) to "general humanoid robots" (early).
+10. **Power Grid Modernization** — grid-edge equipment, transmission, smart meters. Adjacent to (1) but broader — also driven by electrification, EVs, renewables. Sub-theme: long-distance HVDC transmission for renewables.
 
 11. **Cybersecurity for Critical Infrastructure** — OT/ICS security, post-quantum cryptography, AI-augmented threat detection. NIST PQ standardization in 2024 starts a multi-year migration cycle.
 
@@ -52,15 +57,4 @@ Active and queued themes for the long-term growth research workflow. Items move 
 
 _(none yet)_
 
-## Failed / Retired
-
-_(none yet)_
-
----
-
-## How to use this list
-
-- **One or two themes active at any time.** Each theme requires deep human attention; spreading thin defeats the purpose.
-- **Re-order liberally.** Catalysts move themes up; thesis failure or pricing-in moves them down or to retired.
-- **Add new themes freely.** When you encounter a new structural shift, add it here even if you're not ready to work it. The backlog is also a thinking log.
-- **Don't promote without space.** A theme moves Backlog → On Deck → Active only when capacity exists. Active is the bottleneck.
+## Failed / 
