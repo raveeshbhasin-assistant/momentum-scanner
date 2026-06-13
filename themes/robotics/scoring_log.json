@@ -1,0 +1,129 @@
+{
+  "theme": "robotics",
+  "rubric_version": "v1",
+  "generated": "2026-06-13",
+  "weights": {
+    "Moat": 20,
+    "Veh": 15,
+    "TE": 15,
+    "RG": 15,
+    "M": 10,
+    "V": 10,
+    "BS": 10,
+    "Cat": 5
+  },
+  "scores": {
+    "CGNX": {
+      "Moat": 5,
+      "Veh": 5,
+      "TE": 5,
+      "RG": 5,
+      "M": 5,
+      "V": 2,
+      "BS": 4,
+      "Cat": 4
+    },
+    "ROK": {
+      "Moat": 4,
+      "Veh": 5,
+      "TE": 4,
+      "RG": 3,
+      "M": 4,
+      "V": 3,
+      "BS": 5,
+      "Cat": 4
+    },
+    "ZBRA": {
+      "Moat": 4,
+      "Veh": 5,
+      "TE": 4,
+      "RG": 4,
+      "M": 3,
+      "V": 4,
+      "BS": 4,
+      "Cat": 3
+    },
+    "ABBNY": {
+      "Moat": 4,
+      "Veh": 4,
+      "TE": 3,
+      "RG": 3,
+      "M": 4,
+      "V": 4,
+      "BS": 4,
+      "Cat": 5
+    },
+    "QCOM": {
+      "Moat": 5,
+      "Veh": 5,
+      "TE": 2,
+      "RG": 3,
+      "M": 4,
+      "V": 5,
+      "BS": 4,
+      "Cat": 4
+    },
+    "MOG.A": {
+      "Moat": 2,
+      "Veh": 5,
+      "TE": 4,
+      "RG": 3,
+      "M": 3,
+      "V": 3,
+      "BS": 4,
+      "Cat": 4
+    },
+    "SYM": {
+      "Moat": 3,
+      "Veh": 5,
+      "TE": 5,
+      "RG": 5,
+      "M": 3,
+      "V": 2,
+      "BS": 1,
+      "Cat": 4
+    },
+    "PH": {
+      "Moat": 2,
+      "Veh": 5,
+      "TE": 3,
+      "RG": 3,
+      "M": 4,
+      "V": 2,
+      "BS": 4,
+      "Cat": 3
+    },
+    "Keyence": {
+      "Moat": 5,
+      "Veh": 1,
+      "TE": 5,
+      "RG": 4,
+      "M": 5,
+      "V": 3,
+      "BS": 5,
+      "Cat": 3
+    },
+    "Fanuc": {
+      "Moat": 4,
+      "Veh": 2,
+      "TE": 5,
+      "RG": 2,
+      "M": 4,
+      "V": 4,
+      "BS": 5,
+      "Cat": 3
+    }
+  },
+  "weighted": {
+    "CGNX": 91.0,
+    "ROK": 80.0,
+    "ZBRA": 80.0,
+    "ABBNY": 75.0,
+    "QCOM": 80.0,
+    "MOG.A": 68.0,
+    "SYM": 73.0,
+    "PH": 64.0,
+    "Keyence": 79.0,
+    "Fanuc": 72.0
+  }
+}

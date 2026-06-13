@@ -1,50 +1,11 @@
-# [Theme Name] — Supply Chain Map
+# Robotics & Industrial Automation — Supply Chain Map
 
-_Walk from the future to its physical/digital inputs. Each leaf node maps to public companies that supply that input. Hand-curated — no automation here._
+_Walks from the locked thesis (`thesis.md`) down to specific public companies. Four buckets matching the thesis structure, each split into sub-components, each sub-component mapped to public tickers plus critical private/upstream players. Hand-curated. The two dimensions that matter most per leaf node: **(a) where the durable moat sits** (the thesis bets it is shifting UP-STACK from mechanicals to sensing/software) and **(b) Fidelity-tradeability** of the vehicle (load-bearing given the brokerage constraint — many of the best names are Tokyo-listed)._
 
----
+**Knowledge cutoff caveat:** Drafted from data current through May 2025 plus June 2026 web verification of the load-bearing names (CGNX, SYM, Nabtesco/Harmonic Drive, Tesla/Figure). Ticker accessibility (especially Japanese ADRs) MUST be re-verified during the `candidates.md` build — see the ⚑ flags inline.
 
-## The chain
-
-```
-[The Future]
-    ├── Input bucket A: [name]
-    │       ├── Component A1: ___
-    │       │       └── Public co's: TICKER, TICKER, TICKER
-    │       └── Component A2: ___
-    │               └── Public co's: TICKER, TICKER
-    ├── Input bucket B: [name]
-    │       └── ...
-    └── Input bucket C: [name]
-            └── ...
-```
-
-## Bucket A: [name]
-
-**What it is:** _2-3 sentences on the demand driver, why it's needed, and what the bottleneck specifically is._
-
-**Bottleneck specificity:** _Is this a hard-to-substitute input (good — durable pricing power) or commoditized (bad — value capture goes to buyers)?_
-
-**Lead times / capacity constraints:** _Quantified where possible. "X weeks", "Y suppliers globally", etc._
-
-**Public companies in this bucket:**
-| Ticker | What they do in this bucket | Revenue exposure |
-|--------|----------------------------|------------------|
-| | | |
-
-**Private / upstream players to be aware of:**
-_Companies you can't buy but that shape competitive dynamics._
+**Reading the thesis into the chain:** The thesis is NOT "robots will be big." It is a specific claim about *where the value accrues*: (1) the **sensing/perception layer** captures the durable moat as AI commoditizes everything mechanical below it; (2) **mature automation incumbents** monetize their installed base via AI software upgrades; (3) **mechanical components** get commoditized by Chinese scale and are held ONLY as a geopolitical tariff re-rating option; (4) **humanoid OEMs** are avoided — their value, if it materializes, accrues to captives (Tesla) and privates (Figure) we can't cleanly hold.
 
 ---
 
-## Bucket B: [name]
-
-_(repeat structure)_
-
----
-
-## Cross-bucket notes
-
-- _Companies that span multiple buckets — flag for "concentrated bet" candidates_
-- _Suppliers to suppliers (second-derivative plays) worth tracking separately_
-- _Geographic / political risk overlay_
+## The chain at a 

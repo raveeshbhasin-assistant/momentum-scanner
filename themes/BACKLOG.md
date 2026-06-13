@@ -19,8 +19,9 @@ Active and queued themes for the long-term growth research workflow. Items move 
    - Folder: `modern_defense/`
 
 4. **Robotics & Industrial Automation** — embodied-AI value accrues to mature automation + logistics integrators upgraded by VLA vision models, plus high-moat machine-vision/sensor suppliers. 80/20 structural split. Humanoid OEMs avoided. Moat shifts up-stack from mechanicals (commoditized by China) to sensing. Geopolitically sensitive (US-China component tariff war).
-   - Status: **Locked 2026-06-13**, supply chain mapping next
+   - Status: **Locked 2026-06-13, tracker active (7 holdings)** — full workflow complete (thesis→supply_chain→candidates→scoring→tracker)
    - Folder: `robotics/`
+   - Tracker: CGNX(91) ROK(80) ZBRA(80) QCOM(80) ABBNY(75) | SYM(73) MOG.A(68). 80/20 structural/optionality. Keyence & Japanese names EXCLUDED — not Fidelity-holdable.
    - Anchors: SPY $738.52, BOTZ $36.24, CGNX ~$64.18. Vehicles-wrong ref: TSLA.
 
 5. **GLP-1 Second-Order Effects** — not the obesity drugs themselves, but the supply chain (CDMOs, peptide synthesis, delivery devices) and second-order impact on adjacent industries (food, beverage, surgical). The interesting bet is downstream of LLY/NVO, not on them.
@@ -47,14 +48,4 @@ Active and queued themes for the long-term growth research workflow. Items move 
 
 13. **Climate Adaptation Infrastructure** — water rights and treatment, flood mitigation, fire-resistant materials, agricultural resilience. Less hyped than climate-mitigation but the dollars are starting to flow as physical risk gets priced in.
 
-14. **Aging Population Infrastructure** — eldercare REITs, hearing/vision, mobility devices, home-care tech. Demographic certainty — the cohort exists and is aging on schedule.
-
-15. **Quantum Computing — Adjacent Plays** — quantum itself is too early to bet on directly, but cryogenics, control electronics, and post-quantum crypto are real and tradeable now.
-
----
-
-## Completed
-
-_(none yet)_
-
-## Failed / 
+14. **Aging Population Infrastructure** — eldercare REITs, hearing/vision, mobility devices, home-care tech. Demographic certainty — the cohort exists an

@@ -1,49 +1,23 @@
-# [Theme Name] — Tracker
+# Robotics & Industrial Automation — Tracker
 
-_Live watchlist for the top ~5 high-conviction names from this theme. Updated as material events occur._
+_Live watchlist for the 7 high-conviction names. Updated as material events occur. Machine-readable contract: `tracker.json` (entry anchors don't get quietly edited)._
 
-**Theme status:** Active / Trimmed / Closed
-**Last review:** YYYY-MM-DD
-
----
-
-## Holdings / watchlist
-
-| Ticker | Date added | Entry $ | Current $ | Δ % | vs SPY since add | Conviction (1-5) | Thesis status |
-|--------|-----------|---------|-----------|-----|-------------------|------------------|---------------|
-| | | | | | | | |
-
-_Conviction: 5 = increase / 3 = hold / 1 = trim. Thesis status: Intact / Watching / Broken._
+**Theme status:** Active
+**Locked:** 2026-06-13 · **Tracker initialized:** 2026-06-13 · **Last review:** 2026-06-13
+**Sleeve split:** ~80% Structural (5 names) / ~20% Optionality (2 names) — per thesis 80/20.
 
 ---
 
-## Per-name log
+## Holdings
 
-### TICKER
+| # | Ticker | Company | Bucket | Sleeve | Score | Entry $ | Entry as-of | Thesis status |
+|--:|--------|---------|--------|--------|------:|--------:|-------------|---------------|
+| 1 | **CGNX** | Cognex | B1 Vision | Structural | 91 | 64.18 | 2026-06-02 | Intact ⚑ pillar |
+| 2 | **ROK** | Rockwell | B2 Automation | Structural | 80 | 454.00 | 2026-06 | Intact |
+| 3 | **ZBRA** | Zebra | B1/B2 | Structural | 80 | TBD | 2026-06 | Intact |
+| 4 | **QCOM** | Qualcomm | B1 Edge-AI | Structural | 80 | TBD | 2026-06 | Intact |
+| 5 | **ABBNY** | ABB (ADR) | B2 Automation | Structural | 75 | 104.45 | 2026-06-12 | Intact (spin-off catalyst) |
+| 6 | **SYM** | Symbotic | B3 | Optionality | 73 | 42.83 | 2026-06-12 | Watch (concentration) |
+| 7 | **MOG.A** | Moog | B3 Components | Optionality | 68 | TBD | 2026-06 | Intact (tariff option) |
 
-**Date added:** YYYY-MM-DD at $___
-**Why added:** _2-3 sentences from scoring.md._
-**Current conviction:** _and why._
-
-**Event log:**
-- _YYYY-MM-DD: Earnings beat. Revenue +X% YoY. Guide raised. Stock +Y%._
-- _YYYY-MM-DD: Competitor announcement of similar capability. Watching for thesis impact._
-- _YYYY-MM-DD: 13F filed. Fund Z increased position from 1.5% to 3.1%._
-
----
-
-## Theme-level review
-
-**Quarterly checkpoint (most recent):** YYYY-MM-DD
-
-**Are the falsifiers still inactive?** _Walk through each from thesis.md._
-
-**Performance vs. benchmark since theme start:**
-- Tracker average: __%
-- SPY: __%
-- Sector proxy: __%
-- Outperformance / underperformance: __%
-
-**Any names promoted in or trimmed since last review?**
-
-**Forward outlook:**
+_Thesis status: Intact / Watch / Broken. ⚑ = entry-pric

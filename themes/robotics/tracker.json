@@ -1,0 +1,161 @@
+{
+  "theme": "robotics",
+  "theme_display_name": "Robotics & Industrial Automation",
+  "theme_status": "Active",
+  "theme_locked_at": "2026-06-13",
+  "tracker_initialized_at": "2026-06-13",
+  "last_reviewed_at": "2026-06-13",
+  "plain_summary": "The market is obsessed with bipedal humanoids, but the real embodied-AI windfall over 2-5 years accrues to established automation and logistics players whose installed hardware gets upgraded by AI vision models, plus the high-moat machine-vision and sensor suppliers that make it possible. 80/20 structural split; humanoid pure-play OEMs avoided. Central bet: the durable moat shifts UP-STACK from mechanical components (commoditized by Chinese scale) to sensing and software.",
+  "rubric_version": "v1",
+  "benchmarks_at_init": {
+    "spy_at_theme_lock": 738.52,
+    "spy_asof": "2026-06-11",
+    "botz_at_theme_lock": 36.24,
+    "botz_asof": "2026-06-10",
+    "cgnx_at_theme_lock": 64.18,
+    "cgnx_asof": "2026-06-02",
+    "tsla_vehicles_wrong_ref": true
+  },
+  "notes": "Prices are recent-close anchors (web-verified June 2026), not lock-day official; live refresh job refines. Japanese best-in-class names (Keyence, Fanuc, Harmonic Drive, Nabtesco, SMC) EXCLUDED \u2014 not cleanly Fidelity-holdable; the vehicles-wrong risk made literal. CGNX is the load-bearing pillar by design.",
+  "holdings": [
+    {
+      "ticker": "CGNX",
+      "company": "Cognex",
+      "bucket": "B1 Machine Vision",
+      "sleeve": "Structural",
+      "date_added": "2026-06-13",
+      "entry_price": 64.18,
+      "entry_price_asof": "2026-06-02",
+      "scoring_total": 91.0,
+      "scoring_rationale": "Load-bearing pillar. Pure up-stack moat (vision software+AI), GM 71.1%, rev +24% YoY. Only weakness: P/E ~77 \u2014 mind the entry.",
+      "flags": [
+        "valuation_rich"
+      ]
+    },
+    {
+      "ticker": "ROK",
+      "company": "Rockwell Automation",
+      "bucket": "B2 Automation",
+      "sleeve": "Structural",
+      "date_added": "2026-06-13",
+      "entry_price": 454.0,
+      "entry_price_asof": "2026-06",
+      "scoring_total": 80.0,
+      "scoring_rationale": "Cleanest US automation incumbent. FY26 5-9% organic, double-digit orders on reshoring, op margin 21.5%. Priced near targets.",
+      "flags": []
+    },
+    {
+      "ticker": "ZBRA",
+      "company": "Zebra Technologies",
+      "bucket": "B1/B2 Vision+Logistics",
+      "sleeve": "Structural",
+      "date_added": "2026-06-13",
+      "entry_price": null,
+      "entry_price_asof": "2026-06",
+      "scoring_total": 80.0,
+      "scoring_rationale": "Machine vision + warehouse installed base, cheaper than CGNX. FY26 9-13% guide. Caveat: vision sub-segment in cyclical downturn (EV/semi).",
+      "flags": [
+        "mv_subsegment_soft",
+        "entry_price_TBD"
+      ]
+    },
+    {
+      "ticker": "QCOM",
+      "company": "Qualcomm",
+      "bucket": "B1 Edge-AI",
+      "sleeve": "Structural",
+      "date_added": "2026-06-13",
+      "entry_price": null,
+      "entry_price_asof": "2026-06",
+      "scoring_total": 80.0,
+      "scoring_rationale": "Cheapest up-stack sensing exposure (low-teens P/E). Powers CGNX 3900; Dragonwing IQ10 robotics chip. Robotics small vs smartphone core.",
+      "flags": [
+        "partial_exposure",
+        "entry_price_TBD"
+      ]
+    },
+    {
+      "ticker": "ABBNY",
+      "company": "ABB Ltd (ADR)",
+      "bucket": "B2 Automation",
+      "sleeve": "Structural",
+      "date_added": "2026-06-13",
+      "entry_price": 104.45,
+      "entry_price_asof": "2026-06-12",
+      "scoring_total": 75.0,
+      "scoring_rationale": "Only cleanly-holdable foreign name. CATALYST: 100% robotics spin-off to separate listing Q2 2026 = value unlock + future pure-play vehicle.",
+      "flags": [
+        "catalyst_spinoff_q2_2026"
+      ]
+    },
+    {
+      "ticker": "SYM",
+      "company": "Symbotic",
+      "bucket": "B3 Optionality",
+      "sleeve": "Optionality",
+      "date_added": "2026-06-13",
+      "entry_price": 42.83,
+      "entry_price_asof": "2026-06-12",
+      "scoring_total": 73.0,
+      "scoring_rationale": "Demoted from structural. Now GAAP-profitable ($2.0B cash, $22.7B backlog, +23%) but ~85% Walmart concentration (Walmart owns part of supply). SIZED SMALL; concentration named. Falsifier #2 (logistics capex) concentrates here.",
+      "flags": [
+        "concentration_walmart_85pct",
+        "sized_small",
+        "demoted_from_structural"
+      ]
+    },
+    {
+      "ticker": "MOG.A",
+      "company": "Moog",
+      "bucket": "B3 Components",
+      "sleeve": "Optionality",
+      "date_added": "2026-06-13",
+      "entry_price": null,
+      "entry_price_asof": "2026-06",
+      "scoring_total": 68.0,
+      "scoring_rationale": "Holdable US proxy for the actuator/tariff bet (blocked Tokyo reducer names unbuyable). Moat-location deliberately low (2) \u2014 held as geopolitical option, not moat. Record backlog.",
+      "flags": [
+        "tariff_trade_not_moat",
+        "entry_price_TBD"
+      ]
+    }
+  ],
+  "excluded_high_fit": [
+    {
+      "ticker": "Keyence(KYCCF)",
+      "raw_fit_score": 79.0,
+      "reason": "Best-in-class sensing moat but unsponsored OTC \u2014 not Fidelity-holdable in size. THE vehicles-wrong example."
+    },
+    {
+      "ticker": "Fanuc(FANUY)",
+      "raw_fit_score": 72.0,
+      "reason": "Global robot leader; thin unsponsored ADR."
+    },
+    {
+      "ticker": "NVDA",
+      "reason": "Cross-theme overlap with AI Data Center; excluded as fresh position."
+    }
+  ],
+  "watch_line": [
+    {
+      "ticker": "PH",
+      "score": 64.0,
+      "reason": "Quality but expensive (~$905 vs ~$512 FV), diversified, moat-location only 2. First alternate for optionality sleeve."
+    }
+  ],
+  "sleeve_distribution": {
+    "structural_pct_target": 80,
+    "optionality_pct_target": 20,
+    "structural_names": [
+      "CGNX",
+      "ROK",
+      "ZBRA",
+      "QCOM",
+      "ABBNY"
+    ],
+    "optionality_names": [
+      "SYM",
+      "MOG.A"
+    ]
+  }
+}

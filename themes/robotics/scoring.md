@@ -1,39 +1,23 @@
-# [Theme Name] — Scoring
+# Robotics & Industrial Automation — Scoring (v1)
 
-_Apply the rubric. Top ~5 by weighted score get promoted to tracker.md._
+_Generated **2026-06-13**. Rubric v1, tailored to this theme. Source: `candidates.md` (same date, web-verified Q1/Q2 FY26 fundamentals). Audit trail: `scoring_log.json`._
 
----
+## Rubric (this theme)
 
-## Rubric (theme-specific adjustments noted below)
+Two criteria are weighted unusually heavily because they *are* the thesis: **Moat Location** (the bet that durable margin sits up-stack in sensing/software, not mechanicals) and **Vehicle Accessibility** (the Fidelity constraint — a perfect thesis vehicle you can't hold scores zero alpha). This mirrors how Space/Defense elevated capital-structure weight because vehicles risk was central.
 
-| Criterion | Weight | Score 1-5 means |
-|-----------|--------|-----------------|
-| Thesis exposure | 20 | 1: <10% rev tied to theme · 5: >70% pure-play |
-| Bottleneck specificity | 15 | 1: commoditized · 5: hard-to-substitute, few suppliers |
-| Revenue growth trajectory | 15 | 1: decelerating · 5: accelerating, well above sector |
-| Margin durability | 10 | 1: margins compressing · 5: pricing power, expanding margins |
-| Valuation runway | 10 | 1: priced for perfection · 5: meaningful re-rating room |
-| RS rank inflection | 10 | 1: pinned at 99 (late) or below 30 (broken) · 5: inflecting up from 60-80 |
-| Institutional positioning | 10 | 1: concentrated funds exiting · 5: top funds increasing positions |
-| Catalyst proximity | 10 | 1: no near-term catalyst · 5: imminent earnings/contract/regulatory event |
+| Criterion | Weight | Type | Notes |
+|-----------|-------:|------|-------|
+| Moat Location (up-stack) | 20 | judgment | In the durable sensing/software layer (5) or the commoditizing mechanical layer (1)? The central bet. |
+| Vehicle Accessibility | 15 | quantitative | Fidelity-holdable in size (5) → blocked Tokyo name (1). A great thesis fit you can't buy is worthless. |
+| Theme Exposure | 15 | judgment | % of revenue tied to robotics/automation. Penalizes diversified conglomerates. |
+| Revenue Growth | 15 | quantitative | YoY growth, accelerating > flat > declining. |
+| Margin Durability | 10 | mixed | Gross-margin level + trend; pricing power vs China-commoditization risk. |
+| Valuation Runway | 10 | quantitative | P/E / P/S vs growth — re-rating room left vs priced-in. |
+| Balance Sheet / Concentration | 10 | judgment | Clean diversified revenue + net cash (5) → single-customer dependence / dilution (1). The discipline that demoted SYM. |
+| Catalyst Proximity | 5 | judgment | Near-term re-rating events (spin-offs, product cycles, tariffs). |
+| **Total** | **100** | | |
 
-**Theme-specific weight adjustments (if any):**
-- _e.g., "Bumped Bottleneck specificity to 20, reduced Catalyst proximity to 5 because thesis is multi-year"_
+## Ranked candidates
 
----
-
-## Scored table
-
-| Ticker | Exposure (20) | Bottleneck (15) | Growth (15) | Margin (10) | Valuation (10) | RS (10) | 13F (10) | Catalyst (10) | **Weighted** |
-|--------|---------------|-----------------|-------------|-------------|----------------|---------|----------|---------------|--------------|
-| | | | | | | | | | |
-
-_Sort descending by Weighted. Top ~5 → tracker.md._
-
----
-
-## Notes on the cut
-
-_Which names just missed? Why? What would change to promote them?_
-_Any names that scored well but you have a qualitative concern about?_
-_Any names you're including despite a low score because of a specific catalyst?_
+Top ~6 promo

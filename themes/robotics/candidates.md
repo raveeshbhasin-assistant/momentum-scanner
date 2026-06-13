@@ -1,33 +1,18 @@
-# [Theme Name] — Candidate List
+# Robotics & Industrial Automation — Candidate List
 
-_10-20 public companies tied to the supply chain. Wider than the final tracker — the goal is comparison and shortlist._
+_Public companies tied to the supply chain (`supply_chain.md`). Wider than the final tracker — the goal is comparison and shortlist. Two filters run here that are specific to this theme: **(1) Fidelity-tradeability** (the brokerage constraint makes this load-bearing — many best-in-class names are Tokyo-listed) and **(2) moat-location** (the thesis bets durable margin sits UP-STACK in sensing/software, not in mechanicals)._
 
----
-
-## Quick reference table
-
-| Ticker | Company | Bucket | Mkt Cap | P/S | P/E | 1Y % | 3M % | RS Rank | Notes |
-|--------|---------|--------|---------|-----|-----|------|------|---------|-------|
-| | | | | | | | | | |
-
-_(populated from FMP / Yahoo / SEC)_
+**Data currency:** Fundamentals and prices verified via web June 2026 (Q1/Q2 FY2026 reports). Prices are recent closes, not lock-day official — treated as anchors, refined in tracker.
 
 ---
 
-## Per-candidate detail
+## ⚑ Fidelity-tradeability check (run first — it reshapes the whole shortlist)
 
-### TICKER — Company Name
-
-**Bucket:** _which supply chain bucket they fit_
-**What they do:** _1-2 sentences. Focus on the business unit relevant to the thesis._
-**Theme exposure:** _What % of revenue is tied to this thesis? Cite source._
-**Bottleneck specificity:** _Are they a hard-to-substitute supplier, or one of many?_
-**Recent results:** _Last 2 quarters of revenue and margin trajectory. Earnings call quotes that reinforce or undermine the thesis._
-**Competitive position:** _Moats. Customers (concentration risk if any one customer is >20%)._
-**Risks specific to this name:** _Beyond thesis-level risks — company-specific concerns._
-**Why this name might be a great vehicle:** _The one-sentence pitch._
-**Why this name might be a bad vehicle:** _The bear case._
-
----
-
-_(repeat per candidate)_
+| Name | Ticker | US listing status | Fidelity-holdable in size? | Verdict |
+|------|--------|-------------------|----------------------------|---------|
+| Cognex | **CGNX** | Nasdaq | ✅ Yes | **Clean** |
+| Rockwell | **ROK** | NYSE | ✅ Yes | **Clean** |
+| Zebra | **ZBRA** | Nasdaq | ✅ Yes | **Clean** |
+| Symbotic | **SYM** | Nasdaq | ✅ Yes | **Clean** (but concentration — see Bucket 3) |
+| Moog | **MOG.A** | NYSE | ✅ Yes | **Clean** |
+| Parker Hannifin | **PH** | NYSE | ✅ 
