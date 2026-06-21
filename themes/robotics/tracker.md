@@ -16,8 +16,8 @@ _Live watchlist for the 7 high-conviction names. Updated as material events occu
 | 2 | **ROK** | Rockwell | B2 Automation | Structural | 80 | 454.00 | 2026-06 | Intact |
 | 3 | **ZBRA** | Zebra | B1/B2 | Structural | 80 | TBD | 2026-06 | Intact |
 | 4 | **QCOM** | Qualcomm | B1 Edge-AI | Structural | 80 | TBD | 2026-06 | Intact |
-| 5 | **ABBNY** | ABB (ADR) | B2 Automation | Structural | 75 | 104.45 | 2026-06-12 | Intact (spin-off catalyst) |
+| 5 | **ABB** | ABB (ADR) | B2 Automation | Structural | 75 | 104.45 | 2026-06-12 | Intact (spin-off catalyst) |
 | 6 | **SYM** | Symbotic | B3 | Optionality | 73 | 42.83 | 2026-06-12 | Watch (concentration) |
-| 7 | **MOG.A** | Moog | B3 Components | Optionality | 68 | TBD | 2026-06 | Intact (tariff option) |
+| 7 | **MOG-A** | Moog | B3 Components | Optionality | 68 | TBD | 2026-06 | Intact (tariff option) |
 
 _Thesis status: Intact / Watch / Broken. ⚑ = entry-pric

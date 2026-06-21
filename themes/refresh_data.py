@@ -96,6 +96,28 @@ UNIVERSES: dict[str, dict[str, dict[str, Any]]] = {
         "HON":  {"company": "Honeywell",          "bucket": "Thermal Management", "sub": "Thermal Materials",  "specificity": 2, "note": "Watch-list: potential PFAS alternative supplier"},
     },
 
+    "robotics": {
+        # Bucket 1: Machine Vision & Sensors (up-stack moat — Structural)
+        "CGNX": {"company": "Cognex",              "bucket": "Machine Vision & Sensors", "sub": "Machine vision pure-play", "specificity": 5, "note": "Load-bearing pillar. Pure up-stack moat; In-Sight 6900/3900 AI-vision; GM 71%, rev +24% YoY. P/E ~77 — mind entry"},
+        "ZBRA": {"company": "Zebra Technologies",  "bucket": "Machine Vision & Sensors", "sub": "Machine vision + warehouse base", "specificity": 4, "note": "Vision (Matrox) + dominant scanning/mobility base; cheaper than CGNX. MV sub-segment in cyclical downturn (EV/semi)"},
+        "QCOM": {"company": "Qualcomm",            "bucket": "Machine Vision & Sensors", "sub": "Edge-AI silicon",          "specificity": 5, "note": "Powers CGNX 3900; Dragonwing IQ10 robotics chip. Cheapest sensing-layer exposure; robotics small vs phones"},
+        "TEL":  {"company": "TE Connectivity",     "bucket": "Machine Vision & Sensors", "sub": "Sensors / connectors",     "specificity": 3, "note": "Watch — diversified sensing exposure into robotics/industrial"},
+        "OUST": {"company": "Ouster",              "bucket": "Machine Vision & Sensors", "sub": "Industrial/robotics LiDAR", "specificity": 3, "note": "Watch — early, thin margins"},
+
+        # Bucket 2: Mature Automation & Integrators (installed-base AI upgrade — Structural)
+        "ROK":  {"company": "Rockwell Automation", "bucket": "Mature Automation",        "sub": "PLC / automation incumbent", "specificity": 4, "note": "Cleanest US automation incumbent. FY26 5-9% organic, double-digit orders on reshoring, op margin 21.5%"},
+        "ABB":  {"company": "ABB (ADR)",           "bucket": "Mature Automation",        "sub": "Robotics + electrification",  "specificity": 4, "note": "Only cleanly-holdable foreign name. CATALYST: 100% robotics spin-off to separate listing Q2 2026"},
+        "PH":   {"company": "Parker Hannifin",     "bucket": "Mature Automation",        "sub": "Motion & control / drives",   "specificity": 2, "note": "Watch-line. Quality but expensive (~$905 vs ~$512 FV); moat-location low (mechanical)"},
+        "AME":  {"company": "AMETEK",              "bucket": "Mature Automation",        "sub": "Miniature motors / actuators","specificity": 3, "note": "Watch — diversified motion exposure"},
+
+        # Bucket 3: Mechanical Components (TARIFF TRADE only — Optionality)
+        "SYM":   {"company": "Symbotic",          "bucket": "Mechanical Components",     "sub": "AI warehouse automation",     "specificity": 3, "note": "Demoted from structural. Now GAAP-profitable ($2.0B cash, $22.7B backlog) BUT ~85% Walmart concentration. Sized small"},
+        "MOG-A": {"company": "Moog",              "bucket": "Mechanical Components",     "sub": "Precision actuators",         "specificity": 2, "note": "Holdable US proxy for the actuator/tariff bet (Tokyo reducer names unbuyable). Moat-location deliberately low — geopolitical option"},
+        # NOTE: Keyence (KYCCF), Fanuc (FANUY), Harmonic Drive (6324.T), Nabtesco (6268.T), SMC (6273.T)
+        # are EXCLUDED — not cleanly Fidelity-holdable (unsponsored/thin OTC). The vehicles-wrong risk
+        # made literal. They are tracked as benchmarks in scoring.md but NOT priced here.
+    },
+
     "space_economy": {
         # Bucket 1: Mission-Critical Subsystems & Components (HIGH PRIORITY)
         "MRCY":  {"company": "Mercury Systems",       "bucket": "Components",       "sub": "Rad-hard chips / secure processors", "specificity": 4, "note": "~5 global competitors at this tier; specialized defense electronics"},
@@ -169,7 +191,7 @@ UNIVERSES: dict[str, dict[str, dict[str, Any]]] = {
 
 
 # Themes whose data this script refreshes. Theme dir must exist under themes/.
-ACTIVE_THEMES = ["ai_data_center", "space_economy", "modern_defense"]
+ACTIVE_THEMES = ["ai_data_center", "space_economy", "modern_defense", "robotics"]
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -738,7 +760,7 @@ def _render_markdown(result: dict) -> str:
 
 # Index tickers the trackers reference in their `benchmarks_at_init` blocks.
 # Add new ones here when a new theme locks against a new benchmark.
-BENCHMARK_TICKERS = ["SPY", "ITA", "XLU", "SMH", "LMT"]
+BENCHMARK_TICKERS = ["SPY", "ITA", "XLU", "SMH", "LMT", "BOTZ"]
 
 
 def refresh_benchmarks() -> dict:

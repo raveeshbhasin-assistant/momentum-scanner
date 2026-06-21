@@ -75,8 +75,8 @@
       ]
     },
     {
-      "ticker": "ABBNY",
-      "company": "ABB Ltd (ADR)",
+      "ticker": "ABB",
+      "company": "ABB Ltd (NYSE ADR)",
       "bucket": "B2 Automation",
       "sleeve": "Structural",
       "date_added": "2026-06-13",
@@ -86,7 +86,8 @@
       "scoring_rationale": "Only cleanly-holdable foreign name. CATALYST: 100% robotics spin-off to separate listing Q2 2026 = value unlock + future pure-play vehicle.",
       "flags": [
         "catalyst_spinoff_q2_2026"
-      ]
+      ],
+      "note_ticker_change": "Anchored as ABB (NYSE) not ABBNY (OTC) \u2014 cleaner listing, matches refresh universe + AI DC convention. $104.45 was the 6/12 ADR close."
     },
     {
       "ticker": "SYM",
@@ -105,7 +106,7 @@
       ]
     },
     {
-      "ticker": "MOG.A",
+      "ticker": "MOG-A",
       "company": "Moog",
       "bucket": "B3 Components",
       "sleeve": "Optionality",
@@ -151,11 +152,11 @@
       "ROK",
       "ZBRA",
       "QCOM",
-      "ABBNY"
+      "ABB"
     ],
     "optionality_names": [
       "SYM",
-      "MOG.A"
+      "MOG-A"
     ]
   }
 }
