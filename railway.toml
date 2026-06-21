@@ -1,0 +1,6 @@
+# Repo-shared build config. Applies to BOTH Railway services (momentum-scanner + themes_web).
+# Only the builder is set here so it's safe for both. Each service keeps its OWN start command
+# in its Railway dashboard settings (momentum-scanner: python app.py; themes_web: uvicorn themes_web.app:app).
+# Forces NIXPACKS so the build uses Nix's python311 (no mise / no GitHub attestation step that broke 2026-06).
+[build]
+builder = "NIXPACKS"
