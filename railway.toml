@@ -1,6 +1,10 @@
 # Repo-shared build config. Applies to BOTH Railway services (momentum-scanner + themes_web).
-# Only the builder is set here so it's safe for both. Each service keeps its OWN start command
-# in its Railway dashboard settings (momentum-scanner: python app.py; themes_web: uvicorn themes_web.app:app).
-# Forces NIXPACKS so the build uses Nix's python311 (no mise / no GitHub attestation step that broke 2026-06).
+# Builder ONLY — never put startCommand here (would clobber the other service's start).
+# Each service keeps its own start: momentum-scanner = Procfile 'python app.py';
+# themes_web = dashboard 'uvicorn themes_web.app:app'.
+# NIXPACKS forced so builds avoid Railpack/mise (which broke 2026-06 on GitHub python attestations).
+# No nixpacks.toml on purpose: Nixpacks auto-detects requirements.txt and provisions python+pip
+# correctly itself. A custom nixpacks.toml with nixPkgs=['python311'] lacks pip (ensurepip/pip both
+# missing on the Nix CPython) and caused repeated 'pip/No module named pip' build failures.
 [build]
 builder = "NIXPACKS"
