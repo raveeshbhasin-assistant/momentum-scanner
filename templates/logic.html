@@ -388,12 +388,30 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.8.1 ───── -->
+        <div class="release current" id="v3-8-1">
+            <div class="release-header">
+                <span class="release-version">v3.8.1</span>
+                <span class="release-date">Released 2026-07-07</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>Hotfix: historical ELITE badges vanished after v3.8.0.</strong> v3.8.0's <code>normalize_entry</code> stamped a default <code>elite: False</code> (and <code>tradeable: False</code>) onto <em>every</em> row served by <code>/api/performance*</code> — but <code>performance.html</code>'s <code>_isElite()</code> uses persisted-flag-wins logic (<code>typeof p.elite === 'boolean' → return p.elite</code>), so every pre-v3.8.0 row short-circuited to False and all historical ELITE badges disappeared from the performance/history views. Root principle violated: <em>an absent field means "unknown — derive on read"; a stamped False means "lived False." Never conflate the two.</em> Tagged: <span class="pill pill-fixed">fixed</span>.</div>
+            <div class="release-details">
+                <p><strong>Changes:</strong></p>
+                <ul>
+                    <li><strong><code>performance_engine.normalize_entry</code></strong> — <code>elite</code> / <code>tradeable</code> / <code>extension</code> are now included only when the raw row actually carries a value (conditional spread); <code>anti_ext</code> stays tri-state with <code>None</code> = unknown. Old rows again fall through to client-side derivation; new rows keep their lived flags.</li>
+                    <li><strong><code>daily_analysis.analyze_day</code></strong> — threads the raw values (<code>None</code> when absent) instead of defaulting to False, so re-running analysis on a pre-v3.8.0 date can never stamp lived-looking False flags into <code>performance_log.json</code>.</li>
+                    <li><strong>Regression tests</strong> — <code>normalize_entry</code> must not invent tier flags on old-shape rows; lived flags (including a genuine False) must survive normalize + re-normalize. Suite: 35 passed.</li>
+                </ul>
+                <p><strong>Verification:</strong> replayed the live failure — a 6/26-shaped row (STRONG, cat D, RVOL 2.8, RSI 71, 09:35) through <code>normalize_entry</code> now arrives without <code>elite</code>/<code>tradeable</code> keys, so <code>_isElite()</code> falls through to derivation and the badge renders again. No stored data was corrupted: v3.8.0 stamped only at read time (the 4:15 PM cron had not yet written any log with the new code).</p>
+            </div>
+        </div>
+
         <!-- ───── v3.8.0 ───── -->
-        <div class="release current" id="v3-8-0">
+        <div class="release" id="v3-8-0">
             <div class="release-header">
                 <span class="release-version">v3.8.0</span>
                 <span class="release-date">Released 2026-07-06</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>TRADEABLE tier + anti-extension shadow fields — the three live-verified trading rules, in code.</strong> A 52-day full-history analysis (5,830 picks; 4,399 truly-live first-appearance picks 2026-05-12 &rarr; 07-06; bar-level enrichment of all 941 live STRONG picks; every claim independently re-derived by adversarial verification — see <code>research_findings_live52d_elite_precision.md</code>) reduced to three operator rules: <em>(1)</em> only trade STRONG in the opening 30 minutes; <em>(2)</em> of those, prefer the pick that hasn't already run; <em>(3)</em> enter immediately, never re-enter a stopped name. This release encodes rule 1 as a first-class <strong>TRADEABLE</strong> tier and rule 2 as persisted <strong>anti-extension shadow fields</strong> + an <strong>EXTENDED ⚠</strong> warning badge; rule 3 was already live (<code>SUPPRESS_REENTRIES</code>) and is re-confirmed on live data (re-entries: 10.8% 2.5R-hit, &minus;0.009R, n=343; only 9.6% of stopped STRONG losers ever print target later the same day). Tagged: <span class="pill pill-added">added</span>.</div>
             <div class="release-details">

@@ -215,17 +215,21 @@ def normalize_entry(raw: dict) -> dict:
             "new_hod": False, "pm_high_hold": False,
             "complete_bar_used": False,
         },
-        # v3.8.0: carry the tier flags + anti-extension shadow fields into
-        # the perf log so /api/performance/range serves the LIVED flags —
-        # the 52-day analysis had to reconstruct `elite` from config
-        # constants because it was never persisted (same bug class as
-        # v3.7.0.18). None-safe: absent on pre-v3.8.0 rows.
-        "elite": bool(raw.get("elite", False)),
-        "tradeable": bool(raw.get("tradeable", False)),
-        "anti_ext": raw.get("anti_ext"),          # True/False/None (shadow)
-        "extension": raw.get("extension") or {
-            "consec_green": None, "range_pos": None, "above_orb_high": None,
-        },
+        # v3.8.0 / hotfix v3.8.1: carry the tier flags + anti-extension
+        # shadow fields into the perf log so /api/performance/range serves
+        # the LIVED flags (same bug class as v3.7.0.18).
+        #
+        # ⚠️ Pass them through ONLY when the row actually carries a value.
+        # v3.8.0 stamped a default `elite: False` onto every row served —
+        # but performance.html's _isElite() uses persisted-flag-wins logic
+        # (`typeof p.elite === 'boolean' → return p.elite`), so every
+        # pre-v3.8.0 row short-circuited to False and ALL historical ELITE
+        # badges vanished. Absent field = "unknown — derive on read";
+        # a stamped False = "lived False". Never conflate the two.
+        **({"elite": bool(raw["elite"])} if raw.get("elite") is not None else {}),
+        **({"tradeable": bool(raw["tradeable"])} if raw.get("tradeable") is not None else {}),
+        "anti_ext": raw.get("anti_ext"),          # True/False/None (None = unknown)
+        **({"extension": raw["extension"]} if isinstance(raw.get("extension"), dict) else {}),
     }
 
 

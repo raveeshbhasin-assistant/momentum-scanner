@@ -245,6 +245,45 @@ def test_daily_record_persists_v38_fields(tmp_path, monkeypatch):
     assert abs(r["extension"]["range_pos"] - 0.95) < 1e-9
 
 
+# ────────────────────────────────────────────────────────────────
+# Phase E — v3.8.1 hotfix: normalize_entry must NOT stamp default
+# tier flags onto rows that never carried them (persisted-flag-wins
+# consumers like performance.html _isElite would stop deriving and
+# every historical ELITE badge would vanish — the v3.8.0 regression).
+# ────────────────────────────────────────────────────────────────
+
+def _base_perf_raw(**kw):
+    d = {"ticker": "T", "score": 60, "entry": 100, "stop": 99, "target": 102,
+         "batch_time": "09:45", "result": "WIN", "strong_signal": True}
+    d.update(kw)
+    return d
+
+
+def test_normalize_entry_no_default_stamp_on_old_rows():
+    from performance_engine import normalize_entry
+    out = normalize_entry(_base_perf_raw())          # pre-v3.8.0 row shape
+    assert "elite" not in out, "absent elite must stay absent (unknown ≠ False)"
+    assert "tradeable" not in out
+    assert "extension" not in out
+    assert out["anti_ext"] is None                   # None = unknown, allowed
+
+
+def test_normalize_entry_passes_through_lived_flags():
+    from performance_engine import normalize_entry
+    out = normalize_entry(_base_perf_raw(
+        elite=True, tradeable=False, anti_ext=False,
+        extension={"consec_green": 3, "range_pos": 0.95, "above_orb_high": 1},
+    ))
+    assert out["elite"] is True
+    assert out["tradeable"] is False                 # lived False survives
+    assert out["anti_ext"] is False
+    assert out["extension"]["consec_green"] == 3
+    # idempotent on re-normalize
+    from performance_engine import normalize_entry as n2
+    again = n2(out)
+    assert again["elite"] is True and again["tradeable"] is False
+
+
 if __name__ == "__main__":
     import pytest
     raise SystemExit(pytest.main([__file__, "-v"]))

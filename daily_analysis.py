@@ -639,8 +639,12 @@ def _write_performance_log(picks: list[dict], date_str: str):
             # fields, so anything not threaded here never reaches
             # performance_log.json or /api/performance/range, and the
             # 4-week shadow evaluation would have nothing to read).
-            "elite": bool(p.get("elite", False)),
-            "tradeable": bool(p.get("tradeable", False)),
+            # v3.8.1: thread the RAW value (None when absent) — never default
+            # to False. A re-run on a pre-v3.8.0 date must not stamp lived-
+            # looking False flags onto rows that never carried the field
+            # (persisted-flag-wins consumers would stop deriving).
+            "elite": p.get("elite"),
+            "tradeable": p.get("tradeable"),
             "anti_ext": p.get("anti_ext"),
             "extension": p.get("extension"),
         }))
