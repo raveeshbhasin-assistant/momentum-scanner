@@ -262,4 +262,89 @@ HIGH_BETA_EXTENDED = [
 # v3.7.0: Mid-cap expansion — 80 high-liquidity names that scanner historically
 # missed but which produced clean 2.5R moves in the 13-day research window
 # (Apr 22 – May 8 2026). Ranked by 30-day average dollar-volume; range
-# $210
+# $210M–$2.5B/day ADV. Median price ~$105.
+# Source: research/midcap_top80.json
+MIDCAP_EXTENDED = [
+    'ASML', 'VRT', 'RKLB', 'BE', 'BSX', 'TER', 'SLB', 'SATS',
+    'CEG', 'DVN', 'PYPL', 'MPWR', 'TJX', 'HAL', 'ON', 'FANG',
+    'WDAY', 'MCHP', 'VST', 'PWR', 'BKR', 'PL', 'CRH', 'HWM',
+    'EQT', 'FTNT', 'TEAM', 'EBAY', 'HOLX', 'ULTA', 'URI', 'DOCN',
+    'TTD', 'CFLT', 'DHI', 'PCG', 'EW', 'FN', 'STM', 'ZS',
+    'EXC', 'APA', 'FSLR', 'XYZ', 'SMR', 'INSM', 'ETR', 'HUBS',
+    'VMC', 'MRNA', 'CTRA', 'FIVE', 'LEN', 'ENTG', 'OKTA', 'PINS',
+    'IDXX', 'MTZ', 'WAT', 'NVT', 'MLM', 'AFRM', 'DT', 'EME',
+    'HUBB', 'BBY', 'AVAV', 'ROKU', 'WSM', 'W', 'PHM', 'AR',
+    'DKS', 'OVV', 'TLN', 'BURL', 'DOCU', 'LII', 'ENPH', 'CHWY',
+]
+
+# Full scan universe = core + extended + midcap (deduped at runtime)
+def get_full_universe() -> list[str]:
+    """Return deduplicated full scan universe."""
+    seen = set()
+    result = []
+    for t in SP500_LIQUID + HIGH_BETA_EXTENDED + MIDCAP_EXTENDED:
+        if t not in seen:
+            result.append(t)
+            seen.add(t)
+    return result
+
+# ── Sector Rotation Settings ────────────────────────────────
+SECTOR_TOP_N = 3                     # How many top sectors to prioritize
+SECTOR_BOOST_POINTS = 8              # Score boost for tickers in hot sectors
+
+# ── Sector Leadership (v3.3) ────────────────────────────────
+# Classify ticker vs its sector vs SPY:
+#   LEADER:     ticker% > sector% > SPY%   → +10
+#   SOLO_MOVER: ticker% > SPY% but sector < SPY (counter-trend) → 0 (tightened v3.3.1)
+#   FOLLOWER:   ticker% > SPY% but below sector → 0
+#   LAGGARD:    ticker% < sector% → -10
+# Score adjustment applied ONLY when LEADER_FILTER_MODE == "score".
+# In "moderate" mode (v3.3.2 default) leadership becomes a HARD GATE:
+# only LEADER and SOLO_MOVER are admitted; score_adjustment is skipped.
+SECTOR_LEADER_BOOST = 10
+SECTOR_SOLO_BOOST = 0
+SECTOR_LAGGARD_PENALTY = -10
+
+# v3.3.2 — Leadership as hard filter
+# 20-day backtest (Mar 23 → Apr 17, 2026) showed the +10 LEADER boost
+# was letting marginal-technical leaders through the min-score gate
+# during ELEVATED/HIGH VIX regimes, where they bled ~$16k. Switching
+# LEADER + SOLO_MOVER to a hard filter tightens that leak:
+#   20d "score" mode:    337 trades / 18.9% WR / $15,184 / PF 1.09
+#   20d "moderate" mode: 126 trades / 26.2% WR / $15,086 / PF 1.24
+# Same P&L, half the churn, much cleaner regime interaction.
+#
+# Options:
+#   "display"    — (v3.4.2 default) no hard gate; all labels emit as signals,
+#                   UI groups by leader_tier (primary/secondary/weak).
+#                   Rationale: 0-signal days were too common because the
+#                   gate assumed backtest-quality data; user prefers to
+#                   see everything and decide manually on Fidelity.
+#   "moderate"   — v3.3.2 default: only LEADER + SOLO_MOVER admitted
+#   "strict"     — only LEADER admitted (best quality, fewest trades)
+#   "permissive" — LEADER + SOLO + FOLLOWER (blocks LAGGARD + UNKNOWN)
+#   "score"      — legacy v3.3 behaviour: no hard gate, boosts still apply
+LEADER_FILTER_MODE = "display"
+
+# ── Market Regime / VIX (v3.3) ──────────────────────────────
+# When VIX is elevated, raise the min composite score floor and cut
+# suggested position size. See market_regime.py for the band table.
+MARKET_REGIME_ENABLED = True
+
+# ── Earnings Calendar (v3.3) ────────────────────────────────
+EARNINGS_TOMORROW_PENALTY = -5       # Points off for earnings tomorrow BMO
+EARNINGS_HARD_FILTER_HOUR = 14       # After 2 PM ET, block entries when earnings are AMC today
+
+# ── Pre-Market Settings ─────────────────────────────────────
+PREMARKET_BOOST_CAP = 15             # Max score boost from pre-market flags
+PREMARKET_VOL_THRESHOLD = 2.0        # Min volume ratio to flag pre-market
+
+# ── Confirmed Filters (from 3-day analysis) ──────────────────
+# Lunch dead zone: 0 wins in 21 decided trades (p < 0.001)
+DEAD_ZONE_BATCHES = {"11:31", "12:01", "12:02"}
+# Re-entries: 1 win in 32 decided trades (3.1% WR)
+SUPPRESS_REENTRIES = True
+
+# ── Server ────────────────────────────────────────────────────
+HOST = "0.0.0.0"
+PORT = int(os.getenv("PORT", 8000))

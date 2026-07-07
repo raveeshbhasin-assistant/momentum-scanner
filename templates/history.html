@@ -772,4 +772,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             const eChip = document.getElementById('eliteOnly');
             if (eChip) eChip.addEventListener('click', toggleElite);
-            const sChip = document.getElementById('strongOn
+            const sChip = document.getElementById('strongOnly');
+            if (sChip) sChip.addEventListener('click', toggleStrong);
+            _updateEliteChip();
+            _updateStrongChip();
+            bindSortHeaders(document);
+            bindColToggles(document);
+            _computeRTHCounts();
+            _updateRTHBadge();
+        });
+    </script>
+</body>
+</html>

@@ -457,13 +457,11 @@
             if (!isFinite(r) || r < 2.0 || r >= 5.0) return false;
             const rsi = parseFloat(p.rsi);
             if (!isFinite(rsi) || rsi < 68) return false;
-            // entry window 09:30–10:00 ET from batch_time "HH:MM"
             const bt = (p.batch_time || '').slice(0,5);
             const hh = parseInt(bt.slice(0,2), 10), mm = parseInt(bt.slice(3,5), 10);
             if (!isFinite(hh) || !isFinite(mm)) return false;
             const cur = hh*60 + mm;
-            if (cur < 570 || cur > 600) return false;   // 09:30=570, 10:00=600
-            // stop distance % of entry ≥ 0.9
+            if (cur < 570 || cur > 600) return false;
             const entry = parseFloat(p.entry), stop = parseFloat(p.stop);
             if (isFinite(entry) && isFinite(stop) && entry > 0) {
                 if (Math.abs(entry - stop) / entry * 100 < 0.9) return false;
@@ -1194,4 +1192,32 @@
             host.querySelectorAll("th[data-sort]").forEach(th => {
                 th.addEventListener("click", () => {
                     const k = th.dataset.sort;
-                    if (state.sort.key === k) state.sort
+                    if (state.sort.key === k) state.sort.dir *= -1;
+                    else { state.sort.key = k; state.sort.dir = 1; }
+                    render();
+                });
+            });
+        }
+
+        function renderDiagnostics() {
+            const d = VIEW.diagnostics || {};
+            const bits = [];
+            if (d.stale_tickers && d.stale_tickers.length) {
+                bits.push(`<span class="diag-item"><strong>Stale ticker:</strong> ${d.stale_tickers.join(", ")} — scanner universe needs updating.</span>`);
+            }
+            if (d.unclassified_count) {
+                bits.push(`<span class="diag-item"><strong>${d.unclassified_count} unclassified</strong> picks on the log (early-session, before sector rotation settled).</span>`);
+            }
+            if (d.post_close_count) {
+                bits.push(`<span class="diag-item"><strong>${d.post_close_count} post-close</strong> signals excluded from stats.</span>`);
+            }
+            const el = document.getElementById("diagBanner");
+            if (bits.length === 0) { el.classList.add("hidden"); return; }
+            el.classList.remove("hidden");
+            el.innerHTML = bits.join("");
+        }
+
+        render();
+    </script>
+</body>
+</html>

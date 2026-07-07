@@ -693,4 +693,15 @@
                 if (!document.hidden) window.location.reload();
             }, 120000);
         }
-        document.addEventListener('vi
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(_refreshTimer);
+                _refreshTimer = null;
+            } else {
+                _armRefresh();
+            }
+        });
+        _armRefresh();
+    </script>
+</body>
+</html>

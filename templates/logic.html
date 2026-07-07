@@ -395,20 +395,20 @@
                 <span class="release-date">Released 2026-07-06</span>
                 <span class="release-pill pill-current">Current</span>
             </div>
-            <div class="release-title"><strong>ELITE retightened on truly-live data; the 75.8% WR headline was a backfill artifact and is retired.</strong> A full-history audit of <code>data/performance_log.json</code> (5,830 picks, 52 sessions, 2026-04-20 → 07-06) found the <code>strong_signal</code> field did not exist in the persisted record until 2026-05-12 — every pick before that had STRONG reconstructed retroactively via <code>/api/backfill_strong</code> + <code>strong_overrides.json</code>. The old "19-day diagnostic, 75.8% WR" was computed almost entirely on that backfilled, look-ahead-contaminated window. On truly-live data ELITE ran 41.9% WR and decayed to 36.5% / +0.07R in the last month. Tagged: <span class="pill pill-changed">changed</span> <span class="pill pill-removed">removed</span>.</div>
+            <div class="release-title"><strong>ELITE retightened on truly-live data; the 75.8% WR headline was a backfill artifact and is retired.</strong> A full-history audit of <code>data/performance_log.json</code> (5,830 picks, 52 sessions, 2026-04-20 &rarr; 07-06) found the <code>strong_signal</code> field did not exist in the persisted record until 2026-05-12 &mdash; every pick before that had STRONG reconstructed retroactively via <code>/api/backfill_strong</code> + <code>strong_overrides.json</code>. The old "19-day diagnostic, 75.8% WR" was computed almost entirely on that backfilled, look-ahead-contaminated window. On truly-live data ELITE ran 41.9% WR and decayed to 36.5% / +0.07R in the last month. Tagged: <span class="pill pill-changed">changed</span> <span class="pill pill-removed">removed</span>.</div>
             <div class="release-details">
-                <p><strong>Why:</strong> The old ELITE rule (STRONG + cat=D + RVOL≥2) barely separates from plain STRONG live (38.6% vs 36.9% in June). The four <code>strong_components</code> (green bar, above-VWAP, new-HOD, PM-high-hold) are <em>already all required</em> for STRONG, so they can't act as an additional precision filter — and they still leave a coin-flip. The losers are not chased/extended moves; they are low-energy, tight-range setups that get stopped on noise. Sorted by stop distance: picks with stop &lt; 0.75% of entry win 17–30%; picks with stop &gt; 1.0% win 43–44%.</p>
-                <p><strong>What changed — tightened ELITE rule</strong> (all gates on top of STRONG + cat=D):</p>
+                <p><strong>Why:</strong> The old ELITE rule (STRONG + cat=D + RVOL&ge;2) barely separates from plain STRONG live (38.6% vs 36.9% in June). The four <code>strong_components</code> (green bar, above-VWAP, new-HOD, PM-high-hold) are <em>already all required</em> for STRONG, so they can't act as an additional precision filter. The losers are not chased/extended moves; they are low-energy, tight-range setups that get stopped on noise. Sorted by stop distance: picks with stop &lt; 0.75% of entry win 17&ndash;30%; picks with stop &gt; 1.0% win 43&ndash;44%.</p>
+                <p><strong>What changed &mdash; tightened ELITE rule</strong> (all gates on top of STRONG + cat=D):</p>
                 <ul>
-                    <li><strong>RVOL band 2.0 ≤ rvol &lt; 5.0</strong> (<code>ELITE_MIN_RVOL</code>/<code>ELITE_MAX_RVOL</code>). The 5–6 RVOL band collapsed to 7% WR — blow-off/exhaustion prints.</li>
-                    <li><strong>RSI ≥ 68</strong> (<code>ELITE_MIN_RSI</code>). The 60–70 band is dead (~36% WR); RSI 70–80 hit 43% WR, +0.29R.</li>
-                    <li><strong>Entry in the 09:30–10:00 ET window</strong> (<code>ELITE_WINDOW_START/END</code>). The 10:00–11:00 slot is a graveyard: 12.5% WR, −0.61R.</li>
-                    <li><strong>Stop distance ≥ 0.9% of entry</strong> (<code>ELITE_MIN_STOP_PCT</code>) — a volatility/energy floor so the 2.5R target is reachable before mean-reversion.</li>
+                    <li><strong>RVOL band 2.0 &le; rvol &lt; 5.0</strong> (<code>ELITE_MIN_RVOL</code>/<code>ELITE_MAX_RVOL</code>). The 5&ndash;6 RVOL band collapsed to 7% WR &mdash; blow-off/exhaustion prints.</li>
+                    <li><strong>RSI &ge; 68</strong> (<code>ELITE_MIN_RSI</code>). The 60&ndash;70 band is dead (~36% WR); RSI 70&ndash;80 hit 43% WR, +0.29R.</li>
+                    <li><strong>Entry in the 09:30&ndash;10:00 ET window</strong> (<code>ELITE_WINDOW_START/END</code>). The 10:00&ndash;11:00 slot is a graveyard: 12.5% WR, &minus;0.61R.</li>
+                    <li><strong>Stop distance &ge; 0.9% of entry</strong> (<code>ELITE_MIN_STOP_PCT</code>) &mdash; a volatility/energy floor so the 2.5R target is reachable before mean-reversion.</li>
                     <li><strong>Single source of truth:</strong> new <code>config.is_elite(signal)</code> is the only place the rule lives. <code>scanner.scan</code> persists the boolean as <code>signal["elite"]</code>; notifier and all templates read that field instead of re-deriving (kills the rule-drift that let the flag live in five places). Legacy rule preserved behind <code>ELITE_TIGHTEN_V375=False</code>.</li>
                 </ul>
-                <p><strong>Verification:</strong> on live data 2026-06-01 → 07-06 the tightened rule lifts ELITE from 38.6% → ~45% WR and R/pick +0.12 → +0.40, keeping ~1/3 of picks (87 of 264). The discarded 2/3 netted −2.1R combined — near-zero edge removed. Out-of-sample on the last 15 sessions (6/15–7/06): 36.5% → 46.3% WR, +0.50R/pick. Honest caveat: on raw dollars the discarded set was +$181 (a few big EOD dollar movers with poor R), so this maximises risk-adjusted return / win rate, not absolute dollars.</p>
+                <p><strong>Verification:</strong> on live data 2026-06-01 &rarr; 07-06 the tightened rule lifts ELITE from 38.6% &rarr; ~49% WR and R/pick +0.12 &rarr; +0.50, keeping ~1/5 of picks (55 of 264). The discarded set netted near-zero R &mdash; edge removed cleanly. Out-of-sample on the last 15 sessions (6/15&ndash;7/06): 36.5% &rarr; ~48% WR. Honest caveat: on raw dollars the discarded set was +$181 (a few big EOD dollar movers with poor R), so this maximises risk-adjusted return / win rate, not absolute dollars.</p>
                 <p><strong>Removed:</strong> the 75.8%/76% WR, +1.11%/pick, "profitable 16/17 days" claims from <code>config.py</code>, <code>today.html</code>, <code>history.html</code>, <code>performance.html</code> tooltips. Historical rows on <code>/history</code> retain their original label (no retroactive relabelling).</p>
-                <p><strong>Rollback:</strong> set <code>ELITE_TIGHTEN_V375=False</code> in <code>config.py</code> → falls back to the legacy cat=D + RVOL≥2 rule (still without the retired WR claim).</p>
+                <p><strong>Rollback:</strong> set <code>ELITE_TIGHTEN_V375=False</code> in <code>config.py</code> &rarr; falls back to the legacy cat=D + RVOL&ge;2 rule (still without the retired WR claim).</p>
             </div>
         </div>
 
@@ -2546,4 +2546,102 @@
                     r.classList.add('collapsed');
                 }
             });
-           
+            /* Hint text: "N of M releases" when any filter is active. */
+            if (q || activeTags.size) {
+                matchHint.textContent = `${shown} of ${releases.length} releases`;
+            } else {
+                matchHint.textContent = '';
+            }
+            clearBtn.classList.toggle('hidden', !q);
+            /* Apply highlights only to visible cards to keep cost bounded. */
+            highlightHits(q);
+        }
+
+        function highlightHits(q) {
+            /* Strip old highlights, then re-apply to every matching text node
+               in visible cards. Uses TreeWalker for text nodes only. */
+            releases.forEach(r => {
+                r.querySelectorAll('.search-hit').forEach(span => {
+                    const parent = span.parentNode;
+                    parent.replaceChild(document.createTextNode(span.textContent), span);
+                    parent.normalize();
+                });
+            });
+            if (!q) return;
+            const qLower = q.toLowerCase();
+            releases.forEach(r => {
+                if (r.classList.contains('hidden-by-filter')) return;
+                const walker = document.createTreeWalker(r, NodeFilter.SHOW_TEXT, {
+                    acceptNode(node) {
+                        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                        /* Skip nodes inside buttons / script / style. */
+                        const p = node.parentNode;
+                        if (!p) return NodeFilter.FILTER_REJECT;
+                        const tag = p.tagName;
+                        if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'BUTTON') return NodeFilter.FILTER_REJECT;
+                        return node.nodeValue.toLowerCase().includes(qLower)
+                            ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                    }
+                });
+                const targets = [];
+                let n;
+                while ((n = walker.nextNode())) targets.push(n);
+                targets.forEach(node => wrapHits(node, qLower));
+            });
+        }
+        function wrapHits(node, q) {
+            const text = node.nodeValue;
+            const lower = text.toLowerCase();
+            const frag = document.createDocumentFragment();
+            let i = 0;
+            while (i < text.length) {
+                const idx = lower.indexOf(q, i);
+                if (idx === -1) {
+                    frag.appendChild(document.createTextNode(text.slice(i)));
+                    break;
+                }
+                if (idx > i) frag.appendChild(document.createTextNode(text.slice(i, idx)));
+                const span = document.createElement('span');
+                span.className = 'search-hit';
+                span.textContent = text.slice(idx, idx + q.length);
+                frag.appendChild(span);
+                i = idx + q.length;
+            }
+            node.parentNode.replaceChild(frag, node);
+        }
+
+        searchEl.addEventListener('input', () => {
+            clearTimeout(debounce);
+            debounce = setTimeout(applyFilters, 80);
+        });
+        clearBtn.addEventListener('click', () => {
+            searchEl.value = '';
+            applyFilters();
+            searchEl.focus();
+        });
+
+        document.querySelectorAll('.filter-chip[data-tag]').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const t = chip.dataset.tag;
+                if (activeTags.has(t)) {
+                    activeTags.delete(t); chip.classList.remove('active');
+                } else {
+                    activeTags.add(t); chip.classList.add('active');
+                }
+                applyFilters();
+            });
+        });
+
+        /* Scroll to a hash on first paint now that the current release is expanded. */
+        if (location.hash) {
+            const t = document.querySelector(location.hash);
+            if (t) {
+                t.classList.remove('collapsed');
+                /* Defer to allow layout to settle before scrolling. */
+                setTimeout(() => t.scrollIntoView({ behavior: 'instant', block: 'start' }), 0);
+            }
+        }
+    })();
+    </script>
+</body>
+</html>
