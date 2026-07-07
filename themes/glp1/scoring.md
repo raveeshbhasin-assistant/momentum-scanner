@@ -1,14 +1,24 @@
-# GLP-1 Mass Adoption — Scoring Notes
+# GLP-1 Mass Adoption — Scoring (v1, side-aware)
 
-**Not yet run.** First scoring pass happens after the universe is wired into `refresh_data.py` and `themes/refresh_data.py glp1` is executed.
+_Generated **2026-07-07**. Long/Short rubric: SHORT candidates score high on full valuation + rolling-over momentum + slowing growth (max short asymmetry); LONG candidates score high on momentum + reasonable valuation + growth. Source: `candidates.json`. Audit: `scoring_log.json`._
 
-## Scoring wrinkle for a short-weighted theme
-The standard theme scoring ranks a universe on momentum (1M/3M/6M/12M returns) + capital-structure quality. That logic assumes LONG candidates. For this theme:
+## Ranked candidates
 
-- **LONG candidates (Bucket 4):** score normally — strong momentum + clean CS = higher rank.
-- **SHORT candidates (Buckets 1-3):** the read inverts. What we want is names showing early *volume/margin deterioration* while still trading at full multiples (i.e., market hasn't re-priced yet — maximum short asymmetry). A short candidate that has *already* de-rated hard is less interesting (thesis partly played out); one still near 52w highs on a deteriorating volume story is the prize.
+| Rank | Ticker | Side | Company | Bucket | Score | Conv | Setup | Val | Mom | Fund | Liq |
+|-----:|--------|------|---------|--------|------:|-----|------|-----|-----|------|-----|
+| 1 🟢 | **HSY** | short | Hershey | Food & Beverage (Demand Destruction) | **88** | 5 | 4 | 4 | 5 | 3 | 5 |
+| 2 🟢 | **PEP** | short | PepsiCo | Food & Beverage (Demand Destruction) | **77** | 4 | 4 | 3 | 4 | 3 | 5 |
+| 3 🟢 | **TMO** | long | Thermo Fisher | API / CDMO (Long) | **75** | 3 | 4 | 4 | 4 | 3 | 5 |
+| 4 🟢 | **MDT** | short | Medtronic | Med-Tech (Demand Destruction) | **72** | 3 | 4 | 3 | 4 | 3 | 5 |
+| 5 🟢 | **WST** | short | West Pharmaceutical Services | Injectable Supply (Stranded) | **71** | 4 | 4 | 5 | 2 | 1 | 4 |
+| 6 🟡 | **MDLZ** | short | Mondelez | Food & Beverage (Demand Destruction) | **69** | 4 | 3 | 3 | 3 | 3 | 5 |
+| 7 🟡 | **DXCM** | short | Dexcom | Med-Tech (Demand Destruction) | **67** | 4 | 3 | 4 | 2 | 2 | 5 |
+| 8 | **RMD** | short | ResMed | Med-Tech (Demand Destruction) | **61** | 4 | 2 | 2 | 3 | 3 | 5 |
+| 9 | **STVN** | short | Stevanato Group | Injectable Supply (Stranded) | **59** | 4 | 2 | 4 | 1 | 4 | 3 |
+| 10 | **LULU** | long | Lululemon | Beneficiary | **57** | 2 | 3 | 5 | 1 | 2 | 5 |
+| 11 | **CELH** | long | Celsius Holdings | Beneficiary | **55** | 3 | 2 | 2 | 2 | 5 | 4 |
+| 12 | **CAVA** | long | Cava Group | Beneficiary | **44** | 3 | 1 | 1 | 1 | 5 | 4 |
 
-This inversion is a manual scoring overlay for now — the automated `_score_run.py` (if added later) treats the universe as long-only and the analyst flips the sign on Bucket 1-3 names when reading the output. Flagged for a future `side`-aware scoring enhancement.
+🟢 = top 5 (tracker)  ·  🟡 = next 2 (watch)
 
-## Borrow-cost / liquidity gate
-Because shorts dominate, any candidate that fails a liquidity threshold (thin ADV, hard-to-borrow, high borrow fee) is disqualified regardless of thesis fit. This is why the universe is strict US-listed and the European CDMOs are excluded.
+_SHORT names dominate the top of the book by design — the thesis is short-weighted._

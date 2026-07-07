@@ -1,0 +1,816 @@
+{
+  "theme": "glp1",
+  "scored_at": "2026-07-07T01:39:29.381781Z",
+  "trade_date": "2026-07-07",
+  "rubric_version": "v1-sideaware",
+  "weights": {
+    "thesis_conviction": 25,
+    "setup_asymmetry": 25,
+    "valuation_room": 15,
+    "momentum_inflection": 15,
+    "fundamental_trend": 10,
+    "liquidity_borrow": 10
+  },
+  "score_types": {
+    "thesis_conviction": "judgment",
+    "setup_asymmetry": "mixed",
+    "valuation_room": "quantitative",
+    "momentum_inflection": "quantitative",
+    "fundamental_trend": "quantitative",
+    "liquidity_borrow": "judgment"
+  },
+  "results": {
+    "RMD": {
+      "company": "ResMed",
+      "bucket": "Med-Tech (Demand Destruction)",
+      "sub": "CPAP / sleep apnea",
+      "side": "short",
+      "note": "Weight loss reduces OSA severity \u2192 device demand; first-line displacement bet",
+      "raw_total": 305,
+      "normalized_100": 61.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 4,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Direct: weight loss cuts OSA severity \u2192 CPAP demand. First-line displacement is the cleanest med-tech short"
+        },
+        "setup_asymmetry": {
+          "score": 2,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 50,
+          "rationale": "short setup: valuation room 2/5 + rolling-over 3/5"
+        },
+        "valuation_room": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 21 \u2014 already cheap; less short room"
+        },
+        "momentum_inflection": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "RS3M 55 (weak=confirming)"
+        },
+        "fundamental_trend": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "rev +11% \u2014 moderate"
+        },
+        "liquidity_borrow": {
+          "score": 5,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 50,
+          "rationale": "Large-cap NYSE, deep liquidity, easy borrow"
+        }
+      },
+      "snapshot": {
+        "price": 218.4,
+        "market_cap": 31680313344,
+        "pe": 21.040462,
+        "ps": 5.7207513,
+        "side": "short",
+        "1y_pct": -14.88,
+        "3m_pct": -2.9,
+        "1m_pct": 12.39,
+        "dist_from_52w_high_pct": -25.67,
+        "rs_3m": 55,
+        "revenue_growth_yoy": 0.108
+      }
+    },
+    "DXCM": {
+      "company": "Dexcom",
+      "bucket": "Med-Tech (Demand Destruction)",
+      "sub": "CGM / diabetes management",
+      "side": "short",
+      "note": "Fewer progressing diabetics shrinks the CGM funnel",
+      "raw_total": 335,
+      "normalized_100": 67.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 4,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Fewer progressing diabetics shrinks CGM funnel; strong second-order read"
+        },
+        "setup_asymmetry": {
+          "score": 3,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 75,
+          "rationale": "short setup: valuation room 4/5 + rolling-over 2/5"
+        },
+        "valuation_room": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 31 \u2014 full; good downside room"
+        },
+        "momentum_inflection": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS3M 82 (weak=confirming)"
+        },
+        "fundamental_trend": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "rev +15% \u2014 still growing; thesis early"
+        },
+        "liquidity_borrow": {
+          "score": 5,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 50,
+          "rationale": "Large-cap, liquid, borrowable"
+        }
+      },
+      "snapshot": {
+        "price": 72.38,
+        "market_cap": 27929485312,
+        "pe": 31.064377,
+        "ps": 5.7970247,
+        "side": "short",
+        "1y_pct": -13.59,
+        "3m_pct": 14.51,
+        "1m_pct": -0.29,
+        "dist_from_52w_high_pct": -19.56,
+        "rs_3m": 82,
+        "revenue_growth_yoy": 0.15
+      }
+    },
+    "MDT": {
+      "company": "Medtronic",
+      "bucket": "Med-Tech (Demand Destruction)",
+      "sub": "Bariatric + orthopedic",
+      "side": "short",
+      "note": "Diluted mega-cap; bariatric + weight-driven ortho volume decline",
+      "raw_total": 360,
+      "normalized_100": 72.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 3,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Bariatric + ortho exposure real but diluted across a mega-cap med-tech portfolio"
+        },
+        "setup_asymmetry": {
+          "score": 4,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 100,
+          "rationale": "short setup: valuation room 3/5 + rolling-over 4/5"
+        },
+        "valuation_room": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 22 \u2014 moderate room"
+        },
+        "momentum_inflection": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "RS3M 45 (weak=confirming)"
+        },
+        "fundamental_trend": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "rev +10% \u2014 moderate"
+        },
+        "liquidity_borrow": {
+          "score": 5,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 50,
+          "rationale": "Mega-cap, maximal liquidity"
+        }
+      },
+      "snapshot": {
+        "price": 83.06,
+        "market_cap": 106320551936,
+        "pe": 22.268095,
+        "ps": 2.923786,
+        "side": "short",
+        "1y_pct": -6.23,
+        "3m_pct": -3.73,
+        "1m_pct": 1.38,
+        "dist_from_52w_high_pct": -21.88,
+        "rs_3m": 45,
+        "revenue_growth_yoy": 0.099
+      }
+    },
+    "MDLZ": {
+      "company": "Mondelez",
+      "bucket": "Food & Beverage (Demand Destruction)",
+      "sub": "Snacking / confection",
+      "side": "short",
+      "note": "Impulse snacking core to volume; craving-modulation hit",
+      "raw_total": 345,
+      "normalized_100": 69.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 4,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Impulse snacking + confection core to volume; craving-modulation hits directly"
+        },
+        "setup_asymmetry": {
+          "score": 3,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 75,
+          "rationale": "short setup: valuation room 3/5 + rolling-over 3/5"
+        },
+        "valuation_room": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 29 \u2014 moderate room"
+        },
+        "momentum_inflection": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "RS3M 64 (weak=confirming)"
+        },
+        "fundamental_trend": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "rev +8% \u2014 moderate"
+        },
+        "liquidity_borrow": {
+          "score": 5,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 50,
+          "rationale": "Mega-cap staple, deep borrow"
+        }
+      },
+      "snapshot": {
+        "price": 59.17,
+        "market_cap": 75953553408,
+        "pe": 29.292078,
+        "ps": 1.9324638,
+        "side": "short",
+        "1y_pct": -13.23,
+        "3m_pct": 1.35,
+        "1m_pct": -2.98,
+        "dist_from_52w_high_pct": -16.84,
+        "rs_3m": 64,
+        "revenue_growth_yoy": 0.082
+      }
+    },
+    "PEP": {
+      "company": "PepsiCo",
+      "bucket": "Food & Beverage (Demand Destruction)",
+      "sub": "Snacks + sugary bev",
+      "side": "short",
+      "note": "Frito-Lay + beverage caloric volume exposure",
+      "raw_total": 385,
+      "normalized_100": 77.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 4,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Frito-Lay + sugary beverage caloric volume; broad exposure to the calorie-cut"
+        },
+        "setup_asymmetry": {
+          "score": 4,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 100,
+          "rationale": "short setup: valuation room 3/5 + rolling-over 4/5"
+        },
+        "valuation_room": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 22 \u2014 moderate room"
+        },
+        "momentum_inflection": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "RS3M 27 (weak=confirming)"
+        },
+        "fundamental_trend": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "rev +8% \u2014 moderate"
+        },
+        "liquidity_borrow": {
+          "score": 5,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 50,
+          "rationale": "Mega-cap, maximal liquidity"
+        }
+      },
+      "snapshot": {
+        "price": 143.29,
+        "market_cap": 195868950528,
+        "pe": 22.494505,
+        "ps": 2.0520797,
+        "side": "short",
+        "1y_pct": 6.11,
+        "3m_pct": -8.58,
+        "1m_pct": 0.8,
+        "dist_from_52w_high_pct": -16.44,
+        "rs_3m": 27,
+        "revenue_growth_yoy": 0.085
+      }
+    },
+    "HSY": {
+      "company": "Hershey",
+      "bucket": "Food & Beverage (Demand Destruction)",
+      "sub": "Confection",
+      "side": "short",
+      "note": "Purest sugar / impulse exposure in the short book",
+      "raw_total": 440,
+      "normalized_100": 88.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 5,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 125,
+          "rationale": "Purest sugar/impulse name in the book \u2014 nearly all revenue is discretionary confection"
+        },
+        "setup_asymmetry": {
+          "score": 4,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 100,
+          "rationale": "short setup: valuation room 4/5 + rolling-over 5/5"
+        },
+        "valuation_room": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 33 \u2014 full; good downside room"
+        },
+        "momentum_inflection": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "RS3M 9 (weak=confirming)"
+        },
+        "fundamental_trend": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "rev +11% \u2014 moderate"
+        },
+        "liquidity_borrow": {
+          "score": 5,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 50,
+          "rationale": "Large-cap, liquid, borrowable"
+        }
+      },
+      "snapshot": {
+        "price": 177.51,
+        "market_cap": 36006727680,
+        "pe": 33.055866,
+        "ps": 3.0027318,
+        "side": "short",
+        "1y_pct": 4.46,
+        "3m_pct": -14.65,
+        "1m_pct": -2.85,
+        "dist_from_52w_high_pct": -25.88,
+        "rs_3m": 9,
+        "revenue_growth_yoy": 0.106
+      }
+    },
+    "WST": {
+      "company": "West Pharmaceutical Services",
+      "bucket": "Injectable Supply (Stranded)",
+      "sub": "Injectable components",
+      "side": "short",
+      "note": "Glass syringe / auto-injector capex stranded by oral pivot",
+      "raw_total": 355,
+      "normalized_100": 71.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 4,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Glass syringe / auto-injector capex stranded by the oral pivot; the 'dead bottleneck' thesis"
+        },
+        "setup_asymmetry": {
+          "score": 4,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 100,
+          "rationale": "short setup: valuation room 5/5 + rolling-over 2/5"
+        },
+        "valuation_room": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E 48 \u2014 rich; maximum de-rate room"
+        },
+        "momentum_inflection": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS3M 91 (weak=confirming) + still near 52w high (full, rolling over)"
+        },
+        "fundamental_trend": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "rev +21% \u2014 strong growth fights the short"
+        },
+        "liquidity_borrow": {
+          "score": 4,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Large-cap but watch borrow as thesis gets crowded"
+        }
+      },
+      "snapshot": {
+        "price": 357.64,
+        "market_cap": 25266405376,
+        "pe": 47.685337,
+        "ps": 7.8442736,
+        "side": "short",
+        "1y_pct": 62.21,
+        "3m_pct": 39.24,
+        "1m_pct": 12.71,
+        "dist_from_52w_high_pct": -2.73,
+        "rs_3m": 91,
+        "revenue_growth_yoy": 0.21
+      }
+    },
+    "STVN": {
+      "company": "Stevanato Group",
+      "bucket": "Injectable Supply (Stranded)",
+      "sub": "Injectable glass + assembly",
+      "side": "short",
+      "note": "Same stranded-capex thesis; ADR, watch borrow/liquidity",
+      "raw_total": 295,
+      "normalized_100": 59.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 4,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Same stranded-capex thesis, purer play; ADR so watch borrow depth"
+        },
+        "setup_asymmetry": {
+          "score": 2,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 50,
+          "rationale": "short setup: valuation room 4/5 + rolling-over 1/5"
+        },
+        "valuation_room": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 33 \u2014 full; good downside room"
+        },
+        "momentum_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS3M 100 (weak=confirming)"
+        },
+        "fundamental_trend": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "rev +7% \u2014 slow"
+        },
+        "liquidity_borrow": {
+          "score": 3,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "ADR, smaller float \u2014 borrow/liquidity caution"
+        }
+      },
+      "snapshot": {
+        "price": 19.28,
+        "market_cap": 5263511040,
+        "pe": 33.241383,
+        "ps": 4.3743753,
+        "side": "short",
+        "1y_pct": -21.4,
+        "3m_pct": 39.81,
+        "1m_pct": 4.16,
+        "dist_from_52w_high_pct": -31.14,
+        "rs_3m": 100,
+        "revenue_growth_yoy": 0.066
+      }
+    },
+    "CAVA": {
+      "company": "Cava Group",
+      "bucket": "Beneficiary",
+      "sub": "Health-forward QSR",
+      "side": "long",
+      "note": "Health-conscious spend-shift beneficiary",
+      "raw_total": 220,
+      "normalized_100": 44.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 3,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Health-forward QSR beneficiary of spend shift; indirect"
+        },
+        "setup_asymmetry": {
+          "score": 1,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "long setup: value 1/5 + momentum 1/5"
+        },
+        "valuation_room": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E 138 \u2014 extreme"
+        },
+        "momentum_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS3M 18 (strength)"
+        },
+        "fundamental_trend": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "rev +32% \u2014 high growth"
+        },
+        "liquidity_borrow": {
+          "score": 4,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Liquid mid-cap"
+        }
+      },
+      "snapshot": {
+        "price": 71.91,
+        "market_cap": 8375635456,
+        "pe": 138.28847,
+        "ps": 6.5123887,
+        "side": "long",
+        "1y_pct": -17.88,
+        "3m_pct": -12.44,
+        "1m_pct": 0.22,
+        "dist_from_52w_high_pct": -27.21,
+        "rs_3m": 18,
+        "revenue_growth_yoy": 0.321
+      }
+    },
+    "LULU": {
+      "company": "Lululemon",
+      "bucket": "Beneficiary",
+      "sub": "Active lifestyle apparel",
+      "side": "long",
+      "note": "Discretionary lifestyle beneficiary; diffuse exposure",
+      "raw_total": 285,
+      "normalized_100": 57.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 2,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 50,
+          "rationale": "Lifestyle beneficiary but very diffuse \u2014 weakest thesis link in the book"
+        },
+        "setup_asymmetry": {
+          "score": 3,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 75,
+          "rationale": "long setup: value 5/5 + momentum 1/5"
+        },
+        "valuation_room": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E 9 \u2014 attractive"
+        },
+        "momentum_inflection": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "RS3M 0 (strength)"
+        },
+        "fundamental_trend": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "rev +4% \u2014 sluggish"
+        },
+        "liquidity_borrow": {
+          "score": 5,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 50,
+          "rationale": "Large-cap, liquid"
+        }
+      },
+      "snapshot": {
+        "price": 115.64,
+        "market_cap": 13131375616,
+        "pe": 9.363563,
+        "ps": 1.1720735,
+        "side": "long",
+        "1y_pct": -51.52,
+        "3m_pct": -25.96,
+        "1m_pct": -7.43,
+        "dist_from_52w_high_pct": -53.18,
+        "rs_3m": 0,
+        "revenue_growth_yoy": 0.043
+      }
+    },
+    "CELH": {
+      "company": "Celsius Holdings",
+      "bucket": "Beneficiary",
+      "sub": "Functional / zero-sugar bev",
+      "side": "long",
+      "note": "Substitution winner vs sugary beverage",
+      "raw_total": 275,
+      "normalized_100": 55.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 3,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Zero-sugar functional bev \u2014 substitution winner vs sugary drinks"
+        },
+        "setup_asymmetry": {
+          "score": 2,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 50,
+          "rationale": "long setup: value 2/5 + momentum 2/5"
+        },
+        "valuation_room": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 77 \u2014 expensive"
+        },
+        "momentum_inflection": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS3M 36 (strength)"
+        },
+        "fundamental_trend": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "rev +138% \u2014 high growth"
+        },
+        "liquidity_borrow": {
+          "score": 4,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Liquid mid-cap"
+        }
+      },
+      "snapshot": {
+        "price": 33.04,
+        "market_cap": 8446357504,
+        "pe": 76.83721,
+        "ps": 2.8452249,
+        "side": "long",
+        "1y_pct": -27.53,
+        "3m_pct": -8.55,
+        "1m_pct": 19.06,
+        "dist_from_52w_high_pct": -50.49,
+        "rs_3m": 36,
+        "revenue_growth_yoy": 1.377
+      }
+    },
+    "TMO": {
+      "company": "Thermo Fisher",
+      "bucket": "API / CDMO (Long)",
+      "sub": "Small-molecule solid-dose API (Catalent integ.)",
+      "side": "long",
+      "note": "US CDMO layer that scales the oral pill; diluted large-cap",
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "thesis_conviction": {
+          "score": 3,
+          "weight": 25,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Small-molecule solid-dose API/CDMO layer that scales the oral pill; diluted large-cap"
+        },
+        "setup_asymmetry": {
+          "score": 4,
+          "weight": 25,
+          "type": "mixed",
+          "contribution": 100,
+          "rationale": "long setup: value 4/5 + momentum 4/5"
+        },
+        "valuation_room": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 28 \u2014 reasonable"
+        },
+        "momentum_inflection": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "RS3M 73 (strength)"
+        },
+        "fundamental_trend": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "rev +6% \u2014 moderate"
+        },
+        "liquidity_borrow": {
+          "score": 5,
+          "weight": 10,
+          "type": "judgment",
+          "contribution": 50,
+          "rationale": "Mega-cap, maximal liquidity"
+        }
+      },
+      "snapshot": {
+        "price": 517.6,
+        "market_cap": 192351272960,
+        "pe": 28.408342,
+        "ps": 4.2558417,
+        "side": "long",
+        "1y_pct": 21.45,
+        "3m_pct": 6.02,
+        "1m_pct": 7.38,
+        "dist_from_52w_high_pct": -19.63,
+        "rs_3m": 73,
+        "revenue_growth_yoy": 0.062
+      }
+    }
+  }
+}

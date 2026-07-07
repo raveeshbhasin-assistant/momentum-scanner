@@ -3,10 +3,10 @@
   "theme_display_name": "GLP-1 Mass Adoption",
   "theme_status": "Active",
   "theme_locked_at": "2026-07-06",
-  "tracker_initialized_at": "2026-07-06",
-  "last_reviewed_at": "2026-07-06",
+  "tracker_initialized_at": "2026-07-07",
+  "last_reviewed_at": "2026-07-07",
   "structure": "long_short",
-  "plain_summary": "Oral small-molecule GLP-1 (Foundayo/orforglipron, FDA-approved Apr 2026) turns weight-loss from a supply-constrained niche into a mass-market behavioral shift. The mispriced trade is not the drug makers (LLY/NVO avoided — zero margin of safety, drug-pricing risk) but SHORTING the downstream demand-destruction losers: packaged food/snacking (MDLZ, PEP, HSY), legacy diabetes/sleep med-tech (RMD, DXCM, MDT), and the stranded injectable supply chain (WST, STVN). Long side is small: lifestyle beneficiaries (CAVA, LULU, CELH) and US small-molecule solid-dose API (TMO). Strict US-listed liquidity only — short borrow costs paramount; European CDMOs abandoned. Central risk is 'thesis right, LLY captures all value / market reads food volume drop as macro weakness not structural.'",
+  "plain_summary": "Oral small-molecule GLP-1 (Foundayo/orforglipron, FDA-approved Apr 2026) turns weight-loss from a supply-constrained niche into a mass-market behavioral shift. The mispriced trade is not the drug makers (LLY/NVO avoided \u2014 zero margin of safety, drug-pricing risk) but SHORTING the downstream demand-destruction losers: packaged food/snacking (MDLZ, PEP, HSY), legacy diabetes/sleep med-tech (RMD, DXCM, MDT), and the stranded injectable supply chain (WST, STVN). Long side is small: lifestyle beneficiaries (CAVA, LULU, CELH) and US small-molecule solid-dose API (TMO). Strict US-listed liquidity only \u2014 short borrow costs paramount; European CDMOs abandoned. Central risk is 'thesis right, LLY captures all value / market reads food volume drop as macro weakness not structural.'",
   "benchmarks_at_init": {
     "spy_at_theme_lock": null,
     "xlv_at_theme_lock": 163.63,
@@ -14,5 +14,110 @@
     "lly_at_theme_lock": 1213.91,
     "rmd_at_theme_lock": 209.63
   },
-  "holdings": []
+  "holdings": [
+    {
+      "ticker": "HSY",
+      "company": "Hershey",
+      "bucket": "Food & Beverage (Demand Destruction)",
+      "side": "short",
+      "sleeve": "Short (demand destruction)",
+      "date_added": "2026-07-07",
+      "entry_price": 177.51,
+      "entry_price_asof": "2026-07-07",
+      "scoring_total": 88.0,
+      "scoring_rationale": "Purest sugar/impulse name in the book \u2014 nearly all revenue is discretionary confection | Setup: short setup: valuation room 4/5 + rolling-over 5/5",
+      "conviction": 5,
+      "thesis_status": "Intact",
+      "flags": [],
+      "event_log": []
+    },
+    {
+      "ticker": "PEP",
+      "company": "PepsiCo",
+      "bucket": "Food & Beverage (Demand Destruction)",
+      "side": "short",
+      "sleeve": "Short (demand destruction)",
+      "date_added": "2026-07-07",
+      "entry_price": 143.29,
+      "entry_price_asof": "2026-07-07",
+      "scoring_total": 77.0,
+      "scoring_rationale": "Frito-Lay + sugary beverage caloric volume; broad exposure to the calorie-cut | Setup: short setup: valuation room 3/5 + rolling-over 4/5",
+      "conviction": 4,
+      "thesis_status": "Intact",
+      "flags": [],
+      "event_log": []
+    },
+    {
+      "ticker": "TMO",
+      "company": "Thermo Fisher",
+      "bucket": "API / CDMO (Long)",
+      "side": "long",
+      "sleeve": "Long (beneficiary)",
+      "date_added": "2026-07-07",
+      "entry_price": 517.6,
+      "entry_price_asof": "2026-07-07",
+      "scoring_total": 75.0,
+      "scoring_rationale": "Small-molecule solid-dose API/CDMO layer that scales the oral pill; diluted large-cap | Setup: long setup: value 4/5 + momentum 4/5",
+      "conviction": 3,
+      "thesis_status": "Intact",
+      "flags": [],
+      "event_log": []
+    },
+    {
+      "ticker": "MDT",
+      "company": "Medtronic",
+      "bucket": "Med-Tech (Demand Destruction)",
+      "side": "short",
+      "sleeve": "Short (demand destruction)",
+      "date_added": "2026-07-07",
+      "entry_price": 83.06,
+      "entry_price_asof": "2026-07-07",
+      "scoring_total": 72.0,
+      "scoring_rationale": "Bariatric + ortho exposure real but diluted across a mega-cap med-tech portfolio | Setup: short setup: valuation room 3/5 + rolling-over 4/5",
+      "conviction": 3,
+      "thesis_status": "Intact",
+      "flags": [],
+      "event_log": []
+    },
+    {
+      "ticker": "WST",
+      "company": "West Pharmaceutical Services",
+      "bucket": "Injectable Supply (Stranded)",
+      "side": "short",
+      "sleeve": "Short (demand destruction)",
+      "date_added": "2026-07-07",
+      "entry_price": 357.64,
+      "entry_price_asof": "2026-07-07",
+      "scoring_total": 71.0,
+      "scoring_rationale": "Glass syringe / auto-injector capex stranded by the oral pivot; the 'dead bottleneck' thesis | Setup: short setup: valuation room 5/5 + rolling-over 2/5",
+      "conviction": 4,
+      "thesis_status": "Intact",
+      "flags": [
+        "short_borrow_watch"
+      ],
+      "event_log": []
+    }
+  ],
+  "rubric_version": "v1-sideaware",
+  "watch_line": [
+    {
+      "ticker": "MDLZ",
+      "company": "Mondelez",
+      "score": 69.0,
+      "side": "short",
+      "note": "Next-in-line; promote on confirmation"
+    },
+    {
+      "ticker": "DXCM",
+      "company": "Dexcom",
+      "score": 67.0,
+      "side": "short",
+      "note": "Next-in-line; promote on confirmation"
+    }
+  ],
+  "sleeve_distribution": {
+    "short": 4,
+    "long": 1
+  },
+  "notes": "Top 5 promoted from side-aware scoring v1 (2026-07-06 lock). Short-weighted: 4 shorts + 1 long (TMO). Entry prices are yfinance closes as of 2026-07-07. FMP-keyed refresh will refine fundamentals + capital-structure sub-scores."
 }
