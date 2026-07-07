@@ -180,6 +180,31 @@ UNIVERSES: dict[str, dict[str, dict[str, Any]]] = {
         "LDOS":  {"company": "Leidos Holdings",       "bucket": "Software / C2",      "sub": "Largest defense IT contractor", "specificity": 3, "note": "Diluted but high quality; cross-theme with Space"},
         "BAH":   {"company": "Booz Allen Hamilton",   "bucket": "Software / C2",      "sub": "Government consulting + mission support", "specificity": 3, "note": "Cross-theme with Space; cleanest BS of the three IT names"},
     },
+    "glp1": {
+        # Long/Short theme (short-weighted). `side` = short (demand destruction / stranded)
+        # or long (beneficiary). Fetching only reads ticker keys; `side` is an analyst overlay.
+        # LLY/NVO deliberately EXCLUDED from universe — benchmark reference only, never held.
+
+        # Bucket 1: Demand Destruction — Med-Tech (HIGH PRIORITY — SHORT)
+        "RMD":  {"company": "ResMed",            "bucket": "Med-Tech (Demand Destruction)", "sub": "CPAP / sleep apnea",        "side": "short", "specificity": 4, "note": "Weight loss reduces OSA severity → device demand; first-line displacement bet"},
+        "DXCM": {"company": "Dexcom",            "bucket": "Med-Tech (Demand Destruction)", "sub": "CGM / diabetes management", "side": "short", "specificity": 4, "note": "Fewer progressing diabetics shrinks the CGM funnel"},
+        "MDT":  {"company": "Medtronic",         "bucket": "Med-Tech (Demand Destruction)", "sub": "Bariatric + orthopedic",    "side": "short", "specificity": 3, "note": "Diluted mega-cap; bariatric + weight-driven ortho volume decline"},
+
+        # Bucket 2: Demand Destruction — Packaged Food & Beverage (HIGH PRIORITY — SHORT)
+        "MDLZ": {"company": "Mondelez",          "bucket": "Food & Beverage (Demand Destruction)", "sub": "Snacking / confection",  "side": "short", "specificity": 4, "note": "Impulse snacking core to volume; craving-modulation hit"},
+        "PEP":  {"company": "PepsiCo",           "bucket": "Food & Beverage (Demand Destruction)", "sub": "Snacks + sugary bev",    "side": "short", "specificity": 4, "note": "Frito-Lay + beverage caloric volume exposure"},
+        "HSY":  {"company": "Hershey",           "bucket": "Food & Beverage (Demand Destruction)", "sub": "Confection",             "side": "short", "specificity": 5, "note": "Purest sugar / impulse exposure in the short book"},
+
+        # Bucket 3: The Dead Bottleneck (MEDIUM PRIORITY — SHORT / AVOID)
+        "WST":  {"company": "West Pharmaceutical Services", "bucket": "Injectable Supply (Stranded)", "sub": "Injectable components",     "side": "short", "specificity": 4, "note": "Glass syringe / auto-injector capex stranded by oral pivot"},
+        "STVN": {"company": "Stevanato Group",   "bucket": "Injectable Supply (Stranded)", "sub": "Injectable glass + assembly", "side": "short", "specificity": 4, "note": "Same stranded-capex thesis; ADR, watch borrow/liquidity"},
+
+        # Bucket 4: Downstream Beneficiaries (MEDIUM PRIORITY — LONG)
+        "CAVA": {"company": "Cava Group",        "bucket": "Beneficiary",  "sub": "Health-forward QSR",           "side": "long",  "specificity": 3, "note": "Health-conscious spend-shift beneficiary"},
+        "LULU": {"company": "Lululemon",         "bucket": "Beneficiary",  "sub": "Active lifestyle apparel",     "side": "long",  "specificity": 2, "note": "Discretionary lifestyle beneficiary; diffuse exposure"},
+        "CELH": {"company": "Celsius Holdings",  "bucket": "Beneficiary",  "sub": "Functional / zero-sugar bev",  "side": "long",  "specificity": 3, "note": "Substitution winner vs sugary beverage"},
+        "TMO":  {"company": "Thermo Fisher",     "bucket": "API / CDMO (Long)", "sub": "Small-molecule solid-dose API (Catalent integ.)", "side": "long", "specificity": 3, "note": "US CDMO layer that scales the oral pill; diluted large-cap"},
+    },
 }
 
 # Cross-theme tickers (LHX, MRCY, BAESY, NOC, KTOS, CACI, BAH, LDOS) intentionally appear in
@@ -191,7 +216,7 @@ UNIVERSES: dict[str, dict[str, dict[str, Any]]] = {
 
 
 # Themes whose data this script refreshes. Theme dir must exist under themes/.
-ACTIVE_THEMES = ["ai_data_center", "space_economy", "modern_defense", "robotics"]
+ACTIVE_THEMES = ["ai_data_center", "space_economy", "modern_defense", "robotics", "glp1"]
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -760,7 +785,7 @@ def _render_markdown(result: dict) -> str:
 
 # Index tickers the trackers reference in their `benchmarks_at_init` blocks.
 # Add new ones here when a new theme locks against a new benchmark.
-BENCHMARK_TICKERS = ["SPY", "ITA", "XLU", "SMH", "LMT", "BOTZ"]
+BENCHMARK_TICKERS = ["SPY", "ITA", "XLU", "SMH", "LMT", "BOTZ", "XLV", "XLP", "LLY"]
 
 
 def refresh_benchmarks() -> dict:

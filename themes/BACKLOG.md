@@ -24,9 +24,8 @@ Active and queued themes for the long-term growth research workflow. Items move 
    - Tracker: CGNX(91) ROK(80) ZBRA(80) QCOM(80) ABBNY(75) | SYM(73) MOG.A(68). 80/20 structural/optionality. Keyence & Japanese names EXCLUDED — not Fidelity-holdable.
    - Anchors: SPY $738.52, BOTZ $36.24, CGNX ~$64.18. Vehicles-wrong ref: TSLA.
 
-5. **GLP-1 Second-Order Effects** — not the obesity drugs themselves, but the supply chain (CDMOs, peptide synthesis, delivery devices) and second-order impact on adjacent industries (food, beverage, surgical). The interesting bet is downstream of LLY/NVO, not on them.
-   - Status: **Promoted to Active 2026-06-13 — thesis elicitation in progress** (awaiting Raveesh's answers). Live tension: orforglipron oral approval (Apr 2026) threatens the peptide-CDMO bottleneck half.
-   - Folder: `glp1/` _(to scaffold once thesis direction locked)_
+5. **GLP-1** — Mass Adoption. ~~supply chain / CDMO bottleneck~~ **thesis pivoted at lock**: oral orforglipron kills the peptide-CDMO bet. Now a short-weighted Long/Short on downstream demand destruction (packaged food, legacy diabetes/sleep med-tech, stranded injectable supply) — downstream of LLY/NVO, never on them.
+   - Status: **LOCKED & Active 2026-07-06.** Folder `glp1/` scaffolded + wired into `refresh_data.py` ACTIVE_THEMES. See `themes/glp1/thesis.md`.
 
 ## On Deck (next)
 
