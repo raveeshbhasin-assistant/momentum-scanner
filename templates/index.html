@@ -734,6 +734,29 @@
             background: var(--bg-secondary); color: var(--text-muted);
             border: 1px solid var(--border);
         }
+        /* ── v3.8.0 tier badges on the live dashboard ─────────────
+           The live cards previously showed no STRONG/ELITE state at all —
+           the tier was only visible on /today. Rule 1 of the 52-day research
+           (trade only STRONG in the opening 30 min) needs to be visible at
+           decision time, so the tier badges now lead the badge row. */
+        .badge.strong-sig {
+            background: rgba(250,204,21,0.18); color: var(--gold, #facc15);
+            border: 1px solid rgba(250,204,21,0.55); font-weight: 800;
+        }
+        .badge.tradeable {
+            background: rgba(34,197,94,0.18); color: var(--green);
+            border: 1px solid rgba(34,197,94,0.6); font-weight: 800;
+            letter-spacing: 0.6px;
+        }
+        .badge.elite {
+            background: rgba(34,211,238,0.18); color: var(--cyan, #22d3ee);
+            border: 1px solid rgba(34,211,238,0.6); font-weight: 800;
+            letter-spacing: 0.6px;
+        }
+        .badge.extended {
+            background: rgba(239,68,68,0.14); color: var(--red);
+            border: 1px dashed rgba(239,68,68,0.5);
+        }
 
         /* ── Footer ────────────────────────────────────────────── */
         .footer {
@@ -955,6 +978,20 @@
                         <span class="signal-price">${{ "%.2f"|format(signal.price) }}</span>
                     </div>
                     <div class="signal-badges">
+                        {# ── v3.8.0 tier badges — lead the row so the tier is readable at a glance ── #}
+                        {% if signal.elite %}
+                            <span class="badge elite" title="ELITE (v3.7.5): STRONG + cat=D + RVOL 2–5 + RSI≥68 + 09:30–10:00 entry + stop≥0.9%. Live 6/01+: ~45% WR, +0.40R/pick.">ELITE</span>
+                        {% endif %}
+                        {% if signal.tradeable %}
+                            <span class="badge tradeable" title="TRADEABLE (v3.8.0): STRONG + entry 09:30–10:00 ET. 52-day live: +0.285 avgR vs −0.123 for STRONG after 10:00 and −0.029 for non-STRONG. The 'act on this' tier.">TRADEABLE</span>
+                        {% elif signal.strong_signal %}
+                            <span class="badge strong-sig" title="STRONG (v3.7.0) but outside the 09:30–10:00 tradeable window — 52-day live research: STRONG after 10:00 ran negative avgR. Watch, don't chase.">STRONG</span>
+                        {% endif %}
+                        {% if signal.anti_ext is defined and signal.anti_ext == false %}
+                            {% set _ext = signal.extension or {} %}
+                            <span class="badge extended" title="EXTENDED (v3.8.0 shadow): fired after {{ _ext.consec_green if _ext.consec_green is not none else '?' }} consecutive green bars at {{ '%.0f'|format((_ext.range_pos or 0) * 100) }}% of the running day range — historically the losing shape within STRONG (12.5–14.9% 2.5R-hit vs 27–35% for pullback entries). Prefer the less-extended pick.">EXTENDED ⚠</span>
+                        {% endif %}
+
                         {# v3.4.2: Sector Leadership — render every label incl. FOLLOWER / UNKNOWN #}
                         {% if signal.leadership and signal.leadership.label %}
                             {% set lead_label = signal.leadership.label %}

@@ -121,6 +121,18 @@ def add_signals_to_daily(signals: list[dict]):
                 "new_hod": False, "pm_high_hold": False,
                 "complete_bar_used": False,
             },
+            # v3.8.0: persist the tier flags + anti-extension shadow fields.
+            # NOTE this slim-record builder is the persistence bottleneck —
+            # any field not listed here never reaches data/{date}.json (the
+            # v3.7.0.1 strong_signal bug). `elite` was previously derived
+            # in-template only; persisting it makes future performance
+            # analysis exact instead of reconstructed from config constants.
+            "elite": bool(signal.get("elite", False)),
+            "tradeable": bool(signal.get("tradeable", False)),
+            "anti_ext": signal.get("anti_ext"),          # True/False/None (shadow)
+            "extension": signal.get("extension") or {
+                "consec_green": None, "range_pos": None, "above_orb_high": None,
+            },
         }
         existing.append(record)
 

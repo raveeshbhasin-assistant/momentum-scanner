@@ -135,8 +135,10 @@ def _elite_stop_pct(signal):
         return None
 
 
-def _elite_in_window(signal) -> bool:
-    """True if the signal timestamp (ET ISO) falls in the ELITE entry window."""
+def _signal_in_window(signal, start, end) -> bool:
+    """True if the signal timestamp (ET ISO) falls in [start, end] inclusive,
+    where start/end are (hour, minute) ET tuples. Shared by the ELITE and
+    TRADEABLE (v3.8.0) window gates."""
     ts = signal.get("timestamp") or ""
     hh = mm = None
     try:
@@ -151,9 +153,14 @@ def _elite_in_window(signal) -> bool:
         except (IndexError, ValueError):
             return False
     cur = hh * 60 + mm
-    lo = ELITE_WINDOW_START[0] * 60 + ELITE_WINDOW_START[1]
-    hi = ELITE_WINDOW_END[0] * 60 + ELITE_WINDOW_END[1]
+    lo = start[0] * 60 + start[1]
+    hi = end[0] * 60 + end[1]
     return lo <= cur <= hi
+
+
+def _elite_in_window(signal) -> bool:
+    """True if the signal timestamp falls in the ELITE entry window."""
+    return _signal_in_window(signal, ELITE_WINDOW_START, ELITE_WINDOW_END)
 
 
 def is_elite(signal) -> bool:
@@ -193,6 +200,74 @@ def is_elite(signal) -> bool:
     if stop_pct is None or stop_pct < ELITE_MIN_STOP_PCT:
         return False
     return True
+
+
+# ── TRADEABLE tier (v3.8.0) ────────────────────────────────────
+# The "should a human act on this pick at all" flag. Source: 52-day live
+# analysis (research_findings_live52d_elite_precision.md, 2026-07-06),
+# 4,399 truly-live first-appearance picks 2026-05-12 → 07-06:
+#   • non-STRONG picks:            avgR −0.029, totR −100.4  (n=3,458)
+#   • STRONG 09:30–10:00:          avgR +0.285, 25.8% 2.5R-hit (n=577)
+#   • STRONG 10:00–11:00:          avgR −0.123,  6.8% 2.5R-hit (n=221) ← actively bad
+# So TRADEABLE = STRONG AND entry inside [09:30, 10:00] ET (inclusive).
+# ELITE is a strict subset of TRADEABLE (same window, STRONG required).
+# This is a DISPLAY/NOTIFY tier, not an emission gate — non-tradeable
+# picks still emit (operator preference: see everything, act on the tier).
+TRADEABLE_ENABLED = True
+TRADEABLE_WINDOW_START = (9, 30)     # inclusive ET (hour, minute)
+TRADEABLE_WINDOW_END = (10, 0)       # inclusive ET
+
+
+def is_tradeable(signal) -> bool:
+    """SINGLE SOURCE OF TRUTH for the TRADEABLE flag (v3.8.0).
+    STRONG + entry inside the 09:30–10:00 ET window. All consumers
+    (scanner sort, templates via persisted signal['tradeable']) route here."""
+    if not TRADEABLE_ENABLED:
+        return False
+    if not bool(signal.get("strong_signal")):
+        return False
+    return _signal_in_window(signal, TRADEABLE_WINDOW_START, TRADEABLE_WINDOW_END)
+
+
+# ── Anti-extension shadow badge (v3.8.0) ───────────────────────
+# SHADOW ONLY — no gating, no scoring effect. Persisted per pick so the
+# dashboard can warn on extended entries and so ~4 weeks of live data can
+# confirm before any promotion to a gate.
+# Source: same 52-day analysis, bar-level features on 941 live STRONG picks
+# (verified look-ahead-safe by independent recomputation):
+#   • range_pos (position in running day range) 0.5–0.75: 34.9% 2.5R-hit,
+#     +0.55 avgR vs 0.9–1.0 (buying the running high): 14.9%, +0.06 avgR.
+#   • consec_green ≥ 3 at signal (within the 09:30–10:00 window):
+#     12.5% hit, −0.088 avgR vs ≤2: 26.7–33.3% hit, +0.30/+0.60 avgR.
+#   • Entries above the opening-range high: −0.06 avgR vs +0.39 inside.
+# CAVEAT (from adversarial verification): the residual effect inside the
+# proper catD+window control is modest (+1.3–6 hit-points); features were
+# selected from ~9 candidates on one regime window. Hence: shadow, not gate.
+ANTIEXT_MAX_CONSEC_GREEN = 2         # >2 green closed bars at signal = extended
+ANTIEXT_MAX_RANGE_POS = 0.9          # >0.9 of running day range = extended
+
+
+def is_anti_ext(signal):
+    """Tri-state anti-extension check (v3.8.0). Reads the look-ahead-safe
+    extension features the scanner attaches at signal['extension']:
+        consec_green  — consecutive green closed RTH bars ending at the
+                        STRONG reference bar
+        range_pos     — ref-bar close position in the running RTH day range
+                        (0=session low so far, 1=session high so far)
+    Returns True  (pullback-quality entry: cg ≤ 2 and range_pos ≤ 0.9),
+            False (extended entry — the historically losing shape),
+            None  (features unavailable — pre-v3.8.0 pick or compute failed)."""
+    ext = signal.get("extension") or {}
+    cg = ext.get("consec_green")
+    rp = ext.get("range_pos")
+    if cg is None and rp is None:
+        return None
+    if cg is not None and cg > ANTIEXT_MAX_CONSEC_GREEN:
+        return False
+    if rp is not None and rp > ANTIEXT_MAX_RANGE_POS:
+        return False
+    return True
+
 
 # ── Risk Parameters (Aggressive Profile) ─────────────────────
 ATR_STOP_MULTIPLIER = 2.0           # Stop-loss = Entry - (ATR × this)
@@ -343,6 +418,11 @@ PREMARKET_VOL_THRESHOLD = 2.0        # Min volume ratio to flag pre-market
 # Lunch dead zone: 0 wins in 21 decided trades (p < 0.001)
 DEAD_ZONE_BATCHES = {"11:31", "12:01", "12:02"}
 # Re-entries: 1 win in 32 decided trades (3.1% WR)
+# v3.8.0 re-confirmed on 52-day live data: appearance-2 picks ran
+# 10.8% 2.5R-hit / −0.009 avgR (n=343) — dead money. Keep suppressed.
+# Also confirmed: only 9.6% of stopped-out STRONG losers ever printed
+# their target later the same day — a stopped pick is a wrong selection,
+# not a mistimed entry, so no "wait for a better bar" logic is warranted.
 SUPPRESS_REENTRIES = True
 
 # ── Server ────────────────────────────────────────────────────

@@ -408,6 +408,92 @@ def compute_strong_signal(df: pd.DataFrame, now_ref=None) -> dict:
     return _evaluate_strong_on_bar(df_today, ref_pos)
 
 
+def compute_extension_features(df: pd.DataFrame, now_ref=None) -> dict:
+    """
+    v3.8.0: Look-ahead-safe "how extended is this entry" features, evaluated
+    on the SAME reference bar as compute_strong_signal (the most-recently-
+    closed RTH bar as of now_ref) so the two never diverge.
+
+    Returns (any field None when not computable):
+      consec_green   — consecutive green (close > open) RTH bars ending at
+                       the reference bar, inclusive. 0 if ref bar is red.
+      range_pos      — ref-bar close position inside the running RTH day
+                       range through the ref bar: 0 = session low so far,
+                       1 = session high so far.
+      above_orb_high — 1/0: ref close above the 09:30–09:45 opening-range
+                       high. None until the OR is closed (ref bar must be
+                       the 4th RTH bar or later) — no partial-OR peeking.
+
+    Source: 52-day live analysis (research_findings_live52d_elite_precision.md).
+    All three are SHADOW fields — persisted + displayed, never gating.
+    """
+    out = {"consec_green": None, "range_pos": None, "above_orb_high": None}
+    if df is None or df.empty or len(df) < 2:
+        return out
+    # Resolve now_ref exactly like compute_strong_signal
+    try:
+        if now_ref is None:
+            tz = df.index.tz if getattr(df.index, "tz", None) is not None else config.ET
+            now_ref = pd.Timestamp.now(tz=tz)
+        elif isinstance(now_ref, str):
+            now_ref = pd.Timestamp(now_ref)
+            if now_ref.tz is None:
+                now_ref = now_ref.tz_localize(config.ET)
+    except Exception:
+        return out
+    # Slice to the session, fall back to latest session present (same as STRONG)
+    try:
+        df_today = df[df.index.date == now_ref.date()]
+        if df_today.empty:
+            df_today = df[df.index.date == df.index[-1].date()]
+        if df_today.empty:
+            return out
+    except Exception:
+        return out
+    ref_pos = _most_recent_closed_rth_pos(df_today, now_ref)
+    if ref_pos is None:
+        return out
+    try:
+        ref_ts = df_today.index[ref_pos]
+        # RTH-only frame through the reference bar (matches the research
+        # feature definitions, which excluded pre-market bars).
+        idx = df_today.index
+        rth_mask = (
+            ((idx.hour > 9) | ((idx.hour == 9) & (idx.minute >= 30)))
+            & (idx.hour < 16)
+        )
+        rth = df_today[rth_mask]
+        rth_ref = rth.index.get_loc(ref_ts)  # ref bar is always RTH
+        rth_thru = rth.iloc[: rth_ref + 1]
+        ref_bar = rth.iloc[rth_ref]
+
+        # consec_green — walk back from the ref bar
+        cg = 0
+        for j in range(rth_ref, -1, -1):
+            b = rth.iloc[j]
+            if pd.notna(b.get("Close")) and pd.notna(b.get("Open")) and b["Close"] > b["Open"]:
+                cg += 1
+            else:
+                break
+        out["consec_green"] = cg
+
+        # range_pos — position in the running day range so far
+        hi = float(rth_thru["High"].max())
+        lo = float(rth_thru["Low"].min())
+        if hi > lo and pd.notna(ref_bar.get("Close")):
+            out["range_pos"] = round((float(ref_bar["Close"]) - lo) / (hi - lo), 3)
+
+        # above_orb_high — only once the 09:30–09:45 OR is fully closed,
+        # i.e. the ref bar is the 4th RTH bar or later.
+        if rth_ref >= 3:
+            orb_high = float(rth.iloc[:3]["High"].max())
+            if pd.notna(ref_bar.get("Close")):
+                out["above_orb_high"] = int(float(ref_bar["Close"]) > orb_high)
+    except Exception:
+        return out
+    return out
+
+
 def calculate_indicators(df: pd.DataFrame) -> pd.DataFrame:
     """
     Calculate all technical indicators on a DataFrame with OHLCV columns.
@@ -1056,24 +1142,44 @@ def run_scan(tickers: Optional[list[str]] = None,
                     "new_hod": False, "pm_high_hold": False,
                     "complete_bar_used": False,
                 }
+
+            # ── v3.8.0: anti-extension shadow features ──
+            # Same reference bar as STRONG. Persisted + badged, never gating.
+            # 52-day live research: extended entries (3+ green bars, top of
+            # running range) are the losing shape within STRONG.
+            try:
+                signal["extension"] = compute_extension_features(df)
+            except Exception as _e:
+                logger.debug(f"extension compute failed for {ticker}: {_e}")
+                signal["extension"] = {
+                    "consec_green": None, "range_pos": None, "above_orb_high": None,
+                }
+            signal["anti_ext"] = config.is_anti_ext(signal)
             signals.append(signal)
 
         except Exception as e:
             logger.warning(f"Error scanning {ticker}: {e}")
             continue
 
-    # Sort: ELITE first, then STRONG, then by composite score.
-    # v3.7.5: ELITE is now derived by the single source of truth
+    # Sort: ELITE first, then TRADEABLE, then STRONG, then by composite score.
+    # v3.7.5: ELITE is derived by the single source of truth
     # config.is_elite(signal) (STRONG + cat=D + rvol/rsi/window/stop gates).
-    # We PERSIST the boolean as signal["elite"] so notifier + templates read
-    # the flag instead of re-deriving it (kills rule-drift across sites).
+    # v3.8.0: TRADEABLE = config.is_tradeable (STRONG + 09:30–10:00 window);
+    # ELITE is a strict subset of TRADEABLE. Both booleans are PERSISTED on
+    # the signal so notifier + templates read the flag instead of re-deriving
+    # it (kills rule-drift across sites).
     for _s in signals:
         try:
             _s["elite"] = bool(config.is_elite(_s))
         except Exception:
             _s["elite"] = False
+        try:
+            _s["tradeable"] = bool(config.is_tradeable(_s))
+        except Exception:
+            _s["tradeable"] = False
     signals.sort(
         key=lambda x: (1 if x.get("elite") else 0,
+                       1 if x.get("tradeable") else 0,
                        1 if x.get("strong_signal") else 0,
                        x.get("composite_score", 0)),
         reverse=True,

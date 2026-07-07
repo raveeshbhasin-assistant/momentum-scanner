@@ -633,6 +633,16 @@ def _write_performance_log(picks: list[dict], date_str: str):
                 "new_hod": False, "pm_high_hold": False,
                 "complete_bar_used": False,
             },
+            # v3.8.0: thread the tier flags + anti-extension shadow fields
+            # from data/{date}.json into the perf entry (same pattern as the
+            # v3.7.0.18 strong_signal fix above — normalize_entry whitelists
+            # fields, so anything not threaded here never reaches
+            # performance_log.json or /api/performance/range, and the
+            # 4-week shadow evaluation would have nothing to read).
+            "elite": bool(p.get("elite", False)),
+            "tradeable": bool(p.get("tradeable", False)),
+            "anti_ext": p.get("anti_ext"),
+            "extension": p.get("extension"),
         }))
 
     upsert_day(date_str, entries)

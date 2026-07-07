@@ -388,12 +388,37 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.8.0 ───── -->
+        <div class="release current" id="v3-8-0">
+            <div class="release-header">
+                <span class="release-version">v3.8.0</span>
+                <span class="release-date">Released 2026-07-06</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>TRADEABLE tier + anti-extension shadow fields — the three live-verified trading rules, in code.</strong> A 52-day full-history analysis (5,830 picks; 4,399 truly-live first-appearance picks 2026-05-12 &rarr; 07-06; bar-level enrichment of all 941 live STRONG picks; every claim independently re-derived by adversarial verification — see <code>research_findings_live52d_elite_precision.md</code>) reduced to three operator rules: <em>(1)</em> only trade STRONG in the opening 30 minutes; <em>(2)</em> of those, prefer the pick that hasn't already run; <em>(3)</em> enter immediately, never re-enter a stopped name. This release encodes rule 1 as a first-class <strong>TRADEABLE</strong> tier and rule 2 as persisted <strong>anti-extension shadow fields</strong> + an <strong>EXTENDED ⚠</strong> warning badge; rule 3 was already live (<code>SUPPRESS_REENTRIES</code>) and is re-confirmed on live data (re-entries: 10.8% 2.5R-hit, &minus;0.009R, n=343; only 9.6% of stopped STRONG losers ever print target later the same day). Tagged: <span class="pill pill-added">added</span>.</div>
+            <div class="release-details">
+                <p><strong>Why:</strong> On truly-live data the entire system edge lives in one corner: STRONG picks 09:30&ndash;10:00 ran <strong>+0.285 avgR / 25.8% 2.5R-hit</strong> (n=577) while STRONG 10:00&ndash;11:00 ran <strong>&minus;0.123 avgR</strong> (n=221) and non-STRONG picks bled <strong>&minus;100R across 3,458 picks</strong>. Within STRONG, the winners are the <em>least-extended</em> entries: mid-range fires (0.5&ndash;0.75 of the running day range) hit 34.9% / +0.55R vs 14.9% / +0.06R for top-of-range; 3+ consecutive green bars at signal = 12.5% hit, &minus;0.09R. The composite score mechanically rewards extension, so the highest-scored pick is often the worst one on the board.</p>
+                <p><strong>What changed (additive — no emission gating, no scoring change):</strong></p>
+                <ul>
+                    <li><strong><code>config.is_tradeable(signal)</code> — single source of truth</strong> for TRADEABLE = STRONG AND entry inside [09:30, 10:00] ET inclusive. Constants <code>TRADEABLE_ENABLED</code> / <code>TRADEABLE_WINDOW_START</code> / <code>TRADEABLE_WINDOW_END</code>. ELITE is a strict subset of TRADEABLE. The shared window helper <code>_signal_in_window</code> now backs both the ELITE and TRADEABLE gates.</li>
+                    <li><strong><code>scanner.compute_extension_features(df)</code></strong> — look-ahead-safe features on the SAME reference bar as <code>compute_strong_signal</code> (most-recently-closed RTH bar): <code>consec_green</code> (green closed RTH bars ending at ref), <code>range_pos</code> (ref close position in the running RTH day range), <code>above_orb_high</code> (None until the 09:30&ndash;09:45 opening range is closed — no partial-OR peeking). Persisted per pick under <code>extension</code>.</li>
+                    <li><strong><code>config.is_anti_ext(signal)</code> — tri-state shadow flag</strong>: True (pullback-quality: cg &le; <code>ANTIEXT_MAX_CONSEC_GREEN</code>=2 and range_pos &le; <code>ANTIEXT_MAX_RANGE_POS</code>=0.9), False (extended — the losing shape), None (features unavailable). SHADOW ONLY: never gates, never scores; collect ~4 weeks of live data before any promotion (adversarial verification showed the residual effect inside the catD+window control is modest: +1.3&ndash;6 hit-points).</li>
+                    <li><strong>Persistence</strong>: <code>history.add_signals_to_daily</code> slim record now carries <code>elite</code> (previously derived-on-read only), <code>tradeable</code>, <code>anti_ext</code>, <code>extension</code> — so future performance analysis reads the lived flags instead of reconstructing them from config constants.</li>
+                    <li><strong>Live dashboard (<code>/</code>) finally shows tier state</strong> — the signal cards previously displayed no STRONG/ELITE badges at all. New leading badges: cyan <code>ELITE</code>, green <code>TRADEABLE</code>, gold <code>STRONG</code> (shown only when outside the tradeable window, captioned "watch, don't chase"), dashed-red <code>EXTENDED ⚠</code> with the consec-green / range-position values in the tooltip.</li>
+                    <li><strong><code>/today</code></strong>: green <code>TRADEABLE</code> pill + <code>EXTENDED ⚠</code> pill in the Tier cell, <code>data-tradeable</code> row attribute, and a <code>TRADEABLE only</code> filter chip — three-way mutually exclusive with STRONG-only / ELITE-only (toggle logic refactored to a single spec-driven loop).</li>
+                    <li><strong>Sort priority</strong> in <code>scanner.run_scan</code> is now <code>(elite, tradeable, strong, composite)</code> descending.</li>
+                    <li><strong>Tests</strong>: <code>tests/test_v38_tradeable.py</code> — 17 cases covering window boundaries, ELITE&sub;TRADEABLE, tri-state anti-ext, OR-close gating, pre-market exclusion from the running range, STRONG-reference-bar agreement, and slim-record persistence. Full suite: 33 passed.</li>
+                </ul>
+                <p><strong>Operator guidance (the three rules):</strong> act on <span style="color:var(--green);font-weight:700;">TRADEABLE</span> (and especially <span style="color:var(--cyan);font-weight:700;">ELITE</span>) picks only; between two simultaneous TRADEABLE picks take the one <em>without</em> the <span style="color:var(--red);font-weight:700;">EXTENDED ⚠</span> badge; enter immediately (winners resolve in a median 60 min with 0.34R median adverse) and never revisit a stopped-out name.</p>
+                <p><strong>Rollback:</strong> <code>TRADEABLE_ENABLED=False</code> hides the tier (badges/chips no-op via the persisted False); the anti-extension fields are inert data — no behaviour to roll back.</p>
+            </div>
+        </div>
+
         <!-- ───── v3.7.5 ───── -->
-        <div class="release current" id="v3-7-5">
+        <div class="release" id="v3-7-5">
             <div class="release-header">
                 <span class="release-version">v3.7.5</span>
                 <span class="release-date">Released 2026-07-06</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>ELITE retightened on truly-live data; the 75.8% WR headline was a backfill artifact and is retired.</strong> A full-history audit of <code>data/performance_log.json</code> (5,830 picks, 52 sessions, 2026-04-20 &rarr; 07-06) found the <code>strong_signal</code> field did not exist in the persisted record until 2026-05-12 &mdash; every pick before that had STRONG reconstructed retroactively via <code>/api/backfill_strong</code> + <code>strong_overrides.json</code>. The old "19-day diagnostic, 75.8% WR" was computed almost entirely on that backfilled, look-ahead-contaminated window. On truly-live data ELITE ran 41.9% WR and decayed to 36.5% / +0.07R in the last month. Tagged: <span class="pill pill-changed">changed</span> <span class="pill pill-removed">removed</span>.</div>
             <div class="release-details">

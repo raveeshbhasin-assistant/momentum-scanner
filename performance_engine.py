@@ -215,6 +215,17 @@ def normalize_entry(raw: dict) -> dict:
             "new_hod": False, "pm_high_hold": False,
             "complete_bar_used": False,
         },
+        # v3.8.0: carry the tier flags + anti-extension shadow fields into
+        # the perf log so /api/performance/range serves the LIVED flags —
+        # the 52-day analysis had to reconstruct `elite` from config
+        # constants because it was never persisted (same bug class as
+        # v3.7.0.18). None-safe: absent on pre-v3.8.0 rows.
+        "elite": bool(raw.get("elite", False)),
+        "tradeable": bool(raw.get("tradeable", False)),
+        "anti_ext": raw.get("anti_ext"),          # True/False/None (shadow)
+        "extension": raw.get("extension") or {
+            "consec_green": None, "range_pos": None, "above_orb_high": None,
+        },
     }
 
 
