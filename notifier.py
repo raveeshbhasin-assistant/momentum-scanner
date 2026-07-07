@@ -191,21 +191,20 @@ def _signal_category(s: Dict) -> str:
 
 def _is_elite(s: Dict) -> bool:
     """
-    v3.7.1: ELITE = STRONG + category == ELITE_REQUIRES_CATEGORY ("D")
-    + rvol >= ELITE_MIN_RVOL (2.0). Pure post-hoc derivation, identical
-    rule to the one in scanner.scan (sort priority) and the templates
-    (today.html, history.html, performance.html).
-    Honours config.ELITE_ENABLED for runtime kill-switch.
+    v3.7.5: ELITE is derived by config.is_elite (single source of truth):
+    STRONG + cat=D + rvol 2–5 + rsi≥68 + 09:30–10:00 window + stop≥0.9%.
+    scanner.scan persists the boolean as signal["elite"]; prefer that when
+    present, otherwise re-derive via config.is_elite so live-scan payloads
+    and historically-loaded rows both resolve correctly.
+    (The old cat=D + rvol≥2 "76% WR" rule was a backfill artifact — retired.)
     """
     if not getattr(config, "ELITE_ENABLED", True):
         return False
-    if not bool(s.get("strong_signal")):
-        return False
-    if _signal_category(s) != getattr(config, "ELITE_REQUIRES_CATEGORY", "D"):
-        return False
+    if "elite" in s:
+        return bool(s.get("elite"))
     try:
-        return float(s.get("rvol") or 0) >= float(getattr(config, "ELITE_MIN_RVOL", 2.0))
-    except (TypeError, ValueError):
+        return bool(config.is_elite(s))
+    except Exception:
         return False
 
 

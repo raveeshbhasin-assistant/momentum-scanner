@@ -331,7 +331,7 @@
                     <span class="ctrl-label">STRONG</span>
                     <span class="chip" data-strongonly="1" id="strongOnlyChip" style="border-color:rgba(250,204,21,0.55); color:var(--gold,#facc15);">STRONG only <span id="strongOnlyCount" style="font-family:var(--mono);font-size:10px;opacity:0.75;"></span></span>
                 </div>
-                <div class="ctrl-group" title="v3.7.1: ELITE = STRONG + category=D + RVOL≥2.0. 19-day diagnostic: 76% WR, +1.11% avg per pick, profitable on 16/17 days fired.">
+                <div class="ctrl-group" title="v3.7.5: ELITE = STRONG + cat=D + RVOL 2–5 + RSI≥68 + 09:30–10:00 entry + stop≥0.9%. Live 6/01+: ~45% WR, +0.40R/pick. Prior 76% WR headline was a backfill artifact — retired.">
                     <span class="ctrl-label">ELITE</span>
                     <span class="chip elite-chip" data-eliteonly="1" id="eliteOnlyChip">ELITE only <span id="eliteOnlyCount" style="font-family:var(--mono);font-size:10px;opacity:0.75;"></span></span>
                 </div>
@@ -443,13 +443,32 @@
         };
         const resultField = () => state.resultMode === "effective" ? "effective_result" : "result";
 
-        // v3.7.1: pure post-hoc derivation, mirrors templates/scanner/notifier.
+        // v3.7.5: mirrors config.is_elite. Prefer the server-persisted `elite`
+        // boolean when present; otherwise derive the full tightened rule from
+        // the row (STRONG + cat=D + RVOL 2–5 + RSI≥68 + 09:30–10:00 entry +
+        // stop≥0.9%). The old cat=D+RVOL≥2 "76% WR" rule was a backfill
+        // artifact and has been retired.
         function _isElite(p) {
-            if (!p || !p.strong_signal) return false;
+            if (!p) return false;
+            if (typeof p.elite === 'boolean') return p.elite;
+            if (!p.strong_signal) return false;
             if ((p.category || '').toUpperCase() !== 'D') return false;
             const r = parseFloat(p.rvol);
-            if (!isFinite(r)) return false;
-            return r >= 2.0;
+            if (!isFinite(r) || r < 2.0 || r >= 5.0) return false;
+            const rsi = parseFloat(p.rsi);
+            if (!isFinite(rsi) || rsi < 68) return false;
+            // entry window 09:30–10:00 ET from batch_time "HH:MM"
+            const bt = (p.batch_time || '').slice(0,5);
+            const hh = parseInt(bt.slice(0,2), 10), mm = parseInt(bt.slice(3,5), 10);
+            if (!isFinite(hh) || !isFinite(mm)) return false;
+            const cur = hh*60 + mm;
+            if (cur < 570 || cur > 600) return false;   // 09:30=570, 10:00=600
+            // stop distance % of entry ≥ 0.9
+            const entry = parseFloat(p.entry), stop = parseFloat(p.stop);
+            if (isFinite(entry) && isFinite(stop) && entry > 0) {
+                if (Math.abs(entry - stop) / entry * 100 < 0.9) return false;
+            }
+            return true;
         }
 
         // ── Setup controls ─────────────────────────────────────
@@ -1175,32 +1194,4 @@
             host.querySelectorAll("th[data-sort]").forEach(th => {
                 th.addEventListener("click", () => {
                     const k = th.dataset.sort;
-                    if (state.sort.key === k) state.sort.dir *= -1;
-                    else { state.sort.key = k; state.sort.dir = 1; }
-                    render();
-                });
-            });
-        }
-
-        function renderDiagnostics() {
-            const d = VIEW.diagnostics || {};
-            const bits = [];
-            if (d.stale_tickers && d.stale_tickers.length) {
-                bits.push(`<span class="diag-item"><strong>Stale ticker:</strong> ${d.stale_tickers.join(", ")} — scanner universe needs updating.</span>`);
-            }
-            if (d.unclassified_count) {
-                bits.push(`<span class="diag-item"><strong>${d.unclassified_count} unclassified</strong> picks on the log (early-session, before sector rotation settled).</span>`);
-            }
-            if (d.post_close_count) {
-                bits.push(`<span class="diag-item"><strong>${d.post_close_count} post-close</strong> signals excluded from stats.</span>`);
-            }
-            const el = document.getElementById("diagBanner");
-            if (bits.length === 0) { el.classList.add("hidden"); return; }
-            el.classList.remove("hidden");
-            el.innerHTML = bits.join("");
-        }
-
-        render();
-    </script>
-</body>
-</html>
+                    if (state.sort.key === k) state.sort

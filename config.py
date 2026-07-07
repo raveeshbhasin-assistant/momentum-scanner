@@ -53,29 +53,146 @@ WEAK_SIGNAL_FLOOR = 40              # v3.4.2: show down to this, label <MIN as w
 MAX_SIGNALS_PER_SCAN = 20           # v3.4.2: bumped from 10 to show weak tier too
 
 
-# ── v3.7.1: ELITE tier (subset of STRONG) ─────────────────────
-# ELITE is a precision-refinement layer on top of STRONG. A pick is
-# ELITE iff it is STRONG AND its post-hoc category is "D" (no sector
-# leadership classification — the idiosyncratic-breakout group) AND
-# its RVOL is at or above ELITE_MIN_RVOL.
+# ── ELITE tier (precision subset of STRONG) ───────────────────
+# ELITE is a precision-refinement layer on top of STRONG.
 #
-# 19-day diagnostic (2026-04-20 -> 2026-05-15, 188 STRONG picks):
-#   STRONG baseline: 59.0% WR, +0.74R, +0.67% per pick
-#   STRONG + cat=D:  72.0% WR, +1.30R, +1.03% per pick (TIGHT)
-#   ELITE rule:      75.8% WR, +1.42R, +1.11% per pick — profitable 16/17 days fired.
-# See diagnostics_STRONG_2026-05-16.md for the full tradeoff curve.
+# ⚠️ HISTORY / DATA-INTEGRITY NOTE (v3.7.5, 2026-07-06):
+# The old headline — "ELITE rule: 75.8% WR, +1.42R" from a "19-day
+# diagnostic 2026-04-20 → 2026-05-15" — was a BACKFILL ARTIFACT and has
+# been retired. The `strong_signal` field did not exist in the persisted
+# record until 2026-05-12; every pick before that had strong_signal
+# reconstructed retroactively via /api/backfill_strong + strong_overrides.
+# The 75.8% diagnostic was computed almost entirely on that backfilled
+# (look-ahead-contaminated) window, not on lived signals.
 #
-# Derived post-hoc by every consumer using identical logic:
-#   • scanner.scan       — sort priority (ELITE picks float to top)
-#   • notifier._is_elite — subject prefix + email row styling
-#   • templates/today.html, history.html, performance.html — badge + filter chips
-# No new field is persisted on the pick payload — every consumer derives
-# the flag on read from strong_signal + leadership.label + rvol (three
-# fields already stored on every pick row since v3.7.0). Set
-# ELITE_ENABLED=False to short-circuit every site.
+# TRULY-LIVE ELITE performance (strong_signal logged, 2026-05-12 → 07-06,
+# 408 picks, first-appearance, ex post-close):
+#   5/12–5/22 (early live):  50.6% WR, +0.43R/pick
+#   5/26–6/12 (mid):         43.0% WR, +0.27R/pick
+#   6/15–7/06 (last month):  36.5% WR, +0.07R/pick   ← decayed to break-even
+# The old cat=D + rvol≥2 rule barely separates from plain STRONG live.
+#
+# v3.7.5 TIGHTENED ELITE — precision-over-recall. On 6/01+ live data the
+# stack below lifts ELITE from 38.6% → ~45% WR and R/pick +0.12 → +0.40,
+# keeping ~1/3 of picks; the discarded 2/3 were net-negative on R. Rule:
+#   STRONG  AND  category == "D"
+#   AND  ELITE_MIN_RVOL <= rvol < ELITE_MAX_RVOL        (2.0–5.0; 5–6 band = 7% WR)
+#   AND  rsi >= ELITE_MIN_RSI                           (≥68; 60–70 band is dead)
+#   AND  entry inside [ELITE_WINDOW_START, ELITE_WINDOW_END] ET (09:30–10:00)
+#   AND  stop_distance_pct >= ELITE_MIN_STOP_PCT        (≥0.9%; tight/quiet = noise-stopped)
+#
+# Every consumer derives the flag through config.is_elite(signal) — the
+# single source of truth. scanner.scan ALSO persists it as signal["elite"]
+# so templates/notifier read the boolean instead of re-deriving it.
+# Set ELITE_ENABLED=False to short-circuit every site.
 ELITE_ENABLED = True
 ELITE_REQUIRES_CATEGORY = "D"
 ELITE_MIN_RVOL = 2.0
+ELITE_MAX_RVOL = 5.0                 # v3.7.5: 5–6 RVOL band collapsed to 7% WR (blow-off/exhaustion)
+ELITE_MIN_RSI = 68                   # v3.7.5: RSI≥68 → 43.5% WR vs 36% for 60–70 band
+ELITE_MIN_STOP_PCT = 0.9             # v3.7.5: stop-distance < ~0.9% of entry → 17–30% WR (dead range)
+ELITE_WINDOW_START = (9, 30)         # v3.7.5: inclusive ET (hour, minute)
+ELITE_WINDOW_END = (10, 0)           # v3.7.5: inclusive ET; 10:00–11:00 slot = 12.5% WR
+# Master switch: apply the v3.7.5 tightening. Set False to fall back to the
+# legacy cat=D + rvol≥2 ELITE rule (still ex-75.8%-claim).
+ELITE_TIGHTEN_V375 = True
+
+
+def _elite_category(signal) -> str:
+    """Post-hoc category from leadership label (matches notifier._signal_category).
+    'D' = no sector-leadership classification (idiosyncratic breakout group)."""
+    lbl = ((signal.get("leadership") or {}).get("label") or "").upper()
+    if lbl in ("LEADER", "FOLLOWER", "LAGGARD", "SOLO_MOVER"):
+        return {"LEADER": "A", "FOLLOWER": "B", "LAGGARD": "C", "SOLO_MOVER": "C"}.get(lbl, "D")
+    return "D"
+
+
+def _elite_rsi(signal):
+    """RSI lives at signal['indicators']['rsi']; fall back to top-level 'rsi'."""
+    v = (signal.get("indicators") or {}).get("rsi")
+    if v is None:
+        v = signal.get("rsi")
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _elite_stop_pct(signal):
+    """Stop distance as % of entry = risk_pct on the trade levels dict."""
+    trade = signal.get("trade") or {}
+    v = trade.get("risk_pct")
+    if v is None:
+        try:
+            entry = float(trade.get("entry"))
+            stop = float(trade.get("stop_loss"))
+            v = abs(entry - stop) / entry * 100 if entry else None
+        except (TypeError, ValueError, ZeroDivisionError):
+            v = None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _elite_in_window(signal) -> bool:
+    """True if the signal timestamp (ET ISO) falls in the ELITE entry window."""
+    ts = signal.get("timestamp") or ""
+    hh = mm = None
+    try:
+        # ISO like '2026-07-06T09:35:00-04:00' — grab HH:MM after the 'T'
+        t = ts.split("T", 1)[1]
+        hh, mm = int(t[0:2]), int(t[3:5])
+    except (IndexError, ValueError):
+        # Fall back to batch_time 'HH:MM' if present
+        bt = signal.get("batch_time") or ""
+        try:
+            hh, mm = int(bt[0:2]), int(bt[3:5])
+        except (IndexError, ValueError):
+            return False
+    cur = hh * 60 + mm
+    lo = ELITE_WINDOW_START[0] * 60 + ELITE_WINDOW_START[1]
+    hi = ELITE_WINDOW_END[0] * 60 + ELITE_WINDOW_END[1]
+    return lo <= cur <= hi
+
+
+def is_elite(signal) -> bool:
+    """SINGLE SOURCE OF TRUTH for the ELITE flag. All consumers (scanner sort,
+    notifier styling, templates via persisted signal['elite']) route here.
+
+    Legacy base rule: STRONG + category=='D' + rvol >= ELITE_MIN_RVOL.
+    v3.7.5 (ELITE_TIGHTEN_V375): additionally require rvol < ELITE_MAX_RVOL,
+    rsi >= ELITE_MIN_RSI, entry in the 09:30–10:00 window, and
+    stop_distance_pct >= ELITE_MIN_STOP_PCT.
+    """
+    if not ELITE_ENABLED:
+        return False
+    if not bool(signal.get("strong_signal")):
+        return False
+    if _elite_category(signal) != ELITE_REQUIRES_CATEGORY:
+        return False
+    try:
+        rvol = float(signal.get("rvol") or 0)
+    except (TypeError, ValueError):
+        return False
+    if rvol < ELITE_MIN_RVOL:
+        return False
+
+    if not ELITE_TIGHTEN_V375:
+        return True
+
+    # ── v3.7.5 precision gates ──
+    if rvol >= ELITE_MAX_RVOL:
+        return False
+    rsi = _elite_rsi(signal)
+    if rsi is None or rsi < ELITE_MIN_RSI:
+        return False
+    if not _elite_in_window(signal):
+        return False
+    stop_pct = _elite_stop_pct(signal)
+    if stop_pct is None or stop_pct < ELITE_MIN_STOP_PCT:
+        return False
+    return True
 
 # ── Risk Parameters (Aggressive Profile) ─────────────────────
 ATR_STOP_MULTIPLIER = 2.0           # Stop-loss = Entry - (ATR × this)
@@ -145,89 +262,4 @@ HIGH_BETA_EXTENDED = [
 # v3.7.0: Mid-cap expansion — 80 high-liquidity names that scanner historically
 # missed but which produced clean 2.5R moves in the 13-day research window
 # (Apr 22 – May 8 2026). Ranked by 30-day average dollar-volume; range
-# $210M–$2.5B/day ADV. Median price ~$105.
-# Source: research/midcap_top80.json
-MIDCAP_EXTENDED = [
-    'ASML', 'VRT', 'RKLB', 'BE', 'BSX', 'TER', 'SLB', 'SATS',
-    'CEG', 'DVN', 'PYPL', 'MPWR', 'TJX', 'HAL', 'ON', 'FANG',
-    'WDAY', 'MCHP', 'VST', 'PWR', 'BKR', 'PL', 'CRH', 'HWM',
-    'EQT', 'FTNT', 'TEAM', 'EBAY', 'HOLX', 'ULTA', 'URI', 'DOCN',
-    'TTD', 'CFLT', 'DHI', 'PCG', 'EW', 'FN', 'STM', 'ZS',
-    'EXC', 'APA', 'FSLR', 'XYZ', 'SMR', 'INSM', 'ETR', 'HUBS',
-    'VMC', 'MRNA', 'CTRA', 'FIVE', 'LEN', 'ENTG', 'OKTA', 'PINS',
-    'IDXX', 'MTZ', 'WAT', 'NVT', 'MLM', 'AFRM', 'DT', 'EME',
-    'HUBB', 'BBY', 'AVAV', 'ROKU', 'WSM', 'W', 'PHM', 'AR',
-    'DKS', 'OVV', 'TLN', 'BURL', 'DOCU', 'LII', 'ENPH', 'CHWY',
-]
-
-# Full scan universe = core + extended + midcap (deduped at runtime)
-def get_full_universe() -> list[str]:
-    """Return deduplicated full scan universe."""
-    seen = set()
-    result = []
-    for t in SP500_LIQUID + HIGH_BETA_EXTENDED + MIDCAP_EXTENDED:
-        if t not in seen:
-            result.append(t)
-            seen.add(t)
-    return result
-
-# ── Sector Rotation Settings ────────────────────────────────
-SECTOR_TOP_N = 3                     # How many top sectors to prioritize
-SECTOR_BOOST_POINTS = 8              # Score boost for tickers in hot sectors
-
-# ── Sector Leadership (v3.3) ────────────────────────────────
-# Classify ticker vs its sector vs SPY:
-#   LEADER:     ticker% > sector% > SPY%   → +10
-#   SOLO_MOVER: ticker% > SPY% but sector < SPY (counter-trend) → 0 (tightened v3.3.1)
-#   FOLLOWER:   ticker% > SPY% but below sector → 0
-#   LAGGARD:    ticker% < sector% → -10
-# Score adjustment applied ONLY when LEADER_FILTER_MODE == "score".
-# In "moderate" mode (v3.3.2 default) leadership becomes a HARD GATE:
-# only LEADER and SOLO_MOVER are admitted; score_adjustment is skipped.
-SECTOR_LEADER_BOOST = 10
-SECTOR_SOLO_BOOST = 0
-SECTOR_LAGGARD_PENALTY = -10
-
-# v3.3.2 — Leadership as hard filter
-# 20-day backtest (Mar 23 → Apr 17, 2026) showed the +10 LEADER boost
-# was letting marginal-technical leaders through the min-score gate
-# during ELEVATED/HIGH VIX regimes, where they bled ~$16k. Switching
-# LEADER + SOLO_MOVER to a hard filter tightens that leak:
-#   20d "score" mode:    337 trades / 18.9% WR / $15,184 / PF 1.09
-#   20d "moderate" mode: 126 trades / 26.2% WR / $15,086 / PF 1.24
-# Same P&L, half the churn, much cleaner regime interaction.
-#
-# Options:
-#   "display"    — (v3.4.2 default) no hard gate; all labels emit as signals,
-#                   UI groups by leader_tier (primary/secondary/weak).
-#                   Rationale: 0-signal days were too common because the
-#                   gate assumed backtest-quality data; user prefers to
-#                   see everything and decide manually on Fidelity.
-#   "moderate"   — v3.3.2 default: only LEADER + SOLO_MOVER admitted
-#   "strict"     — only LEADER admitted (best quality, fewest trades)
-#   "permissive" — LEADER + SOLO + FOLLOWER (blocks LAGGARD + UNKNOWN)
-#   "score"      — legacy v3.3 behaviour: no hard gate, boosts still apply
-LEADER_FILTER_MODE = "display"
-
-# ── Market Regime / VIX (v3.3) ──────────────────────────────
-# When VIX is elevated, raise the min composite score floor and cut
-# suggested position size. See market_regime.py for the band table.
-MARKET_REGIME_ENABLED = True
-
-# ── Earnings Calendar (v3.3) ────────────────────────────────
-EARNINGS_TOMORROW_PENALTY = -5       # Points off for earnings tomorrow BMO
-EARNINGS_HARD_FILTER_HOUR = 14       # After 2 PM ET, block entries when earnings are AMC today
-
-# ── Pre-Market Settings ─────────────────────────────────────
-PREMARKET_BOOST_CAP = 15             # Max score boost from pre-market flags
-PREMARKET_VOL_THRESHOLD = 2.0        # Min volume ratio to flag pre-market
-
-# ── Confirmed Filters (from 3-day analysis) ──────────────────
-# Lunch dead zone: 0 wins in 21 decided trades (p < 0.001)
-DEAD_ZONE_BATCHES = {"11:31", "12:01", "12:02"}
-# Re-entries: 1 win in 32 decided trades (3.1% WR)
-SUPPRESS_REENTRIES = True
-
-# ── Server ────────────────────────────────────────────────────
-HOST = "0.0.0.0"
-PORT = int(os.getenv("PORT", 8000))
+# $210
