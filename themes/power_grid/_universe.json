@@ -1,0 +1,19 @@
+{
+  "ETN":  {"company": "Eaton",                 "bucket": "Heavy Electrical Equipment", "sub": "Switchgear / breakers / UPS / power mgmt", "specificity": 5, "note": "Flagship equipment anchor; massive backlogs + pricing power. Shared with AI DC — held for whole grid cycle"},
+  "GEV":  {"company": "GE Vernova",             "bucket": "Heavy Electrical Equipment", "sub": "Transformers / HVDC / grid orchestration", "specificity": 5, "note": "Purest large-scale grid-equipment maker; AI-power narrative darling — rich multiple, harvest-into-strength"},
+  "HUBB": {"company": "Hubbell",                "bucket": "Heavy Electrical Equipment", "sub": "Utility T&D components / grid protection", "specificity": 3, "note": "Diversified but genuine utility-facing exposure; more T&D-levered than most equipment names"},
+  "POWL": {"company": "Powell Industries",      "bucket": "Heavy Electrical Equipment", "sub": "Custom switchgear / electrical distribution", "specificity": 4, "note": "Narrower customer base; re-rated hard on power narrative — valuation discipline required"},
+  "NVT":  {"company": "nVent Electric",         "bucket": "Heavy Electrical Equipment", "sub": "Enclosures / connection & protection", "specificity": 3, "note": "Component-level, lower specificity. Shared with AI DC"},
+
+  "PWR":  {"company": "Quanta Services",        "bucket": "T&D Construction / E&C",     "sub": "Dominant US T&D construction contractor", "specificity": 4, "note": "Flagship contractor anchor; largest backlog + deepest workforce. Re-rated but backlog justifies visibility"},
+  "MTZ":  {"company": "MasTec",                 "bucket": "T&D Construction / E&C",     "sub": "Power delivery (T&D) + comms + pipeline", "specificity": 3, "note": "Power-delivery segment growing fast; some pipeline dilution but real T&D leverage"},
+  "MYRG": {"company": "MYR Group",              "bucket": "T&D Construction / E&C",     "sub": "Near-pure-play T&D + C&I electrical construction", "specificity": 4, "note": "Smaller cap, cleanest T&D-construction pure-play; highest-specificity contractor exposure"},
+  "PRIM": {"company": "Primoris Services",      "bucket": "T&D Construction / E&C",     "sub": "Utility + energy infrastructure construction", "specificity": 3, "note": "Diversified E&C with expanding utility/power-delivery mix; backlog compounding"},
+  "EME":  {"company": "EMCOR Group",            "bucket": "T&D Construction / E&C",     "sub": "Mechanical/electrical construction + facilities", "specificity": 3, "note": "Broad electrical construction; strong balance sheet + execution, more diluted grid exposure"},
+
+  "ITRI": {"company": "Itron",                  "bucket": "Grid-Edge Intelligence",     "sub": "Smart meters / grid-edge / distribution automation", "specificity": 3, "note": "Cleanest grid-edge pure-play; recurring software mix growing. Not in AI DC — genuine incremental breadth"},
+  "DY":   {"company": "Dycom Industries",       "bucket": "Grid-Edge Intelligence",     "sub": "Telecom + utility/grid line construction", "specificity": 2, "note": "Primarily telecom/fiber, expanding utility line-construction; grid-edge buildout proxy"},
+
+  "ATKR": {"company": "Atkore",                 "bucket": "Cable / Wire & Components",  "sub": "Conduit / cable / busbar", "specificity": 2, "note": "Commoditized, cyclical pricing; high buildout-volume exposure. Shared with AI DC"},
+  "ENS":  {"company": "EnerSys",                "bucket": "Cable / Wire & Components",  "sub": "Industrial stored energy / DC power systems", "specificity": 2, "note": "Utility + telecom + grid-storage exposure; real revenue, reasonable valuation"}
+}

@@ -1,0 +1,1650 @@
+{
+  "theme": "aging_population",
+  "scored_at": "2026-07-07T02:48:28.087422Z",
+  "trade_date": "2026-07-06",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 10,
+    "theme_exposure": 15,
+    "revenue_growth": 10,
+    "margin_durability": 5,
+    "valuation_runway": 15,
+    "institutional_13f": 5,
+    "capital_structure": 20,
+    "catalyst_proximity": 0
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "capital_structure": "auto-from-fmp",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "WELL": {
+      "company": "Welltower",
+      "bucket": "Senior Housing & Healthcare REITs",
+      "sub": "Senior housing operator-partnered (SHOP)",
+      "note": "Largest senior-housing REIT; RIDEA/SHOP structure captures occupancy + rate recovery directly, not just fixed rent. Flagship demand vehicle",
+      "specificity_meta": 5,
+      "raw_total": 400,
+      "normalized_100": 80.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Highest operating leverage to 80+ move-in inflection vs frozen supply; flagship demand vehicle"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 76, +15.4% 3M \u2014 healthy momentum, near 52w high (-1.5%)"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest senior-housing occupancy-recovery vehicle"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +38% YoY (SHOP consolidation) \u2014 very strong"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "SHOP NOI margins expanding with occupancy"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~112, P/S ~14 \u2014 priced for the recovery; near 52w high tightens room"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Quarterly same-store NOI + occupancy prints"
+        }
+      },
+      "snapshot": {
+        "price": 232.69,
+        "market_cap": 164259233792,
+        "pe": 111.8702,
+        "ps": 13.959463,
+        "1y_pct": 53.19,
+        "3m_pct": 15.4,
+        "1m_pct": 16.58,
+        "dist_from_52w_high_pct": -1.54,
+        "rs_3m": 76.0,
+        "revenue_growth_yoy": 0.383,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "VTR": {
+      "company": "Ventas",
+      "bucket": "Senior Housing & Healthcare REITs",
+      "sub": "Senior housing + medical office",
+      "note": "#2 senior-housing REIT; large SHOP book leveraged to occupancy recovery against frozen new supply",
+      "specificity_meta": 4,
+      "raw_total": 350,
+      "normalized_100": 70.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "SHOP book + medical office; same recovery, slightly more diluted mix"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 65, +11.4% 3M \u2014 solid, near 52w high (-0.9%)"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Large SHOP exposure to the occupancy recovery"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +22% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Improving SHOP margins"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~168 \u2014 richest in the sleeve; run-up limits room"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Same-store occupancy cadence"
+        }
+      },
+      "snapshot": {
+        "price": 92.21,
+        "market_cap": 44829708288,
+        "pe": 167.65454,
+        "ps": 7.3336864,
+        "1y_pct": 50.09,
+        "3m_pct": 11.38,
+        "1m_pct": 17.35,
+        "dist_from_52w_high_pct": -0.9,
+        "rs_3m": 65.0,
+        "revenue_growth_yoy": 0.219,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "OHI": {
+      "company": "Omega Healthcare Investors",
+      "bucket": "Senior Housing & Healthcare REITs",
+      "sub": "Skilled nursing / assisted living net-lease",
+      "note": "Triple-net SNF/ALF landlord; high-yield, operator-credit-sensitive rather than occupancy-upside",
+      "specificity_meta": 3,
+      "raw_total": 335,
+      "normalized_100": 67.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Net-lease SNF/ALF landlord \u2014 operator-credit-driven, not occupancy upside"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 59, +10.5% 3M \u2014 steady, near 52w high"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Aging demand but via fixed leases, diluted linkage"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +14% YoY \u2014 decent"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Stable triple-net margins, high payout"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~24 \u2014 reasonable, income tilt"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Operator-coverage + dividend cadence"
+        }
+      },
+      "snapshot": {
+        "price": 49.02,
+        "market_cap": 15284258816,
+        "pe": 23.68116,
+        "ps": 12.430147,
+        "1y_pct": 42.97,
+        "3m_pct": 10.51,
+        "1m_pct": 11.28,
+        "dist_from_52w_high_pct": -1.15,
+        "rs_3m": 59.0,
+        "revenue_growth_yoy": 0.143,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "NHI": {
+      "company": "National Health Investors",
+      "bucket": "Senior Housing & Healthcare REITs",
+      "sub": "Senior housing + SNF net-lease",
+      "note": "Smaller diversified senior-housing/SNF REIT; conservative balance sheet, income tilt",
+      "specificity_meta": 3,
+      "raw_total": 300,
+      "normalized_100": 60.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Diversified senior-housing/SNF net-lease; conservative"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 24, -7.5% 3M, -14.9% off 52w high \u2014 laggard in the sleeve"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Real senior-housing exposure, income-tilted"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -2.6% YoY \u2014 flat/declining"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Conservative balance sheet, stable"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~25 \u2014 reasonable, and it has pulled back"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Dividend + lease renewals"
+        }
+      },
+      "snapshot": {
+        "price": 76.0,
+        "market_cap": 3683802112,
+        "pe": 24.51613,
+        "ps": 9.102303,
+        "1y_pct": 13.01,
+        "3m_pct": -7.51,
+        "1m_pct": 10.6,
+        "dist_from_52w_high_pct": -14.88,
+        "rs_3m": 24.0,
+        "revenue_growth_yoy": -0.026,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "SBRA": {
+      "company": "Sabra Health Care REIT",
+      "bucket": "Senior Housing & Healthcare REITs",
+      "sub": "SNF + senior housing net-lease",
+      "note": "Smaller-cap SNF-heavy REIT; higher operator-credit risk, deeper value if recovery holds",
+      "specificity_meta": 2,
+      "raw_total": 305,
+      "normalized_100": 61.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "SNF-heavy net-lease; higher operator-credit risk, most diluted linkage"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 47, +0.8% 3M \u2014 middling"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Aging demand but SNF operator-credit-sensitive"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +22% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Recovering coverage, some operator risk"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~31 but deep-value name if recovery holds"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Operator-coverage recovery"
+        }
+      },
+      "snapshot": {
+        "price": 19.73,
+        "market_cap": 4975710720,
+        "pe": 31.31746,
+        "ps": 6.1001964,
+        "1y_pct": 13.32,
+        "3m_pct": 0.77,
+        "1m_pct": 9.07,
+        "dist_from_52w_high_pct": -7.28,
+        "rs_3m": 47.0,
+        "revenue_growth_yoy": 0.217,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "SYK": {
+      "company": "Stryker",
+      "bucket": "Age-Specific Medical Devices",
+      "sub": "Orthopedics / joint replacement",
+      "note": "Ortho + Mako robotic knees/hips; joint-replacement volumes scale directly with the 65+ cohort. Device anchor",
+      "specificity_meta": 5,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Joint-replacement volumes a near-mechanical function of the cohort; Mako moat"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 35, -1.8% 3M, -19% off 52w high \u2014 beaten down despite tailwind (entry opportunity)"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Device anchor; ortho volumes track the cohort directly"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev +2.6% YoY \u2014 soft near-term"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Strong, durable med-tech margins"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~38 \u2014 full but derated ~16% on the year"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Procedure-volume recovery, Mako placements"
+        }
+      },
+      "snapshot": {
+        "price": 324.73,
+        "market_cap": 124488744960,
+        "pe": 37.541042,
+        "ps": 4.9263453,
+        "1y_pct": -16.43,
+        "3m_pct": -1.79,
+        "1m_pct": 10.37,
+        "dist_from_52w_high_pct": -18.98,
+        "rs_3m": 35.0,
+        "revenue_growth_yoy": 0.026,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ZBH": {
+      "company": "Zimmer Biomet",
+      "bucket": "Age-Specific Medical Devices",
+      "sub": "Orthopedics / joint replacement",
+      "note": "Pure-play hips/knees; most cohort-levered of the large ortho names, cheaper multiple than SYK",
+      "specificity_meta": 4,
+      "raw_total": 370,
+      "normalized_100": 74.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Pure-play hips/knees \u2014 most cohort-levered large ortho name"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 41, -1.0% 3M, -16% off 52w high \u2014 depressed"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest joint-replacement exposure"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +9.3% YoY \u2014 decent"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Solid but pricing-pressured ortho margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~23 \u2014 cheapest device name for tight cohort linkage"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Procedure recovery + new-product cadence"
+        }
+      },
+      "snapshot": {
+        "price": 89.76,
+        "market_cap": 17365192704,
+        "pe": 23.253887,
+        "ps": 2.0650477,
+        "1y_pct": -2.02,
+        "3m_pct": -0.98,
+        "1m_pct": 5.91,
+        "dist_from_52w_high_pct": -16.24,
+        "rs_3m": 41.0,
+        "revenue_growth_yoy": 0.093,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ISRG": {
+      "company": "Intuitive Surgical",
+      "bucket": "Age-Specific Medical Devices",
+      "sub": "Surgical robotics",
+      "note": "da Vinci install-base monopoly; procedure mix skews to older-patient general surgery, recurring instrument razor-blade model",
+      "specificity_meta": 5,
+      "raw_total": 360,
+      "normalized_100": 72.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "da Vinci install-base monopoly; razor-blade instruments; older-skewing procedures"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 29, -4.3% 3M, -28% off 52w high \u2014 heavy derating"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Surgical robotics broad but procedure mix skews older"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +23% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Best-in-class device margins, recurring instrument revenue"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~53, P/S ~14 \u2014 still premium despite the pullback"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Procedure growth + new-system cycle"
+        }
+      },
+      "snapshot": {
+        "price": 432.83,
+        "market_cap": 153292308480,
+        "pe": 52.655716,
+        "ps": 14.486001,
+        "1y_pct": -19.05,
+        "3m_pct": -4.26,
+        "1m_pct": 6.27,
+        "dist_from_52w_high_pct": -28.33,
+        "rs_3m": 29.0,
+        "revenue_growth_yoy": 0.23,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "EW": {
+      "company": "Edwards Lifesciences",
+      "bucket": "Age-Specific Medical Devices",
+      "sub": "Structural heart / TAVR",
+      "note": "TAVR near-monopoly; aortic stenosis is an age-driven disease, expanding to lower-risk/younger-old patients",
+      "specificity_meta": 5,
+      "raw_total": 420,
+      "normalized_100": 84.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "TAVR near-monopoly; aortic stenosis is age-driven, expanding indications"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "RS 88, +17.4% 3M, near 52w high (-0.4%) \u2014 momentum leader among devices"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest structural-heart cohort exposure"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +16.7% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Excellent structural-heart margins"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~51 \u2014 premium but momentum-supported"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "TAVR indication expansion + trial readouts"
+        }
+      },
+      "snapshot": {
+        "price": 95.18,
+        "market_cap": 54804643840,
+        "pe": 51.448647,
+        "ps": 8.69432,
+        "1y_pct": 24.11,
+        "3m_pct": 17.43,
+        "1m_pct": 10.67,
+        "dist_from_52w_high_pct": -0.4,
+        "rs_3m": 88.0,
+        "revenue_growth_yoy": 0.167,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "PODD": {
+      "company": "Insulet",
+      "bucket": "Age-Specific Medical Devices",
+      "sub": "Diabetes / insulin delivery",
+      "note": "Omnipod tubeless pump; type-2 expansion tracks aging + obesity, high recurring pod revenue",
+      "specificity_meta": 4,
+      "raw_total": 335,
+      "normalized_100": 67.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Omnipod recurring pods; strong linkage but skews younger via type-2/obesity"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 0, -21.8% 3M, -55% off 52w high \u2014 severe drawdown"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Diabetes tracks aging but not purely geriatric"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +33.9% YoY \u2014 fastest grower"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Improving but pump-margin pressure"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~37 after a 47% 1Y drop \u2014 growth at a reset multiple"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Type-2 label expansion, pod attach"
+        }
+      },
+      "snapshot": {
+        "price": 159.77,
+        "market_cap": 11066417152,
+        "pe": 37.329437,
+        "ps": 3.8149536,
+        "1y_pct": -46.87,
+        "3m_pct": -21.8,
+        "1m_pct": 11.49,
+        "dist_from_52w_high_pct": -54.98,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": 0.339,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "GMED": {
+      "company": "Globus Medical",
+      "bucket": "Age-Specific Medical Devices",
+      "sub": "Spine / enabling tech",
+      "note": "Spine + robotics; degenerative spine surgery is age-driven, post-NuVasive scale but competitive segment",
+      "specificity_meta": 3,
+      "raw_total": 340,
+      "normalized_100": 68.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Degenerative spine is age-driven but a competitive segment"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 12, -8.4% 3M, -21% off 52w high \u2014 weak momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Spine + robotics, moderate cohort linkage"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +27% YoY (post-NuVasive) \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Scaling post-merger margins"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E ~19 \u2014 cheapest device name outright"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "ExcelsiusGPS placements, merger synergies"
+        }
+      },
+      "snapshot": {
+        "price": 80.5,
+        "market_cap": 10927441920,
+        "pe": 18.80841,
+        "ps": 3.5242264,
+        "1y_pct": 43.83,
+        "3m_pct": -8.44,
+        "1m_pct": 3.27,
+        "dist_from_52w_high_pct": -20.61,
+        "rs_3m": 12.0,
+        "revenue_growth_yoy": 0.27,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ALC": {
+      "company": "Alcon",
+      "bucket": "Hearing & Vision",
+      "sub": "Ophthalmology / cataract",
+      "note": "Global #1 in surgical eyecare (cataract IOLs); cataract is a near-universal age-driven procedure",
+      "specificity_meta": 5,
+      "raw_total": 370,
+      "normalized_100": 74.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Cataract IOLs \u2014 among the most demographically certain procedures globally; global #1"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 18, -7.9% 3M, -26% off 52w high \u2014 laggard, value setup"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Surgical eyecare tightly age-driven"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +9.4% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Strong surgical-eyecare margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~41 but derated ~21% on the year \u2014 reasonable for the franchise"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Cataract volumes + premium-IOL mix"
+        }
+      },
+      "snapshot": {
+        "price": 68.33,
+        "market_cap": 33324541952,
+        "pe": 40.91617,
+        "ps": 3.1337729,
+        "1y_pct": -20.89,
+        "3m_pct": -7.91,
+        "1m_pct": 6.4,
+        "dist_from_52w_high_pct": -25.81,
+        "rs_3m": 18.0,
+        "revenue_growth_yoy": 0.094,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "COO": {
+      "company": "Cooper Companies",
+      "bucket": "Hearing & Vision",
+      "sub": "Vision / contact lenses",
+      "note": "CooperVision lenses + CooperSurgical; myopia/presbyopia demand, less purely geriatric",
+      "specificity_meta": 3,
+      "raw_total": 295,
+      "normalized_100": 59.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Lenses skew younger; diversified vision + surgical \u2014 diluted geriatric linkage"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 53, +3.5% 3M \u2014 middling"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Vision demand but not purely aging"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +7.9% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Durable diversified margins"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~62 \u2014 expensive for the diluted linkage"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Myopia-management + lens cadence"
+        }
+      },
+      "snapshot": {
+        "price": 72.61,
+        "market_cap": 14161173504,
+        "pe": 61.5339,
+        "ps": 3.347004,
+        "1y_pct": -0.93,
+        "3m_pct": 3.48,
+        "1m_pct": 20.33,
+        "dist_from_52w_high_pct": -19.17,
+        "rs_3m": 53.0,
+        "revenue_growth_yoy": 0.079,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "RXST": {
+      "company": "RxSight",
+      "bucket": "Hearing & Vision",
+      "sub": "Adjustable intraocular lenses",
+      "note": "Light-adjustable IOL pure-play; premium cataract upgrade cycle, smaller-cap higher-beta optionality",
+      "specificity_meta": 4,
+      "raw_total": 265,
+      "normalized_100": 53.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Light-adjustable IOL pure-play \u2014 tight linkage but pre-profit micro-cap"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 6, -15.7% 3M, -58% off 52w high \u2014 severe drawdown"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Pure premium-cataract-upgrade optionality"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "Rev -18.5% YoY \u2014 contracting"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Unprofitable (negative P/E)"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/S ~1.8, cheap on sales but no earnings \u2014 speculative"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "LAL adoption inflection (uncertain)"
+        }
+      },
+      "snapshot": {
+        "price": 5.6,
+        "market_cap": 231821008,
+        "pe": -10.0,
+        "ps": 1.818532,
+        "1y_pct": -54.95,
+        "3m_pct": -15.66,
+        "1m_pct": 16.91,
+        "dist_from_52w_high_pct": -58.07,
+        "rs_3m": 6.0,
+        "revenue_growth_yoy": -0.185,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "SONVY": {
+      "company": "Sonova Holding (ADR)",
+      "bucket": "Hearing & Vision",
+      "sub": "Hearing aids",
+      "note": "Swiss hearing-aid leader ADR \u2014 CHECK LIQUIDITY; if thin, treat as benchmark-only. Hearing loss is squarely age-driven",
+      "specificity_meta": 3,
+      "raw_total": 340,
+      "normalized_100": 68.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Hearing loss is age-driven; only holdable hearing-aid proxy (diluted-by-necessity)"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 71, +14.8% 3M \u2014 momentum building off a low base"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Pure hearing-aid exposure via sponsored ADR"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev growth n/a in seed \u2014 treat neutral, mid-single-digit historically"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Strong hearing-aid oligopoly margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~23 \u2014 reasonable after a -11% 1Y"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "OTC/prescription hearing-aid cycle"
+        }
+      },
+      "snapshot": {
+        "price": 51.63,
+        "market_cap": 15335298048,
+        "pe": 23.152466,
+        "ps": 4.2528353,
+        "1y_pct": -10.98,
+        "3m_pct": 14.81,
+        "1m_pct": 0.68,
+        "dist_from_52w_high_pct": -15.5,
+        "rs_3m": 71.0,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CHE": {
+      "company": "Chemed",
+      "bucket": "Home Health & Services",
+      "sub": "Hospice (VITAS) + Roto-Rooter",
+      "note": "VITAS hospice is the largest US hospice operator; end-of-life demand is demographically certain, diluted by Roto-Rooter",
+      "specificity_meta": 3,
+      "raw_total": 340,
+      "normalized_100": 68.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "VITAS hospice is pure aging vehicle; Roto-Rooter dilutes the linkage"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "RS 100, +26.4% 3M, near 52w high (-2.4%) \u2014 strongest in the universe"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Hospice end-of-life demand certain, but diluted by plumbing segment"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev +1.6% YoY \u2014 slow"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Excellent, cash-generative both segments"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~26 \u2014 reasonable for the quality"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Hospice census + admissions cadence"
+        }
+      },
+      "snapshot": {
+        "price": 480.5,
+        "market_cap": 6378206720,
+        "pe": 26.24249,
+        "ps": 2.5105634,
+        "1y_pct": 4.86,
+        "3m_pct": 26.42,
+        "1m_pct": 12.57,
+        "dist_from_52w_high_pct": -2.4,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": 0.016,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ADUS": {
+      "company": "Addus HomeCare",
+      "bucket": "Home Health & Services",
+      "sub": "Personal / home care labor",
+      "note": "Personal-care services pure-play; the structurally short home-care labor supply, Medicaid-funded aging-in-place",
+      "specificity_meta": 4,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Personal-care pure-play \u2014 directly the structurally short home-care labor supply"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 82, +15.4% 3M \u2014 strong momentum"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest aging-in-place / home-care labor exposure"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +7.7% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Thin personal-care-services margins, Medicaid-funded"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~20, P/S ~1.4 \u2014 cheap for the pure exposure"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Medicaid rate updates + acquisitions"
+        }
+      },
+      "snapshot": {
+        "price": 105.73,
+        "market_cap": 1973426816,
+        "pe": 19.50738,
+        "ps": 1.3624563,
+        "1y_pct": -4.42,
+        "3m_pct": 15.44,
+        "1m_pct": 19.48,
+        "dist_from_52w_high_pct": -15.04,
+        "rs_3m": 82.0,
+        "revenue_growth_yoy": 0.077,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "EHAB": {
+      "company": "Enhabit",
+      "bucket": "Home Health & Services",
+      "sub": "Home health + hospice",
+      "note": "Encompass spin-off; smaller, leveraged, turnaround/strategic-review optionality on the same home-health demand",
+      "specificity_meta": 2,
+      "raw_total": 295,
+      "normalized_100": 59.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Right demand, but returns hinge on the turnaround not the demographic"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "RS 94, +23% 3M, +89% 1Y, near 52w high \u2014 momentum leader"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Home health/hospice demand, leveraged small-cap"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev +1.9% YoY \u2014 flat"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Thin, leveraged post-spin"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~21, P/S ~0.7 \u2014 deep value on turnaround optionality"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Strategic review / potential sale optionality"
+        }
+      },
+      "snapshot": {
+        "price": 13.8,
+        "market_cap": 706913408,
+        "pe": 20.873669,
+        "ps": 0.6638308,
+        "1y_pct": 88.52,
+        "3m_pct": 22.99,
+        "1m_pct": 0.66,
+        "dist_from_52w_high_pct": -2.95,
+        "rs_3m": 94.0,
+        "revenue_growth_yoy": 0.019,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    }
+  }
+}

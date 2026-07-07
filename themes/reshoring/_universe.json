@@ -1,0 +1,23 @@
+{
+  "PWR":  {"company": "Quanta Services",          "bucket": "E&C / Contractors",           "sub": "Electrical infrastructure E&C",     "specificity": 5, "note": "Largest specialty electrical/utility contractor; multi-year backlog on grid + factory power tie-ins"},
+  "EME":  {"company": "EMCOR Group",              "bucket": "E&C / Contractors",           "sub": "Mechanical / electrical E&C",       "specificity": 4, "note": "Mechanical + electrical construction for factories/data centers; record backlog, buyback culture"},
+  "FIX":  {"company": "Comfort Systems USA",      "bucket": "E&C / Contractors",           "sub": "HVAC / mechanical E&C",             "specificity": 4, "note": "Industrial HVAC + modular process piping; direct chip-fab / factory exposure"},
+  "MTZ":  {"company": "MasTec",                   "bucket": "E&C / Contractors",           "sub": "Infrastructure E&C",                "specificity": 3, "note": "Power delivery + communications + clean-energy build; diversified infra contractor"},
+  "PRIM": {"company": "Primoris Services",        "bucket": "E&C / Contractors",           "sub": "Energy / utility E&C",              "specificity": 3, "note": "Utility + industrial + renewables construction; smaller-cap backlog compounder"},
+  "STRL": {"company": "Sterling Infrastructure",  "bucket": "E&C / Contractors",           "sub": "Site development / e-infrastructure","specificity": 4, "note": "Site-development for data centers + manufacturing pads; highest-margin E&C in cohort"},
+
+  "ROK":  {"company": "Rockwell Automation",      "bucket": "Factory Automation",          "sub": "Industrial automation / control",   "specificity": 5, "note": "Purest US factory-automation play; installed-base + software attach as reshored plants come online"},
+  "EMR":  {"company": "Emerson Electric",         "bucket": "Factory Automation",          "sub": "Process automation",                "specificity": 4, "note": "Process automation + measurement; post-portfolio-reshape pure-play automation"},
+  "ETN":  {"company": "Eaton",                    "bucket": "Factory Automation",          "sub": "Electrical / power management",      "specificity": 4, "note": "Intelligent power management for factories; overlaps AI-DC theme but reshoring-relevant"},
+  "CMI":  {"company": "Cummins",                  "bucket": "Factory Automation",          "sub": "Power systems / capital goods",      "specificity": 3, "note": "Engines + power gen + industrial; backup power and process capital goods for new plants"},
+  "PH":   {"company": "Parker Hannifin",          "bucket": "Factory Automation",          "sub": "Motion & control / capital goods",   "specificity": 4, "note": "Motion, fluid power, filtration — the plumbing of automated factories; aerospace-quality margins"},
+
+  "VMC":  {"company": "Vulcan Materials",         "bucket": "Building Products / Materials","sub": "Aggregates",                        "specificity": 5, "note": "Largest US aggregates producer; local-monopoly quarries, pure pricing-power play on construction volume"},
+  "MLM":  {"company": "Martin Marietta",          "bucket": "Building Products / Materials","sub": "Aggregates",                        "specificity": 5, "note": "#2 aggregates; same local-monopoly economics as VMC, heavy infra/factory-slab exposure"},
+  "CRH":  {"company": "CRH plc (US-listed)",      "bucket": "Building Products / Materials","sub": "Materials / building products",      "specificity": 4, "note": "NYSE-primary listing; diversified aggregates + cement + building products, largest US materials footprint"},
+  "BLDR": {"company": "Builders FirstSource",     "bucket": "Building Products / Materials","sub": "Building products distribution",     "specificity": 3, "note": "Structural building products + distribution; more housing-levered but scaled reshoring beneficiary"},
+
+  "PLD":  {"company": "Prologis",                 "bucket": "Industrial REITs",            "sub": "Logistics / industrial REIT",       "specificity": 4, "note": "Largest industrial REIT; landlords the logistics + light-manufacturing footprint of reshoring"},
+  "REXR": {"company": "Rexford Industrial",       "bucket": "Industrial REITs",            "sub": "Infill SoCal industrial REIT",      "specificity": 4, "note": "Infill Southern California industrial; irreplaceable land, extreme pricing power on re-leasing"},
+  "STAG": {"company": "Stag Industrial",          "bucket": "Industrial REITs",            "sub": "Secondary-market industrial REIT",  "specificity": 3, "note": "Single-tenant industrial in secondary markets; higher-yield exposure to distribution/manufacturing"}
+}

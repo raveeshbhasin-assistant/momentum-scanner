@@ -1,0 +1,1470 @@
+{
+  "theme": "ai_healthcare",
+  "scored_at": "2026-07-07T02:45:24.778742Z",
+  "trade_date": "2026-07-06",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 10,
+    "theme_exposure": 15,
+    "revenue_growth": 10,
+    "margin_durability": 5,
+    "valuation_runway": 15,
+    "institutional_13f": 5,
+    "capital_structure": 20,
+    "catalyst_proximity": 0
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "capital_structure": "auto-from-fmp",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "VEEV": {
+      "company": "Veeva Systems",
+      "bucket": "Clinical AI Workflow \u2014 Systems of Record",
+      "sub": "Life-sciences CRM/content systems of record",
+      "note": "~80% life-sciences CRM share; AI Agents embed into the record it already owns",
+      "specificity_meta": 5,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "~80% life-sciences CRM share; AI Agents run inside the record it owns \u2014 hard-to-substitute"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 50, 3M +10.4% \u2014 mid; -32% 1Y drawdown leaves room, momentum turning"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Workflow AI accrues to the system-of-record owner; VEEV is that owner"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +16.3% YoY \u2014 steady durable SaaS growth"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Best-in-class software margins; FCF-rich"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~34, P/S ~9.4 \u2014 full but reasonable after the drawdown"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "AI Agents for Vault CRM rolling out through 2026"
+        }
+      },
+      "snapshot": {
+        "price": 192.01,
+        "market_cap": 31190736896,
+        "pe": 33.98407,
+        "ps": 9.397019,
+        "1y_pct": -31.67,
+        "3m_pct": 10.36,
+        "1m_pct": 7.44,
+        "dist_from_52w_high_pct": -38.16,
+        "rs_3m": 50.0,
+        "revenue_growth_yoy": 0.163,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "DOCS": {
+      "company": "Doximity",
+      "bucket": "Clinical AI Workflow \u2014 Systems of Record",
+      "sub": "Physician network + clinical AI assistant",
+      "note": "300k+ clinicians on its AI tools/qtr; owns physician distribution startups must rent",
+      "specificity_meta": 4,
+      "raw_total": 335,
+      "normalized_100": 67.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Owns physician distribution AI startups must rent; 300k+ clinicians on AI tools/qtr"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 21, -62% 1Y, 3M +0.4% \u2014 deeply out of favour; not an inflection yet"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Direct clinical-AI adoption story; but Epic first-party scribe is the watch item"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev +5.1% YoY \u2014 decelerated hard, the source of the drawdown"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "High-margin network model, but growth stall pressures the multiple"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~23, P/S ~6.5 \u2014 cheapest it's been; drawdown reset valuation"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "AI-tool adoption metrics each quarter; Epic competitive response"
+        }
+      },
+      "snapshot": {
+        "price": 22.86,
+        "market_cap": 4180455168,
+        "pe": 23.32653,
+        "ps": 6.482703,
+        "1y_pct": -62.44,
+        "3m_pct": 0.4,
+        "1m_pct": 8.65,
+        "dist_from_52w_high_pct": -70.12,
+        "rs_3m": 21.0,
+        "revenue_growth_yoy": 0.051,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "IQV": {
+      "company": "IQVIA Holdings",
+      "bucket": "Clinical AI Workflow \u2014 Systems of Record",
+      "sub": "Healthcare data + trial/commercial analytics",
+      "note": "Data/distribution owner embedding AI across trials and commercial analytics",
+      "specificity_meta": 4,
+      "raw_total": 355,
+      "normalized_100": 71.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Proprietary healthcare data + trial/commercial distribution; AI embeds on an un-buyable data asset"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 64, 3M +18.9%, +26.8% 1Y \u2014 healthy momentum with room"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Real AI accretion across trials/analytics, but gradual not event-driven"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +8.4% YoY \u2014 steady services growth"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Durable margins on scaled data/services franchise"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~26, P/S ~2.1 \u2014 reasonable for the moat, room to re-rate"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "AI-embedded trial/commercial wins in quarterly cadence"
+        }
+      },
+      "snapshot": {
+        "price": 205.97,
+        "market_cap": 34376392704,
+        "pe": 25.586334,
+        "ps": 2.0668826,
+        "1y_pct": 26.79,
+        "3m_pct": 18.88,
+        "1m_pct": 13.14,
+        "dist_from_52w_high_pct": -16.63,
+        "rs_3m": 64.0,
+        "revenue_growth_yoy": 0.084,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "GEHC": {
+      "company": "GE HealthCare",
+      "bucket": "Medical Imaging & Diagnostics AI",
+      "sub": "Imaging systems + on-device AI",
+      "note": "Leads FDA table with ~120 radiology AI authorizations; owns installed scanner base",
+      "specificity_meta": 5,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "FDA AI-clearance leader (~120 radiology authorizations) on an un-buyable installed scanner base"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 0, 3M -7.8%, -12.9% 1Y \u2014 worst momentum in the universe; deep value / falling knife"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Imaging AI is only deployable on the scanner base GEHC owns \u2014 high theme purity"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +7.4% YoY \u2014 steady hardware+recurring"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Solid, improving med-device margins post-spin"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E ~15.5, P/S ~1.4 \u2014 cheapest quality name here; large valuation runway"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Continued FDA AI-clearance flow; installed-base AI upsell"
+        }
+      },
+      "snapshot": {
+        "price": 64.84,
+        "market_cap": 29495181312,
+        "pe": 15.549159,
+        "ps": 1.4059384,
+        "1y_pct": -12.94,
+        "3m_pct": -7.83,
+        "1m_pct": 4.53,
+        "dist_from_52w_high_pct": -27.71,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": 0.074,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "PHG": {
+      "company": "Koninklijke Philips (ADR)",
+      "bucket": "Medical Imaging & Diagnostics AI",
+      "sub": "Imaging + informatics AI",
+      "note": "~50 radiology AI clearances; sponsored NYSE ADR, Fidelity-holdable",
+      "specificity_meta": 4,
+      "raw_total": 310,
+      "normalized_100": 62.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "~50 radiology AI clearances + informatics; sponsored ADR, real installed base"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 36, 3M +7.9%, +22.7% 1Y \u2014 recovering off lows, mid momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Real imaging AI position but turnaround/overhang dilutes the read"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -4.7% YoY \u2014 still working through the recall/turnaround"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Recovering margins; execution risk remains"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~25, P/S ~1.6 \u2014 fair for a turnaround, not a bargain given growth"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Turnaround execution + AI clearance cadence"
+        }
+      },
+      "snapshot": {
+        "price": 28.16,
+        "market_cap": 27371030528,
+        "pe": 24.701754,
+        "ps": 1.5514698,
+        "1y_pct": 22.72,
+        "3m_pct": 7.92,
+        "1m_pct": 11.08,
+        "dist_from_52w_high_pct": -12.51,
+        "rs_3m": 36.0,
+        "revenue_growth_yoy": -0.047,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ISRG": {
+      "company": "Intuitive Surgical",
+      "bucket": "Medical Imaging & Diagnostics AI",
+      "sub": "Surgical robotics + AI vision/analytics",
+      "note": "da Vinci/Ion installed base; AI-assisted imaging and case analytics, razor/razorblade",
+      "specificity_meta": 5,
+      "raw_total": 345,
+      "normalized_100": 69.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "da Vinci/Ion installed base is the moat; AI vision/analytics is upside on a razor/razorblade lock-in"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 7, 3M -4.3%, -19% 1Y \u2014 extended-then-cooled; weak near-term momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "AI is optionality on top of a robotics franchise, not the core driver"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +23% YoY \u2014 strongest durable grower among the incumbents"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Best-in-class recurring-revenue margins"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~53, P/S ~14.5 \u2014 premium leaves little runway even after pullback"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Procedure-volume growth + AI-assisted case analytics rollout"
+        }
+      },
+      "snapshot": {
+        "price": 432.83,
+        "market_cap": 153292308480,
+        "pe": 52.655716,
+        "ps": 14.486001,
+        "1y_pct": -19.05,
+        "3m_pct": -4.26,
+        "1m_pct": 6.27,
+        "dist_from_52w_high_pct": -28.33,
+        "rs_3m": 7.0,
+        "revenue_growth_yoy": 0.23,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "IDXX": {
+      "company": "IDEXX Laboratories",
+      "bucket": "Medical Imaging & Diagnostics AI",
+      "sub": "Veterinary diagnostics instruments + AI",
+      "note": "Diagnostic instrument base with AI interpretation; recurring high-margin consumables",
+      "specificity_meta": 4,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Vet diagnostic instrument lock-in + AI interpretation; recurring high-margin consumables"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 14, 3M -0.8%, +3.6% 1Y \u2014 flat-to-weak momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "AI interpretation on an installed diagnostic base; vet niche insulates pricing"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +14.3% YoY \u2014 solid recurring growth"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Exceptional razor/razorblade margins"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~42, P/S ~10 \u2014 quality always dear; limited runway"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Instrument placements + AI interpretation adoption"
+        }
+      },
+      "snapshot": {
+        "price": 564.98,
+        "market_cap": 44567314432,
+        "pe": 41.512123,
+        "ps": 10.023924,
+        "1y_pct": 3.56,
+        "3m_pct": -0.8,
+        "1m_pct": 0.76,
+        "dist_from_52w_high_pct": -26.62,
+        "rs_3m": 14.0,
+        "revenue_growth_yoy": 0.143,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "TEM": {
+      "company": "Tempus AI",
+      "bucket": "Healthcare Data & Diagnostics Infrastructure",
+      "sub": "Multimodal clinical + molecular data",
+      "note": "2025 revenue +83% to $1.27B; pure-play AI-native healthcare-data reference",
+      "specificity_meta": 5,
+      "raw_total": 395,
+      "normalized_100": 79.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Multimodal molecular-data corpus that compounds with test volume \u2014 the un-replicable asset"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 79, 3M +28.1% \u2014 strong momentum; -42% off 52w high leaves runway"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest expression of the thesis; AI-native at the model layer"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +36.1% YoY (2025 +83% headline) \u2014 fastest durable grower"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Still loss-making (P/E negative); scaling toward profitability"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/S ~8 with 36%+ growth \u2014 full but justifiable for the data moat"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 5,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Data-moat compounding + reimbursement expansion; the theme's flagship catalyst"
+        }
+      },
+      "snapshot": {
+        "price": 60.7,
+        "market_cap": 10899581952,
+        "pe": -569.04474,
+        "ps": 7.989912,
+        "1y_pct": 4.64,
+        "3m_pct": 28.09,
+        "1m_pct": 27.76,
+        "dist_from_52w_high_pct": -41.81,
+        "rs_3m": 79.0,
+        "revenue_growth_yoy": 0.361,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "GH": {
+      "company": "Guardant Health",
+      "bucket": "Healthcare Data & Diagnostics Infrastructure",
+      "sub": "Liquid biopsy + oncology data",
+      "note": "Oncology volume +30% YoY; Smart Liquid Biopsy AI apps on Guardant360",
+      "specificity_meta": 4,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Liquid-biopsy + oncology data moat; Smart Liquid Biopsy AI on Guardant360"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 100, +240% 1Y, +80% 3M \u2014 extreme run, peak momentum, extended"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "AI-native diagnostics data owner; high theme purity"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +48.3% YoY \u2014 fastest top-line grower in the universe"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Loss-making (negative P/E); volume scaling not yet FCF-positive"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/S ~20.7 after a triple \u2014 priced for perfection, minimal runway"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Screening (Shield) reimbursement + volume; the reimbursement path is the swing factor"
+        }
+      },
+      "snapshot": {
+        "price": 168.82,
+        "market_cap": 22385520640,
+        "pe": -355.61267,
+        "ps": 20.723207,
+        "1y_pct": 240.78,
+        "3m_pct": 79.92,
+        "1m_pct": 32.9,
+        "dist_from_52w_high_pct": -2.32,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": 0.483,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "NTRA": {
+      "company": "Natera",
+      "bucket": "Healthcare Data & Diagnostics Infrastructure",
+      "sub": "MRD / molecular diagnostics + AI",
+      "note": "Signatera ~40% YoY; AI trained on 250k+ patient datasets for recurrence",
+      "specificity_meta": 4,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Signatera MRD moat on 250k+ patient dataset; AI trained on proprietary longitudinal data"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 86, +79% 1Y, +36% 3M \u2014 extended run, near 52w high (-1.5%)"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "MRD data owner; strong AI-native theme purity"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +38.8% YoY \u2014 MRD volume compounding"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Loss-making (negative P/E); volume scaling toward breakeven"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/S ~16.3 near highs \u2014 little valuation runway left"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Signatera coverage expansion + volume compounding"
+        }
+      },
+      "snapshot": {
+        "price": 283.8,
+        "market_cap": 40644521984,
+        "pe": -1330.7699,
+        "ps": 16.251783,
+        "1y_pct": 78.84,
+        "3m_pct": 36.46,
+        "1m_pct": 33.96,
+        "dist_from_52w_high_pct": -1.47,
+        "rs_3m": 86.0,
+        "revenue_growth_yoy": 0.388,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "EXAS": {
+      "company": "Exact Sciences",
+      "bucket": "Healthcare Data & Diagnostics Infrastructure",
+      "sub": "Cancer screening diagnostics",
+      "note": "Cologuard screening scale + reimbursement moat in early detection",
+      "specificity_meta": 3,
+      "raw_total": 295,
+      "normalized_100": 59.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Cologuard screening scale + reimbursement moat; more diagnostics-volume than AI-attributable"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Price data unavailable at seed \u2014 neutral placeholder"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Screening scale with a data/coverage moat; modest AI attribution"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Data unavailable at seed \u2014 neutral (historically ~teens growth)"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Historically loss-making at the net line"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "Data unavailable at seed \u2014 neutral"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Cologuard/Shield-adjacent coverage; blood-based screening"
+        }
+      },
+      "snapshot": {
+        "price": null,
+        "market_cap": null,
+        "pe": null,
+        "ps": null,
+        "1y_pct": null,
+        "3m_pct": null,
+        "1m_pct": null,
+        "dist_from_52w_high_pct": null,
+        "rs_3m": null,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "DGX": {
+      "company": "Quest Diagnostics",
+      "bucket": "Healthcare Data & Diagnostics Infrastructure",
+      "sub": "Clinical lab data at national scale",
+      "note": "Largest routine-lab data owner; AI on interpretation + operations at unmatched volume",
+      "specificity_meta": 3,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Largest routine-lab data owner; AI is a slow margin lever on unmatched volume"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 43, 3M +8.3%, +24.3% 1Y, near 52w high \u2014 steady positive momentum"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Low theme purity \u2014 AI is an operating-margin lever, not a growth driver; reserve/anchor"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +9.2% YoY \u2014 steady, acquisition-aided"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Stable, defensible lab-scale margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~24, P/S ~2.1 \u2014 reasonable defensive valuation"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "AI-driven operating efficiency; gradual, not event-driven"
+        }
+      },
+      "snapshot": {
+        "price": 213.45,
+        "market_cap": 23628152832,
+        "pe": 23.5596,
+        "ps": 2.0950658,
+        "1y_pct": 24.34,
+        "3m_pct": 8.26,
+        "1m_pct": 10.21,
+        "dist_from_52w_high_pct": -1.82,
+        "rs_3m": 43.0,
+        "revenue_growth_yoy": 0.092,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "TMO": {
+      "company": "Thermo Fisher Scientific",
+      "bucket": "AI Drug Discovery & Research Tools",
+      "sub": "Research tools + instruments (picks-and-shovels)",
+      "note": "Sells to every AI-discovery lab; real revenue and margins, not a clinical bet",
+      "specificity_meta": 3,
+      "raw_total": 310,
+      "normalized_100": 62.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Picks-and-shovels to every AI-discovery lab; real revenue, not a clinical bet"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 29, 3M +5.4%, +24% 1Y \u2014 mild momentum, lagging the tape"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Diffuse AI exposure; a safe way to hold discovery upside, low purity"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +6.2% YoY \u2014 steady tools/instruments growth"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Durable scaled tools-and-services margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~28, P/S ~4.3 \u2014 reasonable for the quality franchise"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Bioprocessing recovery; AI-lab demand is diffuse tailwind"
+        }
+      },
+      "snapshot": {
+        "price": 517.6,
+        "market_cap": 192351272960,
+        "pe": 28.408342,
+        "ps": 4.2558417,
+        "1y_pct": 24.07,
+        "3m_pct": 5.42,
+        "1m_pct": 9.32,
+        "dist_from_52w_high_pct": -19.47,
+        "rs_3m": 29.0,
+        "revenue_growth_yoy": 0.062,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "A": {
+      "company": "Agilent Technologies",
+      "bucket": "AI Drug Discovery & Research Tools",
+      "sub": "Analytical instruments + informatics",
+      "note": "Lab instrument/software base that AI-discovery workflows depend on",
+      "specificity_meta": 3,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Analytical instrument + informatics base that AI-discovery workflows depend on"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 57, 3M +13.3%, +10.4% 1Y \u2014 building momentum with room"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Low theme purity, high durability \u2014 instruments under discovery workflows"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +10% YoY \u2014 steady instrument/consumables growth"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Strong, consistent instrument margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~26, P/S ~5.1 \u2014 fair for the franchise"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Instrument cycle recovery + AI-lab demand"
+        }
+      },
+      "snapshot": {
+        "price": 130.6,
+        "market_cap": 36885614592,
+        "pe": 26.224901,
+        "ps": 5.1003337,
+        "1y_pct": 10.4,
+        "3m_pct": 13.31,
+        "1m_pct": -4.77,
+        "dist_from_52w_high_pct": -18.02,
+        "rs_3m": 57.0,
+        "revenue_growth_yoy": 0.1,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "SDGR": {
+      "company": "Schrodinger",
+      "bucket": "AI Drug Discovery & Research Tools",
+      "sub": "Physics-based + AI drug-design software (speculative)",
+      "note": "Real software revenue but deeply loss-making; proprietary-pipeline optionality",
+      "specificity_meta": 3,
+      "raw_total": 290,
+      "normalized_100": 58.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Physics + AI drug-design software with real licensing revenue; proprietary-pipeline optionality"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 93, 3M +46.8% but -17.6% 1Y \u2014 sharp bounce off a low base, extended near-term"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "High narrative AI exposure but loss-making pipeline bet \u2014 speculative sleeve"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -1.6% YoY \u2014 software revenue flat/declining"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Deeply loss-making (negative P/E); pipeline cash burn"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/S ~5 but no earnings \u2014 valuation is a pipeline option, not a fundamental"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Proprietary-pipeline readouts; software-bookings inflection"
+        }
+      },
+      "snapshot": {
+        "price": 17.0,
+        "market_cap": 1270252288,
+        "pe": -10.862619,
+        "ps": 4.983238,
+        "1y_pct": -17.6,
+        "3m_pct": 46.8,
+        "1m_pct": 13.86,
+        "dist_from_52w_high_pct": -28.42,
+        "rs_3m": 93.0,
+        "revenue_growth_yoy": -0.016,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "RXRX": {
+      "company": "Recursion Pharmaceuticals",
+      "bucket": "AI Drug Discovery & Research Tools",
+      "sub": "AI-native drug discovery platform (speculative)",
+      "note": "Pre-revenue; 2025 first AI-enabled clinical PoC amid sector endpoint misses \u2014 optionality only",
+      "specificity_meta": 2,
+      "raw_total": 245,
+      "normalized_100": 49.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Highest narrative exposure, weakest bottleneck; binary decade-long clinical risk"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 71, 3M +27.3% but -19.7% 1Y \u2014 bounce off lows, still below trend"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest AI-discovery narrative; but exposure \u2260 moat \u2014 smallest optionality only"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "Rev -56.1% YoY \u2014 collapsing/near-pre-revenue"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Deeply loss-making, heavy cash burn"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/S ~31.7 on shrinking revenue \u2014 extreme; a pure clinical option"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "AI-enabled clinical proof-of-concept readouts; binary"
+        }
+      },
+      "snapshot": {
+        "price": 3.96,
+        "market_cap": 2101818368,
+        "pe": -4.506401,
+        "ps": 31.650078,
+        "1y_pct": -19.68,
+        "3m_pct": 27.33,
+        "1m_pct": 14.12,
+        "dist_from_52w_high_pct": -44.85,
+        "rs_3m": 71.0,
+        "revenue_growth_yoy": -0.561,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    }
+  }
+}

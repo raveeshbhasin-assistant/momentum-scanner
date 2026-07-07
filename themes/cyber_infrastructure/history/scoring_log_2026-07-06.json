@@ -1,0 +1,1470 @@
+{
+  "theme": "cyber_infrastructure",
+  "scored_at": "2026-07-07T02:48:29.264027Z",
+  "trade_date": "2026-07-06",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 10,
+    "theme_exposure": 15,
+    "revenue_growth": 10,
+    "margin_durability": 5,
+    "valuation_runway": 15,
+    "institutional_13f": 5,
+    "capital_structure": 20,
+    "catalyst_proximity": 0
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "capital_structure": "auto-from-fmp",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "CRWD": {
+      "company": "CrowdStrike",
+      "bucket": "Platform / Endpoint / Cloud",
+      "sub": "Endpoint/cloud FCF compounder",
+      "note": "Quality-compounder anchor; Falcon single-agent platform, best module-attach economics, strong FCF",
+      "specificity_meta": 5,
+      "raw_total": 370,
+      "normalized_100": 74.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Single-agent Falcon platform + data-gravity lock-in; the deepest moat in the group"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 79, +99.8% 3M \u2014 ran hard; extended but momentum FCF-supported"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "The platform-consolidator flagship \u2014 endpoint\u2192cloud\u2192identity\u2192SIEM"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "~26% YoY, durable at scale"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Strong FCF margins, best module-attach economics"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E ~128, P/S ~40 \u2014 premium; the 'no margin of safety' risk in one name"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Module-attach + regulation-driven budget expansion"
+        }
+      },
+      "snapshot": {
+        "price": 199.38,
+        "market_cap": 203020533760,
+        "pe": 127.66857,
+        "ps": 39.85327,
+        "1y_pct": 57.78,
+        "3m_pct": 99.82,
+        "1m_pct": 6.68,
+        "dist_from_52w_high_pct": -4.83,
+        "rs_3m": 79.0,
+        "revenue_growth_yoy": 0.256,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "PANW": {
+      "company": "Palo Alto Networks",
+      "bucket": "Platform / Endpoint / Cloud",
+      "sub": "Platformization (net/cloud/SecOps)",
+      "note": "Platformization playbook; real FCF; firewalls give genuine OT/network adjacency into critical infra",
+      "specificity_meta": 4,
+      "raw_total": 330,
+      "normalized_100": 66.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Platformization (Prisma + XSIAM) module-attach lock-in + firewall network position"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 93, +119% 3M, +77.5% 1Y \u2014 extreme run, peak momentum"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Platformization playbook flagship; firewalls give real OT/network adjacency"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "~31% YoY (incl. platformization mix)"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Real FCF, expanding; strong operating leverage"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E ~311, P/S ~28 \u2014 priced for perfection"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Platformization deal cadence + regulation floor"
+        }
+      },
+      "snapshot": {
+        "price": 357.53,
+        "market_cap": 291386949632,
+        "pe": 310.89566,
+        "ps": 27.472488,
+        "1y_pct": 77.5,
+        "3m_pct": 119.06,
+        "1m_pct": 27.49,
+        "dist_from_52w_high_pct": -2.89,
+        "rs_3m": 93.0,
+        "revenue_growth_yoy": 0.311,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ZS": {
+      "company": "Zscaler",
+      "bucket": "Platform / Endpoint / Cloud",
+      "sub": "Zero-trust SASE / secure edge",
+      "note": "Pure-play zero-trust edge; secures remote access into plants \u2014 key for OT/IT convergence",
+      "specificity_meta": 4,
+      "raw_total": 380,
+      "normalized_100": 76.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Zero-trust SASE \u2014 inline traffic dependency once deployed; secures OT/IT remote access"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 21, +8.6% 3M but -52% 1Y \u2014 deeply reset; classic low-RS-but-positioned setup"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Pure-play zero-trust edge; core to OT/IT convergence"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "~25% YoY billings-led growth"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Improving FCF margins as scale builds"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~33, P/S ~8 \u2014 the cheapest premium platform after the 1Y reset"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "SASE consolidation + zero-trust mandates"
+        }
+      },
+      "snapshot": {
+        "price": 150.42,
+        "market_cap": 24324345856,
+        "pe": 32.720203,
+        "ps": 7.664678,
+        "1y_pct": -52.32,
+        "3m_pct": 8.56,
+        "1m_pct": 11.94,
+        "dist_from_52w_high_pct": -55.36,
+        "rs_3m": 21.0,
+        "revenue_growth_yoy": 0.254,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "FTNT": {
+      "company": "Fortinet",
+      "bucket": "Platform / Endpoint / Cloud",
+      "sub": "Firewalls + OT/ICS franchise",
+      "note": "The real critical-infra angle: large embedded FortiGate OT/industrial base; profitable with real FCF",
+      "specificity_meta": 5,
+      "raw_total": 370,
+      "normalized_100": 74.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Genuine OT/ICS installed base inside industrial/utility networks \u2014 the real critical-infra angle"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 71, +96.7% 3M \u2014 ran hard, extended but supported"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "The one profitable platform with a true critical-infra OT franchise"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "~20% YoY, durable"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Highly profitable with real FCF \u2014 best cash generation among platforms"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~63, P/S ~17 \u2014 full after the run"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "OT/ICS regulation + firewall refresh cycle"
+        }
+      },
+      "snapshot": {
+        "price": 162.35,
+        "market_cap": 118945472512,
+        "pe": 62.92636,
+        "ps": 16.730497,
+        "1y_pct": 52.23,
+        "3m_pct": 96.72,
+        "1m_pct": 10.83,
+        "dist_from_52w_high_pct": -0.75,
+        "rs_3m": 71.0,
+        "revenue_growth_yoy": 0.201,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "S": {
+      "company": "SentinelOne",
+      "bucket": "Platform / Endpoint / Cloud",
+      "sub": "Autonomous endpoint challenger",
+      "note": "#2 endpoint to CRWD; faster growth but not consistently FCF-positive \u2014 platform optionality, CS-penalized",
+      "specificity_meta": 3,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "#2 endpoint (Singularity) \u2014 real tech but less data gravity than CRWD"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 50, +36% 3M \u2014 mid, momentum building"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Endpoint platform challenger; real but not the leader"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "~21% YoY, faster than leaders but decelerating"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Not consistently FCF-positive \u2014 the capital-structure penalty name"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~37, P/S ~6 \u2014 cheaper than leaders but for a reason"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Endpoint displacement wins; path to FCF"
+        }
+      },
+      "snapshot": {
+        "price": 18.15,
+        "market_cap": 6221887488,
+        "pe": 36.77588,
+        "ps": 5.9317875,
+        "1y_pct": -0.27,
+        "3m_pct": 36.16,
+        "1m_pct": 11.35,
+        "dist_from_52w_high_pct": -15.19,
+        "rs_3m": 50.0,
+        "revenue_growth_yoy": 0.208,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "TENB": {
+      "company": "Tenable Holdings",
+      "bucket": "OT / ICS / Critical-Infra Specialists",
+      "sub": "Exposure mgmt / OT visibility",
+      "note": "Closest holdable proxy to a pure OT-visibility play; Tenable OT real industrial footprint, modest FCF",
+      "specificity_meta": 4,
+      "raw_total": 330,
+      "normalized_100": 66.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Tenable OT embedded in critical-infra asset inventories \u2014 closest holdable OT-visibility proxy"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 100, +134.9% 3M \u2014 extreme run, peak momentum"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest OT/exposure-management exposure that's publicly holdable"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "~10% YoY \u2014 decelerated, watch"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Modest FCF; improving profitability"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~19, P/S ~4.5 \u2014 reasonable for the OT franchise after run"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "OT/ICS regulation + exposure-management mandates"
+        }
+      },
+      "snapshot": {
+        "price": 41.29,
+        "market_cap": 4553129984,
+        "pe": 19.013542,
+        "ps": 4.4536967,
+        "1y_pct": 20.55,
+        "3m_pct": 134.87,
+        "1m_pct": 39.07,
+        "dist_from_52w_high_pct": -2.71,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": 0.096,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "VRNS": {
+      "company": "Varonis Systems",
+      "bucket": "OT / ICS / Critical-Infra Specialists",
+      "sub": "Data security / DSPM",
+      "note": "Data-centric security; sticky where data governance mandated (utilities/healthcare); mid SaaS transition",
+      "specificity_meta": 3,
+      "raw_total": 295,
+      "normalized_100": 59.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Data security / DSPM \u2014 sticky where data governance is mandated (utilities/healthcare)"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 86, +102.7% 3M but -10.6% 1Y \u2014 ran hard off a reset base"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Data-centric security relevant to regulated critical-infra data"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "~27% YoY (SaaS transition inflating ARR optics)"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "FCF pressured mid SaaS transition \u2014 watch"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~119, P/S ~8 \u2014 full during the transition"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Data-governance mandates; SaaS transition inflection"
+        }
+      },
+      "snapshot": {
+        "price": 45.67,
+        "market_cap": 5363837440,
+        "pe": 119.48929,
+        "ps": 8.124134,
+        "1y_pct": -10.63,
+        "3m_pct": 102.71,
+        "1m_pct": 36.29,
+        "dist_from_52w_high_pct": -28.53,
+        "rs_3m": 86.0,
+        "revenue_growth_yoy": 0.269,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "RDWR": {
+      "company": "Radware",
+      "bucket": "OT / ICS / Critical-Infra Specialists",
+      "sub": "Application / DDoS / network",
+      "note": "Protects the network layer critical-infra web/app services depend on; smaller, profitable, real cash flow",
+      "specificity_meta": 3,
+      "raw_total": 310,
+      "normalized_100": 62.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Application / DDoS / network security \u2014 protects critical-infra web/app layer"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 29, +11.5% 3M \u2014 mid-low, quiet base"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Network-layer protection; real but a competitive segment"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "~11% YoY, steady"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Profitable with real cash flow; smaller and durable"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~69 but P/S ~4 \u2014 cheap small-cap on sales"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "DDoS/app-security demand from attacks"
+        }
+      },
+      "snapshot": {
+        "price": 30.32,
+        "market_cap": 1275940992,
+        "pe": 68.90909,
+        "ps": 4.120711,
+        "1y_pct": 0.23,
+        "3m_pct": 11.47,
+        "1m_pct": 1.85,
+        "dist_from_52w_high_pct": -5.01,
+        "rs_3m": 29.0,
+        "revenue_growth_yoy": 0.107,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "NET": {
+      "company": "Cloudflare",
+      "bucket": "OT / ICS / Critical-Infra Specialists",
+      "sub": "Infrastructure edge / DDoS",
+      "note": "Internet edge increasingly a security platform (Zero Trust, magic transit); high multiple, improving FCF",
+      "specificity_meta": 3,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Infrastructure edge / DDoS / Zero Trust \u2014 sticky at scale, somewhat substitutable"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 36, +16.9% 3M \u2014 mid, steady"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "The internet edge increasingly a security platform for critical infra"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "~34% YoY \u2014 strongest growth in the universe"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Improving FCF margins as it scales"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E ~157, P/S ~38 \u2014 extreme premium"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Zero-trust + edge-security adoption"
+        }
+      },
+      "snapshot": {
+        "price": 247.55,
+        "market_cap": 87865286656,
+        "pe": 156.81319,
+        "ps": 37.733017,
+        "1y_pct": 28.36,
+        "3m_pct": 16.94,
+        "1m_pct": -6.7,
+        "dist_from_52w_high_pct": -10.57,
+        "rs_3m": 36.0,
+        "revenue_growth_yoy": 0.335,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CHKP": {
+      "company": "Check Point Software (ADR)",
+      "bucket": "OT / ICS / Critical-Infra Specialists",
+      "sub": "Firewall ADR (real revenue)",
+      "note": "Israeli firewall incumbent, liquid US ADR; boring FCF machine \u2014 high margins, strong buyback, modest growth",
+      "specificity_meta": 4,
+      "raw_total": 380,
+      "normalized_100": 76.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Deeply embedded firewalls; high switching cost \u2014 the boring FCF/buyback machine"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 14, -6.3% 3M, -37.7% 1Y \u2014 reset hard; low-RS value setup"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Firewall/network security incumbent with real critical-infra footprint"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "~5% YoY \u2014 the growth drag"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Best-in-class margins + strong buyback culture \u2014 balance-sheet anchor"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E ~14, P/S ~5 \u2014 the cheapest quality name in the universe"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Buyback + slow-and-steady; low near-term catalyst"
+        }
+      },
+      "snapshot": {
+        "price": 138.87,
+        "market_cap": 14446341120,
+        "pe": 14.287036,
+        "ps": 5.2417784,
+        "1y_pct": -37.72,
+        "3m_pct": -6.31,
+        "1m_pct": 2.35,
+        "dist_from_52w_high_pct": -40.16,
+        "rs_3m": 14.0,
+        "revenue_growth_yoy": 0.048,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "OKTA": {
+      "company": "Okta",
+      "bucket": "Identity & Access",
+      "sub": "Workforce + CIAM identity",
+      "note": "Identity-as-perimeter leader, FCF-positive; breach-scar + Entra-bundle risk \u2014 held for structure not narrative",
+      "specificity_meta": 3,
+      "raw_total": 295,
+      "normalized_100": 59.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Workforce/CIAM identity \u2014 critical role but Entra-bundle-contested"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 64, +85.3% 3M \u2014 ran hard off a low base"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Identity-as-perimeter leader; held for structure, breach-scar risk"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "~11% YoY \u2014 decelerated"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "FCF-positive now; margins improving"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~107, P/S ~9 \u2014 full after the 3M run"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Zero-trust identity mandates; competitive pressure"
+        }
+      },
+      "snapshot": {
+        "price": 148.6,
+        "market_cap": 25827774464,
+        "pe": 106.90648,
+        "ps": 8.620752,
+        "1y_pct": 52.57,
+        "3m_pct": 85.31,
+        "1m_pct": 19.21,
+        "dist_from_52w_high_pct": -0.17,
+        "rs_3m": 64.0,
+        "revenue_growth_yoy": 0.112,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CYBR": {
+      "company": "CyberArk Software",
+      "bucket": "Identity & Access",
+      "sub": "Privileged access mgmt (PAM)",
+      "note": "PAM leader; privileged control-system access is the crown-jewel attack surface; strong growth, improving FCF",
+      "specificity_meta": 4,
+      "raw_total": 355,
+      "normalized_100": 71.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "PAM leader \u2014 privileged control-system access is the crown-jewel attack surface"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "No live price this seed (data-source gap) \u2014 neutral RS"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "PAM directly relevant to critical-infra privileged access; better-positioned than OKTA"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Strong ~25%+ growth (from prior data) \u2014 not in this seed"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Improving FCF; quality identity franchise"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "Premium but not extreme (est.) \u2014 no live multiple this seed"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Machine-identity + privileged-access mandates"
+        }
+      },
+      "snapshot": {
+        "price": null,
+        "market_cap": null,
+        "pe": null,
+        "ps": null,
+        "1y_pct": null,
+        "3m_pct": null,
+        "1m_pct": null,
+        "dist_from_52w_high_pct": null,
+        "rs_3m": null,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ARQQ": {
+      "company": "Arqit Quantum (ADR)",
+      "bucket": "Post-Quantum / Encryption",
+      "sub": "PQC pure-play (speculative)",
+      "note": "Genuine PQC pure-play but micro-cap/speculative \u2014 immaterial optionality only; solvency is open research",
+      "specificity_meta": 4,
+      "raw_total": 290,
+      "normalized_100": 58.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Genuine PQC pure-play (rare specificity) but micro-cap solvency dominates"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 57, +58.4% 3M but -38.4% 1Y \u2014 volatile speculative"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Only clean public PQC pure-play \u2014 but immaterial-optionality sizing only"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Revenue tiny/erratic off ~$0 base \u2014 not meaningful"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Losses, cash burn, going-concern risk"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/S ~355, negative earnings \u2014 speculative micro-cap"
+        },
+        "institutional_13f": {
+          "score": 1,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 5,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "PQC-mandate / NIST / NSA headlines \u2014 episodic optionality"
+        }
+      },
+      "snapshot": {
+        "price": 22.13,
+        "market_cap": 385115360,
+        "pe": -20.87736,
+        "ps": 354.6182,
+        "1y_pct": -38.43,
+        "3m_pct": 58.41,
+        "1m_pct": 51.16,
+        "dist_from_52w_high_pct": -64.31,
+        "rs_3m": 57.0,
+        "revenue_growth_yoy": 8.299,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "IBM": {
+      "company": "IBM",
+      "bucket": "Post-Quantum / Encryption",
+      "sub": "Quantum-safe, diffuse (mega-cap)",
+      "note": "Co-authored NIST PQC standards; sells quantum-safe migration; real FCF but PQC is a tiny slice of a mega-cap",
+      "specificity_meta": 3,
+      "raw_total": 300,
+      "normalized_100": 60.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Co-authored NIST PQC standards; real quantum-safe capability but diffuse in a mega-cap"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 43, +21.6% 3M \u2014 mid, steady"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "PQC is a tiny slice of a diversified mega-cap \u2014 diffuse exposure"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "~9.5% YoY \u2014 mega-cap slow growth"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Real FCF, durable \u2014 the balance sheet under the optionality"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~27, P/S ~4 \u2014 reasonable for a cash-generative mega-cap"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Federal PQC migration services; quantum roadmap milestones"
+        }
+      },
+      "snapshot": {
+        "price": 299.52,
+        "market_cap": 281514442752,
+        "pe": 26.52967,
+        "ps": 4.085189,
+        "1y_pct": 5.03,
+        "3m_pct": 21.58,
+        "1m_pct": -2.0,
+        "dist_from_52w_high_pct": -9.91,
+        "rs_3m": 43.0,
+        "revenue_growth_yoy": 0.095,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "BAH": {
+      "company": "Booz Allen Hamilton",
+      "bucket": "Post-Quantum / Encryption",
+      "sub": "Gov-focused integrator",
+      "note": "Federal cyber + PQC migration services; implements federal directives; cross-theme, small, real FCF",
+      "specificity_meta": 3,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Federal cyber + PQC migration services \u2014 procurement-framework moat"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 7, -24.5% 3M, -42% 1Y \u2014 deep drawdown"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Implements federal directives + PQC migration; cross-theme, small"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "-6.5% YoY \u2014 federal budget softness the drag"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Real FCF; clean balance sheet"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E ~9, P/S ~0.7 \u2014 very cheap after the drawdown"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Federal cyber contract flow; PQC migration mandates"
+        }
+      },
+      "snapshot": {
+        "price": 62.31,
+        "market_cap": 7473090048,
+        "pe": 9.030435,
+        "ps": 0.6662289,
+        "1y_pct": -42.05,
+        "3m_pct": -24.48,
+        "1m_pct": -20.03,
+        "dist_from_52w_high_pct": -46.7,
+        "rs_3m": 7.0,
+        "revenue_growth_yoy": -0.065,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "LDOS": {
+      "company": "Leidos Holdings",
+      "bucket": "Post-Quantum / Encryption",
+      "sub": "Gov-focused integrator",
+      "note": "Federal IT/cyber integrator with critical-infra contracts; cross-theme, small; cheap and cash-generative",
+      "specificity_meta": 3,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Federal IT/cyber integrator with critical-infra contracts \u2014 procurement moat"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 0, -31.3% 3M, -33% 1Y \u2014 deep drawdown, worst RS in universe"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Critical-infra IT/cyber services; cross-theme, small"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "~4% YoY \u2014 slow"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Steady margins, real cash flow"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E ~10, P/S ~0.8 \u2014 cheapest on earnings in the universe"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; refresh via FMP to sharpen"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Federal program awards; critical-infra IT spend"
+        }
+      },
+      "snapshot": {
+        "price": 108.72,
+        "market_cap": 13675396096,
+        "pe": 9.946935,
+        "ps": 0.78916246,
+        "1y_pct": -33.2,
+        "3m_pct": -31.3,
+        "1m_pct": -12.26,
+        "dist_from_52w_high_pct": -46.73,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": 0.037,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    }
+  }
+}

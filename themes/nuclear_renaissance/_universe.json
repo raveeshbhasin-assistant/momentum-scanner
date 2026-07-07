@@ -1,0 +1,21 @@
+{
+  "LEU":  {"company": "Centrus Energy",       "bucket": "Enrichment & HALEU", "sub": "Enrichment / HALEU",              "specificity": 5, "note": "Sole US-owned enricher; $900M fixed-price DOE HALEU contract (2026-06-30) + $2.4B LEU backlog. The purest bottleneck in the theme."},
+
+  "CCJ":  {"company": "Cameco",               "bucket": "Mining & Conversion", "sub": "Tier-1 mining + conversion + 49% Westinghouse", "specificity": 4, "note": "Theme blue chip: tier-1 pounds, UF6 conversion scarcity, and reactor-services exposure in one balance sheet."},
+  "UEC":  {"company": "Uranium Energy Corp",  "bucket": "Mining & Conversion", "sub": "US ISR production",              "specificity": 3, "note": "Largest US-listed pure-play miner; unhedged spot leverage; ramping Wyoming/Texas ISR hubs. Most substitutable pounds in the stack."},
+  "UUUU": {"company": "Energy Fuels",         "bucket": "Mining & Conversion", "sub": "US conventional milling",        "specificity": 4, "note": "White Mesa is the only operating conventional US uranium mill; rare-earth line dilutes purity but adds policy support."},
+  "NXE":  {"company": "NexGen Energy",        "bucket": "Mining & Conversion", "sub": "Development (Rook I, Athabasca)", "specificity": 3, "note": "Speculative: world-class undeveloped deposit; licensing timeline has slipped. Optionality, not cash flow."},
+
+  "BWXT": {"company": "BWX Technologies",     "bucket": "OEM, Components & Services", "sub": "Nuclear components / naval + commercial", "specificity": 5, "note": "Sole-source naval reactor manufacturer; building the RPV for Darlington's first BWRX-300; TRISO/HALEU fuel work. Decades of NRC/Navy qualification."},
+  "GEV":  {"company": "GE Vernova",          "bucket": "OEM, Components & Services", "sub": "Reactor OEM (BWRX-300) + grid", "specificity": 4, "note": "BWRX-300 is the West's lead SMR order book (Darlington x4, TVA Clinch River, Poland, Sweden); nuclear is a slice of a big company."},
+  "CW":   {"company": "Curtiss-Wright",       "bucket": "OEM, Components & Services", "sub": "Reactor coolant pumps, valves, I&C", "specificity": 4, "note": "Legacy sole-source content across the operating fleet + AP1000; every restart and uprate is aftermarket revenue."},
+  "MIR":  {"company": "Mirion Technologies",  "bucket": "OEM, Components & Services", "sub": "Radiation detection & measurement", "specificity": 4, "note": "Every reactor, restart, and fuel facility needs dosimetry/monitoring; recurring, design-agnostic demand."},
+
+  "CEG":  {"company": "Constellation Energy", "bucket": "Operators & Restarts", "sub": "Largest US nuclear fleet + Crane restart", "specificity": 4, "note": "Microsoft 837 MW / 20-yr (Crane, 2027 restart) + Meta 1.1 GW / 20-yr (Clinton); the restart-execution flagship."},
+  "TLN":  {"company": "Talen Energy",         "bucket": "Operators & Restarts", "sub": "Susquehanna + AWS campus",       "specificity": 3, "note": "Amazon 1.92 GW / 17-yr PPA; the most concentrated single-site expression of nuclear-to-datacenter."},
+  "VST":  {"company": "Vistra",               "bucket": "Operators & Restarts", "sub": "Nuclear + retail + gas fleet",   "specificity": 3, "note": "Real nuclear fleet (Comanche Peak) but gas-heavy generation mix dilutes theme exposure vs CEG/TLN."},
+  "D":    {"company": "Dominion Energy",      "bucket": "Operators & Restarts", "sub": "Regulated utility w/ nuclear + Virginia DC load", "specificity": 2, "note": "Regulated utility at the epicenter of Virginia data-center load; nuclear is a small, rate-based slice — lowest-specificity operator."},
+
+  "SMR":  {"company": "NuScale Power",        "bucket": "SMR Developers", "sub": "Light-water SMR design",         "specificity": 2, "note": "SPECULATIVE: only NRC-certified SMR design; ENTRA1/TVA program talks up to 6 GW — none of it revenue yet. Optionality sleeve."},
+  "OKLO": {"company": "Oklo",                 "bucket": "SMR Developers", "sub": "Fast microreactor + fuel recycling", "specificity": 2, "note": "SPECULATIVE: broke ground at INL (2025-09); DOE pilot darling; pre-revenue, dilution certain. Optionality sleeve."}
+}

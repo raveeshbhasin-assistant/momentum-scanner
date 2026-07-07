@@ -1,0 +1,1650 @@
+{
+  "theme": "reshoring",
+  "scored_at": "2026-07-07T02:48:55.429187Z",
+  "trade_date": "2026-07-06",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 10,
+    "theme_exposure": 15,
+    "revenue_growth": 10,
+    "margin_durability": 5,
+    "valuation_runway": 15,
+    "institutional_13f": 5,
+    "capital_structure": 20,
+    "catalyst_proximity": 0
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "capital_structure": "auto-from-fmp",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "PWR": {
+      "company": "Quanta Services",
+      "bucket": "E&C / Contractors",
+      "sub": "Electrical infrastructure E&C",
+      "note": "Largest specialty electrical/utility contractor; multi-year backlog on grid + factory power tie-ins",
+      "specificity_meta": 5,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Largest specialty electrical/utility E&C; scarce-labor moat + multi-year backlog \u2014 the cleanest enabler"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 76, 3M +20.2% \u2014 healthy momentum, not asymmetric"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Direct build-out exposure: grid, substations, factory power tie-ins"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +26.3% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Thin gross margin (15%) typical of E&C; backlog quality offsets"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~93 \u2014 richly valued, the narrative is in the price"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Shares 4/5 (+1.2% minimal) \u00b7 Debt 1/5 (+43.3% heavy) \u00b7 SBC 5/5 (0.6% rev minimal) \u00b7 FCF margin 2/5 (3.4% thin)"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Megaproject awards + book-to-bill above 1"
+        }
+      },
+      "snapshot": {
+        "price": 674.04,
+        "market_cap": 101146533888,
+        "pe": 92.587906,
+        "ps": 3.3579905,
+        "1y_pct": 74.86,
+        "3m_pct": 20.25,
+        "1m_pct": -5.8,
+        "dist_from_52w_high_pct": -14.53,
+        "rs_3m": 76.0,
+        "revenue_growth_yoy": 0.263,
+        "shares_growth_yoy": 0.012115,
+        "debt_growth_yoy": 0.433136,
+        "sbc_pct_revenue": 0.006041,
+        "fcf_margin": 0.034434
+      }
+    },
+    "EME": {
+      "company": "EMCOR Group",
+      "bucket": "E&C / Contractors",
+      "sub": "Mechanical / electrical E&C",
+      "note": "Mechanical + electrical construction for factories/data centers; record backlog, buyback culture",
+      "specificity_meta": 4,
+      "raw_total": 395,
+      "normalized_100": 79.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Mechanical + electrical construction for factories/DCs; record backlog"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 24, 3M +4.2% \u2014 cooled off; low-RS-but-positioned setup (asymmetric)"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Direct factory/industrial mechanical + electrical build"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +19.7% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "~19% gross margin, improving with mix"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~27 \u2014 most reasonable multiple among the growth E&C names"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 5/5 (-2.1% buyback) \u00b7 Debt 1/5 (+36.6% heavy) \u00b7 SBC 5/5 (0.1% rev minimal) \u00b7 FCF margin 3/5 (5.0% modest)"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Backlog conversion + buyback"
+        }
+      },
+      "snapshot": {
+        "price": 787.29,
+        "market_cap": 35060043776,
+        "pe": 26.46353,
+        "ps": 1.975516,
+        "1y_pct": 43.12,
+        "3m_pct": 4.15,
+        "1m_pct": -6.22,
+        "dist_from_52w_high_pct": -17.3,
+        "rs_3m": 24.0,
+        "revenue_growth_yoy": 0.197,
+        "shares_growth_yoy": -0.020673,
+        "debt_growth_yoy": 0.36575,
+        "sbc_pct_revenue": 0.00116,
+        "fcf_margin": 0.050234
+      }
+    },
+    "FIX": {
+      "company": "Comfort Systems USA",
+      "bucket": "E&C / Contractors",
+      "sub": "HVAC / mechanical E&C",
+      "note": "Industrial HVAC + modular process piping; direct chip-fab / factory exposure",
+      "specificity_meta": 4,
+      "raw_total": 330,
+      "normalized_100": 66.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Industrial HVAC + modular process piping; direct chip-fab exposure"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 88, 3M +26.6%, 1Y +232% \u2014 extended, ran very hard"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Modular-mechanical niche with direct megaproject exposure"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev +1.0% YoY \u2014 decelerated after huge prior-year run"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "~25% gross margin, best-in-class for mechanical E&C"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~52 after 232% 1Y \u2014 priced for perfection"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 5/5 (-0.3% buyback) \u00b7 Debt 1/5 (+56.6% heavy) \u00b7 SBC 5/5 (0.2% rev minimal) \u00b7 FCF margin 4/5 (10.9% healthy)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Backlog + megaproject cadence"
+        }
+      },
+      "snapshot": {
+        "price": 1793.03,
+        "market_cap": 63085912064,
+        "pe": 51.746895,
+        "ps": 6.224138,
+        "1y_pct": 231.88,
+        "3m_pct": 26.57,
+        "1m_pct": -3.08,
+        "dist_from_52w_high_pct": -13.51,
+        "rs_3m": 88.0,
+        "revenue_growth_yoy": 0.01,
+        "shares_growth_yoy": -0.002575,
+        "debt_growth_yoy": 0.566293,
+        "sbc_pct_revenue": 0.002152,
+        "fcf_margin": 0.108513
+      }
+    },
+    "MTZ": {
+      "company": "MasTec",
+      "bucket": "E&C / Contractors",
+      "sub": "Infrastructure E&C",
+      "note": "Power delivery + communications + clean-energy build; diversified infra contractor",
+      "specificity_meta": 3,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Diversified infra E&C \u2014 power delivery + comms + clean energy; more competitively bid"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 65, 3M +13.2% \u2014 mid-high momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Real but diffuse infra exposure"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +34.5% YoY \u2014 fastest ex-STRL"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Thin ~13% gross margin"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~67 \u2014 full"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 4/5 (+0.1% minimal) \u00b7 Debt 3/5 (+6.4% moderate) \u00b7 SBC 5/5 (0.2% rev minimal) \u00b7 FCF margin 2/5 (0.1% thin)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Power delivery + clean-energy awards"
+        }
+      },
+      "snapshot": {
+        "price": 380.63,
+        "market_cap": 30076835840,
+        "pe": 66.66025,
+        "ps": 1.9683466,
+        "1y_pct": 121.32,
+        "3m_pct": 13.2,
+        "1m_pct": 2.97,
+        "dist_from_52w_high_pct": -13.77,
+        "rs_3m": 65.0,
+        "revenue_growth_yoy": 0.345,
+        "shares_growth_yoy": 0.001467,
+        "debt_growth_yoy": 0.063677,
+        "sbc_pct_revenue": 0.002225,
+        "fcf_margin": 0.000822
+      }
+    },
+    "PRIM": {
+      "company": "Primoris Services",
+      "bucket": "E&C / Contractors",
+      "sub": "Energy / utility E&C",
+      "note": "Utility + industrial + renewables construction; smaller-cap backlog compounder",
+      "specificity_meta": 3,
+      "raw_total": 355,
+      "normalized_100": 71.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Utility + industrial + renewables construction; smaller-cap, bid-competitive"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "RS 0, 3M -38.9%, -56% off high \u2014 deeply washed out; max asymmetric-entry setup"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Real utility/industrial exposure but diffuse"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -5.4% YoY \u2014 contracted"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Thin ~10% gross margin"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E ~20 \u2014 cheapest E&C; heavily de-rated"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 4/5 (+0.6% minimal) \u00b7 Debt 5/5 (-20.1% paying down) \u00b7 SBC 5/5 (0.3% rev minimal) \u00b7 FCF margin 2/5 (1.7% thin)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Turnaround / backlog recovery uncertain"
+        }
+      },
+      "snapshot": {
+        "price": 90.2,
+        "market_cap": 4893794816,
+        "pe": 19.911697,
+        "ps": 0.6536651,
+        "1y_pct": 6.24,
+        "3m_pct": -38.93,
+        "1m_pct": -28.54,
+        "dist_from_52w_high_pct": -56.07,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": -0.054,
+        "shares_growth_yoy": 0.006301,
+        "debt_growth_yoy": -0.201059,
+        "sbc_pct_revenue": 0.002752,
+        "fcf_margin": 0.017129
+      }
+    },
+    "STRL": {
+      "company": "Sterling Infrastructure",
+      "bucket": "E&C / Contractors",
+      "sub": "Site development / e-infrastructure",
+      "note": "Site-development for data centers + manufacturing pads; highest-margin E&C in cohort",
+      "specificity_meta": 4,
+      "raw_total": 350,
+      "normalized_100": 70.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Site development for DCs + manufacturing pads; highest-margin E&C in cohort"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 100, 3M +72.2%, 1Y +203% \u2014 peak momentum, most extended name"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Site-dev pads for exactly the factories/DCs being built"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +91.6% YoY \u2014 cohort-leading"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "~23% gross margin, expanding \u2014 unusual for E&C"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E ~64 at all-time highs \u2014 priced for perfection"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 4/5 (+0.9% minimal) \u00b7 Debt 4/5 (-5.2% flat) \u00b7 SBC 5/5 (0.8% rev minimal) \u00b7 FCF margin 4/5 (12.0% healthy)"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Data-center + factory site-dev award cadence"
+        }
+      },
+      "snapshot": {
+        "price": 717.11,
+        "market_cap": 22005204992,
+        "pe": 63.970562,
+        "ps": 7.6280494,
+        "1y_pct": 202.58,
+        "3m_pct": 72.24,
+        "1m_pct": -25.07,
+        "dist_from_52w_high_pct": -28.69,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": 0.916,
+        "shares_growth_yoy": 0.008842,
+        "debt_growth_yoy": -0.052427,
+        "sbc_pct_revenue": 0.008382,
+        "fcf_margin": 0.12025
+      }
+    },
+    "ROK": {
+      "company": "Rockwell Automation",
+      "bucket": "Factory Automation",
+      "sub": "Industrial automation / control",
+      "note": "Purest US factory-automation play; installed-base + software attach as reshored plants come online",
+      "specificity_meta": 5,
+      "raw_total": 390,
+      "normalized_100": 78.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Purest US factory-automation play; installed-base + software attach lock-in"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 94, 3M +32.7% \u2014 extended but automation re-rating supported"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Monetizes plants as they come online; shared with AI-DC/robotics"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +11.9% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "~49% gross margin, high-quality recurring attach"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~50 \u2014 full for a mid-cycle automation name"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 5,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 100,
+          "rationale": "Shares 5/5 (-1.6% buyback) \u00b7 Debt 5/5 (-10.7% paying down) \u00b7 SBC 5/5 (1.0% rev minimal) \u00b7 FCF margin 4/5 (11.1% healthy)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Reshored-plant equipping + software attach"
+        }
+      },
+      "snapshot": {
+        "price": 482.87,
+        "market_cap": 53730852864,
+        "pe": 50.194386,
+        "ps": 6.103005,
+        "1y_pct": 44.48,
+        "3m_pct": 32.69,
+        "1m_pct": 4.58,
+        "dist_from_52w_high_pct": -2.91,
+        "rs_3m": 94.0,
+        "revenue_growth_yoy": 0.119,
+        "shares_growth_yoy": -0.01591,
+        "debt_growth_yoy": -0.107222,
+        "sbc_pct_revenue": 0.009655,
+        "fcf_margin": 0.110688
+      }
+    },
+    "EMR": {
+      "company": "Emerson Electric",
+      "bucket": "Factory Automation",
+      "sub": "Process automation",
+      "note": "Process automation + measurement; post-portfolio-reshape pure-play automation",
+      "specificity_meta": 4,
+      "raw_total": 365,
+      "normalized_100": 73.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Process automation + measurement; post-reshape pure-play automation"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 47, 3M +7.9% \u2014 mid, room to run"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Process-industry automation for reshored chemical/energy plants"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev +2.9% YoY \u2014 slow"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "~53% gross margin, strong FCF (17.9%)"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~33 \u2014 reasonable for the quality"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 5/5 (-0.7% buyback) \u00b7 Debt 1/5 (+64.7% heavy) \u00b7 SBC 5/5 (1.4% rev minimal) \u00b7 FCF margin 4/5 (17.9% healthy)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Automation-capex cycle"
+        }
+      },
+      "snapshot": {
+        "price": 141.56,
+        "market_cap": 79287746560,
+        "pe": 32.768517,
+        "ps": 4.328879,
+        "1y_pct": 3.95,
+        "3m_pct": 7.92,
+        "1m_pct": 0.48,
+        "dist_from_52w_high_pct": -13.61,
+        "rs_3m": 47.0,
+        "revenue_growth_yoy": 0.029,
+        "shares_growth_yoy": -0.006739,
+        "debt_growth_yoy": 0.646601,
+        "sbc_pct_revenue": 0.014359,
+        "fcf_margin": 0.178655
+      }
+    },
+    "ETN": {
+      "company": "Eaton",
+      "bucket": "Factory Automation",
+      "sub": "Electrical / power management",
+      "note": "Intelligent power management for factories; overlaps AI-DC theme but reshoring-relevant",
+      "specificity_meta": 4,
+      "raw_total": 350,
+      "normalized_100": 70.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Intelligent power management for factories + grid"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 71, 3M +14.8% \u2014 solid momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Real reshoring exposure but overlaps AI-DC theme heavily \u2014 shared sleeve"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +16.8% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "~37% gross margin, healthy FCF"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~40 \u2014 full, crowded name"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 5/5 (-0.8% buyback) \u00b7 Debt 3/5 (+7.2% moderate) \u00b7 SBC 3/5 (n/a) \u00b7 FCF margin 3/5 (9.3% modest)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Power-management backlog"
+        }
+      },
+      "snapshot": {
+        "price": 413.42,
+        "market_cap": 160530989056,
+        "pe": 40.531376,
+        "ps": 5.6283216,
+        "1y_pct": 16.66,
+        "3m_pct": 14.81,
+        "1m_pct": -1.85,
+        "dist_from_52w_high_pct": -5.34,
+        "rs_3m": 71.0,
+        "revenue_growth_yoy": 0.168,
+        "shares_growth_yoy": -0.007667,
+        "debt_growth_yoy": 0.072396,
+        "sbc_pct_revenue": null,
+        "fcf_margin": 0.092788
+      }
+    },
+    "CMI": {
+      "company": "Cummins",
+      "bucket": "Factory Automation",
+      "sub": "Power systems / capital goods",
+      "note": "Engines + power gen + industrial; backup power and process capital goods for new plants",
+      "specificity_meta": 3,
+      "raw_total": 275,
+      "normalized_100": 55.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Engines + power gen + industrial; backup power for new plants \u2014 diffuse"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 82, 3M +23.8%, 1Y +110% \u2014 extended"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Reshoring exposure is a slice; trucking/engine cycle dominates"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev +2.7% YoY \u2014 slow"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "~26% gross margin"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~35 \u2014 fair"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Shares 4/5 (+0.2% minimal) \u00b7 Debt 3/5 (+6.8% moderate) \u00b7 SBC 3/5 (n/a) \u00b7 FCF margin 2/5 (5.0% thin)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Power-gen + industrial demand"
+        }
+      },
+      "snapshot": {
+        "price": 678.24,
+        "market_cap": 93589708800,
+        "pe": 35.21495,
+        "ps": 2.761247,
+        "1y_pct": 110.19,
+        "3m_pct": 23.78,
+        "1m_pct": -0.6,
+        "dist_from_52w_high_pct": -8.07,
+        "rs_3m": 82.0,
+        "revenue_growth_yoy": 0.027,
+        "shares_growth_yoy": 0.00151,
+        "debt_growth_yoy": 0.067913,
+        "sbc_pct_revenue": null,
+        "fcf_margin": 0.049821
+      }
+    },
+    "PH": {
+      "company": "Parker Hannifin",
+      "bucket": "Factory Automation",
+      "sub": "Motion & control / capital goods",
+      "note": "Motion, fluid power, filtration \u2014 the plumbing of automated factories; aerospace-quality margins",
+      "specificity_meta": 4,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Motion, fluid power, filtration \u2014 the plumbing of automated factories"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 41, 3M +7.2% \u2014 mid, not extended"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Broad content per plant but aerospace/industrial diluted"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +10.6% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "~37% gross margin, aerospace-quality; FCF 13.2%"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~36 \u2014 reasonable for the compounder"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 5,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 100,
+          "rationale": "Shares 5/5 (-2.1% buyback) \u00b7 Debt 5/5 (-12.1% paying down) \u00b7 SBC 5/5 (0.8% rev minimal) \u00b7 FCF margin 4/5 (13.2% healthy)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Factory motion/filtration content growth"
+        }
+      },
+      "snapshot": {
+        "price": 971.36,
+        "market_cap": 122475274240,
+        "pe": 35.896526,
+        "ps": 5.835768,
+        "1y_pct": 38.67,
+        "3m_pct": 7.21,
+        "1m_pct": 14.18,
+        "dist_from_52w_high_pct": -5.93,
+        "rs_3m": 41.0,
+        "revenue_growth_yoy": 0.106,
+        "shares_growth_yoy": -0.020802,
+        "debt_growth_yoy": -0.120739,
+        "sbc_pct_revenue": 0.007576,
+        "fcf_margin": 0.1322
+      }
+    },
+    "VMC": {
+      "company": "Vulcan Materials",
+      "bucket": "Building Products / Materials",
+      "sub": "Aggregates",
+      "note": "Largest US aggregates producer; local-monopoly quarries, pure pricing-power play on construction volume",
+      "specificity_meta": 5,
+      "raw_total": 390,
+      "normalized_100": 78.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Largest US aggregates producer; local-monopoly quarries \u2014 pure structural pricing power"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 59, 3M +9.1% \u2014 mid, room to run"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Aggregates into every slab/road/pad of the build-out"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +7.4% YoY \u2014 volume steady, pricing compounds"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "~28% gross margin, above-inflation pricing power"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~36 \u2014 fair for the local-monopoly moat"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 5/5 (-1.8% buyback) \u00b7 Debt 5/5 (-16.2% paying down) \u00b7 SBC 5/5 (0.8% rev minimal) \u00b7 FCF margin 2/5 (3.0% thin)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Construction volume + annual price resets"
+        }
+      },
+      "snapshot": {
+        "price": 304.84,
+        "market_cap": 39554478080,
+        "pe": 36.161327,
+        "ps": 4.9060426,
+        "1y_pct": 15.0,
+        "3m_pct": 9.13,
+        "1m_pct": 6.85,
+        "dist_from_52w_high_pct": -7.57,
+        "rs_3m": 59.0,
+        "revenue_growth_yoy": 0.074,
+        "shares_growth_yoy": -0.017924,
+        "debt_growth_yoy": -0.161972,
+        "sbc_pct_revenue": 0.007826,
+        "fcf_margin": 0.030312
+      }
+    },
+    "MLM": {
+      "company": "Martin Marietta",
+      "bucket": "Building Products / Materials",
+      "sub": "Aggregates",
+      "note": "#2 aggregates; same local-monopoly economics as VMC, heavy infra/factory-slab exposure",
+      "specificity_meta": 5,
+      "raw_total": 415,
+      "normalized_100": 83.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "#2 US aggregates; same local-monopoly economics as VMC"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 6, 3M +1.4% \u2014 deeply lagging cohort; low-RS asymmetric setup on a quality name"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Heavy infra + factory-slab aggregates exposure"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +17.2% YoY \u2014 strong for aggregates"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "~30% gross margin, FCF 13.3% \u2014 best of the materials names"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~38 \u2014 fair"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 5/5 (-0.4% buyback) \u00b7 Debt 4/5 (-1.6% flat) \u00b7 SBC 5/5 (0.7% rev minimal) \u00b7 FCF margin 4/5 (13.3% healthy)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Volume cycle + pricing power"
+        }
+      },
+      "snapshot": {
+        "price": 605.3,
+        "market_cap": 36345782272,
+        "pe": 37.97365,
+        "ps": 5.7237453,
+        "1y_pct": 9.24,
+        "3m_pct": 1.36,
+        "1m_pct": 3.8,
+        "dist_from_52w_high_pct": -14.76,
+        "rs_3m": 6.0,
+        "revenue_growth_yoy": 0.172,
+        "shares_growth_yoy": -0.003973,
+        "debt_growth_yoy": -0.015531,
+        "sbc_pct_revenue": 0.007244,
+        "fcf_margin": 0.132559
+      }
+    },
+    "CRH": {
+      "company": "CRH plc (US-listed)",
+      "bucket": "Building Products / Materials",
+      "sub": "Materials / building products",
+      "note": "NYSE-primary listing; diversified aggregates + cement + building products, largest US materials footprint",
+      "specificity_meta": 4,
+      "raw_total": 385,
+      "normalized_100": 77.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Aggregates + cement + building products; largest US materials footprint (NYSE-primary)"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 12, 3M +3.2% \u2014 lagging; low-RS-but-quality setup"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Diversified, scaled materials exposure to US build-out"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +9.1% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "~36% gross margin, diversified"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E ~20 \u2014 cheapest quality materials name in cohort"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Shares 5/5 (-1.1% buyback) \u00b7 Debt 1/5 (+26.6% heavy) \u00b7 SBC 5/5 (0.4% rev minimal) \u00b7 FCF margin 2/5 (2.1% thin)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "US infra + factory materials demand"
+        }
+      },
+      "snapshot": {
+        "price": 107.58,
+        "market_cap": 71884980224,
+        "pe": 19.959185,
+        "ps": 1.8886782,
+        "1y_pct": 14.85,
+        "3m_pct": 3.19,
+        "1m_pct": 1.6,
+        "dist_from_52w_high_pct": -17.63,
+        "rs_3m": 12.0,
+        "revenue_growth_yoy": 0.091,
+        "shares_growth_yoy": -0.010922,
+        "debt_growth_yoy": 0.266063,
+        "sbc_pct_revenue": 0.003757,
+        "fcf_margin": 0.020654
+      }
+    },
+    "BLDR": {
+      "company": "Builders FirstSource",
+      "bucket": "Building Products / Materials",
+      "sub": "Building products distribution",
+      "note": "Structural building products + distribution; more housing-levered but scaled reshoring beneficiary",
+      "specificity_meta": 3,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Structural building products + distribution; more housing-levered than factory-levered"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 18, 3M +4.1%, 1Y -34% \u2014 beaten down on housing cycle"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Reshoring exposure is indirect; residential construction dominates"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -10.1% YoY \u2014 housing-cycle contraction"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "~30% gross margin"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~31 but de-rated hard; cheap on normalized earnings"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 5/5 (-2.7% buyback) \u00b7 Debt 2/5 (+17.7% significant) \u00b7 SBC 5/5 (0.4% rev minimal) \u00b7 FCF margin 2/5 (4.3% thin)"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Housing recovery dependent \u2014 off-thesis timing"
+        }
+      },
+      "snapshot": {
+        "price": 82.33,
+        "market_cap": 8855404544,
+        "pe": 31.423666,
+        "ps": 0.59752184,
+        "1y_pct": -34.06,
+        "3m_pct": 4.06,
+        "1m_pct": 10.87,
+        "dist_from_52w_high_pct": -45.49,
+        "rs_3m": 18.0,
+        "revenue_growth_yoy": -0.101,
+        "shares_growth_yoy": -0.02674,
+        "debt_growth_yoy": 0.177124,
+        "sbc_pct_revenue": 0.003611,
+        "fcf_margin": 0.043245
+      }
+    },
+    "PLD": {
+      "company": "Prologis",
+      "bucket": "Industrial REITs",
+      "sub": "Logistics / industrial REIT",
+      "note": "Largest industrial REIT; landlords the logistics + light-manufacturing footprint of reshoring",
+      "specificity_meta": 4,
+      "raw_total": 360,
+      "normalized_100": 72.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Largest logistics REIT; landlords the logistics + light-mfg footprint"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 35, 3M +5.6% \u2014 mid; rate-sensitive"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Broad logistics landlording; some DC-conversion optionality overlap"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +8.3% YoY \u2014 steady rent growth"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "~76% gross margin, FCF 51.7% \u2014 REIT economics"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/S ~14 rich but REIT-appropriate; re-leasing spreads support"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 4/5 (+0.1% minimal) \u00b7 Debt 2/5 (+13.3% significant) \u00b7 SBC 5/5 (2.0% rev minimal) \u00b7 FCF margin 5/5 (51.8% strong)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Lease-roll mark-to-market + reshoring demand"
+        }
+      },
+      "snapshot": {
+        "price": 140.2,
+        "market_cap": 133764259840,
+        "pe": 35.31486,
+        "ps": 14.266495,
+        "1y_pct": 36.13,
+        "3m_pct": 5.57,
+        "1m_pct": -0.42,
+        "dist_from_52w_high_pct": -5.97,
+        "rs_3m": 35.0,
+        "revenue_growth_yoy": 0.083,
+        "shares_growth_yoy": 0.001015,
+        "debt_growth_yoy": 0.132911,
+        "sbc_pct_revenue": 0.019781,
+        "fcf_margin": 0.517732
+      }
+    },
+    "REXR": {
+      "company": "Rexford Industrial",
+      "bucket": "Industrial REITs",
+      "sub": "Infill SoCal industrial REIT",
+      "note": "Infill Southern California industrial; irreplaceable land, extreme pricing power on re-leasing",
+      "specificity_meta": 4,
+      "raw_total": 345,
+      "normalized_100": 69.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Infill SoCal industrial; irreplaceable land, extreme re-leasing pricing power"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 29, 3M +4.8%, 1Y -2.2% \u2014 lagging, rate-pressured"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Infill industrial land-scarcity premium; SoCal-concentrated"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -2.9% YoY \u2014 soft near-term, embedded mark-to-market ahead"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "~77% gross margin; SBC 10.1% is high for a REIT"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/S ~8 \u2014 reasonable for infill quality"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 5/5 (-8.0% buyback) \u00b7 Debt 4/5 (-2.8% flat) \u00b7 SBC 2/5 (10.1% rev high) \u00b7 FCF margin 5/5 (21.4% strong)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Lease-roll re-leasing spreads"
+        }
+      },
+      "snapshot": {
+        "price": 34.26,
+        "market_cap": 7926545920,
+        "pe": 36.446808,
+        "ps": 7.958987,
+        "1y_pct": -2.19,
+        "3m_pct": 4.77,
+        "1m_pct": 2.06,
+        "dist_from_52w_high_pct": -19.88,
+        "rs_3m": 29.0,
+        "revenue_growth_yoy": -0.029,
+        "shares_growth_yoy": -0.080147,
+        "debt_growth_yoy": -0.028109,
+        "sbc_pct_revenue": 0.100891,
+        "fcf_margin": 0.214024
+      }
+    },
+    "STAG": {
+      "company": "Stag Industrial",
+      "bucket": "Industrial REITs",
+      "sub": "Secondary-market industrial REIT",
+      "note": "Single-tenant industrial in secondary markets; higher-yield exposure to distribution/manufacturing",
+      "specificity_meta": 3,
+      "raw_total": 345,
+      "normalized_100": 69.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Single-tenant industrial in secondary markets; more diffuse tenant base"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 53, 3M +8.1% \u2014 mid"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Secondary-market distribution/manufacturing landlord"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +9.1% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "~80% gross margin, FCF 52.9% \u2014 clean REIT economics"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/S ~9, higher yield \u2014 reasonable"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 4,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 80,
+          "rationale": "Shares 4/5 (+0.4% minimal) \u00b7 Debt 3/5 (+7.4% moderate) \u00b7 SBC 5/5 (1.5% rev minimal) \u00b7 FCF margin 5/5 (52.9% strong)"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Rent escalators + occupancy"
+        }
+      },
+      "snapshot": {
+        "price": 39.1,
+        "market_cap": 7632492544,
+        "pe": 30.310078,
+        "ps": 8.835774,
+        "1y_pct": 12.56,
+        "3m_pct": 8.05,
+        "1m_pct": 8.14,
+        "dist_from_52w_high_pct": -1.25,
+        "rs_3m": 53.0,
+        "revenue_growth_yoy": 0.091,
+        "shares_growth_yoy": 0.004276,
+        "debt_growth_yoy": 0.074048,
+        "sbc_pct_revenue": 0.014724,
+        "fcf_margin": 0.52941
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "MP":   {"company": "MP Materials",                "bucket": "Separation & Magnets", "sub": "RE separation + NdFeB magnets",       "specificity": 5, "note": "Flagship. Mountain Pass mine + separation + Fort Worth magnet plant. DoD 2025 equity stake + ~$110/kg NdPr price floor + 10-yr magnet offtake. The funded, permitted, offtake-backed midstream reference."},
+  "USAR": {"company": "USA Rare Earth",              "bucket": "Separation & Magnets", "sub": "NdFeB magnets + heavy-RE",           "specificity": 5, "note": "Pure-play magnet + heavy-RE (Stillwater magnet plant + Round Top HREE). Funded but early — commissioning + cash runway is the key research item."},
+  "UUUU": {"company": "Energy Fuels",                "bucket": "Separation & Magnets", "sub": "RE separation + uranium crossover",  "specificity": 4, "note": "White Mesa mill: only US mill doing both uranium and operating RE separation (monazite). Diluted by uranium/vanadium but real separation optionality."},
+
+  "ALB":  {"company": "Albemarle",                   "bucket": "Lithium Chemistry",    "sub": "Lithium major + conversion",         "specificity": 3, "note": "Largest, most diversified lithium major; real cash flow but full commodity-price whipsaw. Benchmark anchor."},
+  "SQM":  {"company": "Sociedad Quimica (ADR)",      "bucket": "Lithium Chemistry",    "sub": "Atacama brine lithium (ADR)",        "specificity": 3, "note": "Lowest-cost brine producer; Chilean political/royalty overhang."},
+  "LAC":  {"company": "Lithium Americas",            "bucket": "Lithium Chemistry",    "sub": "Thacker Pass — largest US Li resource","specificity": 4, "note": "US DOE loan + GM offtake; pre-major-revenue, ramp + capital-structure risk. High US-resource specificity."},
+  "SGML": {"company": "Sigma Lithium",              "bucket": "Lithium Chemistry",    "sub": "Grota do Cirilo hard-rock spodumene","specificity": 3, "note": "Low-cost Brazil producer, early revenue, persistent takeover chatter."},
+
+  "FCX":  {"company": "Freeport-McMoRan",            "bucket": "Diversified / Copper", "sub": "Copper major (+ gold, moly)",        "specificity": 4, "note": "Largest liquid US-listed copper pure-play; leveraged to electrification/AI-power demand."},
+  "SCCO": {"company": "Southern Copper",             "bucket": "Diversified / Copper", "sub": "Low-cost Peru/Mexico copper",        "specificity": 4, "note": "Lowest-cost, longest-reserve-life copper; Grupo Mexico control overhang."},
+  "VALE": {"company": "Vale (ADR)",                  "bucket": "Diversified / Copper", "sub": "Iron ore + nickel + copper (ADR)",   "specificity": 3, "note": "Nickel/copper give critical-metal exposure; iron ore dominates. Cheap, high-yield, Brazil risk."},
+  "TECK": {"company": "Teck Resources",              "bucket": "Diversified / Copper", "sub": "Copper (post-coal-spin) + zinc",     "specificity": 3, "note": "Transformed into a copper-growth story (QB2 ramp); clean-ish diversified base metals."},
+
+  "CCJ":  {"company": "Cameco",                      "bucket": "Strategic / Juniors",  "sub": "Uranium fuel cycle strategic anchor","specificity": 4, "note": "Largest Western uranium producer + fuel services. Strategic-mineral overlap with real revenue; same reshore-the-supply-chain tailwind."},
+  "TMC":  {"company": "TMC the metals company",      "bucket": "Strategic / Juniors",  "sub": "Seabed polymetallic nodules",        "specificity": 5, "note": "Frontier sourcing (Ni/Co/Cu/Mn nodules) — pure optionality, decade of regulatory/technical risk. Small speculative sleeve; will fail CS bar."}
+}

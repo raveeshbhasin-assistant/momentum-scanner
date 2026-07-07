@@ -1,0 +1,1380 @@
+{
+  "theme": "nuclear_renaissance",
+  "scored_at": "2026-07-07T02:45:04.193899Z",
+  "trade_date": "2026-07-06",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 10,
+    "theme_exposure": 15,
+    "revenue_growth": 10,
+    "margin_durability": 5,
+    "valuation_runway": 15,
+    "institutional_13f": 5,
+    "capital_structure": 20,
+    "catalyst_proximity": 0
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "capital_structure": "auto-from-fmp",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "LEU": {
+      "company": "Centrus Energy",
+      "bucket": "Enrichment & HALEU",
+      "sub": "Enrichment / HALEU",
+      "note": "Sole US-owned enricher; $900M fixed-price DOE HALEU contract (2026-06-30) + $2.4B LEU backlog. The purest bottleneck in the theme.",
+      "specificity_meta": 5,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Sole US-owned enricher; HALEU barely exists outside Russia \u2014 the 5/5 bottleneck of the whole theme"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 57, 3M -4.9% \u2014 mild pullback off a huge 1Y run; asymmetric re-entry forming"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure enrichment / HALEU play; nothing dilutes the thesis"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +4.9% YoY \u2014 modest; the story is the $2.4B backlog + DOE contract, not trailing growth"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Contracted fixed-price DOE work + LEU backlog underpin margins"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 63, P/S 7.6 \u2014 richly priced; the bottleneck premium is largely in"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 5,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Piketon HALEU milestones + DOE contract execution due near-term"
+        }
+      },
+      "snapshot": {
+        "price": 174.23,
+        "market_cap": 3427590912,
+        "pe": 63.126812,
+        "ps": 7.578136,
+        "1y_pct": -5.13,
+        "3m_pct": -4.9,
+        "1m_pct": -4.1,
+        "dist_from_52w_high_pct": -62.47,
+        "rs_3m": 57.0,
+        "revenue_growth_yoy": 0.049,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CCJ": {
+      "company": "Cameco",
+      "bucket": "Mining & Conversion",
+      "sub": "Tier-1 mining + conversion + 49% Westinghouse",
+      "note": "Theme blue chip: tier-1 pounds, UF6 conversion scarcity, and reactor-services exposure in one balance sheet.",
+      "specificity_meta": 4,
+      "raw_total": 350,
+      "normalized_100": 70.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Tier-1 pounds + UF6 conversion scarcity + 49% Westinghouse \u2014 hardest-to-replace miner"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 21, 3M -13.4% \u2014 cooled hard off highs; low-RS-but-positioned setup"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest large-cap fuel-cycle exposure; theme blue chip"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +7.1% YoY \u2014 steady; recontracting cycle is the driver, not trailing rev"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Tier-1 cost curve + conversion scarcity protect margins"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 93, P/S 12 \u2014 expensive on trailing; discounts a lot of price upside"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Recontracting at $85/lb + McArthur guidance + Westinghouse earnings"
+        }
+      },
+      "snapshot": {
+        "price": 97.5,
+        "market_cap": 42464464896,
+        "pe": 92.85715,
+        "ps": 12.002848,
+        "1y_pct": 29.92,
+        "3m_pct": -13.39,
+        "1m_pct": -14.89,
+        "dist_from_52w_high_pct": -27.91,
+        "rs_3m": 21.0,
+        "revenue_growth_yoy": 0.071,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "UEC": {
+      "company": "Uranium Energy Corp",
+      "bucket": "Mining & Conversion",
+      "sub": "US ISR production",
+      "note": "Largest US-listed pure-play miner; unhedged spot leverage; ramping Wyoming/Texas ISR hubs. Most substitutable pounds in the stack.",
+      "specificity_meta": 3,
+      "raw_total": 280,
+      "normalized_100": 56.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "US ISR pounds \u2014 real but the most substitutable input in the stack"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 7, 3M -22% \u2014 heavy drawdown, momentum broken"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure unhedged spot leverage on the deficit"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Ramping production; trailing revenue tiny (P/S extreme), pre-scale"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Unhedged spot exposure = high operating leverage both ways; thin now"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Negative P/E, P/S 259 \u2014 priced on future pounds, not current cash flow"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "ISR hub restarts + spot-price moves"
+        }
+      },
+      "snapshot": {
+        "price": 10.59,
+        "market_cap": 5240698368,
+        "pe": -99.27815,
+        "ps": 259.44052,
+        "1y_pct": 61.19,
+        "3m_pct": -21.96,
+        "1m_pct": -24.84,
+        "dist_from_52w_high_pct": -47.94,
+        "rs_3m": 7.0,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "UUUU": {
+      "company": "Energy Fuels",
+      "bucket": "Mining & Conversion",
+      "sub": "US conventional milling",
+      "note": "White Mesa is the only operating conventional US uranium mill; rare-earth line dilutes purity but adds policy support.",
+      "specificity_meta": 4,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "White Mesa is the only operating conventional US uranium mill \u2014 real infra moat"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 0, 3M -22.4% \u2014 worst momentum in the cohort after a +123% 1Y run"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Strong uranium exposure; rare-earth line dilutes purity but adds policy tailwind"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +112% YoY \u2014 fastest grower in cohort as milling + RE ramp"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Milling economics improving but still thin; RE line unproven at scale"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 42, P/S 40 \u2014 priced richly for a ramping small-cap"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Milling throughput + RE separation milestones"
+        }
+      },
+      "snapshot": {
+        "price": 13.77,
+        "market_cap": 3441386752,
+        "pe": 41.727272,
+        "ps": 40.552742,
+        "1y_pct": 123.54,
+        "3m_pct": -22.42,
+        "1m_pct": -23.5,
+        "dist_from_52w_high_pct": -50.65,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": 1.121,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "NXE": {
+      "company": "NexGen Energy",
+      "bucket": "Mining & Conversion",
+      "sub": "Development (Rook I, Athabasca)",
+      "note": "Speculative: world-class undeveloped deposit; licensing timeline has slipped. Optionality, not cash flow.",
+      "specificity_meta": 3,
+      "raw_total": 275,
+      "normalized_100": 55.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "World-class Rook I deposit but pre-production; substitutable until it pours"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 14, 3M -17.5% \u2014 weak momentum; development-stage volatility"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure Athabasca development optionality on the deficit"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "Pre-revenue \u2014 no top line yet"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "No operating margins; cash burn through licensing/build"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "$6.4B cap on an undeveloped mine \u2014 a lot of NAV pulled forward"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Licensing decision + FID \u2014 but timeline has slipped"
+        }
+      },
+      "snapshot": {
+        "price": 9.68,
+        "market_cap": 6407283712,
+        "pe": -55.979885,
+        "ps": null,
+        "1y_pct": 42.35,
+        "3m_pct": -17.48,
+        "1m_pct": -14.64,
+        "dist_from_52w_high_pct": -30.66,
+        "rs_3m": 14.0,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "BWXT": {
+      "company": "BWX Technologies",
+      "bucket": "OEM, Components & Services",
+      "sub": "Nuclear components / naval + commercial",
+      "note": "Sole-source naval reactor manufacturer; building the RPV for Darlington's first BWRX-300; TRISO/HALEU fuel work. Decades of NRC/Navy qualification.",
+      "specificity_meta": 5,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Sole-source naval reactor manufacturer + Darlington BWRX-300 RPV + TRISO/HALEU \u2014 decades of unreplicable qualification"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 43, 3M -8.3% but 1M +6.6% \u2014 turning back up; near 52w high"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Real, growing commercial-nuclear content; navy work anchors but isn't 'theme'"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +26% YoY \u2014 strong for a defense-grade manufacturer"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Regulated/qualified monopoly margins; durable backlog"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 53, P/S 5.3 \u2014 full but justified by the moat"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "BWRX-300 component milestones + SMR fuel awards"
+        }
+      },
+      "snapshot": {
+        "price": 196.89,
+        "market_cap": 18038007808,
+        "pe": 52.644386,
+        "ps": 5.342404,
+        "1y_pct": 37.7,
+        "3m_pct": -8.29,
+        "1m_pct": 6.59,
+        "dist_from_52w_high_pct": -18.47,
+        "rs_3m": 43.0,
+        "revenue_growth_yoy": 0.261,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "GEV": {
+      "company": "GE Vernova",
+      "bucket": "OEM, Components & Services",
+      "sub": "Reactor OEM (BWRX-300) + grid",
+      "note": "BWRX-300 is the West's lead SMR order book (Darlington x4, TVA Clinch River, Poland, Sweden); nuclear is a slice of a big company.",
+      "specificity_meta": 4,
+      "raw_total": 280,
+      "normalized_100": 56.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Owns the lead Western SMR order book (BWRX-300: Darlington, Clinch River, Poland, Sweden)"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 100, 3M +28%, 1Y +118% \u2014 peak momentum, near 52w high; extended entry"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Nuclear is a slice of a diversified power giant (gas turbines + grid dominate)"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +16% YoY \u2014 strong across the power complex"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Improving margins as backlog converts; scale advantages"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E 34, P/S 7.9 after a doubling \u2014 priced for perfection"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "BWRX-300 FIDs + gas-turbine order flow"
+        }
+      },
+      "snapshot": {
+        "price": 1152.04,
+        "market_cap": 309576204288,
+        "pe": 33.71496,
+        "ps": 7.8622527,
+        "1y_pct": 117.84,
+        "3m_pct": 28.27,
+        "1m_pct": 20.15,
+        "dist_from_52w_high_pct": -3.67,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": 0.163,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CW": {
+      "company": "Curtiss-Wright",
+      "bucket": "OEM, Components & Services",
+      "sub": "Reactor coolant pumps, valves, I&C",
+      "note": "Legacy sole-source content across the operating fleet + AP1000; every restart and uprate is aftermarket revenue.",
+      "specificity_meta": 4,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Sole-source reactor coolant pumps / valves / I&C across the fleet + AP1000 \u2014 every restart is aftermarket revenue"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 86, 3M +14%, near 52w high \u2014 strong momentum, extended"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Nuclear content is real but diluted by broad defense/industrial portfolio"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +13% YoY \u2014 solid, backlog-driven"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Best-in-class defense-industrial margins, very consistent"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E 58, P/S 8.1 near highs \u2014 quality fully priced"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Restart/uprate aftermarket + AP1000 order content"
+        }
+      },
+      "snapshot": {
+        "price": 792.77,
+        "market_cap": 29285847040,
+        "pe": 57.951023,
+        "ps": 8.120489,
+        "1y_pct": 61.58,
+        "3m_pct": 14.13,
+        "1m_pct": 8.06,
+        "dist_from_52w_high_pct": -0.9,
+        "rs_3m": 86.0,
+        "revenue_growth_yoy": 0.134,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "MIR": {
+      "company": "Mirion Technologies",
+      "bucket": "OEM, Components & Services",
+      "sub": "Radiation detection & measurement",
+      "note": "Every reactor, restart, and fuel facility needs dosimetry/monitoring; recurring, design-agnostic demand.",
+      "specificity_meta": 4,
+      "raw_total": 345,
+      "normalized_100": 69.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Design-agnostic dosimetry/monitoring every reactor + fuel facility must buy; recurring razor-blade demand"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 29, 3M -11%, 1Y -18% \u2014 lagging the cohort; underappreciated"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Nuclear-instrumentation pure-play; benefits from every reactor regardless of design"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +27.5% YoY \u2014 strongest steady grower among the OEMs"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Recurring service mix improving; still integrating post-SPAC"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 169 (post-SPAC amortization noise) but P/S 4.2 reasonable; runway if margins scale"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "New-build + restart instrumentation orders"
+        }
+      },
+      "snapshot": {
+        "price": 16.91,
+        "market_cap": 4137127936,
+        "pe": 169.09999,
+        "ps": 4.2172556,
+        "1y_pct": -18.39,
+        "3m_pct": -11.0,
+        "1m_pct": -7.29,
+        "dist_from_52w_high_pct": -44.15,
+        "rs_3m": 29.0,
+        "revenue_growth_yoy": 0.275,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CEG": {
+      "company": "Constellation Energy",
+      "bucket": "Operators & Restarts",
+      "sub": "Largest US nuclear fleet + Crane restart",
+      "note": "Microsoft 837 MW / 20-yr (Crane, 2027 restart) + Meta 1.1 GW / 20-yr (Clinton); the restart-execution flagship.",
+      "specificity_meta": 4,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Largest US unregulated nuclear fleet \u2014 a scarce, non-replicable asset; Crane restart is the execution proof"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 36, 3M -9.7% \u2014 pulled back off highs; buying into weakness"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Fleet + restart + two signed hyperscaler PPAs \u2014 the operator flagship"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +64% YoY (Calpine deal + power prices)"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Contracted PPAs + baseload fleet underwrite durable cash flow"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 21 \u2014 most reasonable large-cap valuation in the theme after the pullback"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 5,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Crane 2027 restart milestones + additional hyperscaler PPAs"
+        }
+      },
+      "snapshot": {
+        "price": 245.87,
+        "market_cap": 87800668160,
+        "pe": 21.361423,
+        "ps": 2.9397218,
+        "1y_pct": -22.34,
+        "3m_pct": -9.74,
+        "1m_pct": -8.0,
+        "dist_from_52w_high_pct": -40.18,
+        "rs_3m": 36.0,
+        "revenue_growth_yoy": 0.638,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "TLN": {
+      "company": "Talen Energy",
+      "bucket": "Operators & Restarts",
+      "sub": "Susquehanna + AWS campus",
+      "note": "Amazon 1.92 GW / 17-yr PPA; the most concentrated single-site expression of nuclear-to-datacenter.",
+      "specificity_meta": 3,
+      "raw_total": 345,
+      "normalized_100": 69.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Susquehanna + AWS campus \u2014 real, but a single-site bet vs CEG's fleet"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 93, 3M +15% \u2014 strong momentum near highs; extended"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Most concentrated nuclear-to-datacenter expression via the Amazon PPA"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +97% YoY as PPA + merchant power scale"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Merchant exposure adds volatility outside the contracted MW"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E 12.6 \u2014 cheapest operator in the theme; real free cash flow"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "AWS campus buildout + further capacity monetization"
+        }
+      },
+      "snapshot": {
+        "price": 377.79,
+        "market_cap": 18056474624,
+        "pe": 12.577278,
+        "ps": 5.5798745,
+        "1y_pct": 32.51,
+        "3m_pct": 15.33,
+        "1m_pct": -0.47,
+        "dist_from_52w_high_pct": -16.28,
+        "rs_3m": 93.0,
+        "revenue_growth_yoy": 0.967,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "VST": {
+      "company": "Vistra",
+      "bucket": "Operators & Restarts",
+      "sub": "Nuclear + retail + gas fleet",
+      "note": "Real nuclear fleet (Comanche Peak) but gas-heavy generation mix dilutes theme exposure vs CEG/TLN.",
+      "specificity_meta": 3,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Comanche Peak nuclear is real but buried in a gas-heavy generation + retail mix"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 64, 3M +4.1% \u2014 steady, mid-range; healthier entry than the momentum names"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Nuclear is a minority of generation; gas fleet dilutes the theme"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +43% YoY (Energy Harbor nuclear + power prices)"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Retail + merchant mix; hedged but cyclical"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 26 \u2014 fair; diversified cash flows"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Data-center PPAs + capacity market prices"
+        }
+      },
+      "snapshot": {
+        "price": 157.22,
+        "market_cap": 53011828736,
+        "pe": 26.29097,
+        "ps": 2.7262447,
+        "1y_pct": -18.41,
+        "3m_pct": 4.14,
+        "1m_pct": 2.37,
+        "dist_from_52w_high_pct": -28.18,
+        "rs_3m": 64.0,
+        "revenue_growth_yoy": 0.434,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "D": {
+      "company": "Dominion Energy",
+      "bucket": "Operators & Restarts",
+      "sub": "Regulated utility w/ nuclear + Virginia DC load",
+      "note": "Regulated utility at the epicenter of Virginia data-center load; nuclear is a small, rate-based slice \u2014 lowest-specificity operator.",
+      "specificity_meta": 2,
+      "raw_total": 295,
+      "normalized_100": 59.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Regulated utility with a small rate-based nuclear slice \u2014 lowest specificity, diluted-utility reference"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 79, 3M +11% near 52w high \u2014 steady defensive strength"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "At the epicenter of Virginia DC load but nuclear is a minor part of a regulated book"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +23% YoY (rate base + load growth)"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Regulated returns = durable, low-volatility margins"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E 20 \u2014 fair for a regulated utility; limited multiple upside"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Virginia data-center rate cases + load-growth approvals"
+        }
+      },
+      "snapshot": {
+        "price": 69.26,
+        "market_cap": 60915040256,
+        "pe": 20.43068,
+        "ps": 3.491033,
+        "1y_pct": 28.13,
+        "3m_pct": 11.44,
+        "1m_pct": 5.81,
+        "dist_from_52w_high_pct": -1.3,
+        "rs_3m": 79.0,
+        "revenue_growth_yoy": 0.231,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "SMR": {
+      "company": "NuScale Power",
+      "bucket": "SMR Developers",
+      "sub": "Light-water SMR design",
+      "note": "SPECULATIVE: only NRC-certified SMR design; ENTRA1/TVA program talks up to 6 GW \u2014 none of it revenue yet. Optionality sleeve.",
+      "specificity_meta": 2,
+      "raw_total": 260,
+      "normalized_100": 52.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Only NRC-certified SMR design \u2014 real, but substitutable vs BWRX-300 + private rivals; revenue years out"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 50, 3M -5.3% but 1M -21.7% \u2014 rolling over after a brutal 1Y (-74%)"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure SMR optionality on the 400 GW future"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "Rev -96% YoY \u2014 effectively pre-revenue; lumpy pilot work only"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Deep losses; cash burn to first deployment"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Negative P/E, P/S 178 \u2014 priced on programs, not cash flow"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "ENTRA1/TVA program progress \u2014 but nothing near revenue"
+        }
+      },
+      "snapshot": {
+        "price": 9.61,
+        "market_cap": 3326076416,
+        "pe": -14.340929,
+        "ps": 178.1604,
+        "1y_pct": -73.81,
+        "3m_pct": -5.32,
+        "1m_pct": -21.68,
+        "dist_from_52w_high_pct": -83.26,
+        "rs_3m": 50.0,
+        "revenue_growth_yoy": -0.958,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "OKLO": {
+      "company": "Oklo",
+      "bucket": "SMR Developers",
+      "sub": "Fast microreactor + fuel recycling",
+      "note": "SPECULATIVE: broke ground at INL (2025-09); DOE pilot darling; pre-revenue, dilution certain. Optionality sleeve.",
+      "specificity_meta": 2,
+      "raw_total": 250,
+      "normalized_100": 50.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Fast microreactor + fuel recycling \u2014 differentiated but unproven; substitutable optionality"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 71, 3M +7.7% but 1M -20.5% \u2014 volatile; news-driven whipsaw"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure advanced-reactor optionality; DOE pilot darling"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "Pre-revenue \u2014 powerhouse-as-a-service model not yet earning"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "No revenue; certain dilution to fund INL build"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "$9B cap on a pre-revenue developer \u2014 the most speculative valuation in the theme"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback; FMP backfills on nightly refresh"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "INL first-power attempt + DOE pilot news flow near-term"
+        }
+      },
+      "snapshot": {
+        "price": 51.84,
+        "market_cap": 9019693056,
+        "pe": -62.612476,
+        "ps": null,
+        "1y_pct": -7.33,
+        "3m_pct": 7.71,
+        "1m_pct": -20.5,
+        "dist_from_52w_high_pct": -73.26,
+        "rs_3m": 71.0,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    }
+  }
+}

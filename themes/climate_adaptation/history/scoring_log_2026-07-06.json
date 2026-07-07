@@ -1,0 +1,1470 @@
+{
+  "theme": "climate_adaptation",
+  "scored_at": "2026-07-07T02:47:17.412036Z",
+  "trade_date": "2026-07-06",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 10,
+    "theme_exposure": 15,
+    "revenue_growth": 10,
+    "margin_durability": 5,
+    "valuation_runway": 15,
+    "institutional_13f": 5,
+    "capital_structure": 20,
+    "catalyst_proximity": 0
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "capital_structure": "auto-from-fmp",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "XYL": {
+      "company": "Xylem",
+      "bucket": "Water Infrastructure & Treatment",
+      "sub": "Water pumps / smart metering / treatment",
+      "note": "Purest large-cap water-tech play; pumps, transport, Sensus smart-metering, analytics. Deepest reimbursed pool of adaptation dollars",
+      "specificity_meta": 5,
+      "raw_total": 390,
+      "normalized_100": 78.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Purest large-cap water-tech: pumps, transport, Sensus metering + analytics"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 47, 3M -1.1% but 1M +8.9% \u2014 cooled-off then turning; constructive setup"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Cleanest water-tech pure-play; thesis 'what we actually want' reference"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +2.7% YoY \u2014 steady, water-tech is not a hypergrowth story"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Solid, expanding margins on metering/analytics mix shift"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~30, P/S ~3.1 \u2014 full but off its highs (-21.8% from 52w high) leaves room"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "PFAS/lead capex cycle + metering upgrade demand"
+        }
+      },
+      "snapshot": {
+        "price": 119.42,
+        "market_cap": 28385355776,
+        "pe": 29.706467,
+        "ps": 3.1223578,
+        "1y_pct": -7.66,
+        "3m_pct": -1.13,
+        "1m_pct": 8.87,
+        "dist_from_52w_high_pct": -21.8,
+        "rs_3m": 47.0,
+        "revenue_growth_yoy": 0.027,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "AWK": {
+      "company": "American Water Works",
+      "bucket": "Water Infrastructure & Treatment",
+      "sub": "Regulated water utility",
+      "note": "Largest US regulated water/wastewater utility; rate-base compounder, capex recovered through regulated returns. Scarcity gets priced into the rate base",
+      "specificity_meta": 5,
+      "raw_total": 400,
+      "normalized_100": 80.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Largest US regulated water/wastewater utility \u2014 geographic monopoly, rate base"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 33, 3M -3% but 1M +7.5% \u2014 utility recovering, near 52w high (-8%)"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Deepest, most-reimbursed adaptation pool; the 'boring reimbursed' anchor"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +5.7% YoY \u2014 regulated rate-base growth, exactly as designed"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Regulated-return margins, highly durable"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~24 \u2014 reasonable for a rate-base compounder; near highs but not stretched"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Rate cases + resilience capex mandates"
+        }
+      },
+      "snapshot": {
+        "price": 133.09,
+        "market_cap": 25989883904,
+        "pe": 23.597517,
+        "ps": 4.993253,
+        "1y_pct": -2.4,
+        "3m_pct": -2.97,
+        "1m_pct": 7.5,
+        "dist_from_52w_high_pct": -8.15,
+        "rs_3m": 33.0,
+        "revenue_growth_yoy": 0.057,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "WTRG": {
+      "company": "Essential Utilities",
+      "bucket": "Water Infrastructure & Treatment",
+      "sub": "Regulated water + gas utility",
+      "note": "Aqua America water + Peoples gas; regulated water rate-base grower with a gas overhang that dilutes purity",
+      "specificity_meta": 4,
+      "raw_total": 370,
+      "normalized_100": 74.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Regulated water rate-base grower, diluted by Peoples gas segment"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 20, 3M -5% / 1M +4.5% \u2014 lagging but stabilizing near highs (-6.8%)"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Real regulated water exposure; gas overhang caps purity"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +10% YoY \u2014 strongest of the utilities"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Regulated margins, durable"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~20 \u2014 cheapest of the water utilities"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Water rate cases + acquisitions"
+        }
+      },
+      "snapshot": {
+        "price": 38.66,
+        "market_cap": 10965251072,
+        "pe": 19.72449,
+        "ps": 4.2954693,
+        "1y_pct": 8.63,
+        "3m_pct": -5.02,
+        "1m_pct": 4.49,
+        "dist_from_52w_high_pct": -6.75,
+        "rs_3m": 20.0,
+        "revenue_growth_yoy": 0.1,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "PNR": {
+      "company": "Pentair",
+      "bucket": "Water Infrastructure & Treatment",
+      "sub": "Water treatment / filtration / pumps",
+      "note": "Residential + commercial water treatment, filtration, pool. Consumer-cyclical tilt but real water-scarcity exposure",
+      "specificity_meta": 4,
+      "raw_total": 350,
+      "normalized_100": 70.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Water treatment / filtration / pumps \u2014 real scarcity exposure, consumer-cyclical tilt"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 13, 3M -11.7%, -33% from 52w high \u2014 deep drawdown, no inflection yet"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Genuine water treatment exposure diluted by residential/pool"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +2.6% YoY \u2014 flattish on soft consumer demand"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Structurally improved margins post-transformation"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~19 and -33% off highs \u2014 valuation offers real runway"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Residential recovery + water-treatment demand"
+        }
+      },
+      "snapshot": {
+        "price": 75.53,
+        "market_cap": 12206065664,
+        "pe": 18.977386,
+        "ps": 2.9046156,
+        "1y_pct": -27.33,
+        "3m_pct": -11.72,
+        "1m_pct": 5.71,
+        "dist_from_52w_high_pct": -33.2,
+        "rs_3m": 13.0,
+        "revenue_growth_yoy": 0.026,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ECL": {
+      "company": "Ecolab",
+      "bucket": "Water Infrastructure & Treatment",
+      "sub": "Industrial water treatment / hygiene",
+      "note": "Industrial water treatment + hygiene compounder; water-scarcity pricing power with industrial customers, premium multiple",
+      "specificity_meta": 4,
+      "raw_total": 360,
+      "normalized_100": 72.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Industrial water treatment + hygiene compounder; water-scarcity pricing power"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 73, 3M +7.7%, 1M +11.3% \u2014 leading the cohort with healthy momentum"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Strong industrial water-treatment exposure; premium quality"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +10% YoY \u2014 durable organic growth"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Best-in-class, expanding margins; pricing power"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~38 \u2014 premium multiple is the binding constraint here"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Pricing actions + water-scarcity demand"
+        }
+      },
+      "snapshot": {
+        "price": 283.72,
+        "market_cap": 79849447424,
+        "pe": 38.34054,
+        "ps": 4.853391,
+        "1y_pct": 5.51,
+        "3m_pct": 7.65,
+        "1m_pct": 11.27,
+        "dist_from_52w_high_pct": -7.76,
+        "rs_3m": 73.0,
+        "revenue_growth_yoy": 0.1,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "VLTO": {
+      "company": "Veralto",
+      "bucket": "Water Infrastructure & Treatment",
+      "sub": "Water quality analytics / instruments",
+      "note": "Danaher water-quality spin (Hach, Trojan, ChemTreat); recurring-razor water-testing instruments + consumables. High-specificity",
+      "specificity_meta": 5,
+      "raw_total": 390,
+      "normalized_100": 78.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Water-quality instruments + consumables (Hach, Trojan, ChemTreat) \u2014 razor-and-blade"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 67, 3M +5.2%, 1M +9.4% \u2014 momentum building, off its lows"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "High-specificity water-quality analytics; recurring consumables annuity"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +6.8% YoY \u2014 steady recurring growth"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "High-margin razor-and-blade model"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~24, P/S ~4 \u2014 reasonable for the recurring-revenue quality"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Tightening water standards drive consumable pull-through"
+        }
+      },
+      "snapshot": {
+        "price": 92.48,
+        "market_cap": 22713020416,
+        "pe": 23.835052,
+        "ps": 4.0609727,
+        "1y_pct": -9.49,
+        "3m_pct": 5.23,
+        "1m_pct": 9.39,
+        "dist_from_52w_high_pct": -15.56,
+        "rs_3m": 67.0,
+        "revenue_growth_yoy": 0.068,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "VRSK": {
+      "company": "Verisk Analytics",
+      "bucket": "Physical-Risk Analytics",
+      "sub": "Catastrophe / physical-risk modeling",
+      "note": "Catastrophe modeling + insurance analytics; the layer that literally prices flood/wind/wildfire risk. Recurring-subscription, high-margin, hard to replicate",
+      "specificity_meta": 5,
+      "raw_total": 390,
+      "normalized_100": 78.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Catastrophe modeling embedded in insurer underwriting \u2014 enormous switching costs"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 60, 3M +1.7%, 1M +5.6% \u2014 recovering off a deep -38% 1Y drawdown"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "The sole vehicle that literally prices the theme; recurring-subscription moat"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +3.9% YoY \u2014 steady subscription growth"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Very high, durable subscription margins"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~29 but -38% off 52w high \u2014 the drawdown restores valuation runway"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Insurer repricing/exit cycles drive model demand"
+        }
+      },
+      "snapshot": {
+        "price": 187.79,
+        "market_cap": 24604590080,
+        "pe": 28.670227,
+        "ps": 7.9310803,
+        "1y_pct": -38.51,
+        "3m_pct": 1.74,
+        "1m_pct": 5.59,
+        "dist_from_52w_high_pct": -38.51,
+        "rs_3m": 60.0,
+        "revenue_growth_yoy": 0.039,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CSL": {
+      "company": "Carlisle Companies",
+      "bucket": "Flood / Storm Resilience & Building Envelope",
+      "sub": "Roofing / weatherproofing envelope",
+      "note": "Commercial roofing + waterproofing membranes; the building-envelope layer that keeps storms and water out. Re-roof demand is non-discretionary",
+      "specificity_meta": 4,
+      "raw_total": 370,
+      "normalized_100": 74.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Commercial roofing + waterproofing membranes; non-discretionary re-roof demand"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "RS 87, 3M +11.3%, 1M +7.1% \u2014 strong momentum inflection off a soft year"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Best building-envelope proxy \u2014 the layer that keeps storms/water out"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -4% YoY \u2014 soft on non-res construction cycle"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Strong roofing margins, disciplined pricing"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~21 \u2014 reasonable, -15% off highs leaves room"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Re-roof cycle + storm-driven remediation demand"
+        }
+      },
+      "snapshot": {
+        "price": 367.15,
+        "market_cap": 14856752128,
+        "pe": 21.433159,
+        "ps": 2.9855616,
+        "1y_pct": -6.38,
+        "3m_pct": 11.25,
+        "1m_pct": 7.07,
+        "dist_from_52w_high_pct": -14.72,
+        "rs_3m": 87.0,
+        "revenue_growth_yoy": -0.04,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "IBP": {
+      "company": "Installed Building Prod.",
+      "bucket": "Flood / Storm Resilience & Building Envelope",
+      "sub": "Insulation / envelope installation",
+      "note": "Insulation + building-envelope installer; heat/cold resilience of the envelope. Tightly tied to housing starts",
+      "specificity_meta": 3,
+      "raw_total": 270,
+      "normalized_100": 54.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Insulation + envelope installation; heat/cold resilience but housing-tied"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 0, 3M -15.8%, -35% off 52w high \u2014 worst-in-cohort drawdown, no inflection"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Envelope resilience but demand dominated by housing starts"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -3.5% YoY \u2014 soft on housing"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Moderate installer margins"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~24 despite drawdown \u2014 not cheap enough given the cyclicality"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Housing-starts dependent"
+        }
+      },
+      "snapshot": {
+        "price": 225.74,
+        "market_cap": 6081595904,
+        "pe": 24.117523,
+        "ps": 2.0640068,
+        "1y_pct": 19.25,
+        "3m_pct": -15.83,
+        "1m_pct": 12.11,
+        "dist_from_52w_high_pct": -34.67,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": -0.035,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "AWI": {
+      "company": "Armstrong World Ind.",
+      "bucket": "Flood / Storm Resilience & Building Envelope",
+      "sub": "Ceilings / building interiors",
+      "note": "Ceilings + architectural specialties; resilient-building interiors, moisture/humidity performance. Non-res construction cyclical",
+      "specificity_meta": 3,
+      "raw_total": 305,
+      "normalized_100": 61.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Ceilings + architectural specialties; resilient interiors, non-res cyclical"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 27, 3M -3%, -22% off highs \u2014 soft, no clear inflection"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Interior resilience is a secondary adaptation driver"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +7.1% YoY \u2014 solid despite non-res softness"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Strong, consistent ceilings margins"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~23 \u2014 fair but not compelling"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Non-res construction cycle"
+        }
+      },
+      "snapshot": {
+        "price": 159.6,
+        "market_cap": 6811542528,
+        "pe": 22.606234,
+        "ps": 4.1332173,
+        "1y_pct": -3.86,
+        "3m_pct": -3.09,
+        "1m_pct": 4.17,
+        "dist_from_52w_high_pct": -22.23,
+        "rs_3m": 27.0,
+        "revenue_growth_yoy": 0.071,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "AOS": {
+      "company": "A. O. Smith",
+      "bucket": "Flood / Storm Resilience & Building Envelope",
+      "sub": "Water heaters / water treatment",
+      "note": "Water heating + residential water treatment; building-water exposure but consumer-housing cyclical",
+      "specificity_meta": 3,
+      "raw_total": 310,
+      "normalized_100": 62.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Water heating + residential water treatment; building-water, consumer-cyclical"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 40, 3M -2.4% but 1M +10.1% \u2014 turning off a soft patch"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Building-water exposure diluted by consumer/China demand"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -1.9% YoY \u2014 soft on China + consumer"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Durable water-heating margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~17 \u2014 cheapest building-envelope name, -23% off highs"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Residential replacement cycle + water treatment cross-sell"
+        }
+      },
+      "snapshot": {
+        "price": 62.45,
+        "market_cap": 8607397888,
+        "pe": 16.653334,
+        "ps": 2.2580335,
+        "1y_pct": -6.31,
+        "3m_pct": -2.4,
+        "1m_pct": 10.08,
+        "dist_from_52w_high_pct": -23.29,
+        "rs_3m": 40.0,
+        "revenue_growth_yoy": -0.019,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "DE": {
+      "company": "Deere & Co.",
+      "bucket": "Ag Resilience",
+      "sub": "Precision ag equipment",
+      "note": "Precision-ag machinery + guidance; water-efficient farming under drought. Ag-cycle cyclical but dominant franchise",
+      "specificity_meta": 4,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Precision-ag machinery + guidance \u2014 water-efficient farming, dominant franchise"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 80, 3M +10.6%, near 52w high (-5%) \u2014 strong momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Precision ag helps drought efficiency, but broad ag-cycle exposure dilutes"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -11% YoY \u2014 deep in the ag-equipment down-cycle"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Structurally higher trough margins than prior cycles"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~36 at a cyclical earnings trough \u2014 expensive on depressed EPS"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Ag-cycle recovery + precision-ag adoption"
+        }
+      },
+      "snapshot": {
+        "price": 635.24,
+        "market_cap": 171475058688,
+        "pe": 36.011337,
+        "ps": 3.6224318,
+        "1y_pct": 26.05,
+        "3m_pct": 10.63,
+        "1m_pct": 8.26,
+        "dist_from_52w_high_pct": -5.26,
+        "rs_3m": 80.0,
+        "revenue_growth_yoy": -0.111,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CTVA": {
+      "company": "Corteva",
+      "bucket": "Ag Resilience",
+      "sub": "Drought-tolerant seed / crop protection",
+      "note": "Drought-tolerant seed genetics + crop protection; the biology of ag adaptation. Seed-trait moat is hard to substitute",
+      "specificity_meta": 5,
+      "raw_total": 360,
+      "normalized_100": 72.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Drought-tolerant seed genetics + crop protection \u2014 seed-trait moat hard to substitute"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 53, 3M +1.1%, 1M +11% \u2014 steady, basically at 52w high"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "The biology of ag adaptation; highest-specificity ag name"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Rev +11% YoY \u2014 strongest grower in the ag bucket"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Improving seed/CP margins, royalty-like traits"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~47 \u2014 premium; the trait moat is priced in"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Seed-trait launches + drought-year demand"
+        }
+      },
+      "snapshot": {
+        "price": 86.39,
+        "market_cap": 57779355648,
+        "pe": 46.697296,
+        "ps": 3.229882,
+        "1y_pct": 13.64,
+        "3m_pct": 1.09,
+        "1m_pct": 11.04,
+        "dist_from_52w_high_pct": -0.14,
+        "rs_3m": 53.0,
+        "revenue_growth_yoy": 0.11,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "LNN": {
+      "company": "Lindsay Corp.",
+      "bucket": "Ag Resilience",
+      "sub": "Irrigation systems (center-pivot)",
+      "note": "Zimmatic center-pivot irrigation pure-play; the literal water-delivery hardware for drought-stressed farms",
+      "specificity_meta": 5,
+      "raw_total": 390,
+      "normalized_100": 78.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Zimmatic center-pivot irrigation pure-play \u2014 literal drought water-delivery hardware"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "RS 93, 3M +14.6% \u2014 strong inflection off a weak year (-18% 1Y)"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest irrigation vehicle; direct drought-adaptation hardware"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Rev -5% YoY \u2014 soft farm-income cycle"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Moderate irrigation-equipment margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~23, P/S ~1.9 \u2014 reasonable for the pure-play, well off highs"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Drought events + farm-income recovery drive pivot demand"
+        }
+      },
+      "snapshot": {
+        "price": 117.61,
+        "market_cap": 1195962624,
+        "pe": 22.573896,
+        "ps": 1.9048358,
+        "1y_pct": -18.44,
+        "3m_pct": 14.56,
+        "1m_pct": 3.82,
+        "dist_from_52w_high_pct": -20.26,
+        "rs_3m": 93.0,
+        "revenue_growth_yoy": -0.051,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "VMI": {
+      "company": "Valmont Industries",
+      "bucket": "Ag Resilience",
+      "sub": "Irrigation + water infrastructure",
+      "note": "Valley irrigation + infrastructure (poles/structures); irrigation pure-play blended with utility-structure exposure",
+      "specificity_meta": 4,
+      "raw_total": 305,
+      "normalized_100": 61.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Valley irrigation + infrastructure structures; irrigation blended with utility-poles"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 100, 3M +40%, 1Y +68% \u2014 extreme run, extended at the top"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Irrigation pure-play blended with infrastructure structures"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Rev +6.2% YoY \u2014 steady across both segments"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Solid, improving margins"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/E ~31 after a +68% 1Y run, near 52w high \u2014 extended"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Irrigation + infrastructure (grid-structure) demand"
+        }
+      },
+      "snapshot": {
+        "price": 564.07,
+        "market_cap": 10950659072,
+        "pe": 31.354643,
+        "ps": 2.6298509,
+        "1y_pct": 68.01,
+        "3m_pct": 40.19,
+        "1m_pct": 3.23,
+        "dist_from_52w_high_pct": -3.57,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": 0.062,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "NTR": {
+      "company": "Nutrien",
+      "bucket": "Ag Resilience",
+      "sub": "Crop nutrients / ag retail",
+      "note": "Fertilizer + ag retail; input-intensity of resilient yields but commodity-fertilizer cyclicality dilutes the adaptation angle",
+      "specificity_meta": 3,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Crop nutrients + ag retail; commodity-fertilizer cyclicality dilutes the angle"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 7, 3M -13.7%, 1M -5.4% \u2014 lagging on fertilizer-price weakness"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Input-intensity of resilient yields, but commodity exposure"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Rev +19% YoY \u2014 strongest print in the cohort (fertilizer-price led)"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Commodity-fertilizer margins, cyclical"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~13, P/S ~1.2 \u2014 cheapest in the cohort on commodity earnings"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Fertilizer-price cycle dependent"
+        }
+      },
+      "snapshot": {
+        "price": 64.54,
+        "market_cap": 30980720640,
+        "pe": 13.144604,
+        "ps": 1.1526853,
+        "1y_pct": 7.98,
+        "3m_pct": -13.71,
+        "1m_pct": -5.35,
+        "dist_from_52w_high_pct": -23.15,
+        "rs_3m": 7.0,
+        "revenue_growth_yoy": 0.19,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    }
+  }
+}

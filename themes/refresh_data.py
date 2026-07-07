@@ -215,8 +215,41 @@ UNIVERSES: dict[str, dict[str, dict[str, Any]]] = {
 # PLTR is the exception — explicitly Defense-only per locked thesis.
 
 
+# ── Seed-universe themes ─────────────────────────────────────────
+# Themes built via _seed_from_universe.py keep their universe in
+# themes/<slug>/_universe.json (flat TICKER -> meta map, same shape as a
+# UNIVERSES entry). Rather than duplicate ~150 rows here, we auto-merge any
+# _universe.json for a theme not already hard-coded above. This keeps the seed
+# file the single source of truth for the universe and still lets the nightly
+# Railway refresh (with the FMP key) keep those candidates fresh.
+_SEED_UNIVERSE_THEMES = [
+    "nuclear_renaissance", "ai_healthcare", "personalized_medicine", "rare_earth",
+    "power_grid", "cyber_infrastructure", "reshoring", "climate_adaptation",
+    "aging_population",
+]
+
+
+def _merge_seed_universes() -> None:
+    for slug in _SEED_UNIVERSE_THEMES:
+        if slug in UNIVERSES:
+            continue
+        uni_path = _HERE / slug / "_universe.json"
+        if not uni_path.exists():
+            continue
+        try:
+            UNIVERSES[slug] = json.loads(uni_path.read_text(encoding="utf-8"))
+        except Exception as e:  # pragma: no cover - defensive
+            logger.warning(f"could not load seed universe for {slug}: {e}")
+
+
+_merge_seed_universes()
+
+
 # Themes whose data this script refreshes. Theme dir must exist under themes/.
-ACTIVE_THEMES = ["ai_data_center", "space_economy", "modern_defense", "robotics", "glp1"]
+ACTIVE_THEMES = [
+    "ai_data_center", "space_economy", "modern_defense", "robotics", "glp1",
+    *_SEED_UNIVERSE_THEMES,
+]
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -785,7 +818,12 @@ def _render_markdown(result: dict) -> str:
 
 # Index tickers the trackers reference in their `benchmarks_at_init` blocks.
 # Add new ones here when a new theme locks against a new benchmark.
-BENCHMARK_TICKERS = ["SPY", "ITA", "XLU", "SMH", "LMT", "BOTZ", "XLV", "XLP", "LLY"]
+BENCHMARK_TICKERS = [
+    "SPY", "ITA", "XLU", "SMH", "LMT", "BOTZ", "XLV", "XLP", "LLY",
+    # Added for the 2026-07-06 theme batch (nuclear, genomics, rare earth,
+    # power grid, cyber, reshoring, climate adaptation, aging population):
+    "URA", "XBI", "XME", "GRID", "PHO", "CIBR", "XLI",
+]
 
 
 def refresh_benchmarks() -> dict:

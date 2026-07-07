@@ -1,0 +1,1200 @@
+{
+  "theme": "rare_earth",
+  "scored_at": "2026-07-07T02:47:05.761010Z",
+  "trade_date": "2026-07-06",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 10,
+    "theme_exposure": 15,
+    "revenue_growth": 10,
+    "margin_durability": 5,
+    "valuation_runway": 15,
+    "institutional_13f": 5,
+    "capital_structure": 20,
+    "catalyst_proximity": 0
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "capital_structure": "auto-from-fmp",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "MP": {
+      "company": "MP Materials",
+      "bucket": "Separation & Magnets",
+      "sub": "RE separation + NdFeB magnets",
+      "note": "Flagship. Mountain Pass mine + separation + Fort Worth magnet plant. DoD 2025 equity stake + ~$110/kg NdPr price floor + 10-yr magnet offtake. The funded, permitted, offtake-backed midstream reference.",
+      "specificity_meta": 5,
+      "raw_total": 390,
+      "normalized_100": 78.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Only US funded/permitted full chain: separation + Fort Worth magnets + DoD price floor + offtake \u2014 the exact China-monopoly step"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 83, +6.6% 3M \u2014 healthy momentum, not extended; still -47% from 52w high leaves runway"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure-play flagship \u2014 the thesis in one ticker"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "+118% YoY as magnet/sep ramps (off small base, but funded capacity)"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "DoD ~$110/kg NdPr floor structurally caps downside; magnet margins ramping"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/S ~27, P/E ~51 \u2014 priced for the ramp; the runway is volume not multiple"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 5,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "DoD floor+offtake live; magnet-plant qualification milestones ahead"
+        }
+      },
+      "snapshot": {
+        "price": 53.01,
+        "market_cap": 9436955648,
+        "pe": 51.136852,
+        "ps": 27.151316,
+        "1y_pct": 70.72,
+        "3m_pct": 6.6,
+        "1m_pct": -22.67,
+        "dist_from_52w_high_pct": -47.12,
+        "rs_3m": 83.0,
+        "revenue_growth_yoy": 1.186,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "USAR": {
+      "company": "USA Rare Earth",
+      "bucket": "Separation & Magnets",
+      "sub": "NdFeB magnets + heavy-RE",
+      "note": "Pure-play magnet + heavy-RE (Stillwater magnet plant + Round Top HREE). Funded but early \u2014 commissioning + cash runway is the key research item.",
+      "specificity_meta": 5,
+      "raw_total": 330,
+      "normalized_100": 66.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Pure-play NdFeB magnets + Round Top heavy-RE \u2014 the highest-value, hardest-to-substitute midstream step"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 100, +21.5% 3M \u2014 peak momentum, extended; buying after a hot run"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure-play magnet + HREE \u2014 no dilution from other businesses"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Pre-scale revenue \u2014 funded but commissioning still ahead"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Pre-cash-flow; magnet plant not yet at qualified scale"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/S ~645, P/E ~580 \u2014 extreme; entirely story/optionality priced"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Stillwater magnet-plant commissioning + first OEM qualification are the catalysts"
+        }
+      },
+      "snapshot": {
+        "price": 19.35,
+        "market_cap": 4734156288,
+        "pe": 580.55804,
+        "ps": 644.8926,
+        "1y_pct": 101.35,
+        "3m_pct": 21.55,
+        "1m_pct": -30.84,
+        "dist_from_52w_high_pct": -56.0,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "UUUU": {
+      "company": "Energy Fuels",
+      "bucket": "Separation & Magnets",
+      "sub": "RE separation + uranium crossover",
+      "note": "White Mesa mill: only US mill doing both uranium and operating RE separation (monazite). Diluted by uranium/vanadium but real separation optionality.",
+      "specificity_meta": 4,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Only US mill (White Mesa) doing both uranium and operating RE separation from monazite"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 8, -22.4% 3M \u2014 cooling hard; either falling knife or asymmetric setup forming"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Real RE-separation optionality but diluted by uranium/vanadium"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "+112% YoY as uranium + RE ramp"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Thin/volatile margins across uranium + early RE"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/S ~40 \u2014 expensive for the diluted exposure"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "RE-separation offtake + uranium price cycle"
+        }
+      },
+      "snapshot": {
+        "price": 13.77,
+        "market_cap": 3441386752,
+        "pe": 41.727272,
+        "ps": 40.552742,
+        "1y_pct": 123.54,
+        "3m_pct": -22.42,
+        "1m_pct": -23.5,
+        "dist_from_52w_high_pct": -50.65,
+        "rs_3m": 8.0,
+        "revenue_growth_yoy": 1.121,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ALB": {
+      "company": "Albemarle",
+      "bucket": "Lithium Chemistry",
+      "sub": "Lithium major + conversion",
+      "note": "Largest, most diversified lithium major; real cash flow but full commodity-price whipsaw. Benchmark anchor.",
+      "specificity_meta": 3,
+      "raw_total": 310,
+      "normalized_100": 62.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Largest lithium major + conversion; real assets but lithium resource is comparatively abundant"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 0, -24.7% 3M \u2014 deep in the lithium-price down-cycle; cheap but no momentum"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Real critical-mineral exposure but commodity-price-dominated, diluted reshoring specificity"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "+33% YoY \u2014 recovering off the lithium trough"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Low-cost position but full commodity-margin whipsaw"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~10, P/S ~2.9 \u2014 genuinely cheap at cycle-low, real cash flow"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Lithium spot recovery is the swing factor"
+        }
+      },
+      "snapshot": {
+        "price": 133.8,
+        "market_cap": 15779656704,
+        "pe": 10.304737,
+        "ps": 2.8718572,
+        "1y_pct": 107.04,
+        "3m_pct": -24.68,
+        "1m_pct": -20.32,
+        "dist_from_52w_high_pct": -39.3,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": 0.327,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "SQM": {
+      "company": "Sociedad Quimica (ADR)",
+      "bucket": "Lithium Chemistry",
+      "sub": "Atacama brine lithium (ADR)",
+      "note": "Lowest-cost brine producer; Chilean political/royalty overhang.",
+      "specificity_meta": 3,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Lowest-cost Atacama brine lithium + specialty chem; abundant resource, cost moat"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 33, -10.6% 3M \u2014 mid, less beaten-down than ALB"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Lithium + iodine/specialty; commodity-driven, Chile political overhang"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "+70% YoY off the trough"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Lowest-cost brine gives best margin resilience in the group"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~26, P/S ~4 \u2014 fair; royalty/political discount embedded"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Lithium price + Chilean royalty/JV resolution"
+        }
+      },
+      "snapshot": {
+        "price": 73.52,
+        "market_cap": 21000091648,
+        "pe": 25.706293,
+        "ps": 3.9625044,
+        "1y_pct": 106.83,
+        "3m_pct": -10.64,
+        "1m_pct": -6.44,
+        "dist_from_52w_high_pct": -24.13,
+        "rs_3m": 33.0,
+        "revenue_growth_yoy": 0.698,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "LAC": {
+      "company": "Lithium Americas",
+      "bucket": "Lithium Chemistry",
+      "sub": "Thacker Pass \u2014 largest US Li resource",
+      "note": "US DOE loan + GM offtake; pre-major-revenue, ramp + capital-structure risk. High US-resource specificity.",
+      "specificity_meta": 4,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Thacker Pass \u2014 largest US lithium resource; DOE loan + GM offtake give real US-reshoring specificity"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 58, -5.5% 3M \u2014 mid, holding up better than the lithium majors"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Purest US-lithium-reshoring vehicle but pre-major-revenue"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "Pre-production ramp \u2014 revenue not yet meaningful"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Pre-cash-flow; negative earnings during build"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E negative (pre-production); optionality on the US-resource crown jewel"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Phase-1 production ramp + DOE loan drawdown milestones"
+        }
+      },
+      "snapshot": {
+        "price": 3.82,
+        "market_cap": 1341058560,
+        "pe": -20.836742,
+        "ps": null,
+        "1y_pct": 46.36,
+        "3m_pct": -5.45,
+        "1m_pct": -26.54,
+        "dist_from_52w_high_pct": -63.69,
+        "rs_3m": 58.0,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "SGML": {
+      "company": "Sigma Lithium",
+      "bucket": "Lithium Chemistry",
+      "sub": "Grota do Cirilo hard-rock spodumene",
+      "note": "Low-cost Brazil producer, early revenue, persistent takeover chatter.",
+      "specificity_meta": 3,
+      "raw_total": 275,
+      "normalized_100": 55.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Low-cost Brazil hard-rock spodumene; real production but abundant hard-rock supply"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 17, -13.9% 3M \u2014 weak, tracking lithium down-cycle"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Real lithium producer but foreign, commodity-driven"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "-11% YoY on lower lithium prices"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Low-cost position cushions the cycle"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~7 low but P/S ~13 rich \u2014 mixed; takeover chatter is the wildcard"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Lithium price recovery + persistent M&A chatter"
+        }
+      },
+      "snapshot": {
+        "price": 12.37,
+        "market_cap": 1386239744,
+        "pe": 7.3850746,
+        "ps": 13.242516,
+        "1y_pct": 143.5,
+        "3m_pct": -13.92,
+        "1m_pct": -18.4,
+        "dist_from_52w_high_pct": -49.47,
+        "rs_3m": 17.0,
+        "revenue_growth_yoy": -0.112,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "FCX": {
+      "company": "Freeport-McMoRan",
+      "bucket": "Diversified / Copper",
+      "sub": "Copper major (+ gold, moly)",
+      "note": "Largest liquid US-listed copper pure-play; leveraged to electrification/AI-power demand.",
+      "specificity_meta": 4,
+      "raw_total": 360,
+      "normalized_100": 72.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Largest liquid US-listed copper pure-play \u2014 copper is the electrification/AI-power backbone metal"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 75, ~flat 3M, only -16% from 52w high \u2014 best relative strength in the anchor sleeve"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "High on the copper-demand axis, lower on the RE-reshoring axis; structural anchor"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "+9% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Real cash flow, quality copper assets, disciplined balance sheet"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~32, P/S ~3.3 \u2014 fair for the premier copper name"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Copper price + electrification/AI-datacenter demand"
+        }
+      },
+      "snapshot": {
+        "price": 61.0,
+        "market_cap": 87691149312,
+        "pe": 32.27513,
+        "ps": 3.3189943,
+        "1y_pct": 36.74,
+        "3m_pct": -0.4,
+        "1m_pct": -13.65,
+        "dist_from_52w_high_pct": -15.61,
+        "rs_3m": 75.0,
+        "revenue_growth_yoy": 0.088,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "SCCO": {
+      "company": "Southern Copper",
+      "bucket": "Diversified / Copper",
+      "sub": "Low-cost Peru/Mexico copper",
+      "note": "Lowest-cost, longest-reserve-life copper; Grupo Mexico control overhang.",
+      "specificity_meta": 4,
+      "raw_total": 335,
+      "normalized_100": 67.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Lowest-cost, longest-reserve-life copper; structural copper-demand anchor"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 67, ~flat 3M \u2014 steady, -21% from high"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "High copper-demand exposure; Grupo Mexico control caps float"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "+36% YoY"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Best-in-class low-cost copper margins in the industry"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/S ~10, P/E ~29 \u2014 premium for the quality; limited multiple runway"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Copper price + reserve-life premium"
+        }
+      },
+      "snapshot": {
+        "price": 173.87,
+        "market_cap": 145064689664,
+        "pe": 29.46949,
+        "ps": 9.970425,
+        "1y_pct": 76.76,
+        "3m_pct": -0.73,
+        "1m_pct": -11.56,
+        "dist_from_52w_high_pct": -21.15,
+        "rs_3m": 67.0,
+        "revenue_growth_yoy": 0.362,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "VALE": {
+      "company": "Vale (ADR)",
+      "bucket": "Diversified / Copper",
+      "sub": "Iron ore + nickel + copper (ADR)",
+      "note": "Nickel/copper give critical-metal exposure; iron ore dominates. Cheap, high-yield, Brazil risk.",
+      "specificity_meta": 3,
+      "raw_total": 325,
+      "normalized_100": 65.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Nickel/copper give critical-metal exposure but iron ore dominates the P&L"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 50, -6.8% 3M \u2014 mid, cheap and resilient"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Diluted critical-metal exposure inside an iron-ore major"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "+3% YoY \u2014 flattish on iron-ore prices"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Real cash flow, high yield, but iron-ore-cycle exposed"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E ~23, P/S ~0.3 \u2014 deep-value, high dividend; Brazil/iron-ore discount"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Iron ore + nickel/copper price + Brazil policy"
+        }
+      },
+      "snapshot": {
+        "price": 15.09,
+        "market_cap": 64244273152,
+        "pe": 22.863636,
+        "ps": 0.2989997,
+        "1y_pct": 65.36,
+        "3m_pct": -6.79,
+        "1m_pct": -6.04,
+        "dist_from_52w_high_pct": -15.89,
+        "rs_3m": 50.0,
+        "revenue_growth_yoy": 0.027,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "TECK": {
+      "company": "Teck Resources",
+      "bucket": "Diversified / Copper",
+      "sub": "Copper (post-coal-spin) + zinc",
+      "note": "Transformed into a copper-growth story (QB2 ramp); clean-ish diversified base metals.",
+      "specificity_meta": 3,
+      "raw_total": 360,
+      "normalized_100": 72.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Post-coal-spin copper-growth story (QB2 ramp) + zinc; clean-ish diversified base metals"
+        },
+        "rs_inflection": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "RS 92, +16.5% 3M, only -14% from high \u2014 strongest momentum in the whole universe"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Copper-growth pivot gives real base-metal exposure; still diversified"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "+72% YoY as QB2 copper ramps"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Improving as copper mix rises post coal spin-off"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~23, P/S ~2.4 \u2014 reasonable for a copper-growth re-rating story"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "QB2 copper ramp + potential M&A interest"
+        }
+      },
+      "snapshot": {
+        "price": 61.45,
+        "market_cap": 30104004608,
+        "pe": 23.101503,
+        "ps": 2.4259815,
+        "1y_pct": 53.37,
+        "3m_pct": 16.48,
+        "1m_pct": -8.47,
+        "dist_from_52w_high_pct": -13.64,
+        "rs_3m": 92.0,
+        "revenue_growth_yoy": 0.722,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CCJ": {
+      "company": "Cameco",
+      "bucket": "Strategic / Juniors",
+      "sub": "Uranium fuel cycle strategic anchor",
+      "note": "Largest Western uranium producer + fuel services. Strategic-mineral overlap with real revenue; same reshore-the-supply-chain tailwind.",
+      "specificity_meta": 4,
+      "raw_total": 290,
+      "normalized_100": 58.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Largest Western uranium producer + fuel services \u2014 real strategic-supply-chain bottleneck with cash flow"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 25, -13.4% 3M \u2014 cooling after a strong run; extended valuation being worked off"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Strategic-mineral overlap (nuclear fuel cycle), not core RE but same reshoring tailwind"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "+7% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Improving as uranium contracts re-price higher"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E ~93, P/S ~12 \u2014 richly valued on the uranium re-rating"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Uranium contract cycle + nuclear-buildout / reshoring policy"
+        }
+      },
+      "snapshot": {
+        "price": 97.5,
+        "market_cap": 42464464896,
+        "pe": 92.85715,
+        "ps": 12.002848,
+        "1y_pct": 29.92,
+        "3m_pct": -13.39,
+        "1m_pct": -14.89,
+        "dist_from_52w_high_pct": -27.91,
+        "rs_3m": 25.0,
+        "revenue_growth_yoy": 0.071,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "TMC": {
+      "company": "TMC the metals company",
+      "bucket": "Strategic / Juniors",
+      "sub": "Seabed polymetallic nodules",
+      "note": "Frontier sourcing (Ni/Co/Cu/Mn nodules) \u2014 pure optionality, decade of regulatory/technical risk. Small speculative sleeve; will fail CS bar.",
+      "specificity_meta": 5,
+      "raw_total": 290,
+      "normalized_100": 58.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Seabed polymetallic nodules (Ni/Co/Cu/Mn) \u2014 extreme specificity IF it ever clears regulatory/technical bar"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 42, -7.6% 3M, -36% 1Y \u2014 volatile optionality name"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Pure frontier-sourcing optionality; not a 3-5yr cash-flow vehicle"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "Pre-revenue \u2014 no commercial output"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Pre-cash-flow, cash burn"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/E negative; pure speculative option value"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "ISA/NOAA seabed licensing decisions \u2014 binary and slow"
+        }
+      },
+      "snapshot": {
+        "price": 4.24,
+        "market_cap": 2365591552,
+        "pe": -23.555553,
+        "ps": null,
+        "1y_pct": -36.24,
+        "3m_pct": -7.63,
+        "1m_pct": -30.72,
+        "dist_from_52w_high_pct": -62.64,
+        "rs_3m": 42.0,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    }
+  }
+}

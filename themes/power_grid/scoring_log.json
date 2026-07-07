@@ -1,0 +1,1290 @@
+{
+  "theme": "power_grid",
+  "scored_at": "2026-07-07T02:46:47.616575Z",
+  "trade_date": "2026-07-06",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 10,
+    "theme_exposure": 15,
+    "revenue_growth": 10,
+    "margin_durability": 5,
+    "valuation_runway": 20,
+    "institutional_13f": 5,
+    "capital_structure": 10,
+    "catalyst_proximity": 5
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "capital_structure": "auto-from-fmp",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "ETN": {
+      "company": "Eaton",
+      "bucket": "Heavy Electrical Equipment",
+      "sub": "Switchgear / breakers / UPS / power mgmt",
+      "note": "Flagship equipment anchor; massive backlogs + pricing power. Shared with AI DC \u2014 held for whole grid cycle",
+      "specificity_meta": 5,
+      "raw_total": 395,
+      "normalized_100": 79.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Switchgear/breakers/UPS oligopoly; massive backlogs + pricing power"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 38, 3M +14.8% \u2014 mid RS but constructive; not extended"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Direct T&D + data-center power; core equipment anchor (shared w/ AI DC)"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "+16.8% YoY \u2014 strong for a mega-cap industrial"
+        },
+        "margin_durability": {
+          "score": 5,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 25,
+          "rationale": "Best-in-class, expanding electrical margins"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~41, P/S ~5.6 \u2014 full but justified by backlog visibility"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "Transformer/switchgear lead-time blowout is the direct catalyst"
+        }
+      },
+      "snapshot": {
+        "price": 413.42,
+        "market_cap": 160530989056,
+        "pe": 40.531376,
+        "ps": 5.6283216,
+        "1y_pct": 16.66,
+        "3m_pct": 14.81,
+        "1m_pct": -1.85,
+        "dist_from_52w_high_pct": -5.34,
+        "rs_3m": 38.0,
+        "revenue_growth_yoy": 0.168,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "GEV": {
+      "company": "GE Vernova",
+      "bucket": "Heavy Electrical Equipment",
+      "sub": "Transformers / HVDC / grid orchestration",
+      "note": "Purest large-scale grid-equipment maker; AI-power narrative darling \u2014 rich multiple, harvest-into-strength",
+      "specificity_meta": 5,
+      "raw_total": 375,
+      "normalized_100": 75.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Purest large-scale grid-equipment maker (transformers/HVDC/orchestration)"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 77, +28% 3M, +118% 1Y \u2014 extended; ran hard on AI-power narrative"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest public grid-equipment expression; flagship of the equipment bet"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "+16.3% YoY, accelerating"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Rapidly improving post-spin margins"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "P/E ~34 but P/S ~7.9 after +118% run \u2014 priced for continued perfection"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 5,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 25,
+          "rationale": "Direct transformer/HVDC lead-time + FERC transmission-reform catalyst"
+        }
+      },
+      "snapshot": {
+        "price": 1152.04,
+        "market_cap": 309576204288,
+        "pe": 33.71496,
+        "ps": 7.8622527,
+        "1y_pct": 117.84,
+        "3m_pct": 28.27,
+        "1m_pct": 20.15,
+        "dist_from_52w_high_pct": -3.67,
+        "rs_3m": 77.0,
+        "revenue_growth_yoy": 0.163,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "HUBB": {
+      "company": "Hubbell",
+      "bucket": "Heavy Electrical Equipment",
+      "sub": "Utility T&D components / grid protection",
+      "note": "Diversified but genuine utility-facing exposure; more T&D-levered than most equipment names",
+      "specificity_meta": 3,
+      "raw_total": 335,
+      "normalized_100": 67.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Diversified utility T&D components + grid protection; genuinely T&D-facing"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 15, 3M +0.6% \u2014 lagging; cooled off hard"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "More T&D-utility-levered than most equipment names"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "+11.1% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Solid, consistent electrical margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 80,
+          "rationale": "P/E ~29, P/S ~4.4 \u2014 most reasonable of the big-3 equipment names"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Utility grid-component demand cadence"
+        }
+      },
+      "snapshot": {
+        "price": 495.6,
+        "market_cap": 26188384256,
+        "pe": 29.325445,
+        "ps": 4.3675694,
+        "1y_pct": 21.46,
+        "3m_pct": 0.57,
+        "1m_pct": 2.2,
+        "dist_from_52w_high_pct": -12.1,
+        "rs_3m": 15.0,
+        "revenue_growth_yoy": 0.111,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "POWL": {
+      "company": "Powell Industries",
+      "bucket": "Heavy Electrical Equipment",
+      "sub": "Custom switchgear / electrical distribution",
+      "note": "Narrower customer base; re-rated hard on power narrative \u2014 valuation discipline required",
+      "specificity_meta": 4,
+      "raw_total": 275,
+      "normalized_100": 55.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Custom engineered-to-order switchgear; long qualification cycles"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 92, +36% 3M, +246% 1Y \u2014 extreme run, peak momentum"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Pure utility/industrial switchgear; narrow customer base but on-thesis"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "+6.5% YoY \u2014 modest given the multiple"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Cyclical project margins, currently elevated"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "P/E ~48, P/S ~8.0 after +246% 1Y \u2014 cyclical-peak pricing risk is highest here"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "Switchgear backlog + data-center orders"
+        }
+      },
+      "snapshot": {
+        "price": 248.05,
+        "market_cap": 9036870656,
+        "pe": 48.447266,
+        "ps": 7.982713,
+        "1y_pct": 245.63,
+        "3m_pct": 35.89,
+        "1m_pct": -17.24,
+        "dist_from_52w_high_pct": -24.35,
+        "rs_3m": 92.0,
+        "revenue_growth_yoy": 0.065,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "NVT": {
+      "company": "nVent Electric",
+      "bucket": "Heavy Electrical Equipment",
+      "sub": "Enclosures / connection & protection",
+      "note": "Component-level, lower specificity. Shared with AI DC",
+      "specificity_meta": 3,
+      "raw_total": 295,
+      "normalized_100": 59.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Enclosures + connection/protection; component-level, competitive"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 85, +33% 3M, +112% 1Y \u2014 extended"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Grid-hardening components; real but lower-specificity (shared w/ AI DC)"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "+53.5% YoY \u2014 very strong (acquisitions + organic)"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Moderate, improving"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "P/E ~53, P/S ~5.9 \u2014 full after the run"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Grid-hardening + data-center demand"
+        }
+      },
+      "snapshot": {
+        "price": 156.89,
+        "market_cap": 25372321792,
+        "pe": 53.363945,
+        "ps": 5.865348,
+        "1y_pct": 112.24,
+        "3m_pct": 33.2,
+        "1m_pct": -11.06,
+        "dist_from_52w_high_pct": -15.03,
+        "rs_3m": 85.0,
+        "revenue_growth_yoy": 0.535,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "PWR": {
+      "company": "Quanta Services",
+      "bucket": "T&D Construction / E&C",
+      "sub": "Dominant US T&D construction contractor",
+      "note": "Flagship contractor anchor; largest backlog + deepest workforce. Re-rated but backlog justifies visibility",
+      "specificity_meta": 4,
+      "raw_total": 355,
+      "normalized_100": 71.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Dominant US T&D contractor; trained-crew workforce moat + largest backlog"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 54, +20% 3M \u2014 mid; constructive momentum, not overextended"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Purest large-cap T&D-construction expression; the labor-bottleneck flagship"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "+26.3% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Steady construction margins, mix improving toward higher-margin T&D"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "P/E ~93 \u2014 richest in cohort; backlog visibility is the only justification"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "Backlog conversion + interconnection-queue reform"
+        }
+      },
+      "snapshot": {
+        "price": 674.04,
+        "market_cap": 101146533888,
+        "pe": 92.587906,
+        "ps": 3.3579905,
+        "1y_pct": 74.86,
+        "3m_pct": 20.25,
+        "1m_pct": -5.8,
+        "dist_from_52w_high_pct": -14.53,
+        "rs_3m": 54.0,
+        "revenue_growth_yoy": 0.263,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "MTZ": {
+      "company": "MasTec",
+      "bucket": "T&D Construction / E&C",
+      "sub": "Power delivery (T&D) + comms + pipeline",
+      "note": "Power-delivery segment growing fast; some pipeline dilution but real T&D leverage",
+      "specificity_meta": 3,
+      "raw_total": 325,
+      "normalized_100": 65.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Power-delivery T&D growing fast; comms + pipeline dilute the mix"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 31, +13% 3M \u2014 lagging the contractor cohort"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Real T&D leverage via power-delivery segment; some non-grid dilution"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "+34.5% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Improving as power-delivery mix grows"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~67 but P/S ~2.0 \u2014 cheaper on sales than PWR"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "Power-delivery backlog ramp"
+        }
+      },
+      "snapshot": {
+        "price": 380.63,
+        "market_cap": 30076835840,
+        "pe": 66.66025,
+        "ps": 1.9683466,
+        "1y_pct": 121.32,
+        "3m_pct": 13.2,
+        "1m_pct": 2.97,
+        "dist_from_52w_high_pct": -13.77,
+        "rs_3m": 31.0,
+        "revenue_growth_yoy": 0.345,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "MYRG": {
+      "company": "MYR Group",
+      "bucket": "T&D Construction / E&C",
+      "sub": "Near-pure-play T&D + C&I electrical construction",
+      "note": "Smaller cap, cleanest T&D-construction pure-play; highest-specificity contractor exposure",
+      "specificity_meta": 4,
+      "raw_total": 335,
+      "normalized_100": 67.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Near-pure-play T&D + C&I electrical construction; cleanest contractor exposure"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 100, +55% 3M \u2014 top-of-cohort momentum, extended"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Highest-specificity T&D-construction pure-play; least diluted contractor"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "+20% YoY \u2014 solid"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Small-cap contractor margins, cyclical but improving"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~49, P/S ~1.8 \u2014 reasonable on sales despite the run"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 20,
+          "rationale": "T&D backlog + utility MSA renewals"
+        }
+      },
+      "snapshot": {
+        "price": 442.72,
+        "market_cap": 6893608960,
+        "pe": 48.919334,
+        "ps": 1.8024161,
+        "1y_pct": 136.99,
+        "3m_pct": 54.97,
+        "1m_pct": 0.31,
+        "dist_from_52w_high_pct": -12.08,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": 0.2,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "PRIM": {
+      "company": "Primoris Services",
+      "bucket": "T&D Construction / E&C",
+      "sub": "Utility + energy infrastructure construction",
+      "note": "Diversified E&C with expanding utility/power-delivery mix; backlog compounding",
+      "specificity_meta": 3,
+      "raw_total": 305,
+      "normalized_100": 61.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Diversified E&C with expanding utility/power-delivery mix"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 0, 3M -38.9% \u2014 sharp drawdown; either broken or the asymmetric entry"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Growing utility exposure but still diversified energy-infra"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "-5.4% YoY \u2014 recent revenue soft; the RS-0 explains itself"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Thin, project-lumpy margins"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 100,
+          "rationale": "P/E ~20, P/S ~0.65 \u2014 cheapest in cohort; deep-value if backlog holds"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Utility backlog conversion \u2014 but momentum broken; wait for stabilization"
+        }
+      },
+      "snapshot": {
+        "price": 90.2,
+        "market_cap": 4893794816,
+        "pe": 19.911697,
+        "ps": 0.6536651,
+        "1y_pct": 6.24,
+        "3m_pct": -38.93,
+        "1m_pct": -28.54,
+        "dist_from_52w_high_pct": -56.07,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": -0.054,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "EME": {
+      "company": "EMCOR Group",
+      "bucket": "T&D Construction / E&C",
+      "sub": "Mechanical/electrical construction + facilities",
+      "note": "Broad electrical construction; strong balance sheet + execution, more diluted grid exposure",
+      "specificity_meta": 3,
+      "raw_total": 340,
+      "normalized_100": 68.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Broad mechanical/electrical construction; grid exposure more diluted"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 23, +4.2% 3M \u2014 lagging but stable; low-drama compounder"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Real electrical-construction leverage, diluted by facilities/mechanical"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "+19.7% YoY \u2014 strong"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Best execution + margin discipline of the contractor group"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 80,
+          "rationale": "P/E ~26, P/S ~2.0 \u2014 reasonable for the execution quality"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Electrical-construction backlog cadence"
+        }
+      },
+      "snapshot": {
+        "price": 787.29,
+        "market_cap": 35060043776,
+        "pe": 26.46353,
+        "ps": 1.975516,
+        "1y_pct": 43.12,
+        "3m_pct": 4.15,
+        "1m_pct": -6.22,
+        "dist_from_52w_high_pct": -17.3,
+        "rs_3m": 23.0,
+        "revenue_growth_yoy": 0.197,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ITRI": {
+      "company": "Itron",
+      "bucket": "Grid-Edge Intelligence",
+      "sub": "Smart meters / grid-edge / distribution automation",
+      "note": "Cleanest grid-edge pure-play; recurring software mix growing. Not in AI DC \u2014 genuine incremental breadth",
+      "specificity_meta": 3,
+      "raw_total": 350,
+      "normalized_100": 70.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Smart meters + grid-edge + distribution automation; incumbency + software moat"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 8, 3M -2.2%, 1Y -35% \u2014 deeply out of favor; contrarian entry or value trap"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Cleanest grid-edge pure-play; NOT in AI DC \u2014 genuine incremental breadth"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "-3.3% YoY \u2014 soft; the RS/1Y drawdown reflects it"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Recurring software mix improving margins"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 100,
+          "rationale": "P/E ~14, P/S ~1.6 \u2014 cheapest quality name in universe after the drawdown"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Smart-meter refresh cycles + grid-modernization spend"
+        }
+      },
+      "snapshot": {
+        "price": 86.74,
+        "market_cap": 3845995008,
+        "pe": 13.856229,
+        "ps": 1.6386682,
+        "1y_pct": -35.49,
+        "3m_pct": -2.2,
+        "1m_pct": 5.63,
+        "dist_from_52w_high_pct": -38.92,
+        "rs_3m": 8.0,
+        "revenue_growth_yoy": -0.033,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "DY": {
+      "company": "Dycom Industries",
+      "bucket": "Grid-Edge Intelligence",
+      "sub": "Telecom + utility/grid line construction",
+      "note": "Primarily telecom/fiber, expanding utility line-construction; grid-edge buildout proxy",
+      "specificity_meta": 2,
+      "raw_total": 285,
+      "normalized_100": 57.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Primarily telecom/fiber line construction; expanding into utility/grid"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 69, +23.8% 3M \u2014 constructive momentum"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Mostly telecom; grid-edge buildout exposure is emerging, not core"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "+56.1% YoY \u2014 very strong (telecom-led)"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Steady specialty-contracting margins"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~41, P/S ~2.1 \u2014 full for a contractor"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Fiber + utility line-construction demand"
+        }
+      },
+      "snapshot": {
+        "price": 431.0,
+        "market_cap": 12943557632,
+        "pe": 41.20459,
+        "ps": 2.0702784,
+        "1y_pct": 70.94,
+        "3m_pct": 23.8,
+        "1m_pct": -10.97,
+        "dist_from_52w_high_pct": -23.91,
+        "rs_3m": 69.0,
+        "revenue_growth_yoy": 0.561,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ATKR": {
+      "company": "Atkore",
+      "bucket": "Cable / Wire & Components",
+      "sub": "Conduit / cable / busbar",
+      "note": "Commoditized, cyclical pricing; high buildout-volume exposure. Shared with AI DC",
+      "specificity_meta": 2,
+      "raw_total": 305,
+      "normalized_100": 61.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Conduit/cable/busbar \u2014 commoditized, cyclical pricing"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 46, +15% 3M \u2014 recovering off a weak 1Y (-2.4%)"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Direct buildout-volume exposure but low specificity (shared w/ AI DC)"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "+4.2% YoY \u2014 soft (pricing normalization off pandemic peak)"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Margins normalizing down from cyclical peak"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 100,
+          "rationale": "P/E ~11, P/S ~0.83 \u2014 very cheap; deep-value volume play"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Buildout tonnage + data-center conduit demand"
+        }
+      },
+      "snapshot": {
+        "price": 70.45,
+        "market_cap": 2378903552,
+        "pe": 11.448955,
+        "ps": 0.8277381,
+        "1y_pct": -2.38,
+        "3m_pct": 15.04,
+        "1m_pct": -17.14,
+        "dist_from_52w_high_pct": -21.86,
+        "rs_3m": 46.0,
+        "revenue_growth_yoy": 0.042,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "ENS": {
+      "company": "EnerSys",
+      "bucket": "Cable / Wire & Components",
+      "sub": "Industrial stored energy / DC power systems",
+      "note": "Utility + telecom + grid-storage exposure; real revenue, reasonable valuation",
+      "specificity_meta": 2,
+      "raw_total": 290,
+      "normalized_100": 58.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 2,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 40,
+          "rationale": "Industrial stored energy + DC power systems; real but fungible"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 62, +20% 3M, +144% 1Y \u2014 momentum strong"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "Utility + telecom + grid-storage exposure; adjacent, not core equipment"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "+1.3% YoY \u2014 flat"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Steady industrial margins"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 20,
+          "type": "quantitative",
+          "contribution": 80,
+          "rationale": "P/E ~28, P/S ~2.1 \u2014 reasonable after the run"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 10,
+          "type": "auto-from-fmp",
+          "contribution": 30,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 5,
+          "type": "judgment",
+          "contribution": 15,
+          "rationale": "Grid-storage + backup-power demand"
+        }
+      },
+      "snapshot": {
+        "price": 213.31,
+        "market_cap": 7776456704,
+        "pe": 27.666666,
+        "ps": 2.0729613,
+        "1y_pct": 143.68,
+        "3m_pct": 20.42,
+        "1m_pct": -11.07,
+        "dist_from_52w_high_pct": -12.58,
+        "rs_3m": 62.0,
+        "revenue_growth_yoy": 0.013,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    }
+  }
+}

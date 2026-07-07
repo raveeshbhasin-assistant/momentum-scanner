@@ -1,0 +1,21 @@
+{
+  "CRWD": {"company": "CrowdStrike",            "bucket": "Platform / Endpoint / Cloud", "sub": "Endpoint/cloud FCF compounder",     "specificity": 5, "note": "Quality-compounder anchor; Falcon single-agent platform, best module-attach economics, strong FCF"},
+  "PANW": {"company": "Palo Alto Networks",     "bucket": "Platform / Endpoint / Cloud", "sub": "Platformization (net/cloud/SecOps)", "specificity": 4, "note": "Platformization playbook; real FCF; firewalls give genuine OT/network adjacency into critical infra"},
+  "ZS":   {"company": "Zscaler",                "bucket": "Platform / Endpoint / Cloud", "sub": "Zero-trust SASE / secure edge",     "specificity": 4, "note": "Pure-play zero-trust edge; secures remote access into plants — key for OT/IT convergence"},
+  "FTNT": {"company": "Fortinet",               "bucket": "Platform / Endpoint / Cloud", "sub": "Firewalls + OT/ICS franchise",      "specificity": 5, "note": "The real critical-infra angle: large embedded FortiGate OT/industrial base; profitable with real FCF"},
+  "S":    {"company": "SentinelOne",            "bucket": "Platform / Endpoint / Cloud", "sub": "Autonomous endpoint challenger",    "specificity": 3, "note": "#2 endpoint to CRWD; faster growth but not consistently FCF-positive — platform optionality, CS-penalized"},
+
+  "TENB": {"company": "Tenable Holdings",       "bucket": "OT / ICS / Critical-Infra Specialists", "sub": "Exposure mgmt / OT visibility", "specificity": 4, "note": "Closest holdable proxy to a pure OT-visibility play; Tenable OT real industrial footprint, modest FCF"},
+  "VRNS": {"company": "Varonis Systems",        "bucket": "OT / ICS / Critical-Infra Specialists", "sub": "Data security / DSPM",          "specificity": 3, "note": "Data-centric security; sticky where data governance mandated (utilities/healthcare); mid SaaS transition"},
+  "RDWR": {"company": "Radware",                "bucket": "OT / ICS / Critical-Infra Specialists", "sub": "Application / DDoS / network",   "specificity": 3, "note": "Protects the network layer critical-infra web/app services depend on; smaller, profitable, real cash flow"},
+  "NET":  {"company": "Cloudflare",             "bucket": "OT / ICS / Critical-Infra Specialists", "sub": "Infrastructure edge / DDoS",     "specificity": 3, "note": "Internet edge increasingly a security platform (Zero Trust, magic transit); high multiple, improving FCF"},
+  "CHKP": {"company": "Check Point Software (ADR)", "bucket": "OT / ICS / Critical-Infra Specialists", "sub": "Firewall ADR (real revenue)", "specificity": 4, "note": "Israeli firewall incumbent, liquid US ADR; boring FCF machine — high margins, strong buyback, modest growth"},
+
+  "OKTA": {"company": "Okta",                   "bucket": "Identity & Access",           "sub": "Workforce + CIAM identity",         "specificity": 3, "note": "Identity-as-perimeter leader, FCF-positive; breach-scar + Entra-bundle risk — held for structure not narrative"},
+  "CYBR": {"company": "CyberArk Software",      "bucket": "Identity & Access",           "sub": "Privileged access mgmt (PAM)",      "specificity": 4, "note": "PAM leader; privileged control-system access is the crown-jewel attack surface; strong growth, improving FCF"},
+
+  "ARQQ": {"company": "Arqit Quantum (ADR)",    "bucket": "Post-Quantum / Encryption",   "sub": "PQC pure-play (speculative)",       "specificity": 4, "note": "Genuine PQC pure-play but micro-cap/speculative — immaterial optionality only; solvency is open research"},
+  "IBM":  {"company": "IBM",                    "bucket": "Post-Quantum / Encryption",   "sub": "Quantum-safe, diffuse (mega-cap)",  "specificity": 3, "note": "Co-authored NIST PQC standards; sells quantum-safe migration; real FCF but PQC is a tiny slice of a mega-cap"},
+  "BAH":  {"company": "Booz Allen Hamilton",    "bucket": "Post-Quantum / Encryption",   "sub": "Gov-focused integrator",            "specificity": 3, "note": "Federal cyber + PQC migration services; implements federal directives; cross-theme, small, real FCF"},
+  "LDOS": {"company": "Leidos Holdings",        "bucket": "Post-Quantum / Encryption",   "sub": "Gov-focused integrator",            "specificity": 3, "note": "Federal IT/cyber integrator with critical-infra contracts; cross-theme, small; cheap and cash-generative"}
+}

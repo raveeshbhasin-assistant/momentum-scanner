@@ -1,0 +1,1470 @@
+{
+  "theme": "personalized_medicine",
+  "scored_at": "2026-07-07T02:48:26.639466Z",
+  "trade_date": "2026-07-06",
+  "rubric_version": "v1",
+  "weights": {
+    "bottleneck_specificity": 20,
+    "rs_inflection": 10,
+    "theme_exposure": 15,
+    "revenue_growth": 10,
+    "margin_durability": 5,
+    "valuation_runway": 15,
+    "institutional_13f": 5,
+    "capital_structure": 20,
+    "catalyst_proximity": 0
+  },
+  "score_types": {
+    "bottleneck_specificity": "judgment",
+    "rs_inflection": "quantitative",
+    "theme_exposure": "judgment",
+    "revenue_growth": "quantitative",
+    "margin_durability": "mixed",
+    "valuation_runway": "quantitative",
+    "institutional_13f": "auto-from-13f",
+    "capital_structure": "auto-from-fmp",
+    "catalyst_proximity": "judgment"
+  },
+  "results": {
+    "ILMN": {
+      "company": "Illumina",
+      "bucket": "Sequencing Platforms",
+      "sub": "Short-read sequencer + consumables installed base",
+      "note": "Dominant short-read installed base; NovaSeq X drives razor/razorblade consumable pull-through \u2014 the picks-and-shovels anchor",
+      "specificity_meta": 5,
+      "raw_total": 370,
+      "normalized_100": 74.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Dominant short-read installed base + proprietary consumable pull-through; the picks-and-shovels anchor"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 64, 3M +52.6% \u2014 strong recovery off a deep trough; momentum real but partly rebound, not asymmetric"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure sequencing-platform play; the sub-$200-genome enabler"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "~5% YoY \u2014 mature/recovering, not a growth story right now"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "High consumables-driven gross margin; the razor/razorblade annuity"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~35, P/S ~6.7 \u2014 full after a +100% 1Y run; installed-base moat justifies but tightens room"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "NovaSeq X ramp + post-GRAIL simplification"
+        }
+      },
+      "snapshot": {
+        "price": 194.33,
+        "market_cap": 29402128384,
+        "pe": 35.397087,
+        "ps": 6.69295,
+        "1y_pct": 100.03,
+        "3m_pct": 52.56,
+        "1m_pct": 13.69,
+        "dist_from_52w_high_pct": -0.39,
+        "rs_3m": 64.0,
+        "revenue_growth_yoy": 0.048,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "PACB": {
+      "company": "Pacific Biosciences",
+      "bucket": "Sequencing Platforms",
+      "sub": "Long-read (HiFi) sequencing",
+      "note": "Long-read pure-play (Revio); real tech differentiation but micro-cap, cash-burning \u2014 optionality within the platform bucket",
+      "specificity_meta": 4,
+      "raw_total": 290,
+      "normalized_100": 58.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Long-read HiFi differentiation (Revio) \u2014 real tech, but small commercial base"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 29, 3M +23.9% but off a sub-$2 micro-cap base \u2014 noisy, not a clean inflection"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure-play long-read sequencing"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "~0% YoY \u2014 flat revenue, no growth traction"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Negative margins, cash-burning micro-cap"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "$1.66 micro-cap; P/E negative, P/S ~3.2 \u2014 speculative, dilution risk"
+        },
+        "institutional_13f": {
+          "score": 2,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 10,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Revio placements + long-read clinical adoption"
+        }
+      },
+      "snapshot": {
+        "price": 1.66,
+        "market_cap": 515598816,
+        "pe": -4.1855774,
+        "ps": 3.2218885,
+        "1y_pct": 12.93,
+        "3m_pct": 23.88,
+        "1m_pct": 5.06,
+        "dist_from_52w_high_pct": -39.19,
+        "rs_3m": 29.0,
+        "revenue_growth_yoy": 0.001,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "TWST": {
+      "company": "Twist Bioscience",
+      "bucket": "Tools / Consumables / Synthesis",
+      "sub": "Silicon-based DNA synthesis",
+      "note": "Silicon DNA-synthesis platform \u2014 hard-to-substitute upstream input for synbio + NGS panels; still pre-profit",
+      "specificity_meta": 5,
+      "raw_total": 320,
+      "normalized_100": 64.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 5,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 100,
+          "rationale": "Silicon DNA synthesis \u2014 hard-to-substitute upstream input for synbio + NGS; few qualified suppliers"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 100, 3M +99%, 1Y +181% \u2014 peak momentum, extremely extended"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Core arms dealer; synthesis underpins editing + NGS panels"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "~19% YoY, accelerating on synthesis + NGS"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Improving but still pre-profit; gross margin scaling"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/S ~15, P/E negative \u2014 priced for perfection at peak"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Synbio + NGS panel demand; gross-margin inflection"
+        }
+      },
+      "snapshot": {
+        "price": 99.93,
+        "market_cap": 6222772224,
+        "pe": -130.91324,
+        "ps": 15.196804,
+        "1y_pct": 180.78,
+        "3m_pct": 99.02,
+        "1m_pct": 38.16,
+        "dist_from_52w_high_pct": -5.25,
+        "rs_3m": 100.0,
+        "revenue_growth_yoy": 0.193,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "TXG": {
+      "company": "10x Genomics",
+      "bucket": "Tools / Consumables / Synthesis",
+      "sub": "Single-cell + spatial reagents",
+      "note": "Single-cell/spatial consumables franchise; recurring reagent pull-through but IP-litigation and growth overhang",
+      "specificity_meta": 4,
+      "raw_total": 310,
+      "normalized_100": 62.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Single-cell + spatial reagent consumables franchise; recurring pull-through"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 79, 3M +79% \u2014 strong momentum but stretched"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Core research-tools consumables; broad exposure to genomics labs"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "~-3% YoY \u2014 revenue decelerated/contracting; the growth overhang"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "High gross margin but opex-heavy; profitability elusive"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/S ~8 after +236% 1Y run; IP-litigation overhang"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Spatial platform adoption; litigation resolution"
+        }
+      },
+      "snapshot": {
+        "price": 40.0,
+        "market_cap": 5078247424,
+        "pe": 200.0,
+        "ps": 7.949879,
+        "1y_pct": 235.57,
+        "3m_pct": 79.13,
+        "1m_pct": 24.38,
+        "dist_from_52w_high_pct": -1.38,
+        "rs_3m": 79.0,
+        "revenue_growth_yoy": -0.026,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "QGEN": {
+      "company": "Qiagen (ADR)",
+      "bucket": "Tools / Consumables / Synthesis",
+      "sub": "Sample prep + molecular consumables (ADR)",
+      "note": "Sample-to-insight consumables + QuantiFERON; sponsored NYSE ADR, real FCF, defensive consumables",
+      "specificity_meta": 4,
+      "raw_total": 345,
+      "normalized_100": 69.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Sample-to-insight consumables + QuantiFERON; defensive molecular-prep annuity"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 0, 3M -4.6%, 1Y -17.6% \u2014 the laggard; downtrend, oversold-but-not-turning"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Core consumables; sample prep is upstream of every NGS/dx workflow"
+        },
+        "revenue_growth": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "~2% YoY \u2014 slow but steady"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Real FCF, durable consumables margins"
+        },
+        "valuation_runway": {
+          "score": 5,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 75,
+          "rationale": "P/E ~20, P/S ~3.8 \u2014 cheapest quality name in the tools bucket; real value"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "QuantiFERON growth + molecular-dx menu expansion"
+        }
+      },
+      "snapshot": {
+        "price": 39.15,
+        "market_cap": 8074688000,
+        "pe": 19.974491,
+        "ps": 3.8471725,
+        "1y_pct": -17.63,
+        "3m_pct": -4.58,
+        "1m_pct": 7.41,
+        "dist_from_52w_high_pct": -32.29,
+        "rs_3m": 0.0,
+        "revenue_growth_yoy": 0.018,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "A": {
+      "company": "Agilent Technologies",
+      "bucket": "Tools / Consumables / Synthesis",
+      "sub": "Analytical instruments + genomics reagents",
+      "note": "Diversified analytical + genomics tools; durable FCF, diluted theme purity \u2014 quality ballast",
+      "specificity_meta": 3,
+      "raw_total": 300,
+      "normalized_100": 60.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Analytical instruments + genomics reagents; diversified, hard to displace but diffuse"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 21, 3M +13.3% \u2014 mild recovery, low relative strength"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Genomics is one slice; broad analytical-instrument base"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "~10% YoY \u2014 steady"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Durable margins + FCF; quality compounder"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~26, P/S ~5.1 \u2014 reasonable for the quality"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Instrument replacement cycle; NASD/genomics reagent growth"
+        }
+      },
+      "snapshot": {
+        "price": 130.6,
+        "market_cap": 36885614592,
+        "pe": 26.224901,
+        "ps": 5.1003337,
+        "1y_pct": 10.4,
+        "3m_pct": 13.31,
+        "1m_pct": -4.77,
+        "dist_from_52w_high_pct": -18.02,
+        "rs_3m": 21.0,
+        "revenue_growth_yoy": 0.1,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "TMO": {
+      "company": "Thermo Fisher Scientific",
+      "bucket": "Tools / Consumables / Synthesis",
+      "sub": "Instruments + reagents (picks-and-shovels)",
+      "note": "Sells reagents/instruments to every genomics lab; real revenue + margins, diffuse but safe exposure",
+      "specificity_meta": 3,
+      "raw_total": 305,
+      "normalized_100": 61.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Instruments + reagents to every genomics lab; diffuse but structurally durable"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 14, 3M +5.4% \u2014 muted, low relative strength"
+        },
+        "theme_exposure": {
+          "score": 2,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 30,
+          "rationale": "Genomics tools are a slice of a vast life-sciences franchise"
+        },
+        "revenue_growth": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "~6% YoY \u2014 steady mega-cap growth"
+        },
+        "margin_durability": {
+          "score": 4,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 20,
+          "rationale": "Strong, durable margins + FCF; the safe picks-and-shovels ballast"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/E ~28, P/S ~4.3 \u2014 reasonable for the quality/breadth"
+        },
+        "institutional_13f": {
+          "score": 5,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 25,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 2,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Bioprocessing/reagent recovery; capital-equipment cycle"
+        }
+      },
+      "snapshot": {
+        "price": 517.6,
+        "market_cap": 192351272960,
+        "pe": 28.408342,
+        "ps": 4.2558417,
+        "1y_pct": 24.07,
+        "3m_pct": 5.42,
+        "1m_pct": 9.32,
+        "dist_from_52w_high_pct": -19.47,
+        "rs_3m": 14.0,
+        "revenue_growth_yoy": 0.062,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "EXAS": {
+      "company": "Exact Sciences",
+      "bucket": "Molecular Diagnostics / Liquid Biopsy",
+      "sub": "Cancer screening (Cologuard) + MRD",
+      "note": "Reimbursed screening scale (Cologuard) + Oncodetect MRD; the flagship real-revenue molecular-dx franchise",
+      "specificity_meta": 4,
+      "raw_total": 350,
+      "normalized_100": 70.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Reimbursed screening scale (Cologuard) + Oncodetect MRD; reimbursement/guideline moat"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "Did not price at seed \u2014 hand-set neutral; historically strong screening-volume franchise"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Flagship real-revenue molecular-dx; blood-based screening is the next TAM leg"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "Screening volume compounding double-digits (hand-set; no seed data)"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Improving toward profitability on screening scale"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "Reimbursed franchise; valuation reasonable vs. TAM (hand-set \u2014 no seed price)"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Blood-based screening + MCED coverage decisions"
+        }
+      },
+      "snapshot": {
+        "price": null,
+        "market_cap": null,
+        "pe": null,
+        "ps": null,
+        "1y_pct": null,
+        "3m_pct": null,
+        "1m_pct": null,
+        "dist_from_52w_high_pct": null,
+        "rs_3m": null,
+        "revenue_growth_yoy": null,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "GH": {
+      "company": "Guardant Health",
+      "bucket": "Molecular Diagnostics / Liquid Biopsy",
+      "sub": "Liquid biopsy + MRD",
+      "note": "Guardant360 + Shield blood screening; liquid-biopsy volume compounding, reimbursement is the swing factor",
+      "specificity_meta": 4,
+      "raw_total": 355,
+      "normalized_100": 71.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Guardant360 liquid biopsy + Shield blood screening + MRD; reimbursement is the swing factor"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 93, 3M +79.9% \u2014 strong momentum, extended after a big run"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure-play liquid biopsy + blood screening; thesis flagship dx name"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "~48% YoY \u2014 volume compounding fast"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Still loss-making (P/E negative); scaling toward operating leverage"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/S ~21 after +241% 1Y \u2014 priced for continued volume growth"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Shield reimbursement + guideline inclusion"
+        }
+      },
+      "snapshot": {
+        "price": 168.82,
+        "market_cap": 22385520640,
+        "pe": -355.61267,
+        "ps": 20.723207,
+        "1y_pct": 240.78,
+        "3m_pct": 79.92,
+        "1m_pct": 32.9,
+        "dist_from_52w_high_pct": -2.32,
+        "rs_3m": 93.0,
+        "revenue_growth_yoy": 0.483,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "NTRA": {
+      "company": "Natera",
+      "bucket": "Molecular Diagnostics / Liquid Biopsy",
+      "sub": "MRD (Signatera) + reproductive",
+      "note": "Signatera MRD compounding ~40% YoY on a large proprietary dataset; category-leading tumor-informed MRD",
+      "specificity_meta": 4,
+      "raw_total": 365,
+      "normalized_100": 73.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Tumor-informed MRD (Signatera) on a large proprietary dataset; category leader"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 50, 3M +36.5% \u2014 mid RS with healthy momentum; not over-extended"
+        },
+        "theme_exposure": {
+          "score": 5,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 75,
+          "rationale": "Pure-play MRD + molecular dx; the compounding-volume flagship"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "~39% YoY \u2014 Signatera compounding ~40%"
+        },
+        "margin_durability": {
+          "score": 2,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 10,
+          "rationale": "Near/at breakeven; heavy reinvestment (P/E deeply negative on small loss)"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/S ~16 \u2014 priced for continued MRD compounding"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "MRD guideline inclusion + Medicare coverage expansion"
+        }
+      },
+      "snapshot": {
+        "price": 283.8,
+        "market_cap": 40644521984,
+        "pe": -1330.7699,
+        "ps": 16.251783,
+        "1y_pct": 78.84,
+        "3m_pct": 36.46,
+        "1m_pct": 33.96,
+        "dist_from_52w_high_pct": -1.47,
+        "rs_3m": 50.0,
+        "revenue_growth_yoy": 0.388,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "VCYT": {
+      "company": "Veracyte",
+      "bucket": "Molecular Diagnostics / Liquid Biopsy",
+      "sub": "Genomic classifiers (Decipher/Afirma)",
+      "note": "Reimbursed genomic-classifier franchise (Decipher, Afirma); profitable, narrower TAM than GH/NTRA",
+      "specificity_meta": 3,
+      "raw_total": 325,
+      "normalized_100": 65.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Genomic classifiers (Decipher, Afirma); reimbursed but narrower TAM"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 86, 3M +79.8% \u2014 strong momentum, stretched"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Reimbursed genomic-classifier franchise; smaller but real"
+        },
+        "revenue_growth": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "~22% YoY \u2014 solid double-digit growth"
+        },
+        "margin_durability": {
+          "score": 3,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 15,
+          "rationale": "Profitable (P/E ~54); cleaner P&L than GH/NTRA"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/E ~54, P/S ~8.5 \u2014 full but supported by profitability + growth"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Classifier menu expansion; MRD entry"
+        }
+      },
+      "snapshot": {
+        "price": 57.995,
+        "market_cap": 4627574784,
+        "pe": 53.69907,
+        "ps": 8.542011,
+        "1y_pct": 120.18,
+        "3m_pct": 79.83,
+        "1m_pct": 19.11,
+        "dist_from_52w_high_pct": -4.79,
+        "rs_3m": 86.0,
+        "revenue_growth_yoy": 0.215,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "CRSP": {
+      "company": "CRISPR Therapeutics",
+      "bucket": "Gene Editing & mRNA (Optionality)",
+      "sub": "Ex-vivo + in-vivo CRISPR editing",
+      "note": "Best-capitalized editor; Casgevy approved/commercial + large cash runway \u2014 the core of the optionality sleeve",
+      "specificity_meta": 4,
+      "raw_total": 325,
+      "normalized_100": 65.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Best-capitalized editor; Casgevy approved/commercial + in-vivo pipeline"
+        },
+        "rs_inflection": {
+          "score": 2,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 20,
+          "rationale": "RS 36, 3M +25% \u2014 mid-low RS, moderate momentum"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Editing optionality anchor; has an approved product, unlike peers"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "~69% YoY off a small Casgevy base \u2014 early commercial ramp"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Loss-making clinical-stage economics; large cash offsets"
+        },
+        "valuation_runway": {
+          "score": 2,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "P/S distorted by tiny revenue; valued on cash + pipeline optionality"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Casgevy uptake + in-vivo clinical readouts"
+        }
+      },
+      "snapshot": {
+        "price": 61.89,
+        "market_cap": 6095182848,
+        "pe": -16.06431,
+        "ps": 1485.543,
+        "1y_pct": 20.9,
+        "3m_pct": 25.01,
+        "1m_pct": 18.84,
+        "dist_from_52w_high_pct": -21.14,
+        "rs_3m": 36.0,
+        "revenue_growth_yoy": 0.686,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "MRNA": {
+      "company": "Moderna",
+      "bucket": "Gene Editing & mRNA (Optionality)",
+      "sub": "mRNA platform + personalized cancer vaccine",
+      "note": "mRNA platform + INT personalized cancer vaccine w/ Merck; large cash pile but revenue cliff post-COVID",
+      "specificity_meta": 3,
+      "raw_total": 285,
+      "normalized_100": 57.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "mRNA platform + INT personalized cancer vaccine (w/ Merck)"
+        },
+        "rs_inflection": {
+          "score": 4,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 40,
+          "rationale": "RS 71, 3M +66% \u2014 strong momentum off a beaten-down base"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "mRNA optionality; personalized-oncology INT is the theme-relevant piece"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "Post-COVID revenue cliff \u2014 reported growth noisy off collapsing base"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Loss-making post-COVID; large cash pile cushions"
+        },
+        "valuation_runway": {
+          "score": 3,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 45,
+          "rationale": "P/S ~15 but trades near cash; optionality-priced"
+        },
+        "institutional_13f": {
+          "score": 4,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 20,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "INT (mRNA-4157) melanoma/other Phase 3 readouts with Merck"
+        }
+      },
+      "snapshot": {
+        "price": 81.8,
+        "market_cap": 32457117696,
+        "pe": -19.771206,
+        "ps": 14.587469,
+        "1y_pct": 173.58,
+        "3m_pct": 66.26,
+        "1m_pct": 66.73,
+        "dist_from_52w_high_pct": -4.44,
+        "rs_3m": 71.0,
+        "revenue_growth_yoy": 2.602,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "BNTX": {
+      "company": "BioNTech (ADR)",
+      "bucket": "Gene Editing & mRNA (Optionality)",
+      "sub": "mRNA immunotherapy (ADR)",
+      "note": "mRNA individualized cancer immunotherapy pipeline; strong balance sheet, sponsored NASDAQ ADR",
+      "specificity_meta": 3,
+      "raw_total": 265,
+      "normalized_100": 53.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 3,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "mRNA individualized cancer immunotherapy pipeline; strong balance sheet"
+        },
+        "rs_inflection": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "RS 7, 3M +3% \u2014 laggard, low relative strength"
+        },
+        "theme_exposure": {
+          "score": 3,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 45,
+          "rationale": "mRNA optionality; individualized immunotherapy is theme-relevant"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "~-35% YoY \u2014 post-COVID revenue decline"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Loss-making now; very large cash pile"
+        },
+        "valuation_runway": {
+          "score": 4,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 60,
+          "rationale": "P/S ~8.5 and trades close to net cash \u2014 cheapest optionality in the sleeve"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Individualized immunotherapy readouts; pipeline milestones"
+        }
+      },
+      "snapshot": {
+        "price": 93.93,
+        "market_cap": 23753418752,
+        "pe": -18.557491,
+        "ps": 8.467639,
+        "1y_pct": -14.65,
+        "3m_pct": 3.02,
+        "1m_pct": 6.2,
+        "dist_from_52w_high_pct": -24.25,
+        "rs_3m": 7.0,
+        "revenue_growth_yoy": -0.354,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "NTLA": {
+      "company": "Intellia Therapeutics",
+      "bucket": "Gene Editing & mRNA (Optionality)",
+      "sub": "In-vivo CRISPR editing",
+      "note": "In-vivo editing leader (NTLA-2001/2002) but clinical-stage, dilutive; binary catalyst risk",
+      "specificity_meta": 4,
+      "raw_total": 275,
+      "normalized_100": 55.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "In-vivo CRISPR leader (NTLA-2001/2002) \u2014 rare platform capability"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 43, 3M +35.9% \u2014 mid RS, moderate momentum"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Pure-play in-vivo editing optionality"
+        },
+        "revenue_growth": {
+          "score": 1,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 10,
+          "rationale": "~-10% YoY \u2014 collaboration revenue, no product revenue"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Loss-making, cash-burning clinical-stage"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/S ~38; pre-revenue, single-catalyst, dilution-financed \u2014 smallest sizing"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 4,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "ATTR + HAE in-vivo Phase 3 readouts"
+        }
+      },
+      "snapshot": {
+        "price": 17.84,
+        "market_cap": 2492645376,
+        "pe": -9.9056635,
+        "ps": 37.714783,
+        "1y_pct": 74.05,
+        "3m_pct": 35.87,
+        "1m_pct": 37.02,
+        "dist_from_52w_high_pct": -36.85,
+        "rs_3m": 43.0,
+        "revenue_growth_yoy": -0.095,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    },
+    "BEAM": {
+      "company": "Beam Therapeutics",
+      "bucket": "Gene Editing & mRNA (Optionality)",
+      "sub": "Base editing",
+      "note": "Base-editing platform differentiation; pre-revenue, cash-burning \u2014 small optionality only",
+      "specificity_meta": 4,
+      "raw_total": 315,
+      "normalized_100": 63.0,
+      "components": {
+        "bottleneck_specificity": {
+          "score": 4,
+          "weight": 20,
+          "type": "judgment",
+          "contribution": 80,
+          "rationale": "Base-editing platform differentiation \u2014 distinct editing modality"
+        },
+        "rs_inflection": {
+          "score": 3,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 30,
+          "rationale": "RS 57, 3M +43.2% \u2014 mid RS with momentum"
+        },
+        "theme_exposure": {
+          "score": 4,
+          "weight": 15,
+          "type": "judgment",
+          "contribution": 60,
+          "rationale": "Pure-play base-editing optionality"
+        },
+        "revenue_growth": {
+          "score": 5,
+          "weight": 10,
+          "type": "quantitative",
+          "contribution": 50,
+          "rationale": "Revenue up sharply off a near-zero collaboration base \u2014 not meaningful"
+        },
+        "margin_durability": {
+          "score": 1,
+          "weight": 5,
+          "type": "mixed",
+          "contribution": 5,
+          "rationale": "Loss-making, cash-burning pre-revenue"
+        },
+        "valuation_runway": {
+          "score": 1,
+          "weight": 15,
+          "type": "quantitative",
+          "contribution": 15,
+          "rationale": "P/S ~22; pre-revenue, dilutive \u2014 optionality only"
+        },
+        "institutional_13f": {
+          "score": 3,
+          "weight": 5,
+          "type": "auto-from-13f",
+          "contribution": 15,
+          "rationale": "13F data unavailable \u2014 hand-scored fallback"
+        },
+        "capital_structure": {
+          "score": 3,
+          "weight": 20,
+          "type": "auto-from-fmp",
+          "contribution": 60,
+          "rationale": "Capital structure data unavailable (yfinance-only seed) \u2014 neutral fallback; FMP populates on Railway fold-in"
+        },
+        "catalyst_proximity": {
+          "score": 3,
+          "weight": 0,
+          "type": "judgment",
+          "contribution": 0,
+          "rationale": "Base-editing clinical readouts; platform validation"
+        }
+      },
+      "snapshot": {
+        "price": 35.32,
+        "market_cap": 3633693952,
+        "pe": -7.4459634,
+        "ps": 22.155184,
+        "1y_pct": 84.15,
+        "3m_pct": 43.23,
+        "1m_pct": 19.53,
+        "dist_from_52w_high_pct": -5.31,
+        "rs_3m": 57.0,
+        "revenue_growth_yoy": 3.249,
+        "shares_growth_yoy": null,
+        "debt_growth_yoy": null,
+        "sbc_pct_revenue": null,
+        "fcf_margin": null
+      }
+    }
+  }
+}
