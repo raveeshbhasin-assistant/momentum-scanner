@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-07-08",
+  "objective": "Stocks most likely to 3X in 2-3 years, screened from all 14 themes' candidate universes",
+  "methodology": "Empirical base rates from a 4,971-ticker / 2015-2026 backtest; framework screen (mcap ceiling ~$20B, growth or re-rate engine, dilution check, not-already-parabolic); adversarial red-team with July-2026 facts; per-name historical 3X precedent check. See research_findings_3x_growth.md.",
+  "base_rates": {
+    "pct_3x_36m_price_ge5": 8.4,
+    "odds_line": "~1 in 12 for any $5+ US stock over 3 years (survivorship-biased upper bound)",
+    "theme_precedent": "71 of 119 theme tickers (60%) have 3X'd from a $5+ start in some 36-month window, 2015-2024"
+  },
+  "anchor_note": "anchor_price recorded 2026-07-06/08 at list finalization; 3X target = 3x anchor. Current prices flow from each theme's candidates.json nightly refresh.",
+  "picks": [
+    {
+      "ticker": "LEU", "company": "Centrus Energy", "theme_slug": "nuclear_renaissance",
+      "tier": 1, "odds": "~1 in 3-4", "tracker_pick": true,
+      "anchor_price": 166.47, "anchor_mcap_b": 3.3,
+      "bull": "Sole US-owned enricher, profitable, ~$1.9B cash, $900M DOE HALEU award + $2.4B backlog; 3X merely revisits its own 2025 mania peak (~$10B) as Piketon capacity and follow-on DOE orders land.",
+      "bear": "Share count +28%/yr with stacked converts; today's revenue is low-margin TENEX brokerage with sanctions risk; new capacity only reaches commercial scale 2029 — the 3X needs the multiple, not 2027 earnings.",
+      "precedent": "3X'd in 6 of 10 cohort windows; best 36m run 21.5x"
+    },
+    {
+      "ticker": "AVAV", "company": "AeroVironment", "theme_slug": "modern_defense",
+      "tier": 1, "odds": "~1 in 3-4", "tracker_pick": true,
+      "anchor_price": 158.00, "anchor_mcap_b": 7.9,
+      "bull": "The one battle-tested US drone pure-play, -62% off its high while allied drone procurement enters a multi-year supercycle (Replicator, Ukraine restock, BlueHalo scale); 3X = $24B on a step-change in fielded-systems orders.",
+      "bear": "Order lumpiness is why it's -62%; BlueHalo integration risk; if procurement stays study-phase rather than production-phase, revenue growth (+14%) doesn't support a re-rate.",
+      "precedent": "3X'd in 5 of 10 cohort windows; best 36m run 4.4x"
+    },
+    {
+      "ticker": "SGML", "company": "Sigma Lithium", "theme_slug": "rare_earth",
+      "tier": 1, "odds": "~1 in 3-4", "tracker_pick": false,
+      "anchor_price": 11.53, "anchor_mcap_b": 1.3,
+      "bull": "Producing low-cost lithium (Q1-26: 61% gross margin, AISC ~$550/t) with a clean ~110M-share cap table and debt-funded expansion — the Pilbara 2020-22 template (volume x price, no dilution) into a forecast 2026-27 deficit.",
+      "bear": "Chronic multi-year Phase-2 delays; only ~$28M cash (one stumble = a raise); CATL's Jianxiawo restart could cap spodumene; single mine, single product, price-taker.",
+      "precedent": "3X'd in 4 of 10 cohort windows; best 36m run 26.1x"
+    },
+    {
+      "ticker": "GILT", "company": "Gilat Satellite Networks", "theme_slug": "space_economy",
+      "tier": 1, "odds": "~1 in 3-4", "tracker_pick": false,
+      "anchor_price": 12.21, "anchor_mcap_b": 0.9,
+      "bull": "Sub-$1B, already profitable (P/E ~29, P/S ~2), revenue accelerating (+20-48%) on defense satcom + IFC ground-station demand; smallest sector-ceiling risk on the list — a modest re-rate plus contract momentum gets to 3X.",
+      "bear": "Lumpy contract timing, Israeli geopolitical discount, hardware gross margins; small-cap neglect can persist indefinitely without a headline win.",
+      "precedent": "3X'd in 2 of 10 cohort windows; best 36m run 3.5x"
+    },
+    {
+      "ticker": "MP", "company": "MP Materials", "theme_slug": "rare_earth",
+      "tier": 1, "odds": "~1 in 4-5", "tracker_pick": true,
+      "anchor_price": 53.01, "anchor_mcap_b": 9.4,
+      "bull": "The West's only scaled RE-magnet chain with a DoD price floor, Pentagon equity, and Apple offtake; revenue +119% as 10X magnet capacity ramps — 3X = $28B, and industrial policy is explicitly trying to build exactly that.",
+      "bear": "3X already means ~1.4x the biggest Western RE company ever (Lynas peak ~$19.5B); DoD warrants dilute ~15% on the way up; NdPr at $133/kg is above the floor — the downside protection isn't paying.",
+      "precedent": "3X'd in 1 of 10 cohort windows; best 36m run 4.5x"
+    },
+    {
+      "ticker": "TEM", "company": "Tempus AI", "theme_slug": "ai_healthcare",
+      "tier": 1, "odds": "~1 in 4-6", "tracker_pick": true,
+      "anchor_price": 60.70, "anchor_mcap_b": 10.9,
+      "bull": "Category leader in AI-native clinical/molecular data at $1.6B revenue growing ~36% with adjusted-EBITDA breakeven in sight; a re-rate to ~20x sales on continued execution = 3X ($33B) — the actual institutional bull case.",
+      "bear": "Active Spruce Point accounting short (JV round-tripping, 'AI' <2% of revenue); growth decelerating toward ~25%; ~$500M GAAP loss — a multiple built on the AI label, not yet on earnings.",
+      "precedent": "IPO'd 2024 — no 36m history yet"
+    },
+    {
+      "ticker": "MIR", "company": "Mirion Technologies", "theme_slug": "nuclear_renaissance",
+      "tier": 2, "odds": "~1 in 4-6", "tracker_pick": true,
+      "anchor_price": 16.91, "anchor_mcap_b": 4.1,
+      "bull": "Radiation detection is design-agnostic nuclear infrastructure — every restart, uprate, SMR and fuel facility buys dosimetry; +28% revenue with recurring mix; 3X = $12B as the buildout broadens.",
+      "bear": "Optically expensive (trailing P/E ~169); underlying organic growth has historically been mid-single-digit — the 3X needs the nuclear capex wave to actually hit the P&L, not just the narrative.",
+      "precedent": "3X'd in 2 of 10 cohort windows; best 36m run 3.7x"
+    },
+    {
+      "ticker": "ITRI", "company": "Itron", "theme_slug": "power_grid",
+      "tier": 2, "odds": "~1 in 5-6", "tracker_pick": true,
+      "anchor_price": 86.74, "anchor_mcap_b": 3.9,
+      "bull": "The cheap one: P/S 1.6, -39% off its high, with a grid-edge software mix shift; if AMI 2.0 + distribution-automation orders inflect, a value re-rate plus modest growth compounds to 3X ($12B).",
+      "bear": "Weakest precedent on the list (best-ever 36m run just 2.4x); revenue currently flat; utility procurement is slow — the entire 3X is a multiple bet on a historically low-multiple company.",
+      "precedent": "Never 3X'd in a 36m window (best 2.4x) — pure re-rate bet"
+    },
+    {
+      "ticker": "TLN", "company": "Talen Energy", "theme_slug": "nuclear_renaissance",
+      "tier": 2, "odds": "~1 in 5", "tracker_pick": true,
+      "anchor_price": 377.79, "anchor_mcap_b": 18.1,
+      "bull": "The most concentrated nuclear-to-datacenter expression: Amazon 1.92GW/17yr PPA, aggressive buybacks, scarcity value of merchant nuclear MWh; VST's 9.4x run 2021-24 is the direct precedent; 3X = $54B < CEG today.",
+      "bear": "Largest name on this list ($18B) so the easiest math is behind it; single-site Susquehanna concentration, gas fleet dilution, PJM regulatory risk; already an institutional favorite after +33%/1y.",
+      "precedent": "3X'd in 1 of 10 cohort windows; best 36m run 6.4x (VST, its closest comp: 9.4x)"
+    },
+    {
+      "ticker": "OUST", "company": "Ouster", "theme_slug": "robotics",
+      "tier": 2, "odds": "~1 in 5", "tracker_pick": false,
+      "anchor_price": 43.41, "anchor_mcap_b": 2.9,
+      "bull": "Last consolidated lidar pure-play (absorbed Velodyne) growing +49% with software attach, $375M cash post-raise, riding the physical-AI/robotics wave; 3X = $9B on a path to ~$500M revenue.",
+      "bear": "13 straight growth quarters and still no GAAP profit; the sector's two prior leaders went to zero; hardware gross margins (43%) may never support the multiple.",
+      "precedent": "3X'd in 1 of 10 cohort windows; best 36m run 12.0x"
+    },
+    {
+      "ticker": "BEAM", "company": "Beam Therapeutics", "theme_slug": "personalized_medicine",
+      "tier": 2, "odds": "~1 in 4 on data win, binary", "tracker_pick": false,
+      "anchor_price": 36.88, "anchor_mcap_b": 3.8,
+      "bull": "First-ever in-vivo base-editing correction (BEAM-302: ~79% mutant-protein reduction, no SAEs); a clean Phase 1/2 expansion readout re-rates platform value 2-4x — a 3X only needs a partial win, unlike the 10X.",
+      "bear": "Binary: a durability fade or LNP liver-tox signal is -50 to -70% overnight; near its 52-week high, so good news is partly priced; commercial launches still need capital.",
+      "precedent": "Listed 2020 — never 3X'd in a 36m window (best 1.6x)"
+    },
+    {
+      "ticker": "VCYT", "company": "Veracyte", "theme_slug": "personalized_medicine",
+      "tier": 2, "odds": "~1 in 5", "tracker_pick": true,
+      "anchor_price": 58.00, "anchor_mcap_b": 4.6,
+      "bull": "Profitable-ish reimbursed genomic-classifier franchise (+22%) with MRD expansion optionality; cheap vs diagnostics peers; the lowest total-loss risk on this list — a 3X via steady growth plus a modest re-rate.",
+      "bear": "22% growth alone doesn't 3X in 3 years — the multiple must expand; diagnostics reimbursement is a perennial policy risk; Decipher/Afirma TAMs are finite.",
+      "precedent": "3X'd in 3 of 10 cohort windows; best 36m run 8.9x"
+    }
+  ],
+  "excluded_notables": [
+    {"ticker": "MYRG", "reason": "Quality T&D contractor but already +137%/1y — the re-rate happened; now a 2X candidate"},
+    {"ticker": "UUUU", "reason": "Share count roughly doubling in 30 months (VAC deal +27%) strangles the per-share math even for 3X"},
+    {"ticker": "RCAT", "reason": "FOIA shows flagship Army SRR contract ~$12.9M, ~60% below management framing — thesis integrity fails"},
+    {"ticker": "BWXT", "reason": "Superb monopoly but $18B and +26% growth is a 2X profile, not 3X"},
+    {"ticker": "KTOS", "reason": "-61% off high with CCA optionality, but P/E ~306 at $9.8B already prices the drone future"},
+    {"ticker": "TWST", "reason": "+180%/1y already; an ~18% grower at 15x sales needs the multiple to do everything from here"},
+    {"ticker": "GH/NTRA", "reason": "Both now ~$20B+ after big runs — the 3X window was 2023-2025 and they took it"}
+  ]
+}

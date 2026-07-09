@@ -26,6 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from themes_web.render import (
+    aggregate_moonshots,
     aggregate_portfolio,
     benchmark_price,
     discover_themes_full,
@@ -200,6 +201,32 @@ def portfolio_page(request: Request):
 @app.get("/api/portfolio", response_class=JSONResponse)
 def api_portfolio():
     return aggregate_portfolio()
+
+
+@app.get("/moonshots", response_class=HTMLResponse)
+def moonshots_page(request: Request):
+    """Cross-theme 3X screen — the portfolio view filtered to the names most
+    likely to 3X in 2-3 years (see themes/_moonshots_3x.json + research doc)."""
+    moonshots = aggregate_moonshots()
+    if moonshots is None:
+        return HTMLResponse("<h1>No 3X screen found</h1><p>Missing <code>themes/_moonshots_3x.json</code>.</p>", status_code=404)
+    return templates.TemplateResponse(
+        request=request,
+        name="moonshots.html",
+        context={
+            "active_slug": None,
+            "active_page": "moonshots",
+            "tracker": None,
+            "all_themes": discover_themes_full(),
+            "moonshots": moonshots,
+        },
+    )
+
+
+@app.get("/api/moonshots", response_class=JSONResponse)
+def api_moonshots():
+    m = aggregate_moonshots()
+    return m if m is not None else JSONResponse({"error": "missing _moonshots_3x.json"}, status_code=404)
 
 
 @app.get("/how-it-works", response_class=HTMLResponse)

@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}3X Screen · Themes{% endblock %}
+
+{% block extra_css %}
+  .pf-header { margin-bottom: 18px; }
+  .pf-title { font-family: var(--font-serif); font-size: 32px; line-height: 1.15; font-weight: 500; letter-spacing: -0.015em; margin: 0 0 4px; }
+  .pf-sub { font-size: 13px; color: var(--text-tertiary); max-width: 760px; line-height: 1.5; }
+
+  .method-strip { background: var(--bg-elev); border-radius: var(--radius-md); padding: 12px 18px; margin-bottom: 22px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+  .method-strip b { color: var(--text-primary); }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 26px; }
+  .kpi { background: var(--bg-elev); border-radius: var(--radius-md); padding: 14px 18px; }
+  .kpi-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .kpi-value { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .kpi-value .unit { font-size: 13px; color: var(--text-secondary); margin-left: 4px; font-weight: 400; }
+  .kpi-value.positive { color: var(--text-success); }
+  .kpi-value.negative { color: var(--text-danger); }
+  .kpi-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+
+  .section-head { font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin: 28px 0 12px; display: flex; align-items: baseline; gap: 10px; }
+  .section-head .hint { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-tertiary); }
+
+  /* ── Pick cards ─── */
+  .pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .pick-card { background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 16px 18px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .pick-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .pick-id { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .pick-tk { font-family: var(--font-mono); font-size: 17px; font-weight: 600; }
+  .pick-co { font-size: 12px; color: var(--text-tertiary); }
+  .pick-badges { display: flex; gap: 6px; align-items: center; }
+  .badge { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 500; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+  .badge.tracker { background: var(--text-success-bg, rgba(60,160,90,0.12)); color: var(--text-success); }
+  .badge.universe { background: var(--bg-elev-2); color: var(--text-secondary); }
+  .badge.odds { background: var(--text-warning-bg); color: var(--text-warning); text-transform: none; }
+
+  .pick-nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .pn { background: var(--bg-elev); border-radius: 6px; padding: 7px 10px; }
+  .pn-l { font-size: 10px; color: var(--text-tertiary); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 2px; }
+  .pn-v { font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .pn-v.pos { color: var(--text-success); } .pn-v.neg { color: var(--text-danger); }
+
+  .progress-row { display: flex; align-items: center; gap: 10px; }
+  .progress-track { flex: 1; height: 5px; border-radius: 3px; background: var(--bg-elev-2); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: var(--accent); opacity: 0.85; }
+  .progress-lbl { font-size: 11px; color: var(--text-tertiary); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  .pick-case { font-size: 12.5px; line-height: 1.55; }
+  .pick-case .bull { color: var(--text-secondary); }
+  .pick-case .bear { color: var(--text-tertiary); margin-top: 6px; }
+  .pick-case .tag { font-weight: 600; font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; margin-right: 6px; }
+  .pick-case .bull .tag { color: var(--text-success); }
+  .pick-case .bear .tag { color: var(--text-danger); }
+
+  .pick-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-top: 0.5px solid var(--border); padding-top: 9px; font-size: 11px; color: var(--text-tertiary); }
+  .pick-foot a.theme-pill { font-size: 10.5px; padding: 2px 7px; border-radius: 4px; background: var(--bg-elev-2); color: var(--text-secondary); font-weight: 500; text-decoration: none; white-space: nowrap; }
+  .pick-foot a.theme-pill:hover { background: var(--border-strong); color: var(--text-primary); }
+  .precedent { font-variant-numeric: tabular-nums; }
+
+  /* ── Excluded table ─── */
+  .excluded-card { background: var(--bg-elev); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 14px 18px; }
+  .excluded-row { display: grid; grid-template-columns: 90px 1fr; gap: 12px; padding: 8px 0; border-top: 0.5px solid var(--border); font-size: 12.5px; }
+  .excluded-row:first-child { border-top: none; }
+  .excluded-tk { font-family: var(--font-mono); font-weight: 600; }
+  .excluded-why { color: var(--text-secondary); line-height: 1.5; }
+
+  .footnote { font-size: 11.5px; color: var(--text-tertiary); line-height: 1.6; }
+
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .pick-grid { grid-template-columns: 1fr; }
+    .pick-nums { grid-template-columns: repeat(2, 1fr); }
+  }
+{% endblock %}
+
+{% block content %}
+{% set s = moonshots.summary %}
+{% set meta = moonshots.meta %}
+
+<div class="pf-header">
+  <h1 class="pf-title">3X Screen</h1>
+  <div class="pf-sub">
+    The portfolio view filtered to one question: <b>which names across all 14 themes are most likely to
+    3X in the next 2–3 years?</b> Curated from the full 182-candidate universe — screened, red-teamed,
+    and precedent-checked. Not a durability ranking; a convexity ranking.
+  </div>
+</div>
+
+<div class="method-strip">
+  <b>Base rate:</b> ~{{ meta.base_rates.pct_3x_36m_price_ge5 }}% of $5+ US stocks 3X within 3 years
+  ({{ meta.base_rates.odds_line }}). <b>Theme precedent:</b> {{ meta.base_rates.theme_precedent }}.
+  Selection targets the profile that historically did it: &lt;$20B cap, a growth or re-rate engine,
+  survivable dilution, catalyst still ahead. {{ meta.anchor_note }}
+</div>
+
+<div class="kpis">
+  <div class="kpi">
+    <div class="kpi-label">Finalists</div>
+    <div class="kpi-value">{{ s.count }}</div>
+    <div class="kpi-sub">from 182 theme candidates</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Already tracker picks</div>
+    <div class="kpi-value">{{ s.tracker_overlap }}<span class="unit">of {{ s.count }}</span></div>
+    <div class="kpi-sub">{{ s.universe_only }} from candidate universes only</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Since anchor ({{ meta.generated_at }})</div>
+    <div class="kpi-value {% if s.avg_chg_pct > 0 %}positive{% elif s.avg_chg_pct < 0 %}negative{% endif %}">{{ '%+.2f'|format(s.avg_chg_pct) }}%</div>
+    <div class="kpi-sub">equal-weight basket</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Best so far</div>
+    <div class="kpi-value">{{ s.best.ticker if s.best else '—' }}</div>
+    <div class="kpi-sub">{{ '%+.2f'|format(s.best.chg_pct) if s.best else '' }}% since anchor</div>
+  </div>
+</div>
+
+{% for tier in moonshots.tiers %}
+  <div class="section-head">
+    Tier {{ tier }}
+    <span class="hint">{{ 'best odds (~1-in-3 to 1-in-5) — growth or cycle engine already running' if tier == 1 else 'higher variance (~1-in-4 to 1-in-6) — re-rate or binary-catalyst dependent' }}</span>
+  </div>
+  <div class="pick-grid">
+    {% for p in moonshots.picks if p.tier == tier %}
+    <div class="pick-card">
+      <div class="pick-top">
+        <div class="pick-id">
+          <span class="pick-tk">{{ p.ticker }}</span>
+          <span class="pick-co">{{ p.company }}</span>
+        </div>
+        <div class="pick-badges">
+          <span class="badge odds">{{ p.odds }}</span>
+          {% if p.tracker_pick %}
+            <span class="badge tracker" title="Also a live tracker holding in its theme">Tracker pick</span>
+          {% else %}
+            <span class="badge universe" title="In the theme's candidate universe but not promoted to its tracker">Universe only</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="pick-nums">
+        <div class="pn"><div class="pn-l">Now</div><div class="pn-v">${{ '%.2f'|format(p.current_price) }}</div></div>
+        <div class="pn"><div class="pn-l">Δ since anchor</div><div class="pn-v {% if p.chg_pct > 0 %}pos{% elif p.chg_pct < 0 %}neg{% endif %}">{{ '%+.1f'|format(p.chg_pct) }}%</div></div>
+        <div class="pn"><div class="pn-l">3X target</div><div class="pn-v">${{ '%.0f'|format(p.target_price) }}</div></div>
+        <div class="pn"><div class="pn-l">Mkt cap</div><div class="pn-v">${{ '%.1f'|format(p.mcap_b) }}B</div></div>
+      </div>
+
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width: {{ p.progress_pct }}%;"></div></div>
+        <span class="progress-lbl">{{ p.to_target_x }}x to go</span>
+      </div>
+
+      <div class="pick-case">
+        <div class="bull"><span class="tag">Bull</span>{{ p.bull }}</div>
+        <div class="bear"><span class="tag">Bear</span>{{ p.bear }}</div>
+      </div>
+
+      <div class="pick-foot">
+        <a class="theme-pill" href="/themes/{{ p.theme_slug }}/tracker">{{ p.theme_display_name }}</a>
+        <span class="precedent" title="How often this exact ticker achieved a 3X in a rolling 36-month window, 2015–2024">{{ p.precedent }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endfor %}
+
+{% if moonshots.excluded_notables %}
+<div class="section-head">Notable exclusions <span class="hint">names people would expect here, and why they didn't make it</span></div>
+<div class="excluded-card">
+  {% for e in moonshots.excluded_notables %}
+  <div class="excluded-row">
+    <div class="excluded-tk">{{ e.ticker }}</div>
+    <div class="excluded-why">{{ e.reason }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="footnote" style="margin-top:18px;">
+  Source of truth: <code>themes/_moonshots_3x.json</code> (picks, odds, anchors) joined live with each
+  theme's <code>candidates.json</code> (nightly refresh). Full method + counter-view:
+  <code>research_findings_3x_growth.md</code>. Odds are honest subjective estimates calibrated to the
+  empirical base rate — a basket where several picks disappoint is the expected outcome, not a failure mode.
+</div>
+{% endblock %}

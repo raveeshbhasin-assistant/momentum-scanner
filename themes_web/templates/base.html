@@ -164,11 +164,12 @@
         <span class="brand-sub">Long-term thesis tracker</span>
       </div>
       <a href="/portfolio" class="global-link {% if active_page == 'portfolio' %}active{% endif %}" style="font-size:13px; color:var(--text-secondary); text-decoration:none; padding-bottom:2px; border-bottom: 2px solid transparent;{% if active_page == 'portfolio' %} color:var(--text-primary); border-bottom-color:var(--accent); font-weight:500;{% endif %}">Portfolio</a>
+      <a href="/moonshots" class="global-link {% if active_page == 'moonshots' %}active{% endif %}" style="font-size:13px; color:var(--text-secondary); text-decoration:none; padding-bottom:2px; border-bottom: 2px solid transparent;{% if active_page == 'moonshots' %} color:var(--text-primary); border-bottom-color:var(--accent); font-weight:500;{% endif %}">3X Screen</a>
       <a href="/how-it-works" class="global-link {% if active_page == 'how-it-works' %}active{% endif %}" style="font-size:13px; color:var(--text-secondary); text-decoration:none; padding-bottom:2px; border-bottom: 2px solid transparent;{% if active_page == 'how-it-works' %} color:var(--text-primary); border-bottom-color:var(--accent); font-weight:500;{% endif %}">How it works</a>
     </div>
     <div class="theme-selector">
       <label for="theme-switch">Theme</label>
-      <select id="theme-switch" onchange="if(this.options[this.selectedIndex].disabled) return; location.href='/themes/'+this.value+'/{{ active_page if active_page and active_page not in ['how-it-works', 'portfolio'] else 'tracker' }}'">
+      <select id="theme-switch" onchange="if(this.options[this.selectedIndex].disabled) return; location.href='/themes/'+this.value+'/{{ active_page if active_page and active_page not in ['how-it-works', 'portfolio', 'moonshots'] else 'tracker' }}'">
         {% set active_themes = all_themes | selectattr('status', 'equalto', 'Active') | list %}
         {% set ondeck_themes = all_themes | selectattr('status', 'equalto', 'On Deck') | list %}
         {% set backlog_themes = all_themes | selectattr('status', 'equalto', 'Backlog') | list %}

@@ -424,3 +424,95 @@ def base_context(slug: str, active_page: str) -> dict:
         "tracker": tracker,
         "all_themes": discover_themes_full(),
     }
+
+
+# ─────────────────────────────────────────────────────────────
+#  Moonshots (3X screen) — cross-theme filtered view
+# ─────────────────────────────────────────────────────────────
+
+def load_moonshots() -> Optional[dict]:
+    """themes/_moonshots_3x.json — the curated 3X screen config.
+    JSON is the source of truth (same contract as tracker.json);
+    research_findings_3x_growth.md is the derived narrative."""
+    path = _THEMES_DIR / "_moonshots_3x.json"
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def aggregate_moonshots() -> Optional[dict]:
+    """
+    Join the 3X-screen config with live data:
+      - current price from the pick's own theme candidates.json (nightly refresh),
+        falling back to the anchor price (renders 0% — surfaces staleness).
+      - tracker membership context (entry price/score) when the pick is also a
+        theme tracker holding, so overlap with "the picks" is explicit.
+    Returns {meta, picks, summary} or None when the config is absent.
+    """
+    cfg = load_moonshots()
+    if not cfg:
+        return None
+
+    cand_cache: dict[str, dict] = {}
+    trk_cache: dict[str, dict] = {}
+
+    def _cands(slug: str) -> dict:
+        if slug not in cand_cache:
+            doc = load_candidates_json(slug) or {}
+            cand_cache[slug] = {c["ticker"]: c for c in doc.get("candidates", [])}
+        return cand_cache[slug]
+
+    def _trk(slug: str) -> dict:
+        if slug not in trk_cache:
+            doc = load_tracker_json(slug) or {}
+            trk_cache[slug] = {h["ticker"]: h for h in doc.get("holdings", [])}
+        return trk_cache[slug]
+
+    picks = []
+    for p in cfg.get("picks", []):
+        slug = p["theme_slug"]
+        cand = _cands(slug).get(p["ticker"]) or {}
+        anchor = float(p.get("anchor_price") or 0)
+        now = float(cand.get("price") or anchor)
+        chg = ((now / anchor - 1) * 100) if anchor > 0 else 0.0
+        target = anchor * 3
+        holding = _trk(slug).get(p["ticker"])
+        theme_display = (load_tracker_json(slug) or {}).get("theme_display_name") or slug
+        picks.append({
+            **p,
+            "theme_display_name": theme_display,
+            "current_price": round(now, 2),
+            "chg_pct": round(chg, 2),
+            "target_price": round(target, 2),
+            "to_target_x": round(target / now, 2) if now > 0 else None,
+            "progress_pct": round(max(0.0, min(100.0, (now / target) * 100)), 1) if target > 0 else None,
+            "mcap_b": round((cand.get("market_cap") or 0) / 1e9, 2) or p.get("anchor_mcap_b"),
+            "rev_growth_yoy": cand.get("revenue_growth_yoy"),
+            "dist_from_52w_high_pct": cand.get("dist_from_52w_high_pct"),
+            "tracker_entry": (holding or {}).get("entry_price"),
+            "tracker_score": (holding or {}).get("scoring_total"),
+            "data_stale": not bool(cand.get("price")),
+        })
+
+    n = len(picks)
+    n_tracker = sum(1 for p in picks if p.get("tracker_pick"))
+    avg_chg = round(sum(p["chg_pct"] for p in picks) / n, 2) if n else 0.0
+    best = max(picks, key=lambda p: p["chg_pct"]) if picks else None
+    tiers = sorted({p.get("tier", 2) for p in picks})
+    return {
+        "meta": {k: cfg.get(k) for k in
+                 ["generated_at", "objective", "methodology", "base_rates", "anchor_note"]},
+        "picks": picks,
+        "excluded_notables": cfg.get("excluded_notables", []),
+        "tiers": tiers,
+        "summary": {
+            "count": n,
+            "tracker_overlap": n_tracker,
+            "universe_only": n - n_tracker,
+            "avg_chg_pct": avg_chg,
+            "best": {"ticker": best["ticker"], "chg_pct": best["chg_pct"]} if best else None,
+        },
+    }
