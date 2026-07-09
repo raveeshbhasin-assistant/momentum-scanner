@@ -8,7 +8,7 @@
   "structure": "long_short",
   "plain_summary": "Oral small-molecule GLP-1 (Foundayo/orforglipron, FDA-approved Apr 2026) turns weight-loss from a supply-constrained niche into a mass-market behavioral shift. The mispriced trade is not the drug makers (LLY/NVO avoided \u2014 zero margin of safety, drug-pricing risk) but SHORTING the downstream demand-destruction losers: packaged food/snacking (MDLZ, PEP, HSY), legacy diabetes/sleep med-tech (RMD, DXCM, MDT), and the stranded injectable supply chain (WST, STVN). Long side is small: lifestyle beneficiaries (CAVA, LULU, CELH) and US small-molecule solid-dose API (TMO). Strict US-listed liquidity only \u2014 short borrow costs paramount; European CDMOs abandoned. Central risk is 'thesis right, LLY captures all value / market reads food volume drop as macro weakness not structural.'",
   "benchmarks_at_init": {
-    "spy_at_theme_lock": null,
+    "spy_at_theme_lock": 751.28,
     "xlv_at_theme_lock": 163.63,
     "xlp_at_theme_lock": 83.64,
     "lly_at_theme_lock": 1213.91,
@@ -119,5 +119,5 @@
     "short": 4,
     "long": 1
   },
-  "notes": "Top 5 promoted from side-aware scoring v1 (2026-07-06 lock). Short-weighted: 4 shorts + 1 long (TMO). Entry prices are yfinance closes as of 2026-07-07. FMP-keyed refresh will refine fundamentals + capital-structure sub-scores."
+  "notes": "Top 5 promoted from side-aware scoring v1 (2026-07-06 lock). Short-weighted: 4 shorts + 1 long (TMO). Entry prices are yfinance closes as of 2026-07-07. FMP-keyed refresh will refine fundamentals + capital-structure sub-scores. | spy_at_theme_lock backfilled 2026-07-09 with the 2026-07-06 close (751.28) used by the same-day theme batch \u2014 was null pending first refresh."
 }

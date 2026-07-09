@@ -229,6 +229,11 @@
 
   {% block content %}{% endblock %}
 
+  <footer style="margin-top: 48px; padding: 16px 0 8px; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-tertiary);">
+    <span>Themes — long-term thesis tracker</span>
+    <a href="/releases" style="color: var(--text-tertiary); text-decoration: none; font-variant-numeric: tabular-nums;" title="Release log">v{{ THEMES_WEB_VERSION }}</a>
+  </footer>
+
 </div>
 
 {% block scripts %}{% endblock %}

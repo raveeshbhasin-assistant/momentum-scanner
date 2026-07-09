@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Releases · v{{ THEMES_WEB_VERSION }} · Themes{% endblock %}
+
+{% block content %}
+<div class="article-layout">
+  <article class="article">
+    {{ body_html | safe }}
+  </article>
+  <aside class="toc-wrap" aria-label="Table of contents">
+    <div class="toc-head">Versions</div>
+    {{ toc_html | safe }}
+  </aside>
+</div>
+{% endblock %}

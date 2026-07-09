@@ -39,6 +39,7 @@ from themes_web.render import (
     theme_dir,
 )
 from themes_web.scheduler import start_scheduler, stop_scheduler, trigger_manual_refresh
+from themes_web.version import THEMES_WEB_VERSION
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +47,11 @@ _HERE = Path(__file__).parent
 _TEMPLATES_DIR = _HERE / "templates"
 _STATIC_DIR = _HERE / "static"
 
-app = FastAPI(title="Themes Web — Long-term thesis tracker")
+# Version derives from themes_web/version.py — the single source (see the
+# convention note there). Footer + /releases + FastAPI docs all read this.
+app = FastAPI(title="Themes Web — Long-term thesis tracker", version=THEMES_WEB_VERSION)
 templates = Jinja2Templates(directory=str(_TEMPLATES_DIR))
+templates.env.globals["THEMES_WEB_VERSION"] = THEMES_WEB_VERSION
 # Static mount is optional — only mount if the directory exists and has files.
 # Empty dirs don't get committed to git, so this avoids crashing on Railway
 # when themes_web/static/ wasn't tracked. Add files (and .gitkeep) when we start
@@ -227,6 +231,28 @@ def moonshots_page(request: Request):
 def api_moonshots():
     m = aggregate_moonshots()
     return m if m is not None else JSONResponse({"error": "missing _moonshots_3x.json"}, status_code=404)
+
+
+@app.get("/releases", response_class=HTMLResponse)
+def releases_page(request: Request):
+    """Release log for themes_web (RELEASES.md rendered) — the version-hygiene
+    surface. Convention documented in themes_web/version.py."""
+    md_path = _HERE / "RELEASES.md"
+    if not md_path.exists():
+        return HTMLResponse("<h1>No release log</h1>", status_code=404)
+    body_html, toc_html = render_markdown(md_path.read_text(encoding="utf-8"))
+    return templates.TemplateResponse(
+        request=request,
+        name="releases.html",
+        context={
+            "active_slug": None,
+            "active_page": "releases",
+            "tracker": None,
+            "all_themes": discover_themes_full(),
+            "body_html": body_html,
+            "toc_html": toc_html,
+        },
+    )
 
 
 @app.get("/how-it-works", response_class=HTMLResponse)
