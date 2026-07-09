@@ -4,6 +4,15 @@ Configuration for Momentum Scanner
 import os
 from zoneinfo import ZoneInfo
 
+# ── App version — SINGLE SOURCE (v3.8.3) ─────────────────────
+# Everything version-shaped derives from this one constant: the FastAPI
+# version (app.py), the footer on every page (_footer.html via the
+# APP_VERSION Jinja global), and the static-asset cache-bust query string
+# (_head.html). Before v3.8.3 each surface was hand-bumped and drifted
+# (footer was stuck at 3.7.4, cache-bust at 3.8.0 while the app was 3.8.2).
+# Bump THIS on every release; the pre-push hygiene hook checks the rest.
+APP_VERSION = "3.8.3"
+
 # ── Timezone ─────────────────────────────────────────────────
 ET = ZoneInfo("America/New_York")
 

@@ -61,7 +61,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ── App Setup ─────────────────────────────────────────────────
-app = FastAPI(title="Momentum Scanner", version="3.8.2")
+# v3.8.3: version derives from config.APP_VERSION — the single source for
+# the API version, page footers, and the static cache-bust (see config.py).
+app = FastAPI(title="Momentum Scanner", version=config.APP_VERSION)
 
 BASE_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -152,6 +154,10 @@ def _ts_is_rth(ts) -> bool:
 
 # Expose is_rth() to every Jinja template (v3.5.10: market-hours filter toggle)
 templates.env.globals["is_rth"] = _ts_is_rth
+# v3.8.3: expose the app version to every template — _footer.html renders it
+# and _head.html uses it as the static-asset cache-bust, so neither can
+# drift from config.APP_VERSION again.
+templates.env.globals["APP_VERSION"] = config.APP_VERSION
 
 
 def premarket_scan_job():

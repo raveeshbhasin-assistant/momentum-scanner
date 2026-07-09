@@ -284,6 +284,33 @@ def test_normalize_entry_passes_through_lived_flags():
     assert again["elite"] is True and again["tradeable"] is False
 
 
+# ────────────────────────────────────────────────────────────────
+# Phase F — v3.8.3 release hygiene: version has ONE source.
+# The footer and cache-bust derive from config.APP_VERSION via the
+# APP_VERSION Jinja global; hardcoded version strings in the shared
+# templates are the drift bug this guards against (footer sat at
+# v3.7.4 while the app was at 3.8.2).
+# ────────────────────────────────────────────────────────────────
+
+def test_app_version_single_source():
+    import re
+    import config
+    assert re.fullmatch(r"\d+\.\d+\.\d+", config.APP_VERSION)
+    root = os.path.join(ROOT, "templates")
+    for name in ("_footer.html", "_head.html"):
+        src = open(os.path.join(root, name), encoding="utf-8").read()
+        assert "APP_VERSION" in src, f"{name} must derive from the APP_VERSION global"
+        # no hardcoded version strings on the rendered surfaces:
+        for m in re.finditer(r'(?:\?v=|Scanner v)(\d+\.\d+(?:\.\d+)?)', src):
+            raise AssertionError(f"{name} hardcodes version {m.group(1)} — must use APP_VERSION")
+
+
+def test_fastapi_version_matches_config():
+    import config
+    src = open(os.path.join(ROOT, "app.py"), encoding="utf-8").read()
+    assert 'version=config.APP_VERSION' in src, "app.py must take its version from config.APP_VERSION"
+
+
 if __name__ == "__main__":
     import pytest
     raise SystemExit(pytest.main([__file__, "-v"]))

@@ -12,7 +12,10 @@
             {% include "_footer.html" %}
         {% endwith %}
 #}
+{# Version derives from config.APP_VERSION via the APP_VERSION Jinja global
+   (v3.8.3) — never hand-edit a version string here again. Before v3.8.3
+   this line was hand-bumped and had drifted to v3.7.4. #}
 <footer class="footer">
-    Momentum Scanner v3.7.4 &mdash; For educational and informational purposes only. Not financial advice.
+    Momentum Scanner v{{ APP_VERSION | default("?") }} &mdash; For educational and informational purposes only. Not financial advice.
     {% if footer_note %}<br><span style="opacity:0.8">{{ footer_note }}</span>{% endif %}
 </footer>

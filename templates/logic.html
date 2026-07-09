@@ -388,12 +388,21 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.8.3 ───── -->
+        <div class="release current" id="v3-8-3">
+            <div class="release-header">
+                <span class="release-version">v3.8.3</span>
+                <span class="release-date">Released 2026-07-08</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>Release hygiene: one version source + a pre-push gate.</strong> Version-shaped surfaces had drifted apart — the shared footer was stuck at <code>v3.7.4</code> and the CSS cache-bust at <code>?v=3.8.0</code> while the app was at 3.8.2, because each was hand-bumped separately. Now <code>config.APP_VERSION</code> is the <em>single source</em>: <code>app.py</code>'s FastAPI version, the footer on every page (<code>_footer.html</code> via the new <code>APP_VERSION</code> Jinja global), and the stylesheet cache-bust (<code>_head.html</code>) all derive from it — bump one constant and every surface moves together, and stylesheets automatically re-fetch on every release. Guard tests fail the suite if a hardcoded version string reappears on a rendered surface or <code>app.py</code> stops deriving from config. A repo-committed pre-push hook (<code>.claude/hooks/pre_push_hygiene.py</code> + <code>.claude/settings.json</code>) injects the full release checklist into any session attempting <code>git push</code>, and <code>CLAUDE.md</code> documents the rule. Tagged: <span class="pill pill-added">added</span> <span class="pill pill-fixed">fixed</span>.</div>
+        </div>
+
         <!-- ───── v3.8.2 ───── -->
-        <div class="release current" id="v3-8-2">
+        <div class="release" id="v3-8-2">
             <div class="release-header">
                 <span class="release-version">v3.8.2</span>
                 <span class="release-date">Released 2026-07-08</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>TRADEABLE + EXTENDED pills on <code>/performance</code>.</strong> The picks table previously showed only ELITE/STRONG in the Cat cell; the v3.8.0 tier flags were persisted but invisible on this page. New <code>_tierPillsHtml(p)</code> renderer shows the highest tier (ELITE &gt; TRADEABLE &gt; STRONG, since each implies the next) plus an independent dashed-red <code>EXT ⚠</code> pill when <code>anti_ext === false</code>, with the consec-green count and running-range position in the tooltip. New <code>_isTradeable(p)</code> mirrors <code>_isElite</code>'s persisted-flag-wins pattern (lived flag from 2026-07-08 onward; window derivation from <code>batch_time</code> for older rows). Rows before 2026-07-08 never carry <code>anti_ext</code>, so they correctly show no EXT pill rather than a guessed one. Tagged: <span class="pill pill-added">added</span>.</div>
         </div>
