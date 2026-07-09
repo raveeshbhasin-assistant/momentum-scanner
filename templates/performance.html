@@ -469,6 +469,40 @@
             return true;
         }
 
+        // ── v3.8.2: tier pills for the picks table ──────────────
+        // ELITE ⊃ TRADEABLE ⊃ STRONG — show the highest tier only, then
+        // append the EXTENDED shadow warning independently. `tradeable`
+        // and `anti_ext` are lived flags persisted from 2026-07-08 onward;
+        // older rows lack them (anti_ext null/absent → no pill), while
+        // ELITE/STRONG still derive client-side for old rows via _isElite.
+        function _isTradeable(p) {
+            if (!p) return false;
+            if (typeof p.tradeable === 'boolean') return p.tradeable;
+            if (!p.strong_signal) return false;
+            const bt = (p.batch_time || '').slice(0,5);
+            const hh = parseInt(bt.slice(0,2), 10), mm = parseInt(bt.slice(3,5), 10);
+            if (!isFinite(hh) || !isFinite(mm)) return false;
+            const cur = hh*60 + mm;
+            return cur >= 570 && cur <= 600;
+        }
+        function _tierPillsHtml(p) {
+            let html = '';
+            if (_isElite(p)) {
+                html += '<span class="tier-pill elite" style="margin-left:6px;" title="ELITE (v3.7.5): STRONG + cat=D + RVOL 2–5 + RSI≥68 + 09:30–10:00 + stop≥0.9%">ELITE</span>';
+            } else if (_isTradeable(p)) {
+                html += '<span class="tier-pill tradeable" style="margin-left:6px;" title="TRADEABLE (v3.8.0): STRONG + entry 09:30–10:00 ET — the act-on-this tier">TRADEABLE</span>';
+            } else if (p.strong_signal) {
+                html += '<span class="tier-pill strong" style="margin-left:6px;" title="STRONG (v3.7.0) — outside the 09:30–10:00 tradeable window">STRONG</span>';
+            }
+            if (p.anti_ext === false) {
+                const ext = p.extension || {};
+                const cg = ext.consec_green ?? '?';
+                const rp = ext.range_pos != null ? Math.round(ext.range_pos * 100) + '%' : '?';
+                html += `<span class="tier-pill extended" style="margin-left:6px;" title="EXTENDED (v3.8.0 shadow): fired after ${cg} consecutive green bars at ${rp} of the running day range — historically the losing shape within STRONG">EXT ⚠</span>`;
+            }
+            return html;
+        }
+
         // ── Setup controls ─────────────────────────────────────
         const dateSel = document.getElementById("dateSel");
         (VIEW.dates || []).forEach(d => {
@@ -1170,7 +1204,7 @@
                     ${dateCell}
                     <td data-label="Time">${p.batch_time}</td>
                     <td class="ticker-cell" data-label="Ticker"><span class="ticker">${p.ticker}</span></td>
-                    <td data-label="Cat"><span class="cat-badge ${p.category}">${p.category}</span>${_isElite(p) ? '<span class="tier-pill elite" style="margin-left:6px;" title="ELITE (v3.7.1)">ELITE</span>' : (p.strong_signal ? '<span class="tier-pill strong" style="margin-left:6px;" title="STRONG (v3.7.0)">STRONG</span>' : '')}</td>
+                    <td data-label="Cat"><span class="cat-badge ${p.category}">${p.category}</span>${_tierPillsHtml(p)}</td>
                     <td data-label="Leader">${p.leadership_label || "—"}</td>
                     <td data-label="Score">${p.score}</td>
                     <td data-label="RSI">${p.rsi ?? "—"}</td>

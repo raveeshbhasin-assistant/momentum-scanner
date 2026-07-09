@@ -388,12 +388,21 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.8.2 ───── -->
+        <div class="release current" id="v3-8-2">
+            <div class="release-header">
+                <span class="release-version">v3.8.2</span>
+                <span class="release-date">Released 2026-07-08</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>TRADEABLE + EXTENDED pills on <code>/performance</code>.</strong> The picks table previously showed only ELITE/STRONG in the Cat cell; the v3.8.0 tier flags were persisted but invisible on this page. New <code>_tierPillsHtml(p)</code> renderer shows the highest tier (ELITE &gt; TRADEABLE &gt; STRONG, since each implies the next) plus an independent dashed-red <code>EXT ⚠</code> pill when <code>anti_ext === false</code>, with the consec-green count and running-range position in the tooltip. New <code>_isTradeable(p)</code> mirrors <code>_isElite</code>'s persisted-flag-wins pattern (lived flag from 2026-07-08 onward; window derivation from <code>batch_time</code> for older rows). Rows before 2026-07-08 never carry <code>anti_ext</code>, so they correctly show no EXT pill rather than a guessed one. Tagged: <span class="pill pill-added">added</span>.</div>
+        </div>
+
         <!-- ───── v3.8.1 ───── -->
-        <div class="release current" id="v3-8-1">
+        <div class="release" id="v3-8-1">
             <div class="release-header">
                 <span class="release-version">v3.8.1</span>
                 <span class="release-date">Released 2026-07-07</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>Hotfix: historical ELITE badges vanished after v3.8.0.</strong> v3.8.0's <code>normalize_entry</code> stamped a default <code>elite: False</code> (and <code>tradeable: False</code>) onto <em>every</em> row served by <code>/api/performance*</code> — but <code>performance.html</code>'s <code>_isElite()</code> uses persisted-flag-wins logic (<code>typeof p.elite === 'boolean' → return p.elite</code>), so every pre-v3.8.0 row short-circuited to False and all historical ELITE badges disappeared from the performance/history views. Root principle violated: <em>an absent field means "unknown — derive on read"; a stamped False means "lived False." Never conflate the two.</em> Tagged: <span class="pill pill-fixed">fixed</span>.</div>
             <div class="release-details">
