@@ -18,28 +18,33 @@ $log = Join-Path $logDir "referral_refresh.log"
 
 function Log($msg) { "$(Get-Date -Format s)  $msg" | Add-Content $log }
 
+# Native commands (git/python) write progress to stderr; in PowerShell 5.1
+# a bare `2>&1` turns those lines into terminating ErrorRecords. Routing
+# through `cmd /c "... 2>&1"` merges the streams safely; $LASTEXITCODE
+# still carries the child's exit code.
+function Run($cmdline) {
+    cmd /c "$cmdline 2>&1" | Add-Content $log
+    return $LASTEXITCODE
+}
+
 try {
     Set-Location $repo
     Log "=== refresh start ==="
 
-    git fetch origin 2>&1 | Out-Null
-    git merge --ff-only origin/main 2>&1 | Add-Content $log
-    if ($LASTEXITCODE -ne 0) { Log "ABORT: local main diverged from origin"; exit 1 }
+    if ((Run "git fetch origin") -ne 0) { Log "ABORT: git fetch failed"; exit 1 }
+    if ((Run "git merge --ff-only origin/main") -ne 0) { Log "ABORT: local main diverged from origin"; exit 1 }
 
-    python referral_moat/build.py 2>&1 | Add-Content $log
-    if ($LASTEXITCODE -ne 0) { Log "ABORT: build.py failed"; exit 1 }
-    python referral_moat/make_site.py 2>&1 | Add-Content $log
-    if ($LASTEXITCODE -ne 0) { Log "ABORT: make_site.py failed"; exit 1 }
+    if ((Run "python referral_moat/build.py") -ne 0) { Log "ABORT: build.py failed"; exit 1 }
+    if ((Run "python referral_moat/make_site.py") -ne 0) { Log "ABORT: make_site.py failed"; exit 1 }
 
-    git add referral_moat/data referral_moat/site
-    git diff --cached --quiet
+    Run "git add referral_moat/data referral_moat/site" | Out-Null
+    cmd /c "git diff --cached --quiet"
     if ($LASTEXITCODE -eq 0) {
         Log "No data changes - nothing to commit."
     } else {
         $stamp = Get-Date -Format yyyy-MM-dd
-        git commit -m "referral_moat: automated monthly data refresh ($stamp)" 2>&1 | Add-Content $log
-        git push origin main 2>&1 | Add-Content $log
-        if ($LASTEXITCODE -ne 0) { Log "ERROR: push failed"; exit 1 }
+        if ((Run "git commit -m `"referral_moat: automated monthly data refresh ($stamp)`"") -ne 0) { Log "ERROR: commit failed"; exit 1 }
+        if ((Run "git push origin main") -ne 0) { Log "ERROR: push failed"; exit 1 }
         Log "Pushed refresh ($stamp)."
     }
     Log "=== refresh done ==="
