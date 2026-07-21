@@ -7,7 +7,36 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.2.0 — 2026-07-09 **(current)**
+## v1.3.0 — 2026-07-21 **(current)**
+
+**What**
+- New `/referrals` page: the Referral-Moat research app (new standalone
+  `referral_moat/` module — ~111 companies across 12 industry groups scored
+  on the financial fingerprints of word-of-mouth customer acquisition, with
+  a three-gate "flywheel" pick list: growing + efficient acquisition +
+  sales intensity not rising). Self-contained static page; scores never see
+  price data (returns are attached afterwards as an output-only evaluation).
+- Monthly scheduler job (1st of month, 19:00 ET) rebuilds scorecards + site
+  via subprocess (`referral_moat/build.py` → `make_site.py`), preserving the
+  no-cross-import rule. Manual trigger: `POST /api/refresh_referrals`.
+- `referral_moat/data/` (scorecards + dated snapshots) is committed as the
+  deploy-time seed, same philosophy as `themes/_benchmarks.json`; root
+  `.gitignore` narrowed from `data/` to `/data/` to allow it.
+
+**Why** Operator research thesis: high-customer-referral companies should
+outperform; wants it deployed, queryable, refreshed monthly, with picks
+chosen on theory metrics only (returns as output, never input).
+
+**Verified** `pytest` green; TestClient renders `/referrals` (200) with
+embedded data; flywheel gates spot-checked against per-year statements;
+scheduler registers both jobs.
+
+**Rollback** Revert the commit — `/referrals` disappears, themes pages and
+scanner unaffected (module is fully standalone).
+
+---
+
+## v1.2.0 — 2026-07-09
 
 **What**
 - Version convention introduced: `themes_web/version.py` (`THEMES_WEB_VERSION`),

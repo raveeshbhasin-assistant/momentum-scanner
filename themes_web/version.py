@@ -11,4 +11,4 @@ Convention (mirrors the scanner's config.APP_VERSION + templates/logic.html):
   always visible and always matches this constant. No hand-copied strings.
 """
 
-THEMES_WEB_VERSION = "1.2.0"
+THEMES_WEB_VERSION = "1.3.0"

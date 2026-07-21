@@ -1,0 +1,393 @@
+<title>Referral Moat — Scorecards</title>
+<style>
+:root{
+  --bg:#F7F7FA; --surface:#FFFFFF; --surface2:#EFEFF5;
+  --ink:#1B1E2B; --muted:#5C6172; --faint:#9BA0B0; --line:#DDDEE8;
+  --accent:#4A57C4; --accent-soft:#E3E6F8;
+  --pos:#1E7F4F; --neg:#C13B3B; --warn:#9A6B15;
+  --serif:'Iowan Old Style',Georgia,'Times New Roman',serif;
+  --sans:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:ui-monospace,'Cascadia Code',Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#14161F; --surface:#1C1F2C; --surface2:#242838;
+  --ink:#E8EAF2; --muted:#A6ABC0; --faint:#6C7188; --line:#333748;
+  --accent:#8B96E8; --accent-soft:#2A2F52;
+  --pos:#4CBF88; --neg:#E07070; --warn:#D0A04A;
+}}
+:root[data-theme="dark"]{
+  --bg:#14161F; --surface:#1C1F2C; --surface2:#242838;
+  --ink:#E8EAF2; --muted:#A6ABC0; --faint:#6C7188; --line:#333748;
+  --accent:#8B96E8; --accent-soft:#2A2F52;
+  --pos:#4CBF88; --neg:#E07070; --warn:#D0A04A;
+}
+:root[data-theme="light"]{
+  --bg:#F7F7FA; --surface:#FFFFFF; --surface2:#EFEFF5;
+  --ink:#1B1E2B; --muted:#5C6172; --faint:#9BA0B0; --line:#DDDEE8;
+  --accent:#4A57C4; --accent-soft:#E3E6F8;
+  --pos:#1E7F4F; --neg:#C13B3B; --warn:#9A6B15;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+  margin:0;padding:0 16px 64px;font-size:14.5px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto}
+a{color:var(--accent)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+header{padding:34px 0 10px;border-bottom:2px solid var(--ink);margin-bottom:18px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,38px);
+  margin:6px 0 8px;text-wrap:balance}
+.thesis{max-width:68ch;color:var(--muted);margin:0 0 14px}
+.purity{display:inline-block;background:var(--accent-soft);color:var(--accent);
+  border-radius:3px;padding:3px 9px;font-size:12px;margin-bottom:16px}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;margin:18px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.tile .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tile .v{font-family:var(--mono);font-size:24px;font-weight:600;margin-top:2px}
+.tile .s{font-size:12px;color:var(--faint)}
+
+h2{font-family:var(--serif);font-size:20px;font-weight:600;margin:30px 0 4px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 12px;max-width:78ch}
+
+/* theory-check chart */
+.tc{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px}
+.tc-row{display:grid;grid-template-columns:minmax(140px,230px) 1fr 58px;
+  gap:10px;align-items:center;padding:3px 0}
+.tc-name{font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-name.ctrl{color:var(--muted);font-style:italic}
+.tc-track{position:relative;height:16px}
+.tc-axis{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--line)}
+.tc-bar{position:absolute;top:2px;height:12px;border-radius:3px}
+.tc-val{font-family:var(--mono);font-size:12.5px;text-align:right}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 10px;align-items:center}
+.controls input[type=text],.controls select{
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);
+  border-radius:5px;padding:7px 10px;font:inherit;font-size:13.5px}
+.controls input[type=text]{width:230px}
+.controls input:focus,.controls select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.chk{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.count{margin-left:auto;font-size:12.5px;color:var(--faint)}
+
+/* table */
+.tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:940px}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  text-align:right;padding:10px 10px;border-bottom:1px solid var(--line);white-space:nowrap;
+  cursor:pointer;user-select:none}
+th.l{text-align:left}
+th.sorted{color:var(--accent)}
+th.outhdr{color:var(--warn)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+td.l{text-align:left}
+tr.co{cursor:pointer}
+tr.co:hover td{background:var(--surface2)}
+tr.co:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.tk{font-family:var(--mono);font-weight:700}
+.nm{color:var(--muted);font-size:12.5px;max-width:210px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.grp{font-size:12px;color:var(--faint)}
+.resbar{display:inline-block;vertical-align:middle;width:64px;height:8px;
+  background:var(--surface2);border-radius:4px;margin-left:8px;overflow:hidden}
+.resbar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+.badge{display:inline-block;font-size:11px;border-radius:3px;padding:1px 6px;margin-left:6px}
+.b-cov{background:var(--surface2);color:var(--warn)}
+.b-fw{background:var(--pos);color:#fff;margin-left:0;cursor:help}
+.b-fwno{background:var(--surface2);color:var(--faint);margin-left:0;cursor:help}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.pick{font-family:var(--mono);font-size:12.5px;font-weight:700;background:var(--surface);
+  border:1px solid var(--line);border-left:3px solid var(--pos);border-radius:4px;
+  padding:3px 9px;cursor:pointer}
+.pick:hover{background:var(--surface2)}
+.b-plus{background:var(--accent-soft);color:var(--accent);cursor:help}
+.b-minus{background:var(--surface2);color:var(--neg);cursor:help}
+.b-mixed{background:var(--surface2);color:var(--muted);cursor:help}
+
+/* detail */
+tr.detail td{background:var(--surface2);padding:16px 18px;white-space:normal;text-align:left}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.dcard h4{margin:0 0 8px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.pill-row{display:grid;grid-template-columns:150px 1fr 40px;gap:8px;align-items:center;
+  padding:2.5px 0;font-size:12.5px}
+.pill-track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.pill-fill{height:100%;background:var(--accent);border-radius:4px}
+.spark-label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+.qual{font-size:13px;color:var(--ink);line-height:1.55}
+.yrtbl{width:100%;min-width:0;font-size:12.5px}
+.yrtbl th,.yrtbl td{padding:4px 8px;border-bottom:1px solid var(--line)}
+.footnote{margin-top:26px;font-size:12.5px;color:var(--faint);max-width:80ch}
+.footnote strong{color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Trader v3 · Research module · as of __ASOF__</div>
+  <h1>The Referral Moat</h1>
+  <p class="thesis">Companies whose customers recruit their next customers should grow
+  faster and more profitably than peers. Referral rate isn't a reported line item —
+  so this scores its financial fingerprints: new revenue per sales dollar, falling
+  sales intensity, steady compounding, pricing power, operating leverage.</p>
+  <span class="purity">Theory purity: scores see fundamentals only — returns are computed afterwards, as an output</span>
+</header>
+
+<div class="tiles" id="tiles"></div>
+
+<h2>Does the score line up with returns?</h2>
+<p class="sub">Spearman rank correlation between the Referral Economics Score and 3-year
+annualized alpha vs SPY, by industry group. This is a <em>concurrent</em> association
+(windows overlap), not a forward test — the forward test starts from today's snapshot.
+If the theory is real, the two control groups at the bottom should stay near zero or negative.</p>
+<div class="tc" id="tc"></div>
+
+<h2>Flywheel picks</h2>
+<p class="sub">Companies that pass all three gates — <strong>growing</strong> (latest
+revenue growth ≥ 8% and 3y ≥ 10%), <strong>efficient acquisition</strong> (each S&amp;M
+dollar returns ≥ $1 of new annual revenue), and <strong>intensity not rising</strong>
+(S&amp;M% of revenue flat or falling while growing — customers arriving on their own).
+Chosen from fundamentals before returns are ever computed; control groups excluded.</p>
+<div class="picks" id="picks"></div>
+
+<h2>Scorecards</h2>
+<p class="sub">Percentile-scored within industry group. Click any row for the full
+per-year trend, pillar breakdown, and disclosed referral evidence. Columns marked
+<span style="color:var(--warn)">◦ output</span> never feed the score.</p>
+
+<div class="controls">
+  <input type="text" id="q" placeholder="Search ticker or name…" aria-label="Search">
+  <select id="grp" aria-label="Industry group"><option value="">All groups</option></select>
+  <label class="chk"><input type="checkbox" id="fw"> Flywheel passers only</label>
+  <label class="chk"><input type="checkbox" id="cov"> Full-coverage only</label>
+  <span class="count" id="count"></span>
+</div>
+
+<div class="tblwrap"><table id="tbl">
+  <thead><tr>
+    <th class="l" data-k="universe_rank">#</th>
+    <th class="l" data-k="ticker">Company</th>
+    <th class="l" data-k="group">Group</th>
+    <th data-k="res">RES</th>
+    <th class="l" data-k="_fw">Flywheel</th>
+    <th data-k="_rev_cagr3">Rev 3y</th>
+    <th data-k="_sm_pct">S&amp;M %</th>
+    <th data-k="growth_efficiency">Magic</th>
+    <th data-k="_gross_margin">GM</th>
+    <th class="outhdr" data-k="r1y">◦ 1y ret</th>
+    <th class="outhdr" data-k="r3y_alpha">◦ 3y α</th>
+    <th class="outhdr" data-k="r5y_alpha">◦ 5y α</th>
+    <th class="l">Evidence</th>
+  </tr></thead>
+  <tbody id="rows"></tbody>
+</table></div>
+
+<p class="footnote"><strong>Method.</strong> RES = weighted within-group percentile of:
+growth efficiency 25 (ΔRevenue ÷ S&amp;M, 2y avg) · sales intensity 20 (S&amp;M % level + slope)
+· growth persistence 20 · gross quality 15 · operating leverage 10 · Rule of 40 10.
+S&amp;M falls back to SG&amp;A where not broken out (flagged “SG&amp;A” in the detail).
+Fundamentals: Yahoo Finance annual statements (≤5y). α = annualized total return minus SPY.
+Universe chosen by industry prominence, never by past performance; includes two
+deliberate control groups. Coverage &lt;100% means some pillars were unmeasurable
+(weights renormalized). Personal research, not investment advice.</p>
+</div>
+
+<script>
+const DATA = __DATA__;
+const QUAL = __QUAL__;
+
+const fmtP = (v,d=0)=> v==null?'–':(v*100).toFixed(d)+'%';
+const fmtS = (v,d=1)=> v==null?'–':(v>0?'+':'')+(v*100).toFixed(d)+'%';
+const fmtN = (v,d=2)=> v==null?'–':v.toFixed(d);
+const cls  = v => v==null?'':(v>0?'pos':v<0?'neg':'');
+const esc  = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const companies = Object.values(DATA.companies).filter(c=>c.res!=null);
+
+/* tiles */
+const topGroup = Object.entries(DATA.theory_checks)
+  .filter(([k])=>k!=='all' && !k.startsWith('Control'))
+  .sort((a,b)=>b[1].spearman_res_vs_3y_alpha-a[1].spearman_res_vs_3y_alpha)[0];
+document.getElementById('tiles').innerHTML = [
+  ['Companies scored', companies.length, DATA.groups.length+' industry groups'],
+  ['Flywheel picks', (DATA.picks||[]).length, 'pass all three gates'],
+  ['Overall ρ (RES vs 3y α)', fmtN(DATA.theory_checks.all.spearman_res_vs_3y_alpha), 'concurrent, not forward'],
+  ['Strongest group', esc(topGroup[0]), 'ρ = '+fmtN(topGroup[1].spearman_res_vs_3y_alpha)],
+  ['Energy control ρ', fmtN(DATA.theory_checks['Control: Energy'].spearman_res_vs_3y_alpha), 'should be ≈ 0 or worse'],
+].map(([k,v,s])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
+
+/* flywheel picks strip */
+document.getElementById('picks').innerHTML = (DATA.picks||[]).map(tk=>
+  `<button class="pick" data-tk="${tk}" title="${esc(DATA.companies[tk].name)} — RES ${DATA.companies[tk].res}">${tk}</button>`).join('')
+  || '<span class="sub">No companies currently pass all three gates.</span>';
+document.getElementById('picks').addEventListener('click',e=>{
+  const b=e.target.closest('.pick'); if(!b) return;
+  document.getElementById('q').value=b.dataset.tk; openTk=b.dataset.tk; render();
+  document.getElementById('tbl').scrollIntoView({behavior:'smooth'});
+});
+
+const FW_LABEL={growing:'growing', efficient_acquisition:'efficient acquisition', intensity_not_rising:'intensity not rising'};
+function fwBadge(c){
+  const f=c.flywheel; if(!f) return '–';
+  if(f.pass) return `<span class="badge b-fw" title="Passes all three gates">PASS</span>`;
+  const fails=Object.entries(f.checks).filter(([,v])=>v!==true).map(([k])=>FW_LABEL[k]).join(', ');
+  return `<span class="badge b-fwno" title="Fails: ${esc(fails)}">–</span>`;
+}
+
+/* theory-check diverging bars */
+const tc = document.getElementById('tc');
+const entries = Object.entries(DATA.theory_checks).filter(([k])=>k!=='all')
+  .sort((a,b)=>{
+    const ac=a[0].startsWith('Control'), bc=b[0].startsWith('Control');
+    if(ac!==bc) return ac?1:-1;
+    return b[1].spearman_res_vs_3y_alpha - a[1].spearman_res_vs_3y_alpha;
+  });
+tc.innerHTML = entries.map(([g,v])=>{
+  const rho=v.spearman_res_vs_3y_alpha, w=Math.abs(rho)*50;
+  const left = rho>=0? '50%' : (50-w)+'%';
+  const col = rho>=0? 'var(--pos)':'var(--neg)';
+  return `<div class="tc-row" title="${esc(g)}: ρ = ${fmtN(rho)}">
+    <div class="tc-name ${g.startsWith('Control')?'ctrl':''}">${esc(g)}</div>
+    <div class="tc-track"><div class="tc-axis"></div>
+      <div class="tc-bar" style="left:${left};width:${w}%;background:${col}"></div></div>
+    <div class="tc-val ${cls(rho)}">${fmtN(rho)}</div></div>`;
+}).join('');
+
+/* controls + table */
+const grpSel=document.getElementById('grp');
+DATA.groups.forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;grpSel.append(o);});
+let sortKey='res', sortDir=-1, openTk=null;
+
+function val(c,k){
+  if(k==='_fw') return c.flywheel && c.flywheel.pass ? 1 : 0;
+  if(k in c) return c[k];
+  if(c.pillar_raw && k in c.pillar_raw) return c.pillar_raw[k];
+  if(c.returns && k in c.returns) return c.returns[k];
+  return null;
+}
+function qualBadge(tk){
+  const q=QUAL[tk]; if(!q) return '';
+  const m={'+':['b-plus','WOM +'],'-':['b-minus','Paid −'],'~':['b-mixed','Mixed ~']}[q.direction];
+  return `<span class="badge ${m[0]}" title="${esc(q.note)}">${m[1]}</span>`;
+}
+function spark(rows,key,pct){
+  const pts=rows.filter(r=>r[key]!=null);
+  if(pts.length<2) return '<div class="spark-label">insufficient history</div>';
+  const vs=pts.map(r=>r[key]), min=Math.min(...vs,0), max=Math.max(...vs,0), W=220,H=46;
+  const x=i=>8+i*(W-16)/(pts.length-1), y=v=>H-6-(v-min)/((max-min)||1)*(H-12);
+  const path=pts.map((r,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(r[key]).toFixed(1)).join(' ');
+  const zero = (min<0&&max>0)?`<line x1="8" x2="${W-8}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)" stroke-dasharray="3 3"/>`:'';
+  const last=pts[pts.length-1];
+  const fmt = pct? v=>fmtS(v,1) : v=>fmtN(v,2);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img"
+    aria-label="${key} trend">${zero}
+    <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="${x(pts.length-1)}" cy="${y(last[key])}" r="3.5" fill="var(--accent)"/>
+    ${pts.map((r,i)=>`<circle cx="${x(i)}" cy="${y(r[key])}" r="7" fill="transparent"><title>FY${r.year}: ${fmt(r[key])}</title></circle>`).join('')}
+  </svg>
+  <div class="spark-label"><span>FY${pts[0].year}</span><span class="num">${fmt(last[key])}</span></div>`;
+}
+const PILLARS=[['growth_efficiency','Growth efficiency',25],['sales_intensity','Sales intensity',20],
+  ['growth_persistence','Growth persistence',20],['gross_quality','Gross quality',15],
+  ['operating_leverage','Operating leverage',10],['rule_of_40','Rule of 40',10]];
+
+function detailHTML(c){
+  const q=QUAL[c.ticker];
+  const yr=[...c.years].filter(r=>r.rev_growth!=null||r.sm_pct!=null);
+  return `<div class="dgrid">
+  <div class="dcard"><h4>Pillars — within-group percentile</h4>
+    ${PILLARS.map(([k,label,w])=>{
+      const p=c.pillars[k];
+      return `<div class="pill-row"><span>${label} <span style="color:var(--faint)">·${w}</span></span>
+        <div class="pill-track">${p!=null?`<div class="pill-fill" style="width:${p}%"></div>`:''}</div>
+        <span class="num">${p!=null?p.toFixed(0):'n/a'}</span></div>`;}).join('')}
+    <div class="pill-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px">
+      <span><strong>RES</strong></span><div class="pill-track"><div class="pill-fill" style="width:${c.res}%"></div></div>
+      <span class="num"><strong>${c.res}</strong></span></div></div>
+  <div class="dcard"><h4>Revenue growth</h4>${spark(yr,'rev_growth',true)}
+    <h4 style="margin-top:12px">S&amp;M % of revenue ${yr.some(r=>r.sm_is_sga)?'<span class="badge b-cov">SG&amp;A fallback</span>':''}</h4>${spark(yr,'sm_pct',true)}</div>
+  <div class="dcard"><h4>Magic number (ΔRev ÷ S&amp;M)</h4>${spark(yr,'magic',false)}
+    <h4 style="margin-top:12px">Gross margin</h4>${spark(yr,'gross_margin',true)}</div>
+  <div class="dcard"><h4>Flywheel gates</h4>
+    ${c.flywheel?Object.entries(c.flywheel.checks).map(([k,v])=>
+      `<div class="pill-row" style="grid-template-columns:1fr 40px"><span>${FW_LABEL[k]}</span>
+       <span class="num ${v===true?'pos':v===false?'neg':''}">${v===true?'✓':v===false?'✗':'n/a'}</span></div>`).join(''):''}
+    <h4 style="margin-top:12px">Disclosed referral evidence</h4>
+    <p class="qual">${q?esc(q.note):'<span style="color:var(--faint)">No curated disclosure note yet for this name — the quantitative fingerprint stands alone.</span>'}</p>
+    <h4 style="margin-top:12px">Returns <span style="color:var(--warn)">◦ output only</span></h4>
+    <table class="yrtbl"><tr><th></th><th>1y</th><th>3y α/yr</th><th>5y α/yr</th></tr>
+    <tr><td class="l">vs SPY</td>
+      <td class="num ${cls(val(c,'r1y'))}">${fmtS(val(c,'r1y'))}</td>
+      <td class="num ${cls(val(c,'r3y_alpha'))}">${fmtS(val(c,'r3y_alpha'))}</td>
+      <td class="num ${cls(val(c,'r5y_alpha'))}">${fmtS(val(c,'r5y_alpha'))}</td></tr></table></div>
+  <div class="dcard" style="grid-column:1/-1"><h4>Fiscal-year detail</h4>
+    <div style="overflow-x:auto"><table class="yrtbl"><tr><th class="l">FY</th><th>Revenue</th><th>Growth</th>
+    <th>S&amp;M %</th><th>Magic</th><th>Gross margin</th><th>Op margin</th><th>Incr. margin</th><th>FCF margin</th></tr>
+    ${yr.map(r=>`<tr><td class="l num">${r.year}</td>
+      <td class="num">${r.revenue!=null?'$'+(r.revenue/1e9).toFixed(1)+'B':'–'}</td>
+      <td class="num ${cls(r.rev_growth)}">${fmtS(r.rev_growth)}</td>
+      <td class="num">${fmtP(r.sm_pct,1)}${r.sm_is_sga?'*':''}</td>
+      <td class="num">${fmtN(r.magic)}</td>
+      <td class="num">${fmtP(r.gross_margin,1)}</td>
+      <td class="num ${cls(r.op_margin)}">${fmtP(r.op_margin,1)}</td>
+      <td class="num">${fmtN(r.incr_margin)}</td>
+      <td class="num ${cls(r.fcf_margin)}">${fmtP(r.fcf_margin,1)}</td></tr>`).join('')}
+    </table></div>
+    ${yr.some(r=>r.sm_is_sga)?'<div class="spark-label" style="margin-top:6px">* S&amp;M not broken out — SG&amp;A used.</div>':''}</div>
+  </div>`;
+}
+
+function render(){
+  const q=document.getElementById('q').value.trim().toLowerCase();
+  const g=grpSel.value, covOnly=document.getElementById('cov').checked;
+  const fwOnly=document.getElementById('fw').checked;
+  let list=companies.filter(c=>
+    (!q || c.ticker.toLowerCase().includes(q) || (c.name||'').toLowerCase().includes(q)) &&
+    (!g || c.group===g) && (!covOnly || c.coverage===1) &&
+    (!fwOnly || (c.flywheel && c.flywheel.pass)));
+  list.sort((a,b)=>{
+    const av=val(a,sortKey), bv=val(b,sortKey);
+    if(av==null&&bv==null) return 0; if(av==null) return 1; if(bv==null) return -1;
+    return (av<bv?-1:av>bv?1:0)*(typeof av==='string'?-sortDir:sortDir)* (typeof av==='string'?-1:1);
+  });
+  document.getElementById('count').textContent=list.length+' companies';
+  document.getElementById('rows').innerHTML=list.map(c=>{
+    const open=c.ticker===openTk;
+    return `<tr class="co" tabindex="0" data-tk="${c.ticker}" aria-expanded="${open}">
+      <td class="l num">${c.universe_rank??'–'}</td>
+      <td class="l"><span class="tk">${c.ticker}</span> <span class="nm">${esc(c.name)}</span></td>
+      <td class="l grp">${esc(c.group.replace('Control: ','⌁ '))}</td>
+      <td><span class="num" style="font-weight:700">${c.res}</span><span class="resbar"><i style="width:${c.res}%"></i></span>${c.coverage<1?`<span class="badge b-cov" title="Only ${Math.round(c.coverage*100)}% of pillars measurable">${Math.round(c.coverage*100)}%</span>`:''}</td>
+      <td class="l">${fwBadge(c)}</td>
+      <td class="num ${cls(val(c,'_rev_cagr3'))}">${fmtS(val(c,'_rev_cagr3'))}</td>
+      <td class="num">${fmtP(val(c,'_sm_pct'),1)}</td>
+      <td class="num">${fmtN(val(c,'growth_efficiency'))}</td>
+      <td class="num">${fmtP(val(c,'_gross_margin'))}</td>
+      <td class="num ${cls(val(c,'r1y'))}">${fmtS(val(c,'r1y'))}</td>
+      <td class="num ${cls(val(c,'r3y_alpha'))}">${fmtS(val(c,'r3y_alpha'))}</td>
+      <td class="num ${cls(val(c,'r5y_alpha'))}">${fmtS(val(c,'r5y_alpha'))}</td>
+      <td class="l">${qualBadge(c.ticker)}</td></tr>` +
+      (open?`<tr class="detail"><td colspan="13">${detailHTML(c)}</td></tr>`:'');
+  }).join('');
+}
+document.getElementById('rows').addEventListener('click',e=>{
+  const tr=e.target.closest('tr.co'); if(!tr) return;
+  openTk = openTk===tr.dataset.tk? null : tr.dataset.tk; render();
+});
+document.getElementById('rows').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  const tr=e.target.closest('tr.co'); if(!tr) return;
+  e.preventDefault(); openTk = openTk===tr.dataset.tk? null : tr.dataset.tk; render();
+});
+document.querySelectorAll('th[data-k]').forEach(th=>th.addEventListener('click',()=>{
+  const k=th.dataset.k;
+  if(sortKey===k) sortDir*=-1; else {sortKey=k; sortDir=(k==='ticker'||k==='group'||k==='universe_rank')?1:-1;}
+  document.querySelectorAll('th').forEach(t=>t.classList.remove('sorted'));
+  th.classList.add('sorted'); render();
+}));
+['q','grp','cov','fw'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+render();
+</script>

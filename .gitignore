@@ -2,7 +2,9 @@ __pycache__/
 *.pyc
 .env
 *.egg-info/
-data/
+# Scanner runtime data only (root). referral_moat/data/ IS committed —
+# Railway serves /referrals from the committed scorecards + site.
+/data/
 "scanner_trade_log.xlsx"
 "April15_Scanner_Analysis.md"
 "Momentum_Scanner_v3.1_Summary.pdf"

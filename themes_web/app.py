@@ -38,7 +38,12 @@ from themes_web.render import (
     render_markdown,
     theme_dir,
 )
-from themes_web.scheduler import start_scheduler, stop_scheduler, trigger_manual_refresh
+from themes_web.scheduler import (
+    refresh_referrals,
+    start_scheduler,
+    stop_scheduler,
+    trigger_manual_refresh,
+)
 from themes_web.version import THEMES_WEB_VERSION
 
 logger = logging.getLogger(__name__)
@@ -430,6 +435,33 @@ def api_refresh(slug: Optional[str] = None):
         return {"ok": True, "result": result}
     except Exception as e:
         logger.exception("Manual refresh failed")
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+_REFERRAL_SITE = _HERE.parent / "referral_moat" / "site" / "index.html"
+
+
+@app.get("/referrals", response_class=HTMLResponse)
+def referrals_page():
+    """Referral-moat research app. Standalone module (referral_moat/) —
+    served as a self-contained static page, regenerated monthly by the
+    scheduler (or POST /api/refresh_referrals). No Jinja, no imports."""
+    if not _REFERRAL_SITE.exists():
+        raise HTTPException(status_code=404,
+                            detail="Referral site not generated yet — POST /api/refresh_referrals")
+    return HTMLResponse(_REFERRAL_SITE.read_text(encoding="utf-8"))
+
+
+@app.post("/api/refresh_referrals", response_class=JSONResponse)
+def api_refresh_referrals():
+    """Manually rebuild referral-moat scorecards + site. Blocks ~3-6 min
+    (fetches fundamentals for ~110 tickers)."""
+    try:
+        result = refresh_referrals()
+        ok = all(v.get("returncode") == 0 for v in result.values())
+        return {"ok": ok, "result": result}
+    except Exception as e:
+        logger.exception("Referral refresh failed")
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 

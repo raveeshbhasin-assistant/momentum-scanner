@@ -73,6 +73,31 @@ def _run_refresh_for_theme(theme: str) -> dict:
     return result
 
 
+def refresh_referrals() -> dict:
+    """
+    Rebuild the referral-moat scorecards + static site (referral_moat/ is a
+    standalone module — subprocess keeps the no-cross-import rule, same as
+    the themes refresh). Runs monthly; also callable via
+    POST /api/refresh_referrals.
+    """
+    result: dict = {}
+    for script in ("referral_moat/build.py", "referral_moat/make_site.py"):
+        logger.info(f"[scheduler] referral refresh — {script}")
+        try:
+            r = subprocess.run([_PYTHON, script], cwd=_PROJECT_ROOT,
+                               capture_output=True, text=True, timeout=1800)
+            result[script] = {"returncode": r.returncode,
+                              "tail": (r.stdout + r.stderr)[-300:]}
+            if r.returncode != 0:
+                logger.warning(f"[scheduler] {script} non-zero: {r.returncode}")
+                break  # don't regenerate the site from a failed build
+        except Exception as e:
+            logger.exception(f"[scheduler] {script} failed: {e}")
+            result[script] = {"error": str(e)}
+            break
+    return result
+
+
 def _scheduled_job():
     """Cron entry point — refresh every active theme that has a tracker."""
     # Discover active themes by scanning themes/ for tracker.json
@@ -107,8 +132,19 @@ def start_scheduler() -> BackgroundScheduler:
         replace_existing=True,
         misfire_grace_time=3600,  # if missed, run within 1 hour of when it should have fired
     )
+    # Monthly referral-moat refresh: 1st of the month, 19:00 ET (after the
+    # daily themes job window). Statements move quarterly; monthly is plenty.
+    _scheduler.add_job(
+        refresh_referrals,
+        trigger=CronTrigger(day=1, hour=19, minute=0),
+        id="referral_monthly_refresh",
+        name="Monthly referral-moat scorecards refresh",
+        replace_existing=True,
+        misfire_grace_time=6 * 3600,
+    )
     _scheduler.start()
-    logger.info("[scheduler] Started. Daily refresh at 18:00 ET weekdays.")
+    logger.info("[scheduler] Started. Daily refresh 18:00 ET weekdays; "
+                "referral refresh monthly (1st, 19:00 ET).")
     return _scheduler
 
 
