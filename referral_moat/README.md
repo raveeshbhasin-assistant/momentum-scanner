@@ -142,18 +142,18 @@ reads `site/index.html`). Two automated refresh layers:
    trigger: `POST <domain>/api/refresh_referrals` (~3–6 min). Railway's
    filesystem is ephemeral, so this layer's output lives only until the
    next deploy.
-2. **Durable data-commit job** (2nd of each month): reruns the pipeline
-   and commits refreshed `data/` + `site/` back to main — git keeps every
+2. **GitHub Actions** (durability): `.github/workflows/referral-refresh.yml`
+   reruns the pipeline on the **2nd of each month** (plus manual
+   `workflow_dispatch`, plus a self-test run on workflow edits) and
+   commits refreshed `data/` + `site/` back to main — git keeps every
    dated snapshot forever (the forward-test record), and the push makes
-   Railway redeploy with a fresh seed. Currently runs as a Windows Task
-   Scheduler job (`referral_moat/refresh_and_push.ps1`) on the operator's
-   machine. A GitHub Actions version (`.github/workflows/
-   referral-refresh.yml`) is written and preferred — it needs the repo's
-   git PAT to gain `workflow` scope before it can be pushed; once pushed,
-   retire the local task.
+   Railway redeploy with a fresh seed. Verified live 2026-07-21 (bot
+   commit `5e7a0a2`). Requires the repo PAT to keep `workflow` scope.
 
-No manual steps remain; a local `python build.py && python make_site.py`
-plus commit is only needed for an off-cycle durable snapshot.
+No manual steps remain. `referral_moat/refresh_and_push.ps1` is the
+manual/off-cycle fallback (runs the same rebuild → data-only commit →
+push loop locally); the Windows scheduled task that used to run it was
+retired 2026-07-21 when the Actions run went green.
 
 ## Honest caveats
 
