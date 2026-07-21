@@ -1,0 +1,57 @@
+# Referral-moat monthly refresh — the durable half of the automation.
+#
+# The themes_web in-app scheduler (1st of month, 19:00 ET) refreshes the
+# running Railway container, but Railway's filesystem is ephemeral: dated
+# snapshots (the forward-test record) vanish on redeploy and the committed
+# deploy seed goes stale. This workflow reruns the pipeline on the 2nd of
+# each month and commits refreshed data + site back to main — git keeps
+# every snapshot forever, and the push makes Railway redeploy with fresh
+# seed data. Data-only commits; never touches code.
+name: referral-moat refresh
+
+on:
+  schedule:
+    - cron: "0 6 2 * *"   # 2nd of month, 06:00 UTC
+  workflow_dispatch: {}
+  push:
+    paths:
+      - ".github/workflows/referral-refresh.yml"   # self-test on workflow edits
+
+permissions:
+  contents: write
+
+concurrency:
+  group: referral-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install "yfinance>=0.2.43"
+
+      - name: Build scorecards (fundamentals -> RES -> gates; returns output-only)
+        run: python referral_moat/build.py
+
+      - name: Regenerate site
+        run: python referral_moat/make_site.py
+
+      - name: Commit refreshed data + site (data-only, skips if unchanged)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add referral_moat/data referral_moat/site
+          if git diff --cached --quiet; then
+            echo "No data changes — nothing to commit."
+          else
+            git commit -m "referral_moat: automated monthly data refresh ($(date -u +%F))"
+            git push
+          fi
