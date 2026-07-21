@@ -14,25 +14,27 @@ UNIVERSE = {
     "Enterprise Software & SaaS": [
         "CRM", "NOW", "ADBE", "INTU", "WDAY", "HUBS", "TEAM", "DDOG",
         "SNOW", "ZS", "CRWD", "PANW", "MNDY", "VEEV", "TTD", "PLTR",
+        "KVYO", "IOT", "RBRK", "FIG",
     ],
     "Consumer Internet & Platforms": [
         "GOOGL", "META", "NFLX", "SPOT", "UBER", "DASH", "PINS", "SNAP",
-        "RDDT", "DUOL", "ROKU", "ZG",
+        "RDDT", "DUOL", "ROKU", "ZG", "CART",
     ],
     "Fintech & Payments": [
         "V", "MA", "PYPL", "XYZ", "COIN", "HOOD", "AXP", "SOFI",
-        "NU", "TOST", "AFRM", "GPN",
+        "NU", "TOST", "AFRM", "GPN", "CHYM", "CRCL", "KLAR",
     ],
     "Consumer Brands": [
         "NKE", "LULU", "DECK", "ELF", "CELH", "MNST", "CROX", "SKX",
-        "PG", "KO", "PEP", "YETI",
+        "PG", "KO", "PEP", "YETI", "ONON", "BIRK", "SN",
     ],
     "Restaurants": [
         "CMG", "SBUX", "MCD", "YUM", "WING", "CAVA", "TXRH", "DPZ",
+        "SG", "BROS",
     ],
     "Healthcare & Medtech": [
         "ISRG", "DXCM", "PODD", "ALGN", "HIMS", "IDXX", "TDOC", "EW",
-        "SYK", "RMD",
+        "SYK", "RMD", "TEM", "OSCR",
     ],
     "Financial Services & Insurance": [
         "PGR", "ALL", "SCHW", "IBKR", "KNSL", "LMND", "TRV", "AJG",

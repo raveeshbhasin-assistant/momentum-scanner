@@ -72,6 +72,25 @@ NU, HOOD, IBKR, PLTR, DUOL, META, AMZN, HIMS* — with CELH, ELF, TOST,
 CAVA on watch. (*HIMS passes on efficiency but fails the intensity test —
 marketing is ~40% of revenue; it stays only if intensity falls with scale.)
 
+## The early-indicators lens (added 2026-07-21)
+
+The flywheel list skews to proven incumbents (Alphabet, Amazon, Meta pass
+because their engines genuinely still compound — informative, but the
+asymmetric payoff isn't there). The early list is where the theory has
+torque: a young or pivoting company whose *latest* year shows fast growth,
+magic ≥ 1, and an improving engine, before three years of history can
+prove it. How to use the two lists together:
+
+- **Flywheel picks** = the confirmed basket; position-sized, sell-rule
+  driven.
+- **Early indicators** = the research queue; smaller starter positions at
+  most, and each name needs the qualitative gate *more*, not less — one
+  good year is easily a marketing pause or a price hike. Demand a named
+  referral mechanism before treating the quantitative pass as real.
+- Graduation: an early name that accumulates three years and passes the
+  full flywheel gate moves to the confirmed basket (RDDT and CAVA are the
+  current examples of names passing both).
+
 ## Traps to respect
 
 - **Concurrent ≠ forward.** Today's ρ values overlap score and return

@@ -84,6 +84,32 @@ from fundamentals only (thresholds in `build.py::FLYWHEEL`):
 Passers (excluding control groups, coverage ≥ 50%) form the `picks` list,
 frozen into each dated snapshot **before** the returns pass runs.
 
+### Early indicators (young / pivoting)
+
+The flywheel gate structurally favors incumbents — three years of proven
+history is exactly what a recent IPO or a mid-pivot company cannot show.
+The **early indicators** gate (`build.py::early_test`) looks for the
+fingerprint *forming*, using only the latest data plus direction of travel:
+
+- **Eligibility** (one of):
+  - *young* — listed ≤ 5 years (real IPO date from exchange metadata;
+    statement count is NOT used — Yahoo sometimes returns only 4 years
+    for mega-caps, which would misclassify Alphabet as "young");
+  - *re-acceleration* — growth < 10% two FYs ago, ≥ 15% now (a pivot
+    catching on), **and revenue < $10B** so a re-accelerating giant
+    doesn't masquerade as early. Revenue, not market cap, keeps the size
+    test free of price data.
+- **Gates** (all three): latest revenue growth ≥ 15% (with no history the
+  present must be loud) · latest-year magic ≥ 1.0 · engine improving
+  (S&M% fell, or magic rose, vs prior year).
+
+Passers form `early_picks` (controls excluded); overlap with the flywheel
+list is allowed and badged — a young company passing both is
+best-of-breed. Early names carry wider error bars by construction: one
+fiscal year of inflection can be a marketing pause, a price hike, or a
+COVID-style demand pull-forward, not a flywheel. Treat the list as a
+research queue, not a buy list.
+
 ## Universe
 
 ~130 top listed companies across 10 industry groups where word-of-mouth

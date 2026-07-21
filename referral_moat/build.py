@@ -62,10 +62,16 @@ def fetch_one(ticker: str) -> dict | None:
             info = t.info or {}
         except Exception:
             pass
+        first_trade = (info.get("firstTradeDateEpochUtc")
+                       or (info.get("firstTradeDateMilliseconds") or 0) / 1000
+                       or None)
         return {
             "ticker": ticker,
             "name": info.get("shortName") or ticker,
             "market_cap": info.get("marketCap"),
+            "listed_years": round((dt.datetime.now(dt.timezone.utc).timestamp()
+                                   - first_trade) / (365.25 * 86400), 1)
+                            if first_trade else None,
             "revenue": _row(inc, "Total Revenue", "Operating Revenue"),
             "gross_profit": _row(inc, "Gross Profit"),
             "op_income": _row(inc, "Operating Income",
@@ -222,6 +228,61 @@ def flywheel_test(pins: dict, group_sm_median: float | None) -> dict:
     return {"pass": all(v is True for v in checks.values()), "checks": checks}
 
 
+# ──────────────── early indicators (young / pivoting) ────────────────
+# The flywheel gate structurally favors incumbents: it demands 3y of
+# proven history, which recent IPOs and mid-pivot companies cannot show.
+# The Early Indicators gate looks for the referral fingerprint *forming*:
+# current-year signals plus direction of travel, not multi-year averages.
+#
+# Eligibility (one of):
+#   young          — listed ≤ 5 years (real IPO date from exchange
+#                    metadata; statement count is NOT a youth signal —
+#                    Yahoo sometimes returns only 4 years for mega-caps).
+#                    Fallback when listing date is unknown: ≤ 3 fiscal
+#                    years of revenue on record.
+#   reacceleration — growth was < 10% two FYs ago, now ≥ 15% (a pivot
+#                    catching on: the trailing average hides the new
+#                    engine) AND revenue < $10B — a giant re-accelerating
+#                    is not "early", and revenue (not market cap) keeps
+#                    the size test free of price data.
+# Gates (all three, latest data only):
+#   fast_growth      — latest rev growth ≥ 15% (higher bar than flywheel's
+#                      8%: with no history, the present must be loud)
+#   efficient_latest — latest-year magic ≥ 1.0
+#   engine_improving — S&M% fell vs prior year OR magic rose vs prior year
+EARLY = {"max_listed_years": 5.0, "fallback_max_years_data": 3,
+         "reaccel_from": 0.10, "reaccel_to": 0.15, "reaccel_max_rev": 10e9,
+         "min_rev_latest": 0.15, "min_magic_latest": 1.0}
+
+
+def early_test(rows: list[dict], listed_years: float | None) -> dict:
+    growth = _series(rows, "rev_growth")
+    magic = _series(rows, "magic")
+    smp = _series(rows, "sm_pct")
+    years = len([r for r in rows if r.get("revenue") is not None])
+    if listed_years is not None:
+        young = listed_years <= EARLY["max_listed_years"]
+    else:
+        young = years <= EARLY["fallback_max_years_data"]
+    latest_rev = next((r["revenue"] for r in reversed(rows)
+                       if r.get("revenue") is not None), None)
+    reaccel = (len(growth) >= 3 and growth[-3][1] < EARLY["reaccel_from"]
+               and growth[-1][1] >= EARLY["reaccel_to"]
+               and latest_rev is not None
+               and latest_rev < EARLY["reaccel_max_rev"])
+    eligible = young or reaccel
+    fast = bool(growth) and growth[-1][1] >= EARLY["min_rev_latest"]
+    efficient = bool(magic) and magic[-1][1] >= EARLY["min_magic_latest"]
+    improving = ((len(smp) >= 2 and smp[-1][1] < smp[-2][1])
+                 or (len(magic) >= 2 and magic[-1][1] > magic[-2][1]))
+    checks = {"fast_growth": fast, "efficient_latest": efficient,
+              "engine_improving": improving}
+    return {"eligible": eligible,
+            "why": ("young" if young else "reacceleration") if eligible else None,
+            "years_of_data": years, "listed_years": listed_years,
+            "pass": eligible and all(checks.values()), "checks": checks}
+
+
 # ─────────────────────────── scoring ───────────────────────────
 
 def pct_rank(values: dict[str, float]) -> dict[str, float]:
@@ -316,7 +377,9 @@ def main():
             rows = yearly_metrics(raw[tk])
             pins = pillar_inputs(rows)
             members[tk] = pins
+            early = early_test(rows, raw[tk].get("listed_years"))
             companies[tk] = {
+                "early": early,
                 "ticker": tk,
                 "name": raw[tk]["name"],
                 "group": group,
@@ -345,6 +408,13 @@ def main():
              if c["flywheel"]["pass"] and c["coverage"] >= 0.5
              and not c["group"].startswith("Control")]
 
+    # early indicators: young/pivoting names where the fingerprint is
+    # forming. Same RES order; overlap with `picks` is allowed and marked
+    # in the app (a young company passing both is best-of-breed).
+    early_picks = [c["ticker"] for c in ranked
+                   if c["early"]["pass"]
+                   and not c["group"].startswith("Control")]
+
     # ── returns pass: strictly after scoring, output-only ──
     print("Computing returns (output-only evaluation) …")
     rets = compute_returns(list(companies))
@@ -372,8 +442,10 @@ def main():
         "as_of": dt.date.today().isoformat(),
         "weights": WEIGHTS,
         "flywheel_thresholds": FLYWHEEL,
+        "early_thresholds": EARLY,
         "groups": list(UNIVERSE.keys()),
         "picks": picks,
+        "early_picks": early_picks,
         "companies": companies,
         "theory_checks": checks,
         "note": ("Scores computed from fundamentals only; returns attached "
@@ -386,7 +458,8 @@ def main():
     snap = OUT_DIR / "snapshots"
     snap.mkdir(exist_ok=True)
     slim = {tk: {"res": c["res"], "group": c["group"],
-                 "flywheel": c["flywheel"]["pass"]}
+                 "flywheel": c["flywheel"]["pass"],
+                 "early": c["early"]["pass"]}
             for tk, c in companies.items()}
     (snap / f"{payload['as_of']}.json").write_text(json.dumps(slim), encoding="utf-8")
     print(f"Wrote {OUT_DIR / 'scorecards.json'} ({len(companies)} companies).")

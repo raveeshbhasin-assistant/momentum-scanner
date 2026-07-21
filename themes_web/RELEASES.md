@@ -7,7 +7,35 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.3.0 — 2026-07-21 **(current)**
+## v1.4.0 — 2026-07-21 **(current)**
+
+**What** `/referrals` app v2 — "Early indicators" lens for newer/pivoting
+companies the 3y flywheel gate structurally excludes:
+- Eligibility: listed ≤ 5 years (real IPO date — statement count would
+  misclassify mega-caps as young) OR re-accelerating (<10% growth two FYs
+  ago → ≥15% now) with revenue < $10B (size test uses revenue, not market
+  cap, preserving the no-price-data purity rule).
+- Gates (latest data only): growth ≥ 15% · latest magic ≥ 1 · engine
+  improving (S&M% fell or magic rose YoY).
+- Universe +15 recent IPOs (FIG, CHYM, CRCL, KLAR, KVYO, IOT, RBRK, CART,
+  ONON, BIRK, SN, SG, BROS, TEM, OSCR → 127 companies scored).
+- App: early-picks strip, EARLY badge, filter, per-gate detail; snapshots
+  now record the early flag for forward tracking. No themes_web code
+  changes — referral_moat module + regenerated static page only.
+
+**Why** Operator: flywheel picks skew to forever-incumbents (GOOGL et al);
+wants a lens for companies without 3y history due to time-in-market or
+business pivot.
+
+**Verified** pytest green; TestClient `/referrals` 200; GOOGL/META/AMZN
+correctly NOT early-eligible after the listing-age fix; 9 early picks all
+listed ≤5y or genuine re-accelerations; UI checks in browser.
+
+**Rollback** Revert the commit; prior scorecards/site restore on deploy.
+
+---
+
+## v1.3.0 — 2026-07-21
 
 **What**
 - New `/referrals` page: the Referral-Moat research app (new standalone

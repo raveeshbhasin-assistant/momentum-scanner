@@ -99,11 +99,14 @@ tr.co:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .b-cov{background:var(--surface2);color:var(--warn)}
 .b-fw{background:var(--pos);color:#fff;margin-left:0;cursor:help}
 .b-fwno{background:var(--surface2);color:var(--faint);margin-left:0;cursor:help}
+.b-early{background:var(--warn);color:#fff;margin-left:4px;cursor:help}
 .picks{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
 .pick{font-family:var(--mono);font-size:12.5px;font-weight:700;background:var(--surface);
   border:1px solid var(--line);border-left:3px solid var(--pos);border-radius:4px;
   padding:3px 9px;cursor:pointer}
 .pick:hover{background:var(--surface2)}
+.pick.early{border-left-color:var(--warn)}
+.pick .why{font-family:var(--sans);font-weight:400;font-size:11px;color:var(--faint)}
 .b-plus{background:var(--accent-soft);color:var(--accent);cursor:help}
 .b-minus{background:var(--surface2);color:var(--neg);cursor:help}
 .b-mixed{background:var(--surface2);color:var(--muted);cursor:help}
@@ -153,6 +156,17 @@ dollar returns ≥ $1 of new annual revenue), and <strong>intensity not rising</
 Chosen from fundamentals before returns are ever computed; control groups excluded.</p>
 <div class="picks" id="picks"></div>
 
+<h2>Early indicators</h2>
+<p class="sub">The flywheel gate structurally favors incumbents — it demands three
+years of proven history. This lens catches the fingerprint <em>forming</em>:
+eligibility is <strong>young</strong> (listed ≤ 5 years) or
+<strong>re-accelerating</strong> (growth was &lt; 10% two years ago, now ≥ 15% —
+a pivot catching on — with revenue under $10B, so a re-accelerating giant
+doesn't masquerade as early). Gates use only the latest data: revenue growth ≥ 15%,
+latest magic number ≥ 1, and the engine improving (S&amp;M intensity fell or magic
+rose vs prior year). Higher bar on the present, no demand for a past.</p>
+<div class="picks" id="earlyPicks"></div>
+
 <h2>Scorecards</h2>
 <p class="sub">Percentile-scored within industry group. Click any row for the full
 per-year trend, pillar breakdown, and disclosed referral evidence. Columns marked
@@ -162,6 +176,7 @@ per-year trend, pillar breakdown, and disclosed referral evidence. Columns marke
   <input type="text" id="q" placeholder="Search ticker or name…" aria-label="Search">
   <select id="grp" aria-label="Industry group"><option value="">All groups</option></select>
   <label class="chk"><input type="checkbox" id="fw"> Flywheel passers only</label>
+  <label class="chk"><input type="checkbox" id="early"> Early indicators only</label>
   <label class="chk"><input type="checkbox" id="cov"> Full-coverage only</label>
   <span class="count" id="count"></span>
 </div>
@@ -214,6 +229,7 @@ const topGroup = Object.entries(DATA.theory_checks)
 document.getElementById('tiles').innerHTML = [
   ['Companies scored', companies.length, DATA.groups.length+' industry groups'],
   ['Flywheel picks', (DATA.picks||[]).length, 'pass all three gates'],
+  ['Early indicators', (DATA.early_picks||[]).length, 'young or pivoting, fingerprint forming'],
   ['Overall ρ (RES vs 3y α)', fmtN(DATA.theory_checks.all.spearman_res_vs_3y_alpha), 'concurrent, not forward'],
   ['Strongest group', esc(topGroup[0]), 'ρ = '+fmtN(topGroup[1].spearman_res_vs_3y_alpha)],
   ['Energy control ρ', fmtN(DATA.theory_checks['Control: Energy'].spearman_res_vs_3y_alpha), 'should be ≈ 0 or worse'],
@@ -229,7 +245,25 @@ document.getElementById('picks').addEventListener('click',e=>{
   document.getElementById('tbl').scrollIntoView({behavior:'smooth'});
 });
 
+/* early indicators strip */
+const EARLY_WHY={young:'young', reacceleration:'re-accel'};
+const eAge=e=> e.listed_years!=null? e.listed_years+'y listed' : e.years_of_data+' FYs of data';
+document.getElementById('earlyPicks').innerHTML = (DATA.early_picks||[]).map(tk=>{
+  const c=DATA.companies[tk];
+  return `<button class="pick early" data-tk="${tk}" title="${esc(c.name)} — RES ${c.res}, ${eAge(c.early)}">${tk} <span class="why">${EARLY_WHY[c.early.why]||''} · ${eAge(c.early)}</span></button>`;
+}).join('') || '<span class="sub">No early-indicator names currently pass.</span>';
+document.getElementById('earlyPicks').addEventListener('click',e=>{
+  const b=e.target.closest('.pick'); if(!b) return;
+  document.getElementById('q').value=b.dataset.tk; openTk=b.dataset.tk; render();
+  document.getElementById('tbl').scrollIntoView({behavior:'smooth'});
+});
+
 const FW_LABEL={growing:'growing', efficient_acquisition:'efficient acquisition', intensity_not_rising:'intensity not rising'};
+const EARLY_LABEL={fast_growth:'growth ≥ 15% (latest)', efficient_latest:'magic ≥ 1 (latest)', engine_improving:'engine improving'};
+function earlyBadge(c){
+  const e=c.early; if(!e||!e.pass) return '';
+  return `<span class="badge b-early" title="Early indicator (${EARLY_WHY[e.why]||e.why}, ${eAge(e)}): fingerprint forming — passes all three early gates">EARLY</span>`;
+}
 function fwBadge(c){
   const f=c.flywheel; if(!f) return '–';
   if(f.pass) return `<span class="badge b-fw" title="Passes all three gates">PASS</span>`;
@@ -315,6 +349,11 @@ function detailHTML(c){
     ${c.flywheel?Object.entries(c.flywheel.checks).map(([k,v])=>
       `<div class="pill-row" style="grid-template-columns:1fr 40px"><span>${FW_LABEL[k]}</span>
        <span class="num ${v===true?'pos':v===false?'neg':''}">${v===true?'✓':v===false?'✗':'n/a'}</span></div>`).join(''):''}
+    ${c.early&&c.early.eligible?`<h4 style="margin-top:12px">Early indicators
+      <span style="color:var(--faint);text-transform:none;letter-spacing:0">— ${EARLY_WHY[c.early.why]||''}, ${eAge(c.early)}</span></h4>`+
+      Object.entries(c.early.checks).map(([k,v])=>
+      `<div class="pill-row" style="grid-template-columns:1fr 40px"><span>${EARLY_LABEL[k]}</span>
+       <span class="num ${v?'pos':'neg'}">${v?'✓':'✗'}</span></div>`).join(''):''}
     <h4 style="margin-top:12px">Disclosed referral evidence</h4>
     <p class="qual">${q?esc(q.note):'<span style="color:var(--faint)">No curated disclosure note yet for this name — the quantitative fingerprint stands alone.</span>'}</p>
     <h4 style="margin-top:12px">Returns <span style="color:var(--warn)">◦ output only</span></h4>
@@ -344,10 +383,12 @@ function render(){
   const q=document.getElementById('q').value.trim().toLowerCase();
   const g=grpSel.value, covOnly=document.getElementById('cov').checked;
   const fwOnly=document.getElementById('fw').checked;
+  const earlyOnly=document.getElementById('early').checked;
   let list=companies.filter(c=>
     (!q || c.ticker.toLowerCase().includes(q) || (c.name||'').toLowerCase().includes(q)) &&
     (!g || c.group===g) && (!covOnly || c.coverage===1) &&
-    (!fwOnly || (c.flywheel && c.flywheel.pass)));
+    (!fwOnly || (c.flywheel && c.flywheel.pass)) &&
+    (!earlyOnly || (c.early && c.early.pass)));
   list.sort((a,b)=>{
     const av=val(a,sortKey), bv=val(b,sortKey);
     if(av==null&&bv==null) return 0; if(av==null) return 1; if(bv==null) return -1;
@@ -361,7 +402,7 @@ function render(){
       <td class="l"><span class="tk">${c.ticker}</span> <span class="nm">${esc(c.name)}</span></td>
       <td class="l grp">${esc(c.group.replace('Control: ','⌁ '))}</td>
       <td><span class="num" style="font-weight:700">${c.res}</span><span class="resbar"><i style="width:${c.res}%"></i></span>${c.coverage<1?`<span class="badge b-cov" title="Only ${Math.round(c.coverage*100)}% of pillars measurable">${Math.round(c.coverage*100)}%</span>`:''}</td>
-      <td class="l">${fwBadge(c)}</td>
+      <td class="l">${fwBadge(c)}${earlyBadge(c)}</td>
       <td class="num ${cls(val(c,'_rev_cagr3'))}">${fmtS(val(c,'_rev_cagr3'))}</td>
       <td class="num">${fmtP(val(c,'_sm_pct'),1)}</td>
       <td class="num">${fmtN(val(c,'growth_efficiency'))}</td>
@@ -388,6 +429,6 @@ document.querySelectorAll('th[data-k]').forEach(th=>th.addEventListener('click',
   document.querySelectorAll('th').forEach(t=>t.classList.remove('sorted'));
   th.classList.add('sorted'); render();
 }));
-['q','grp','cov','fw'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+['q','grp','cov','fw','early'].forEach(id=>document.getElementById(id).addEventListener('input',render));
 render();
 </script>
