@@ -23,7 +23,7 @@ This deployment does NOT touch the existing momentum scanner Railway service.
    - `FINNHUB_API_KEY` — same value as the momentum scanner
    - `TZ=America/New_York` — required so APScheduler cron evaluates 18:00 ET correctly
 
-5. **Set a domain** (Railway settings → Networking → Generate Domain). Note the URL — that's your themes_web URL. E.g. `themes-web-production.up.railway.app`.
+5. **Set a domain** (Railway settings → Networking → Generate Domain). Note the URL — that's your themes_web URL. The live one is `alert-youthfulness-production-354a.up.railway.app` (service `alert-youthfulness` in project `reasonable-forgiveness`).
 
 6. **Deploy.** Railway auto-deploys on push to main. First deploy installs Python deps including `markdown`, `apscheduler`, and the FMP/Finnhub deps already in `requirements.txt`.
 

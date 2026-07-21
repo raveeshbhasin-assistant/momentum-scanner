@@ -131,15 +131,29 @@ by past performance.
   today's scores against future returns, which is the *real* test).
 - `python make_site.py` → `site/index.html`, the self-contained app.
 
-## Deployment & refresh
+## Deployment & refresh (fully automated)
 
-Served by the **themes_web Railway service** at `/referrals` (static file,
-no imports — themes_web only reads `site/index.html`). The themes_web
-scheduler rebuilds everything **monthly** (1st, 19:00 ET) via subprocess;
-manual trigger: `POST <themes_web-domain>/api/refresh_referrals` (~3–6 min).
-`data/` + `site/` are committed as the deploy-time seed — Railway's
-filesystem is ephemeral, so runtime snapshots persist only until the next
-deploy; committing after a local refresh keeps the snapshot record durable.
+Live at **https://alert-youthfulness-production-354a.up.railway.app/referrals**
+(the themes_web Railway service; static file, no imports — themes_web only
+reads `site/index.html`). Two automated refresh layers:
+
+1. **In-app** (freshness): the themes_web scheduler rebuilds everything on
+   the **1st of each month, 19:00 ET** inside the Railway container. Manual
+   trigger: `POST <domain>/api/refresh_referrals` (~3–6 min). Railway's
+   filesystem is ephemeral, so this layer's output lives only until the
+   next deploy.
+2. **Durable data-commit job** (2nd of each month): reruns the pipeline
+   and commits refreshed `data/` + `site/` back to main — git keeps every
+   dated snapshot forever (the forward-test record), and the push makes
+   Railway redeploy with a fresh seed. Currently runs as a Windows Task
+   Scheduler job (`referral_moat/refresh_and_push.ps1`) on the operator's
+   machine. A GitHub Actions version (`.github/workflows/
+   referral-refresh.yml`) is written and preferred — it needs the repo's
+   git PAT to gain `workflow` scope before it can be pushed; once pushed,
+   retire the local task.
+
+No manual steps remain; a local `python build.py && python make_site.py`
+plus commit is only needed for an off-cycle durable snapshot.
 
 ## Honest caveats
 
