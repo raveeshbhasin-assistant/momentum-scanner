@@ -71,8 +71,8 @@ Holm-adjusted one-sided p = 1.0 for every non-benchmark cell. Per-capital at K =
 
 | Rule | trades | mean return | mean SPY | **excess** | quarter-cluster CI | quarters positive | K=10 total return |
 |---|---|---|---|---|---|---|---|
-| W0 gap ≥ 3%, hold 3 (benchmark) | 17,077 | +0.49% | +0.64% | −0.15% | [−0.34, +0.05] | 4 / 8 | +3.1% |
-| W1 gap ≥ 5%, strong close, 2× volume, hold 3 | 954 | −0.22% | +0.35% | −0.57% | [−1.06, −0.09] | 3 / 8 | −19.9% |
+| W0 gap ≥ 3%, hold 3 (benchmark) | 17,077 (14,903 under the one-open-position rule) | +0.49% | +0.64% | −0.15% (−0.18% verified) | [−0.34, +0.05] | 4 / 8 (2 / 8 verified) | +3.1% |
+| W1 gap ≥ 5%, strong close, 2× volume, hold 3 | 954 (938 verified) | −0.22% | +0.35% | −0.57% (−0.38% verified; the 16 overlapping-position trades averaged −11.5%) | [−1.06, −0.09] (verified [−0.76, +0.02]) | 3 / 8 (2 / 8 verified) | −19.9% |
 | W2 20-day breakout + RS + MA50, hold 5 | 4,348 | −0.47% | +0.22% | −0.69% | [−1.46, +0.07] | 2 / 8 | −44.3% |
 | W3 gap ≥ 8%, 3× volume, green, hold 5 | 502 | −1.50% | +0.38% | −1.88% | [−3.00, −0.73] | 1 / 8 | −50.7% |
 
@@ -94,7 +94,7 @@ Because drift after every long entry tested is negative, fading was checked on t
 
 ### 6.5 Red-team review of the registration (completed in parallel)
 
-Sixteen risks were raised; the material ones for the numbers above: (1) the exploratory base rate used signal-close entry and a day-length filter that drops halted names; both were addressed (next-bar-open entry in all registered cells; sensitivity without the filter reported); (2) VWAP is effectively RTH-only in yfinance data, a live-vs-backtest divergence; (3) the swing universe filters must use T−1 data only (they do); (4) tie-breaks and window boundaries were tightened; none changes any conclusion. Independent recomputation of the headline cells by a separate verifier is scheduled for the next usage window and its verdicts will be appended here.
+Sixteen risks were raised; the material ones for the numbers above: (1) the exploratory base rate used signal-close entry and a day-length filter that drops halted names; both were addressed (next-bar-open entry in all registered cells; sensitivity without the filter reported); (2) VWAP is effectively RTH-only in yfinance data, a live-vs-backtest divergence; (3) the swing universe filters must use T−1 data only (they do); (4) tie-breaks and window boundaries were tightened; none changes any conclusion. **Independent verification (completed 2026-09-13, separate agent, own code from raw bars):** 11 cells recomputed; 10 CONFIRMED within 0.03R / 0.1 pp (all eight U1 cells with identical n and day counts; U3 W0; U2 C0), 1 PARTIALLY_CONFIRMED (U3 W1: the orchestrator's per-trade metric let a new signal open while a position was still open, which added 16 trades averaging −11.5% and overstated the loss; under the locked rule W1 is −0.38% [−0.76, +0.02], still negative, still failing; W0 n is 14,903 not 17,077 and 2 of 8 folds positive). No look-ahead found in 30 + 30 sampled trades and whole-file checks: entries strictly after the signal bar, ex-ante watchlist inputs, swing ADV through T−1, SPY excess on identical dates. Two minor departures from the locked table were noted and are immaterial: VAL1 uses a 1% instead of 0.5% floor for the R2 no-target stop (that cell is −0.33 with CI upper −0.13) and a ≥70-bar day filter (effect < 0.01R). The accounting convention (entry cost embedded in the fill, stop set relative to the adjusted fill) is conservative by ≤ 0.03R. **Survivors after verification: none.**
 
 ### 6.6 Decision
 

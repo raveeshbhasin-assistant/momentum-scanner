@@ -1,0 +1,9 @@
+cell,n,days,quarters,mean_excess_net_pct,ci_low,ci_high,p_one_sided,quarters_positive_share,mean_raw_pct,win_share,K5_total_return_pct,K5_maxdd_pct,K5_days,p_holm,pass
+E1_big_catalyst/X1_overnight,722,535,39,0.792,0.077,1.481,0.015,0.41,0.994,0.418,236.3,-16.8,535,0.105,False
+E1_big_catalyst/X2_next_close,722,535,39,0.393,-0.299,1.088,0.149,0.564,0.671,0.511,97.5,-32.3,535,0.894,False
+E2_gapup_held/X1_overnight,3098,1398,39,0.324,0.049,0.617,0.009,0.436,0.398,0.46,685.0,-25.1,1398,0.072,False
+E2_gapup_held/X2_next_close,3098,1398,39,0.097,-0.182,0.389,0.278,0.41,0.213,0.477,123.9,-41.2,1398,1.0,False
+E3_strong_close/X1_overnight,4750,1699,39,-0.023,-0.177,0.144,0.636,0.359,0.021,0.416,14.7,-54.6,1699,1.0,False
+E3_strong_close/X2_next_close,4750,1699,39,-0.253,-0.442,-0.054,0.993,0.308,-0.223,0.447,-84.3,-86.9,1699,1.0,False
+E4_top20_ret_vol/X1_overnight,31066,2415,39,-0.042,-0.112,0.036,0.856,0.308,0.081,0.435,191.6,-72.8,2415,1.0,False
+E4_top20_ret_vol/X2_next_close,31066,2415,39,-0.114,-0.19,-0.027,0.993,0.256,0.013,0.467,-89.8,-92.5,2415,1.0,False

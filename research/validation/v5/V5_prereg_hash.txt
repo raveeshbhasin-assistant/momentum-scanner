@@ -1,0 +1,2 @@
+preregistration_v5.json sha256 = 6222b79dd312090e7bab4d980675d93fac8a11f2abca94daf62c7f3bece2b1e1
+registered 2026-09-13 by JUDGE; any edit to preregistration_v5.json after this hash is a v6, not v5

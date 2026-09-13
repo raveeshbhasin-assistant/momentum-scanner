@@ -1,0 +1,312 @@
+{
+  "registered_at": "2026-09-13T11:05:00-04:00",
+  "version": "v5",
+  "name": "Catalyst-Close-to-Open (CCO) with out-of-sample-validated regime gate",
+  "author": "JUDGE synthesis of five independent proposals (EVENTQ, RM, EXR, SK, OP) written against the same brief and evidence",
+  "status": "PRE-REGISTERED. No script may compute a return on bars1d_2004_2013 before (a) this file's SHA-256 is written to research/V5_prereg_hash.txt, (b) eight rows are appended to research/things_tried.csv, (c) the B1 seen-window sanity check (cells.V5-3.pre_check) and the earnings-coverage check (cells.V5-7.c.promotion_rule) have been executed and logged, so the Holm family size m is fixed before any confirmatory return exists.",
+
+  "problem_statement_operator": "Start afresh from an algo perspective and not start with what we have done before. The problem statement is really pick up trades early, when they are building momentum, and sell them when they are above a threshold or technical or made a fixed return. The objective remains to have sustainable trades that have entry and exit and make money. Perhaps the daily-out requirement isn't critical but this isn't a long-hold strategy.",
+
+  "reading_of_the_brief": "'Early' = the closing auction of the first day on which a catalyst is observable (gap, relative volume, green close), which is the earliest point with any measured positive expectation. 'Sell above a threshold' = the next opening auction, a TIME threshold rather than a price one, because every price/technical/intraday exit measured in this project carried nothing or lost, and holding to the next close was worse in every pre-registered cell. 'Not necessarily daily-out' is honoured only as a research cell (V5-6 overnight ladder: re-enter MOC while the catalyst gain is held, exit MOO each morning), never as an intraday hold.",
+
+  "evidence_respected": [
+    "Intraday continuation at 5-min granularity negative after costs from every bar (753k bars); live scanner -0.23R/trade over 100 days; no exit/timing/feature/regime variant survived out of sample. => No intraday entry, no intraday exit, no technical exit in v5.",
+    "Top-20 gap-up continuation negative in discovery and test; multi-day continuation entered at T+1 OPEN underperforms SPY 0.15-1.9%/trade. => No entry at T+1 open, no multi-day hold from the open; E3/E4 not traded.",
+    "Decomposition 2024-09..2026-09: catalyst overnight +0.64%, next intraday +0.02%, 5-day -1.25%. Holdout 2014-09..2024-08 run once: E1 overnight +0.79% [+0.08,+1.48] n=722, 41% quarters positive, Holm 0.105; E2 +0.32% [+0.05,+0.62] n=3,098, 44% quarters, Holm 0.072; X2 (next close) worse in every cell. E1 yearly negative every year 2015-2019, positive 2020-2022 and 2024; E2 negative 4 of 5 years 2015-2019. => Effect is real in aggregate but regime-dependent; not demonstrated structural; the 2014-2024 window is SEEN at yearly-aggregate level.",
+    "Survivorship: symbol list as of 2026-09; bias favours long continuation and grows with lookback, so the confirmatory 2004-2013 window is the MOST biased in the rule's favour; a pass there is necessary, not sufficient; a fail is decisive."
+  ],
+
+  "universe_per_day_T_using_data_through_T-1": {
+    "source": "research/us_common_symbols.csv (US common stocks; ETFs/SPAC units/warrants excluded where identifiable)",
+    "prev_close_min_usd": 5,
+    "adv20_dollar_min_usd": 50000000,
+    "min_history_rows": 250,
+    "note": "Identical to preregistration_overnight.json so 2004-2013 is a true confirmation of the same rule. The $20-50M ADV tier is NOT admitted in v5 (a v6 cell may register it)."
+  },
+
+  "events_at_close_T": {
+    "E1_big_catalyst": "gap = Open_T/Close_{T-1}-1 >= 0.08 AND Volume_T >= 3 x mean(Volume_{T-20..T-1}) AND Close_T > Open_T   (verbatim from preregistration_overnight.json)",
+    "E2_gapup_held": "gap >= 0.03 AND Close_T >= Open_T AND Volume_T >= 2 x ADV20sh   (verbatim; E1 is a strict subset of E2)",
+    "M1_mirror_event_diagnostic": "gap <= -0.08 AND Volume_T >= 3 x ADV20sh AND Close_T < Open_T   (mechanism falsifier: if its overnight leg is also positive, the 'edge' is a high-volume-name overnight premium, not continuation)",
+    "flags_logged_per_event_not_rules": {
+      "deal_pin": "gap >= 0.15 AND (High_T-Low_T)/Open_T <= 0.02",
+      "extreme_mover": "Close_T/Close_{T-1}-1 >= 0.25",
+      "earnings": "from research/earnings_dates.csv: report dated T (BMO) or T-1 (AMC); ambiguous timing counts either date; coverage per window recorded before use",
+      "adv_tier": ">= $500M / $100-500M / $50-100M",
+      "spy_day_return": "SPY Close_T/Close_{T-1}-1",
+      "macro_eve": "T+1 is a CPI or nonfarm-payrolls release day (BLS calendar)"
+    }
+  },
+
+  "live_decision_proxy_at_1544_ET": {
+    "reason": "MOC cutoffs (NYSE 15:50, Nasdaq 15:55) precede the close, so the live rule must be decided at 15:44 from a real-time snapshot (FMP in production only).",
+    "D1_for_E1": "gap >= 0.08 (known since the open) AND cumulative Volume_{15:44} >= 2.7 x ADV20sh AND Last_{15:44} >= Open_T x 1.005",
+    "D2_for_E2": "gap >= 0.03 AND cumulative Volume_{15:44} >= 1.8 x ADV20sh AND Last_{15:44} >= Open_T",
+    "no_volume_projection": true,
+    "post_close_reconciliation_1610": "each traded name is re-evaluated on official Close_T/Volume_T and stamped close_confirmed in {E1,E2,none}; flip_at_close and rule_miss are shadow KPIs (cell V5-8)"
+  },
+
+  "entry": {
+    "order": "Market-on-close (MOC) in the official closing auction of day T; NYSE tickets by 15:49 ET, Nasdaq by 15:54 ET; a missed cutoff = no trade (never chase, never LOC, never post-cutoff imbalance offsets).",
+    "modelled_fill": "Close_T x (1 + cost_side)",
+    "fallback_only_if_V5-8_conversion_between_70_and_85pct": "marketable limit at Last_{15:58:30} x 1.003 with +10 bp added to the cost side",
+    "max_positions_per_night": 5,
+    "fill_order": "E1 events first, then E2, each ranked by day return Close_T/Close_{T-1}-1 descending (this is the fill order already priced by the holdout K5 series; RVOL ranking is a V5-7 non-inferiority diagnostic only)",
+    "never": ["intraday entries", "averaging", "scaling up to fill idle slots"]
+  },
+
+  "exit": {
+    "default_X1": "Market-on-open (MOO) in the official opening auction of T+1, tickets submitted 08:30-09:20 ET; modelled fill Open_{T+1} x (1 - cost_side); if halted at the open the MOO rests to the reopening auction.",
+    "no": ["stops (none executable overnight; size is the stop)", "profit targets", "pre-market trading", "holds past 09:30 in v5", "discretion on overnight news"],
+    "counterfactual_columns_logged_never_traded_in_v5": ["cf_next_close = Close_{T+1}", "cf_1000 = 10:00 ET print", "cf_tp5_touch = first-30-min high >= entry x 1.05", "cf_hold_if_green = hold to 10:00 only if Open_{T+1} > entry and the 09:30-09:45 bar closes above its open"],
+    "counterfactual_rule": "Pre-registered expectation: none beats X1. A v6 forward-test candidate may be created only if one beats X1 by > 0.30% with day-cluster 95% lower CI > 0 after >= 120 logged events; never adopted retroactively.",
+    "alternative_exit_research_cell": "V5-6 overnight ladder (see cells)"
+  },
+
+  "cost_model": {
+    "per_side_bp": {"adv20_dollar_ge_100M": 5, "adv20_dollar_50M_to_100M": 10},
+    "charged_on": "the trade's own notional, both legs, per event",
+    "sensitivity_reported": "flat 10 bp/side for every cell",
+    "auction_assumption": "MOC/MOO fills equal the official prints; spread is not crossed; imbalance impact is inside the tier cost for retail size ($5-50k) in $50M+ ADV names; shadow must verify median |fill - print| <= 10 bp/side (V5-8)"
+  },
+
+  "benchmarks_over_the_identical_leg": {
+    "SPY": "Open_{T+1}/Close_T - 1 (X1) from SPY daily bars; 2014-2024 from bars1d_10y/SPY.csv or a refetched research/V5_SPY_2014_2024.csv (SPY_10y.csv is absent from research/ as of registration); 2004-2013 via yfinance with 5 retries and exponential backoff cached to research/V5_SPY_2004_2013.csv; if SPY cannot be fetched for a window, C1 is the sole benchmark there and this is recorded",
+    "C1_matched_non_event_primary": "5 names drawn per event (seed = hash(date, symbol)) from the same day and the same ADV20-dollar decile, with no E2 flag on T, |gap| < 0.01 and Volume_T < 1.5 x ADV20sh; same leg, same tier costs. Cancels universe-level survivorship (same 2026 survivor list) and the generic overnight premium.",
+    "C2_matched_by_day_return_diagnostic": "3 nearest same-day non-E2 names by day return within [0.75x, 1.25x] of the event's day return and Volume_T < 1.5 x ADV20sh (tests whether the catalyst volume matters or any big up day would do)",
+    "primary_metric": "mean net excess return per trade (%) over SPY; co-reported: excess over C1, excess over C2, raw"
+  },
+
+  "statistics": {
+    "cluster_ci": "day-cluster AND quarter-cluster bootstrap 95% CI (>= 2,000 reps each); the WIDER interval is the one that must exclude zero",
+    "p_values": "one-sided, from the wider cluster bootstrap; Holm across the trading-cell family (see holm_family)",
+    "robustness_reported_for_every_cell": ["yearly table", "quarterly table and share of quarters positive", "winsorized (1/99) mean", "mean with top 2% of events removed", "median and win share", "ADV tier split and liquidity terciles", "events per night distribution and K5 capacity binding", "K5 per-capital series at the v5 weights with max drawdown"],
+    "no_random_date_cross_validation": true
+  },
+
+  "test_windows": {
+    "confirmatory_unseen": {
+      "label": "confirmatory, unseen",
+      "start": "2004-01-01", "end": "2013-12-31",
+      "data": "scratchpad/bars1d_2004_2013 (982 of 3,179 files present at registration; download ongoing)",
+      "halves_fixed_now": ["2004-01-01..2008-12-31", "2009-01-01..2013-12-31"],
+      "coverage_rule": "Record the file count and the per-year count of names with data. Run once when the download completes or stalls; if fewer than 1,500 files are present, label every result 'partial' and re-run once on completion (this second run is pre-declared here and is not a second look because no rule may change between runs). Freeze the file list used into research/V5_frozen_files_2004_2013.txt at run time."
+    },
+    "refinement_seen": {
+      "label": "refinement on a seen window",
+      "start": "2014-09-01", "end": "2024-08-31",
+      "data": "scratchpad/bars1d_10y (3,179 files) and research/OVERNIGHT_holdout_trades.csv.gz for E1/E2 legs",
+      "mandatory_regime_halves": ["2014-09-01..2019-12-31", "2020-01-01..2024-08-31"],
+      "what_is_already_known": "E1 X1 yearly net excess 2015-2019 all negative (-0.07..-0.50%), 2020-2024 = +2.94, +1.54, +0.40, -0.13, +1.07; E2 negative 4 of 5 years 2015-2019. Any new cell tested here is a refinement, never a confirmation."
+    },
+    "discovery_seen": {
+      "label": "discovery (seen); descriptive only",
+      "start": "2024-09-01", "end": "2026-09-12",
+      "data": "scratchpad/bars1d_all (2,814 files); also the source of the shadow forward window"
+    },
+    "pooled_reporting": "A pooled 2004-2026 table is reported for context only; pooling a seen window with the unseen one is NOT a pass criterion."
+  },
+
+  "regime_gates": {
+    "B1_trailing_population_performance": {
+      "definition": "On day T, B1 = ON iff the mean X1_net (SPY-adjusted, tier-costed) of ALL E2 events (E1 included, traded or not) whose T+1 open is <= T-1, over the trailing 63 trading days, is > 0. If fewer than 30 such events, extend to 126 trading days; if still fewer than 30, OFF.",
+      "why_this_form": "Population-based (E2 gives ~75-125 events per 63 days, SE ~0.3-0.4% per window, far better powered than the traded E1 subset), zero threshold (nothing to calibrate), computable every morning from daily bars alone, and directly falsifiable by an OFF cell.",
+      "honesty": "The 63-day window and the idea of a trailing brake were formed after seeing the 2014-2024 yearly pattern. B1 is therefore a refinement on the seen window; its ONLY validation is the confirmatory window (cells V5-3, V5-4).",
+      "seen_window_sanity_check_before_unseen_run": "Computed walk-forward on 2014-09..2024-08 from OVERNIGHT_holdout_trades.csv.gz: B1 must be OFF on >= 60% of trading days in 2015-01..2019-12 AND ON on >= 60% of trading days in 2020-01..2021-12. If either fails, B1 does not capture the regime it was built for: cells V5-3 and V5-4 are VOID before the unseen window is opened and the Holm family shrinks accordingly (logged)."
+    },
+    "B2_cross_sectional_dispersion": {
+      "definition": "On day T, B2 = ON iff the trailing-21-day mean (through T-1) of the cross-sectional standard deviation of close-to-close daily returns across the eligible universe is at or above the 50th percentile of its own trailing 504-trading-day distribution.",
+      "why_this_form": "Hypothesis-driven (Lou-Polk-Skouras overnight/intraday clientele tug-of-war intensifies with dispersion and retail attention; 2022 stayed positive on high dispersion despite shrinking retail share), independent of both the event rule and the strategy's own P&L, and the median threshold requires no calibration.",
+      "companion_mechanism_variables_reported_not_gates": ["catalyst rate = trailing 63-day mean of E2 events per day per 1,000 eligible names", "attention concentration = trailing 21-day mean of top-20-mover dollar volume / eligible-universe dollar volume", "realized trailing-40-event sd of E1 X1_net (the EXR dispersion brake; its 5% threshold was fitted on the seen split and is reported, not used)"],
+      "oos_validation": "cell V5-5 (ON-OFF difference and quarterly Spearman on 2004-2013)"
+    },
+    "live_gate_composition_pre_declared": "If V5-3 or V5-4 passes: gate = B1. If V5-5 passes and neither B1 cell passes: gate = B2 (E1 only; E2 is not traded because E2|B2 is not registered). If both B1 and B2 cells pass: full weight when both ON, half weight when exactly one ON, zero when both OFF. If no gated cell passes: no live capital (see decision_tree).",
+    "risk_rules_not_alpha": ["skip the night if SPY Close_T/Close_{T-1}-1 <= -0.03 (cost measured in V5-7e; retained regardless as a correlation-night rule)", "no new positions on macro_eve nights only if V5-7e shows the exclusion costs <= 0.10% of the remaining mean"]
+  },
+
+  "sizing_and_risk": {
+    "sleeve": "a fixed dollar sleeve S assigned to the strategy; the rest of the operator's capital is untouched by design (this is a low-exposure overlay, average exposure ~5-15% of S)",
+    "weights_full": {"E1": "7.5% of S", "E2": "3.75% of S"},
+    "max_positions": 5,
+    "max_gross": "37.5% of S",
+    "per_name_gap_cap": "weight x 3 x ATR20% <= 2% of S, else scale the weight down (ATR20% = 20-day mean true range / close)",
+    "pilot": "half weights for the first 100 live events; full weights only if the gate is ON at event 100 and the CUSUM has not alarmed",
+    "drawdown_ladder": "-6% of S from peak -> halve all weights; -10% -> zero, written review, return to shadow; re-entry needs 60 shadow events with mean net excess > 0 and no rule change",
+    "worst_case_statement": "single name -30% overnight (observed min -26%) x 7.5% = -2.25% of S; five names on a -7.5% SPY overnight (Mar-2020 type) at beta 1.5 = about -4.2% of S; catastrophic all-five-at--30% = -11% of S. Nothing trades between 20:00 and 04:00; sizing is the only stop.",
+    "per_trade_distribution_from_holdout": "E1 X1_net sd 7.9%, median -0.22%, win share 41.8%, mean turns negative if the top 5% of trades are removed; E2 sd ~3.5-4%, win share 46%. The payoff is right-skewed: any systematically missed winner (limit non-fill, discretionary skip, early exit) is disproportionately expensive."
+  },
+
+  "cells": [
+    {
+      "id": "V5-1",
+      "role": "base trading cell (confirmatory measurement of the unconditional effect)",
+      "definition": "E1_big_catalyst verbatim; universe verbatim; buy Close_T x (1+cost_side), K=5/night E1-first by day return; tier costs; benchmarks SPY + C1 + C2; day- and quarter-cluster bootstrap 95% CIs (>= 2,000 reps).",
+      "entry": "MOC at Close_T",
+      "exit": "MOO at Open_{T+1} (X1)",
+      "regime_or_brake": "none",
+      "test_windows": "confirmatory unseen 2004-01..2013-12 (halves 2004-2008 / 2009-2013); refinement on a seen window 2014-09..2024-08 (halves 2014-09..2019-12 / 2020-01..2024-08); discovery 2024-09..2026-09 descriptive",
+      "pass_criterion": "ALL of: Holm-adjusted one-sided p < 0.05 within the trading-cell family; wider-cluster 95% lower CI of net excess over SPY > 0 in the confirmatory window AND in the 2014-09..2019-12 half; share of quarters positive >= 0.60 in the confirmatory window; n >= 300 in the confirmatory window; excess over C1 point estimate >= +0.25% (survivorship haircut) with wider-cluster lower CI > 0; excess over C2 > 0; both confirmatory halves >= 0; winsorized and drop-top-2% means > 0; placebo leg (same events, Close_{T+5} -> Open_{T+6} vs C1) |mean| < 0.20% and not significant; mirror M1 overnight not significantly positive at >= 0.5x the V5-1 mean; point estimate > 0 in the >= $500M ADV tier and the effect not confined to the least-liquid tercile.",
+      "known_before_registration": "The 2014-09..2019-12 half of this cell is negative in every year 2015-2019, so V5-1 cannot pass as an unconditional trading rule. It is registered because (a) it is the base against which the gated cells are judged, (b) its confirmatory result decides whether 2004-2013 resembles 2015-2019 (effect absent -> structural doubt) or 2020-2024 (effect present -> regime story credible), and (c) its placebo/mirror/C1 gates are inherited by V5-3 and V5-5.",
+      "power": "E1 sd 7.9%: SE 0.56% at n=200, 0.40% at n=400; a true +0.79% needs ~385 iid trades for a two-sided 95% lower bound above zero; expected confirmatory n 150-500 depending on download completeness -> n < 300 with all other gates met is INCONCLUSIVE (AMBER), not a pass."
+    },
+    {
+      "id": "V5-2",
+      "role": "base trading cell, best powered",
+      "definition": "E2_gapup_held verbatim (E1 included); same universe, fills, K=5 E1-first, costs, benchmarks and statistics as V5-1.",
+      "entry": "MOC at Close_T",
+      "exit": "MOO at Open_{T+1} (X1)",
+      "regime_or_brake": "none",
+      "test_windows": "as V5-1",
+      "pass_criterion": "As V5-1 with n >= 600 in the confirmatory window and a C1 haircut of +0.15%.",
+      "known_before_registration": "E2 was negative in 4 of 5 years 2015-2019 on the seen window; the 2014-2019 half gate is therefore expected to fail; same role as V5-1.",
+      "power": "E2 sd ~3.5-4%: SE ~0.12% at n=1,000; MDE ~0.35% at n=600; expected confirmatory n 800-1,500 when the download is complete."
+    },
+    {
+      "id": "V5-3",
+      "role": "gated trading cell (primary candidate for live)",
+      "definition": "V5-1 restricted to nights where B1 = ON (trailing 63-trading-day mean X1_net of all resolved E2 events > 0; 126 days if < 30 events; OFF if still < 30). OFF-night events form the falsification cell reported alongside.",
+      "entry": "MOC at Close_T",
+      "exit": "MOO at Open_{T+1} (X1)",
+      "regime_or_brake": "B1",
+      "pre_check": "B1 seen-window sanity check (regime_gates.B1) must pass BEFORE the unseen run, else this cell is void.",
+      "test_windows": "confirmatory unseen 2004-2013 (primary); refinement on a seen window 2014-2024 with the ON subset reported by half; discovery descriptive",
+      "pass_criterion": "ALL of, on the ON subset in the confirmatory window: Holm-adjusted one-sided p < 0.05; wider-cluster 95% lower CI of net excess over SPY > 0; share of ON quarters positive >= 0.60; n_ON >= 300; C1 haircut gate (+0.25%, lower CI > 0); inherited placebo, mirror and liquidity gates from V5-1. PLUS the out-of-sample regime validation replacing the 2014-2019-half requirement: mean(ON) - mean(OFF) >= +0.50% with one-sided day-cluster p < 0.05; mean(OFF) <= mean(ON) in BOTH confirmatory halves; ON state covers between 25% and 75% of confirmatory trading days (otherwise non-discriminating). If the OFF cell is itself significantly positive (lower CI > 0) the regime claim is wrong and this cell cannot pass even if ON passes.",
+      "power": "n_ON expected ~40-60% of V5-1's n; MDE ~1.0% at n=200 -> can pass only if the conditional effect is large; n_ON < 300 with all other gates met = AMBER."
+    },
+    {
+      "id": "V5-4",
+      "role": "gated trading cell (E2 sleeve)",
+      "definition": "V5-2 restricted to B1 = ON nights; OFF-night E2 events reported as the falsification cell.",
+      "entry": "MOC at Close_T",
+      "exit": "MOO at Open_{T+1} (X1)",
+      "regime_or_brake": "B1 (same pre_check as V5-3)",
+      "test_windows": "as V5-3",
+      "pass_criterion": "As V5-3 with n_ON >= 600, C1 haircut +0.15%, and mean(ON) - mean(OFF) >= +0.30% with one-sided day-cluster p < 0.05. E2 is traded live only if this cell passes."
+    },
+    {
+      "id": "V5-5",
+      "role": "gated trading cell (mechanism gate)",
+      "definition": "V5-1 restricted to nights where B2 = ON (universe cross-sectional dispersion, trailing-21-day mean, >= 50th percentile of its trailing 504-day distribution). OFF-night events reported as the falsification cell. Companion mechanism variables (catalyst rate, attention concentration, realized E1 sd) reported as quarterly Spearman correlations with quarterly E2 mean X1_net, Holm m=3 among themselves, descriptive for a v6.",
+      "entry": "MOC at Close_T",
+      "exit": "MOO at Open_{T+1} (X1)",
+      "regime_or_brake": "B2",
+      "test_windows": "confirmatory unseen 2004-2013 (primary); refinement on a seen window 2014-2024 reporting ON share by year and the ON subset by half (must be consistent with the known sign flip or the mechanism is not the one hypothesised); discovery descriptive",
+      "pass_criterion": "ALL of, on the ON subset in the confirmatory window: Holm-adjusted one-sided p < 0.05; wider-cluster 95% lower CI > 0; ON quarters positive >= 0.60; n_ON >= 300; C1 haircut gate; inherited V5-1 gates. PLUS out-of-sample regime validation: mean(ON) - mean(OFF) >= +0.50% with one-sided day-cluster p < 0.05; quarterly Spearman rho between mean B2 dispersion and quarterly E2 mean X1_net > 0 with one-sided p < 0.05 on 2004-2013; ON covers 25-75% of confirmatory trading days; OFF cell not significantly positive."
+    },
+    {
+      "id": "V5-6",
+      "role": "research cell, NOT traded in v5 (answers the operator's 'daily-out not critical')",
+      "definition": "Overnight ladder: for each E1 event, additional legs k = 1, 2, 3: buy MOC at Close_{T+k} only if Close_{T+k} >= Close_T (catalyst gain held); each leg is a separate trade; no leg-picking. Primary ungated; B1-gated version reported alongside. Same universe, costs, SPY and C1 benchmarks.",
+      "entry": "MOC at Close_{T+k}",
+      "exit": "MOO at Open_{T+k+1}; never held into the session",
+      "regime_or_brake": "none (primary); B1 (secondary report)",
+      "test_windows": "confirmatory unseen 2004-2013 (primary); refinement on a seen window 2014-2024 (the day 2-4 overnight legs were not part of the seen aggregate, but the window is seen)",
+      "pass_criterion": "Research pass only: pooled legs wider-cluster 95% lower CI > 0 in the confirmatory window AND in the 2014-09..2019-12 half (or via a passing B1 gate); each k individually mean net excess >= 0; pooled n >= 300; quarters positive >= 0.60; C1 lower CI > 0; not in the Holm trading family. A pass creates a v6 registration with its own >= 60-day shadow; it changes nothing in v5 live rules. A fail is logged and the design stays one-night.",
+      "why_not_ruled_out": "Evidence 2 rules out multi-day holds entered at T+1 OPEN and the 5-day close-to-close leg; it does not measure repeated close-to-open legs, which is exactly the overnight/intraday split the decomposition found."
+    },
+    {
+      "id": "V5-7",
+      "role": "pre-declared descriptive slices (expectations fixed now; none may change a v5 trading rule except 7b as dilution removal)",
+      "definition": "Within E1 (and E2 where stated) in the confirmatory window and the seen refinement window: (a) extreme_mover >= 25% day return vs 8-25% (expectation from the seen slice: the >= 25% subset carries the mean; declared so a v6 may act on it, v5 may not); (b) deal_pin excluded set (expectation |mean| < 0.30%, sd < 2%; if so AND removal costs <= 0.10% of the remaining mean, the exclusion is adopted operationally as dilution removal; the headline cells stay computed WITHOUT it for comparability with the holdout); (c) earnings vs non-earnings from earnings_dates.csv (expectation: earnings subset >= non-earnings; see promotion_rule); (d) ADV tiers and liquidity terciles (survivorship signature: effect only in the least-liquid tercile or $50-100M tier = disqualifying for V5-1/3/5 via the inherited gate); (e) risk-rule costs: SPY day return <= -3% nights and macro_eve nights (adopt macro_eve exclusion only if it removes <= 0.10% from the remaining mean); (f) events-per-night distribution and K5 binding; (g) on nights with > 5 qualifying names, day-return top-5 vs RVOL (Volume_T/ADV20sh) top-5, non-inferiority within 0.20% (day-return rank stays the default either way; a v6 may switch).",
+      "entry": "MOC at Close_T",
+      "exit": "MOO at Open_{T+1} (X1)",
+      "regime_or_brake": "none",
+      "test_windows": "confirmatory unseen 2004-2013 and refinement on a seen window 2014-2024, both labelled; earnings slice on whatever window earnings_dates.csv covers (coverage recorded first)",
+      "pass_criterion": "Not Holm-tested; expectations are reported as met/unmet. Nothing in this cell may be used to change thresholds or add cells after the unseen run.",
+      "promotion_rule_for_7c_fixed_before_the_run": "BEFORE any confirmatory return is computed, measure earnings_dates.csv coverage: if >= 60% of E1 events in 2004-2013 (by the file's own date range and ticker match) are resolvable as earnings/non-earnings, then 'E1 & earnings, X1, ungated' is PROMOTED to a sixth trading cell V5-7c with V5-1's pass criteria (n >= 300, 2014-2019-half gate applies) and the Holm family becomes m = 6. The coverage number and the resulting m are logged in things_tried.csv before the run. If coverage is below 60%, 7c stays descriptive and m = 5."
+    },
+    {
+      "id": "V5-8",
+      "role": "execution fidelity + shadow gate (measurement, not a return claim)",
+      "definition": "Part A (historical, bars5m_inplay 929 gappers x 60 days with ADV20 from bars1d_all): apply D1/D2 at 15:44 and compare with official close-based E1/E2 on the same names/days. Part B (forward): >= 60 trading days of shadow on Railway (FMP real-time is production-only) with the full daily loop: 15:35 watch snapshot, 15:44 decision + [ON-ORDERS]/[ON-NOTRADE] record, 16:10 reconciliation, 08:30-09:20 MOO record, 09:40 settlement vs official prints, gate state, counterfactual columns, statuses {SHADOW, MISSED_CUTOFF, MISSED_OPERATOR, SKIPPED_GATE, NOTRADE}; append-only log backed up to origin/data-backups.",
+      "entry": "MOC at Close_T (modelled at the official print in shadow)",
+      "exit": "MOO at Open_{T+1}",
+      "regime_or_brake": "gate state logged every day",
+      "test_windows": "Part A on 2026 5-min data (discovery data; implementation fidelity only, no return conditioning); Part B forward from first deploy",
+      "pass_criterion": "Part A: coverage >= 70% of official E1 nights captured by D1; conversion P(E1 at close | D1) >= 85%; flip rate (Last_{15:44} >= Open x 1.005 but Close_T <= Open_T) <= 15%; |mean drift 15:44 -> close| <= 0.15%; mean overnight leg of D1-but-not-E1 names >= -0.50%. Conversion 70-85% -> the 15:58:30 marketable-limit fallback is adopted with +10 bp; conversion < 70% or coverage < 50% or flip > 25% -> the close-entry design is killed. Part B: >= 40 events (E1+E2); median |modelled fill - official print| <= 10 bp/side on both legs (95th percentile reported); event-detection agreement with the daily-bar definition >= 90%; MISSED_* <= 20% of event nights; production 15:44 quote latency <= 60 s; mean net excess reported with day-cluster CI (NOT a gate: ~15 E1 / ~70 E2 events give SE ~2% / ~0.4%, plumbing only); no rule change during the shadow. Shadow -> pilot additionally requires a GREEN verdict from the confirmatory cells."
+    }
+  ],
+
+  "holm_family": {
+    "trading_cells": ["V5-1", "V5-2", "V5-3", "V5-4", "V5-5"],
+    "m": 5,
+    "adjustments_fixed_before_the_run": "m becomes 6 if V5-7c is promoted by the coverage rule; m shrinks by 2 if the B1 sanity check voids V5-3/V5-4. Both checks are executed and logged before any confirmatory return is computed.",
+    "research_and_measurement_cells_outside_the_family": ["V5-6", "V5-7", "V5-8"],
+    "later_additions": "Any cell tested on 2004-2013 after this run joins the family retroactively (m recomputed) or every v5 pass verdict is void; 2004-2013 is marked SEEN in things_tried.csv immediately after the run."
+  },
+
+  "pass_criteria_common_to_trading_cells": {
+    "excess_lower_ci_gt_0": "wider of day-cluster / quarter-cluster 95% CI, net of tier costs, over SPY on the identical leg, in the confirmatory window AND in the 2014-09..2019-12 half, OR (gated cells) the registered regime condition validated out of sample as specified in the cell",
+    "quarters_positive_share_min": 0.60,
+    "min_trades_confirmatory": {"E1_cells": 300, "E2_cells": 600},
+    "matched_controls": "C1 excess point estimate >= haircut (+0.25% E1 / +0.15% E2) with lower CI > 0; C2 excess > 0",
+    "multiple_testing": "Holm, one-sided, across the trading-cell family",
+    "mechanism_gates": "placebo leg not positive; mirror event not positive at >= 0.5x; effect not confined to the least-liquid tercile",
+    "inconclusive": "all gates met except n -> AMBER, never a pass"
+  },
+
+  "decision_tree_computed_in_code": {
+    "GREEN": "At least one gated trading cell (V5-3, V5-4, V5-5, or a promoted V5-7c) passes every gate including Holm, AND V5-8 Part A passes, AND no kill rule 1-4 is triggered. -> build the standalone shadow module; shadow >= 60 trading days; pilot at half weights for 100 events; full weights thereafter under the drawdown ladder and live monitors.",
+    "AMBER": "A gated cell meets every gate except n (n_ON < 300 for E1 / < 600 for E2) or raw one-sided p < 0.05 but Holm >= 0.05, with the C1 and mechanism gates met; OR the confirmatory download is < 1,500 files and the run is 'partial'. -> shadow only, no capital; re-decision at the earlier of (i) the completed-download re-run or (ii) 12 months of shadow (~300 E2 events), pooling confirmatory + shadow events (shadow events are unseen forward data) against the same gates.",
+    "RED": "No gated cell meets the gates, or any kill rule 1-4 fires. -> log and stop; the fresh-start search has exhausted intraday, multi-day and overnight continuation in this data; no live service is written; the shadow log may continue as free data collection only if the operator wants it."
+  },
+
+  "kill_rules": [
+    "K1 (regime artefact): confirmatory point estimate of excess over C1 <= 0 for BOTH V5-1 and V5-2, or either confirmatory half < -0.20% for the best cell -> RED.",
+    "K2 (wrong mechanism): mirror event M1 significantly positive overnight at >= 0.5x the V5-1 mean -> the effect is a high-volume overnight premium, not continuation -> RED for the design as stated.",
+    "K3 (name characteristic, not event): placebo leg (Close_{T+5} -> Open_{T+6}) significantly positive vs C1 -> RED.",
+    "K4 (survivorship signature): effect present only in the $50-100M tier or the least-liquid tercile and absent at >= $500M ADV -> RED.",
+    "K5 (gate does not capture the regime): B1 seen-window sanity check fails -> V5-3/V5-4 void before the unseen run; if V5-5 also fails, no gated cell can pass -> at best AMBER on the base cells' confirmatory result, no capital.",
+    "K6 (untradeable at the close): V5-8 Part A conversion < 70%, coverage < 50%, or flip > 25%.",
+    "K7 (cannot execute): shadow median slippage > 15 bp/side, MISSED_* > 30% of event nights, or any unintended pre-market or next-close hold.",
+    "K8 (live): cumulative mean net excess < 0 after >= 150 live trades; day-cluster 95% CI includes 0 after >= 300 live trades; CUSUM alarm (z_t = (x_t - 0.35%)/3.5% winsorized at +/-3, k = 0.05, h ~ 25, ARLs verified by simulation on holdout trades before shadow); two consecutive trailing-100-event windows with mean X1_net <= 0; sleeve drawdown -10% from peak. Any kill returns the rule to shadow; re-entry needs 60 shadow events with mean > 0 and no rule change.",
+    "K9 (design integrity): any addition of an intraday technical exit, a price target, a multi-day hold from the open, or a threshold change after the confirmatory run voids the registration; the change must be re-registered as v6 and re-enter at the things-tried step."
+  ],
+
+  "shadow_criteria": {
+    "duration": ">= 60 trading days before anything is displayed to the operator as a trade recommendation",
+    "events": ">= 40 (E1 + E2)",
+    "fills": "median |modelled fill - official auction print| <= 10 bp/side on both legs; 95th percentile reported",
+    "detection": "agreement >= 90% between the 15:44 decision and the daily-bar definition; coverage >= 70%; flip rate <= 15%",
+    "operations": "MISSED_* <= 20% of event nights; 15:44 quote latency <= 60 s; email/record by 15:45:30",
+    "gate": "B1/B2 state computed and logged every morning from data through T-1",
+    "edge": "mean net excess reported with CI; not a gate (underpowered by design)",
+    "no_rule_changes": true,
+    "log_schema": "date_T, ticker, tier, rank, status, gap_pct, rvol_1544, last_1544, open_T, close_prev, adv20_dollar, adv20sh, quote_ts_1544, close_T, volume_T, close_confirmed, flip_at_close, entry_type, entry_fill, entry_slip_bp, shares, notional, sleeve_pct, spy_close_T, spy_close_prev, open_T1, exit_type, exit_fill, exit_slip_bp, fill_source, ret_gross, cost_bp, ret_net, spy_leg, excess_net, c1_excess (backfilled), cf_next_close, cf_1000, cf_tp5_touch, cf_hold_if_green, gate_state_B1, gate_state_B2, trailing100_mean, near_misses, notes"
+  },
+
+  "things_tried_requirement": {
+    "before_any_confirmatory_return_is_computed": [
+      "write research/V5_prereg_hash.txt = SHA-256 of this file",
+      "append 8 rows to research/things_tried.csv (who=V5, variant=<cell id: thresholds>, window=<label>, n=NA, avgR_net=NA, note='pre-registered; sha256=<hash>')",
+      "append the B1 sanity-check result and the earnings-coverage result with the resulting Holm m",
+      "freeze the bars1d_2004_2013 file list to research/V5_frozen_files_2004_2013.txt"
+    ],
+    "after_the_run": [
+      "append one outcome row per cell with n, mean net excess, wider-cluster CI, Holm p, verdict, window label ('confirmatory, unseen' / 'refinement on a seen window' / 'partial')",
+      "mark 2004-2013 as SEEN; no further rule tests on that window without joining the family"
+    ],
+    "during_shadow_and_live": "every operational incident and every proposed rule change is appended; a proposed change is a v6 registration, never an edit of v5"
+  },
+
+  "not_allowed": [
+    "changing any threshold after the confirmatory run",
+    "adding events, exits or gates after the confirmatory run without re-registration as v6",
+    "using Volume_T or Close_T information for T's universe filter",
+    "random-date cross-validation",
+    "using the pooled 2004-2026 table as a pass criterion",
+    "acting on V5-7 slices (except 7b dilution removal) in v5",
+    "any intraday technical exit, price target, or hold past the T+1 open in v5",
+    "sharing code with the scanner (app.py) or themes services; the live module is a separate process"
+  ],
+
+  "power_statement": {
+    "overnight_sd": "E1 X1_net 7.9% (holdout per-event; 0.8-3% in 2015-2019, 7-12% in 2020-2024); E2 ~3.5-4%",
+    "se_at_n": {"E1_n200": "0.56%", "E1_n400": "0.40%", "E2_n600": "0.15%", "E2_n1000": "0.12%"},
+    "detectable": "E1 +0.79% needs ~385 iid events for a two-sided 95% lower bound > 0; E2 +0.32% needs ~460",
+    "shadow": "60 trading days yield ~15 E1 / ~70 E2 events: SE ~2% / ~0.4%; shadow validates plumbing, not the edge",
+    "live_decay_detection": "per-trade signal ~0.1 sigma; no monitor detects decay to zero in fewer than ~300 trades (~1 year); sizing must make a zero-edge year cheap (~-2 to -3% of S)"
+  },
+
+  "expected_economics_if_GREEN": "Skeptic's central case with a 50% haircut on holdout point estimates: E1 ~+0.4%/trade, E2 ~+0.15%/trade net of tier costs, ~50-120 E1 and ~200-500 E2 events/yr, ~90% tradeable within 5 slots. At 7.5%/3.75% weights: roughly +2% to +6% of S per year in a 2020-2024-type regime, ~0 to -2% in a 2015-2019-type regime before the gate, gate expected to cut the losing-regime cost to about -1% (one-to-two-quarter lag). Nightly sd ~0.7% of S; max drawdown planning figure -8% to -12% of S at full weights. A small, positively skewed overlay; not a primary income strategy; short-term capital gains; wash-sale rules apply to repeated names."
+}

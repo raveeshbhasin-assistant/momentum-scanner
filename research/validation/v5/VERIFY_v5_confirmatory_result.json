@@ -1,0 +1,97 @@
+{
+ "verdicts": [
+  {
+   "cell": "V5-1",
+   "verdict": "CONFIRMED",
+   "claimed": -0.382,
+   "recomputed": -0.382,
+   "recomputed_ci": "[-0.658, -0.088] day-cluster (wider)",
+   "lookahead_found": false,
+   "note": "n=205, q+=0.222 (36 q), Holm 1.00, halves -0.265/-0.431, C1 -0.256 [-0.55,+0.07], winsor -0.434, trim2 -0.602, tier500 -0.38 (n16), placebo vs C1 -0.051 [-0.19,+0.09]. Fails 9/12 gates."
+  },
+  {
+   "cell": "V5-2",
+   "verdict": "CONFIRMED",
+   "claimed": -0.208,
+   "recomputed": -0.208,
+   "recomputed_ci": "[-0.383, -0.016] day-cluster (wider)",
+   "lookahead_found": false,
+   "note": "n=1243, q+=0.243, Holm 1.00, halves -0.260/-0.175, C1 -0.063 [-0.23,+0.11] (alt seeds -0.062/-0.073/-0.073), placebo vs C1 -0.166 [-0.344,-0.015] significantly negative as claimed, tier500 +0.977 (n99), K5-filled n=1208 -0.266."
+  },
+  {
+   "cell": "V5-3",
+   "verdict": "CONFIRMED",
+   "claimed": -0.722,
+   "recomputed": -0.722,
+   "recomputed_ci": "[-1.258, -0.251] day-cluster (wider)",
+   "lookahead_found": false,
+   "note": "n_ON=42, q+=0.077, ON-OFF -0.427 p=0.909, OFF -0.295 [-0.617,+0.072], OFF>ON in both halves, ON share 0.184 (0.216 from 2005-06-21), C1 -0.695 [-1.32,-0.17]. Fails 12/15 gates."
+  },
+  {
+   "cell": "V5-4",
+   "verdict": "CONFIRMED",
+   "claimed": -0.236,
+   "recomputed": -0.236,
+   "recomputed_ci": "[-0.540, +0.087] day-cluster (wider)",
+   "lookahead_found": false,
+   "note": "n_ON=258, q+=0.200, ON-OFF -0.035 p=0.586, OFF -0.201 [-0.389,+0.043], OFF<=ON in H1 only, ON share 0.184, C1 +0.009 [-0.27,+0.35], C2 +0.006. My tally 10/15 fails vs claimed 11/15 (tier gate inherited from V5-2 vs V5-1) - immaterial."
+  },
+  {
+   "cell": "V5-5",
+   "verdict": "CONFIRMED",
+   "claimed": -0.538,
+   "recomputed": -0.538,
+   "recomputed_ci": "[-0.937, -0.132] day-cluster (wider)",
+   "lookahead_found": false,
+   "note": "n_ON=88, q+=0.158, ON-OFF -0.272 p=0.829, OFF -0.266 [-0.71,+0.17], OFF>ON both halves, ON share 0.312 (0.451 from 2007-01-31), Spearman rho 0.013 one-sided p 0.469 nq 36, C1 -0.405. My tally 12/16 fails vs claimed 13/16 (C2 n=1 counting) - immaterial."
+  },
+  {
+   "cell": "V5-3 (B1 window sensitivity [T-63,T-2])",
+   "verdict": "CONFIRMED",
+   "claimed": -0.819,
+   "recomputed": -0.819,
+   "recomputed_ci": "[-1.426, -0.402] quarter-cluster (wider in my draw; claimed day [-1.36,-0.35])",
+   "lookahead_found": false,
+   "note": "n=45, q+=0.077, ON-OFF -0.559 p=0.976, OFF -0.260, ON share 0.187. One-day shift changes ON state on 1.0% of days; no verdict change."
+  },
+  {
+   "cell": "V5-4 (B1 window sensitivity [T-63,T-2])",
+   "verdict": "PARTIALLY_CONFIRMED",
+   "claimed": -0.32,
+   "recomputed": -0.32,
+   "recomputed_ci": "[-0.625, +0.015] day-cluster (wider)",
+   "lookahead_found": false,
+   "note": "n=256, q+=0.200, ON-OFF -0.141 p=0.771, OFF -0.179 all reproduce; the claimed 'upper CI turns negative' (-0.01) is at the bootstrap boundary (+0.015 in my draw). Immaterial to any gate; no verdict change."
+  },
+  {
+   "cell": "V5-6 ladder pooled ungated (research, outside Holm family)",
+   "verdict": "CONFIRMED",
+   "claimed": -0.297,
+   "recomputed": -0.297,
+   "recomputed_ci": "[-0.432, -0.170] (wider)",
+   "lookahead_found": false,
+   "note": "pooled n=308, q+=0.171; k1 n100 -0.517, k2 n104 -0.240, k3 n104 -0.143; B1-gated pooled n54 +0.064 [-0.274,+0.459]. Research FAIL; design stays one-night."
+  },
+  {
+   "cell": "M1 mirror gap-down overnight long (falsifier)",
+   "verdict": "CONFIRMED",
+   "claimed": 0.03,
+   "recomputed": 0.03,
+   "recomputed_ci": "[-0.888, +0.725] quarter-cluster (wider)",
+   "lookahead_found": false,
+   "note": "n=252, halves -0.861/+0.646, C1 +0.277 [-0.15,+0.67]. Not significantly positive; 0.5 x V5-1 mean = -0.19 -> K2 not triggered. My one-sided p 0.42 vs claimed 0.52 is a direction convention; immaterial."
+  }
+ ],
+ "decision_agreed": true,
+ "overall_assessment": "RED agreed. Independent recompute from the 1,225 raw bar files (frozen list verified set-identical to the directory; window label 'confirmatory, unseen, partial universe (1,225 names)' appropriate; registration hash unchanged) reproduces every claimed cell: n exactly, point estimates to 0.001%, CIs to bootstrap noise, quarters-positive shares, ON-OFF differences and p-values, OFF means, ON shares, Holm = 1.00 for all five family cells. Kill rule K1 fires on both clauses in my numbers (C1 excess -0.256 and -0.063 for V5-1/V5-2, robust to three alternative control seeds; best cell V5-2 H1 half -0.260 < -0.20, and it would also fire with V5-4 as best). No gated cell meets any substantive gate and none is AMBER-eligible (raw one-sided p 0.999/0.927/0.996). Look-ahead audit: 40/40 sampled executor rows pass every check (filters and ADV20/RVOL use T-20..T-1 only and explicitly not the leaky T-19..T window; entry Close_T; exit = next SPY-calendar-day open; SPY leg, tier cost, net and excess exact; B1/B1v/B2 flags equal mine); whole-series: executor B1 = my [T-64,T-2] series on 100% of days and B1_mean identical on all 2,148 defined days, while a leaky [T-63,T-1] series agrees only 98.4% - B1 is built from events resolved by T-1. The B1 one-day window ambiguity is immaterial here (1.0% of days flip; both readings give negative ON cells, negative ON-OFF, ON share 18-19% < 25%). C1 controls differ from the executor's on 17.5% of events because of an unspecified ADV-decile edge convention (0-9 vs 1-10 binning); aggregates agree to 0.003% and no verdict depends on it. V5-6 ladder and M1 falsifier reproduce exactly. The literal AMBER 'partial run' clause also applies, but the kill-rule RED clause is unconditional, RED > AMBER is the stricter/intended precedence, and the 1,225-name panel is the complete 2004-2013 universe reachable from the 2026 list so the pre-declared re-run cannot change anything. Registered consequence: log and stop; no live service. The result is decisive in the registration's own terms: on the window most biased in the rule's favour, E1 and E2 overnight continuation are significantly negative (upper CIs -0.09% and -0.02%). Report: C:/Users/ravee/AppData/Local/Temp/claude/C--Users-ravee-OneDrive-Documents-Claude-Projects-Trader-v3/78b21416-ab81-443d-91e4-e5b336ec1c07/scratchpad/research/VERIFY_v5_confirmatory_report.md; code VERIFY_v5_confirmatory_recompute.py; outputs VERIFY_v5_confirmatory_recompute.json, VERIFY_v5_confirmatory_extra.json, VERIFY_v5_confirmatory_events.csv.gz, VERIFY_v5_confirmatory_files_check.txt (same directory).",
+ "concerns": [
+  "Registration ambiguity: the AMBER partial-run clause (1,225 < 1,500 files) and the RED kill-rule clause both literally apply; the executor's documented RED > AMBER precedence is the stricter and intended reading (kill rules '-> RED' unconditionally) and the practical outcome (no capital) is identical either way, but a future registration should state precedence explicitly.",
+  "B1 is structurally non-discriminating in 2004-2013: ON on only 18.4% of days (21.6% from first defined day), yielding just 42 E1 ON events; this is a registered fail (ON share < 25%), not an excuse, but it means the gated cells were also badly under-powered.",
+  "B1 window text ('trailing 63 trading days' with events resolved by T-1) still admits [T-64,T-2] and [T-63,T-2]; immaterial here (1.0% of days flip, all gated statistics negative under both) but should be pinned down in any v6.",
+  "C1 control construction: the ADV20$ decile edge convention is unspecified in the registration; the executor's 0-9 binning and my 1-10 binning draw different control sets for 17.5% of events. Aggregates agree to 0.003% and K1 clause 1 is robust to three alternative seeds (V5-2 C1 -0.062/-0.073/-0.073), but V5-2's C1 point estimate (-0.06) is close enough to zero that a v6 should fix the convention before relying on clause 1 alone; clause 2 fires independently.",
+  "Executor gate tallies differ from mine by one gate for V5-4 (11 vs 10: tier gate inherited from V5-1 via 'as V5-3' vs from V5-2) and V5-5 (13 vs 12: C2 with n=1 counted as a fail); no verdict is affected.",
+  "V5-4 [T-63,T-2] variant: the claimed 'upper CI turns negative' is bootstrap-boundary noise (+0.015 in my draw vs -0.01 claimed); the executor should not cite it as a finding.",
+  "M1 one-sided p reported as 0.520 vs my 0.42 - a direction-convention difference; M1 is not significant either way and K2 stays untriggered.",
+  "The executor's reported frozen-list sha256 (dbcb7d06...) is the hash of the sorted listing string; the CRLF file on disk hashes to 471a9d55...; content is identical. things_tried.csv outcome rows and the SEEN mark were not re-audited by me."
+ ]
+}

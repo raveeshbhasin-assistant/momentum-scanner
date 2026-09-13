@@ -1,0 +1,22 @@
+{
+  "registered_at": "2026-09-13T10:20:00-04:00",
+  "purpose": "Fresh-start hypothesis: short-horizon continuation after a momentum/catalyst day accrues OVERNIGHT (close T -> open T+1), while the following intraday session is flat-to-negative. Buy the strongest catalyst names at the close, sell at or shortly after the next open.",
+  "discovery_evidence_already_seen": "explore_overnight_decomp.py on 2024-09..2026-09 (2,700 names): big-catalyst days (gap>=8%, vol>=3x, green) overnight excess +0.64% [+0.05,+1.24] n=504, next-session intraday +0.02%, 5-day -1.25%; gap-up-held overnight +0.19%, intraday -0.22%; top-20-by-return-with-volume overnight +0.08%, intraday -0.04%. These two years are therefore DISCOVERY and may not be reused as evidence.",
+  "holdout": {"start": "2014-09-01", "end": "2024-08-31", "data": "bars1d_10y (yfinance daily, same symbol list; survivorship caveat: delisted names absent, bias direction discussed in the report)", "rules_fixed_before_download": true},
+  "universe_per_day_T_using_data_through_T-1": {"prev_close_min": 5, "adv20_dollar_min": 50000000, "min_history_rows": 250},
+  "events_at_close_T": {
+    "E1_big_catalyst": "gap = Open_T/Close_{T-1}-1 >= 0.08 AND Volume_T >= 3 x mean(Volume_{T-20..T-1}) AND Close_T > Open_T",
+    "E2_gapup_held": "gap >= 0.03 AND Close_T >= Open_T AND Volume_T >= 2 x ADV20sh",
+    "E3_strong_close": "Close_T/Close_{T-1}-1 >= 0.03 AND (Close_T-Low_T)/(High_T-Low_T) >= 0.8 AND Volume_T >= 2 x ADV20sh",
+    "E4_top20_ret_vol": "among names with Volume_T >= 2 x ADV20sh, the 20 highest Close_T/Close_{T-1}-1 that day"
+  },
+  "trades": {
+    "X1_overnight": "buy at Close_T x (1+0.0005); sell at Open_{T+1} x (1-0.0005)",
+    "X2_next_close": "buy at Close_T x (1+0.0005); sell at Close_{T+1} x (1-0.0005)"
+  },
+  "benchmark": "SPY over the identical leg (Open_{T+1}/Close_T - 1, or Close_{T+1}/Close_T - 1); metric = mean excess return per trade (%), also raw",
+  "statistics": "quarter-cluster bootstrap 95% CI (>=1000 reps); share of quarters positive; n; per-capital series with K=5 equal-weight positions (20% each) filled first by E1 then by day return, max drawdown; yearly table",
+  "pass_criteria_holdout": {"excess_lower_CI_gt_0": true, "quarters_positive_share_min": 0.6, "min_trades": 500, "multiple_testing": "Holm across the 8 cells (4 events x 2 exits)"},
+  "not_allowed": ["changing thresholds after seeing holdout results", "adding events or exits after seeing holdout results", "using Volume_T or Close_T information for T's universe filter", "random-date cross-validation"],
+  "expected_failure_modes": ["overnight edge concentrated in one regime (2020-21 retail boom)", "costs and overnight gap risk larger for small names", "survivorship in the 10-year symbol list inflating gap-up follow-through"]
+}
