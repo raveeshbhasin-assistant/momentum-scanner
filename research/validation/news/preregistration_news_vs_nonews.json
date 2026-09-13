@@ -1,0 +1,93 @@
+{
+  "key": "N1",
+  "title": "Chan (2003) test: for the same size of daily move, do names with a public 8-K catalyst continue while names with no public catalyst revert?",
+  "registered_at": "2026-09-13",
+  "registered_by": "EXECUTOR N1 (subagent); single run after registration; no thresholds changed after this file is hashed",
+  "run_policy": "Run exactly once. Every reported variant is declared below; any extra variant is appended to things_tried.csv with who=N1 and is descriptive only (never promoted).",
+  "hypothesis": {
+    "H_news": "Large positive day-0 excess moves accompanied by an 8-K whose tradeable reaction session is T continue over T+1..T+20 (net excess > 0).",
+    "H_nonews": "Large positive day-0 excess moves with no 8-K of any item in reaction sessions [T-1, T+1] revert (net excess < 0).",
+    "H_diff": "NEWS minus NO-NEWS forward net excess > 0 at T+5 and/or T+20.",
+    "mirror": "For day-0 <= -8%: NEWS drops continue (long-side excess < 0), NO-NEWS drops bounce (long-side excess > 0). Reported as a finding, not a pass."
+  },
+  "data": {
+    "filings": "research/news8k_events.csv (701,481 8-K-family filings, 4,384 tickers, 2004-01..2026-09; all forms starting with 8-K incl. 8-K/A; items from items_new)",
+    "bars": ["bars1d_2004_2013 (1,225 names)", "bars1d_10y (2014-01..2024-08, 3,179 names)", "bars1d_all (2024-09..2026-09, 2,814 names; hole 2024-09-03..09-11)"],
+    "benchmark": "research/EXEC_v5_SPY_2004_2026.csv; SPY dates define the trading calendar from 2004-01-01",
+    "ticker_mapping": "filing tickers_all (pipe-split, upper) matched to bar files by symbol, then us_common_symbols.csv yf alias, then '.'->'-'; unmatched filings dropped and counted",
+    "survivorship": "symbol list as of 2026-09; delisted names absent from both filings and bars; caveat, no haircut applied to point estimates (reported separately as +0.25%/+0.40% guidance from NEWSARCH)"
+  },
+  "universe_through_T_minus_1": {
+    "prev_close_min": 5.0,
+    "adv20_dollar_min": 50000000,
+    "adv20_definition": "mean(Close*Volume) over the 20 sessions ending T-1, min 15 valid sessions",
+    "min_prior_valid_rows": 250,
+    "requires": "Open_T, Close_T, Volume_T, Open_{T+1} all present"
+  },
+  "event_rows": {
+    "day0_excess": "Close_T/Close_{T-1} - 1 - (SPY_Close_T/SPY_Close_{T-1} - 1)",
+    "UP8_primary": "day0_excess >= +0.08",
+    "UP3V_secondary": "day0_excess >= +0.03 AND Volume_T >= 2.0 * ADV20_shares (mean Volume over 20 sessions ending T-1, min 15)",
+    "DN8_mirror": "day0_excess <= -0.08",
+    "event_unit": "ticker-day; no dedupe (consecutive-day events kept; cluster CIs absorb dependence); events with T in the window and T+1 < end of data"
+  },
+  "reaction_session_rule": {
+    "pre": "acceptance ET < 09:30 -> first session >= et_date",
+    "intra": "09:30 <= acceptance ET < 16:00 -> same session (first session >= et_date); flagged intra",
+    "post": "acceptance ET >= 16:00 -> first session strictly after et_date",
+    "non_trading_et_date": "pre/intra/post on a weekend/holiday -> next trading session"
+  },
+  "arms": {
+    "NEWS": ">= 1 filing of any item with reaction session == T",
+    "NEWS_202": "NEWS and >= 1 such filing carries item 2.02",
+    "NEWS_non202": "NEWS and no such filing carries item 2.02",
+    "NONEWS": "no filing of any item with reaction session in {T-1, T, T+1}",
+    "AMBIG": "filing at T-1 or T+1 but none at T; excluded from both arms, count reported",
+    "descriptive_only": ["NEWS split intra-only (all T filings intra) vs known-at-open (>= 1 pre or prior-day post)", "NEWS_non202 by item code present at T (7.01, 8.01, 1.01, 2.01, 5.02, 3.02, 5.07, 5.03, 2.03, 3.01, 9.01-only); overlapping categories"]
+  },
+  "entries_exits": {
+    "entries": ["MOC_T = Close_T", "MOO_T1 = Open_{T+1}"],
+    "exits": ["Close_{T+1}", "Close_{T+5}", "Close_{T+20}"],
+    "no_stops_no_targets": true
+  },
+  "costs_and_benchmark": {
+    "per_side_bp": {"adv20_dollar_ge_100M": 5, "else": 10},
+    "round_trip_applied": "10 bp or 20 bp subtracted once per trade",
+    "net_excess": "(exit/entry - 1) - (SPY exit/SPY entry - 1) - round_trip; SPY entry = SPY Close_T for MOC_T, SPY Open_{T+1} for MOO_T1; SPY exit = SPY Close at the same exit session",
+    "down_side_convention": "DN8 cells are reported long-side: gross excess, net_long = gross - cost, net_short = -gross - cost"
+  },
+  "windows": {
+    "DISC": "T in 2005-01-01..2014-12-31 (bars1d_2004_2013 + 2014 from bars1d_10y; survivorship-heavy; descriptive)",
+    "TEST": "T in 2015-01-01..2026-08-31 (decisive)",
+    "regime_split": "TEST years 2020-2024 vs other TEST years, reported for UP8 NEWS/NONEWS at h=5,20 MOC_T",
+    "yearly": "per calendar year: n and mean net excess for NEWS and NONEWS (UP8, MOC_T, h=5 and 20) and NONEWS share"
+  },
+  "statistics": {
+    "point": "mean net excess per trade, percent",
+    "ci": "95% cluster bootstrap, 2,000 reps, seed 20260913; clusters = event day T and calendar quarter; the WIDER interval is reported (both stored)",
+    "p_value": "one-sided bootstrap p in the declared direction, max over day/quarter clustering, floor 0.5/reps",
+    "declared_direction": {"UP NEWS arms": "> 0", "UP NONEWS": "< 0", "DN NEWS arms": "< 0 (long-side)", "DN NONEWS": "> 0 (long-side)"},
+    "difference": "NEWS minus NONEWS (and NEWS_202 minus NONEWS, NEWS_non202 minus NONEWS): joint cluster bootstrap resampling days (and quarters), difference of arm means per rep; wider CI reported; one-sided p for diff > 0 on UP rows",
+    "years_positive": "share of years with >= 10 events in the cell whose mean net excess is > 0",
+    "holm_family": "exactly 6 cells: TEST x UP8 x MOC_T x no-exclusion x {NEWS, NONEWS} x {h=1, 5, 20}; Holm step-down on the declared-direction one-sided p; everything else descriptive"
+  },
+  "pass_rule_tradeable_claim": {
+    "applies_to": "NEWS arm, TEST, UP8, MOC_T (family cells); MOO_T1 reported alongside but not in the family",
+    "all_required": ["net excess lower CI (wider cluster) > 0 at that horizon", "NEWS minus NONEWS difference lower CI > 0 at that horizon", "years_positive >= 0.60", "n >= 500", "Holm p < 0.05"]
+  },
+  "finding_rule_nonews_reversion": {
+    "statement": "NONEWS UP8 TEST MOC_T mean net excess < 0 with upper CI (wider cluster) < 0 at h=5 or h=20 -> 'no-news big moves revert' is a supported finding and justifies an exclusion rule; reported with Holm p from the same family"
+  },
+  "N5_exclusion_variant": {
+    "single_pre_declared_variant": true,
+    "rule": "drop the event if the ticker has any filing carrying item 3.02, 4.02, 3.01, 1.03 or 5.03 whose reaction session lies in [T-60, T] (60 prior sessions plus day 0)",
+    "reporting": "every long (UP) cell reported with and without the exclusion; the exclusion is adopted only if it raises the NEWS cell excess with non-overlapping CIs (NEWSARCH N5 rule); no pass decision changes because of it"
+  },
+  "outputs": {
+    "cells": "research/N1_cells.csv",
+    "events": "research/N1_events.csv.gz",
+    "report": "research/N1_report.md",
+    "sha_sidecar": "research/N1_prereg_sha256.txt (SHA-256 of this file computed at run start)",
+    "things_tried": "append rows with who=N1 for every reported cell and variant"
+  }
+}

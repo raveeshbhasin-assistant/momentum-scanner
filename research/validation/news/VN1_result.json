@@ -1,0 +1,145 @@
+{
+ "verdicts": [
+  {
+   "cell": "FAMILY NEWS UP8 MOC_T h1",
+   "claimed": 0.117,
+   "recomputed": 0.117,
+   "recomputed_ci": "[-0.093, +0.382] quarter (wider); diff +0.115 [-0.192, +0.418] day",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=3169 exact. Holm 0.68 (mine) vs 0.72 (executor). pass=false agreed."
+  },
+  {
+   "cell": "FAMILY NEWS UP8 MOC_T h5",
+   "claimed": -0.222,
+   "recomputed": -0.222,
+   "recomputed_ci": "[-0.651, +0.240] quarter; diff +0.595 wider [-0.018, +1.307] q, day [-0.062, +1.258]; 20k reps day [-0.076, +1.256]",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=3164 exact. Diff lower CI misses zero under both clusterings; pass=false agreed."
+  },
+  {
+   "cell": "FAMILY NEWS UP8 MOC_T h20",
+   "claimed": -0.181,
+   "recomputed": -0.181,
+   "recomputed_ci": "[-1.296, +0.994] quarter; diff +1.405 wider [-0.181, +3.135] q; day-cluster [+0.284, +2.544] (20k: [+0.259, +2.537])",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=3131 exact. Diff clears zero only under day clustering, not quarter; registered wider-CI rule fails. pass=false agreed."
+  },
+  {
+   "cell": "FAMILY NONEWS UP8 MOC_T h1",
+   "claimed": 0.002,
+   "recomputed": 0.002,
+   "recomputed_ci": "[-0.261, +0.281] day",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=9262 exact. Flat; no reversion at h1."
+  },
+  {
+   "cell": "FAMILY NONEWS UP8 MOC_T h5",
+   "claimed": -0.817,
+   "recomputed": -0.817,
+   "recomputed_ci": "[-1.462, -0.134] day (wider); 20k reps day [-1.484, -0.129], q [-1.479, -0.223]",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=9260 exact. Upper CI < 0 under both clusterings: the registered 'no-news big moves revert' finding rule is met. Holm p is bootstrap-noise-sensitive: 2k reps mine 0.045, executor 0.084, 20k-rep stable p_max 0.0115 -> Holm(6) ~0.069. Not family-wise significant at 0.05; finding rule does not require it. Implementable variant (no T+1 exclusion, n=9905): -0.852 [-1.513, -0.153]."
+  },
+  {
+   "cell": "FAMILY NONEWS UP8 MOC_T h20",
+   "claimed": -1.586,
+   "recomputed": -1.586,
+   "recomputed_ci": "[-3.652, +0.695] quarter (wider); day [-2.698, -0.452] at 20k reps",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=9124 exact. Day-cluster CI excludes zero, quarter does not; registered wider rule -> no h20 reversion claim. Implementable variant n=9761: -1.666 [-3.778, +0.578]."
+  },
+  {
+   "cell": "NEWS UP8 MOO_T1 h5 (not in family)",
+   "claimed": -0.35,
+   "recomputed": -0.348,
+   "recomputed_ci": "[-0.722, +0.049] quarter; diff +0.873 [+0.270, +1.475] day (wider)",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=3164 exact. Diff clears zero because NONEWS loses a further -0.42% in the T+1 session, not because NEWS is positive."
+  },
+  {
+   "cell": "NONEWS UP8 MOO_T1 h1 (not in family)",
+   "claimed": -0.42,
+   "recomputed": -0.421,
+   "recomputed_ci": "[-0.780, -0.114] quarter (wider)",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=9262 exact; years+ 0.08 agreed."
+  },
+  {
+   "cell": "NEWS_202 UP8 MOC_T h20 (sub-arm)",
+   "claimed": 0.31,
+   "recomputed": 0.313,
+   "recomputed_ci": "[-0.692, +1.380] quarter; diff +1.899 wider [-0.330, +3.851] q, day [+0.661, +3.099]",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=2297 exact (NEWS_202 arm 2328). Consistent with PEAD result: positive-pointing but far from clearing zero."
+  },
+  {
+   "cell": "NEWS_non202 UP8 MOC_T h20 (sub-arm)",
+   "claimed": -1.54,
+   "recomputed": -1.541,
+   "recomputed_ci": "[-4.388, +1.553] quarter; diff +0.045 [-2.013, +2.025]",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=834 exact. Non-earnings 8-K movers revert like no-news movers."
+  },
+  {
+   "cell": "NEWS UP8 MOC_T h20 with N5 exclusion",
+   "claimed": 0.45,
+   "recomputed": 0.454,
+   "recomputed_ci": "[-0.587, +1.663] quarter; diff +1.383 [-0.384, +3.217] q",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=2520 exact; bad60 flag agrees on 13939/13939 events. CIs overlap the no-exclusion cell entirely; N5 rule correctly not adopted."
+  },
+  {
+   "cell": "NEWS UP3V MOC_T h5 (secondary row)",
+   "claimed": -0.21,
+   "recomputed": -0.211,
+   "recomputed_ci": "[-0.429, +0.016] quarter; diff +0.279 [-0.127, +0.726]",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=5690 exact (UP3V arms NEWS 5695 / NONEWS 7428 / AMBIG 2046)."
+  },
+  {
+   "cell": "NONEWS UP3V MOC_T h5 (secondary row)",
+   "claimed": -0.49,
+   "recomputed": -0.49,
+   "recomputed_ci": "[-0.948, -0.058] quarter (wider)",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=7424 exact; upper CI < 0 here too (secondary row, descriptive)."
+  },
+  {
+   "cell": "DN8 NEWS MOC_T h20 (mirror, long-side)",
+   "claimed": -1.16,
+   "recomputed": -1.156,
+   "recomputed_ci": "[-2.126, -0.087] quarter; diff vs DN8 NONEWS -0.914 [-2.815, +1.078]",
+   "lookahead_found": false,
+   "verdict": "CONFIRMED",
+   "note": "n=3252 exact. DN8 NONEWS h20 -0.242 [-2.764, +2.384] (n=7628): no bounce, agreed."
+  }
+ ],
+ "overall_assessment": "I agree with the executor's pass/fail on every cell and with the findings. Independent recomputation (VN1_verify.py, written from the preregistration alone; N1_run.py opened only afterwards) from news8k_events.csv + the three bar directories + the SPY calendar reproduces the executor's TEST UP8 event set exactly: 13,939 events (NEWS 3,169 / NONEWS 9,262 / AMBIG 1,508), 1,534 tickers, outer-merge on (ticker, T) gives 0 left-only / 0 right-only, and arm, news_Tm1/T/Tp1, cost tier and bad60 agree on 100% of rows; day0_exc, close_T, open_T1 and net_c_1/5/20, net_o_5 agree to 1e-16 (adv_d to 4e-4 dollars, i.e. float noise). All 14 claimed point estimates and n match; CIs differ only by bootstrap realization and never change a conclusion. Prereg SHA-256 9a61eb6a...498e matches the sidecar. Look-ahead audit: the 40 random executor rows (plus the full-panel merge) confirm (a) ADV20 and prev-close filters are computed through T-1 (median relative difference vs my through-T-1 ADV 1.5e-16, vs a through-T ADV 6e-2, so no look-ahead), (b) reaction sessions are derived from acceptance ET time (pre/intra -> first session >= et_date, post -> first session after; timing column recomputed from acceptance_et agrees on 701,481/701,481 filings) and every NEWS row in the sample shows a filing whose mapped session is T, (c) exits are the close at the SPY-calendar T+h, (d) SPY entry for MOO_T1 is SPY Open_{T+1}. The one design feature that is not implementable at MOC T is the registered NONEWS T+1 exclusion (it conditions on a filing that arrives after entry). I re-ran the implementable version (no 8-K in {T-1,T} only, n=9,905): h5 -0.852% [-1.513, -0.153], h20 -1.666% [-3.778, +0.578]; the T+1-only AMBIG slice (n=643) reverts even more (-1.35% h5, -2.81% h20), so the exclusion did not manufacture the reversion; the finding is robust. Substantive conclusion: Chan (2003) replicates in sign on this data (no-8-K +8% movers revert -0.82%/5d with upper CI < 0 under both clusterings; 8-K-tagged movers are flat, -0.22%/5d, -0.18%/20d, every CI through zero) but the news half is flat, not positive, so nothing is a tradeable long; the NEWS-minus-NONEWS gap (+0.60% h5, +1.40% h20) clears zero only under day clustering at h20 and at the MOO T+1 entry, and fails the registered wider-cluster rule. Two thirds of +8% excess moves in the $50M-ADV universe carry no 8-K in [T-1, T+1] (74.5% of the classified NEWS+NONEWS set). The answer to the operator remains: news explains a minority of big moves, does not make them continue net of costs, and the only actionable content is an exclusion (do not hold a continuation on a big move with no 8-K), which the scanner's existing negative-continuation result already implies.",
+ "survivors_after_verification": [
+  "NONEWS reversion finding (registered finding rule, not a pass): UP8 no-8-K movers, MOC_T h5 = -0.817% [-1.462, -0.134] day / [-1.479, -0.223] quarter, upper CI < 0 under both clusterings; robust to dropping the non-implementable T+1 exclusion (-0.852% [-1.513, -0.153], n=9,905); Holm p ~0.07 at stable resolution (not family-wise significant); h20 reversion only under day clustering. Survives as 'justifies an exclusion rule', not as a trade.",
+  "DN8 mirror (descriptive): 8-K-tagged -8% drops keep falling at h20 (-1.16% [-2.13, -0.09] long-side); no-8-K drops are flat, not a bounce.",
+  "No tradeable NEWS long survives: 0 of 6 family cells pass; NEWS_202 h20 +0.31% and +0.45% with N5 exclusion are far from clearing zero, consistent with the PEAD fail."
+ ],
+ "concerns": [
+  "Holm p for NONEWS h5 is bootstrap-noise-sensitive at 2,000 reps: executor 0.084, my seed 0.045, 20,000-rep stable value ~0.069 (p_day 0.0115). The registered finding rule is CI-based and is met, but any wording that leans on 'Holm < 0.05' for the reversion would be unsupported; report it as ~0.07.",
+  "The registered NONEWS arm excludes events with an 8-K reacting on T+1, which is information not available at the MOC T entry. It is fine for the scientific Chan question and I showed the reversion is robust without it, but any live exclusion rule must be specified as 'no 8-K in {T-1, T}' (n=9,905 implementable version reported in things_tried.csv).",
+  "'No 8-K' is a proxy for 'no public catalyst': 6-K foreign filers, analyst actions, index adds, M&A rumours, press releases without an 8-K and sector moves all land in NONEWS, so the 66% no-news share overstates truly catalyst-free moves; the arm is still the right control for the 8-K question asked.",
+  "Survivorship: symbol list as of 2026-09; delisted no-news movers (which tend to revert to zero) are missing, so true no-news reversion is likely stronger and NEWS-arm drift likely overstated. Bias direction favours the reversion finding and works against the (already failed) tradeable claim; no haircut applied to point estimates, as registered.",
+  "NEWS-minus-NONEWS h20 difference: day-cluster CI [+0.26, +2.54] excludes zero but quarter-cluster [-0.13, +3.05] does not; the gap is regime-clustered (2020-2024 vs other years differ in level) and should not be described as established.",
+  "33,483 of 708,839 filing-ticker rows (4.7%) did not match a bar symbol (no alias hits); this cannot create events, but historical ticker renames that differ from the 2026-09 symbol could misplace a filing. My mapping agreed 100% with the executor's, which shows we made the same choice, not that no such cases exist.",
+  "things_tried.csv: executor rows exist (426 lines mention N1); I appended 3 who=VN1 descriptive rows (recompute, implementable no-news variant, 20k-rep p stability). Outputs written: VN1_verify.py, VN1_run.log, VN1_cells.csv, VN1_events.pkl, VN1_events_stage1.pkl under research/."
+ ]
+}

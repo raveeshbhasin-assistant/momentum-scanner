@@ -1,0 +1,86 @@
+{
+ "verdicts": [
+  {
+   "cell": "C1 top-quintile reaction (month), long, TEST h=5",
+   "verdict": "CONFIRMED",
+   "claimed": -0.167,
+   "recomputed": -0.171,
+   "recomputed_ci": "[-0.448, 0.111] (wider of day/quarter cluster, 2000 reps); n=4905; p=0.13; years+ 7/12=0.583",
+   "lookahead_found": false,
+   "note": "Recomputed from sec_sub_raw_*.jsonl + daily bars with independent code (own DST conversion, own R mapping, own dedupe, own filters). n differs from claimed 5001 only because PEAD_run.py uses pandas rank(pct=True) with q>0.8 while I used (rank-1)/n>=0.8; their C1 set is a strict superset of mine by 96 boundary events (\u0394mean 0.004 pp). Fails CI, control and Holm criteria as claimed."
+  },
+  {
+   "cell": "C1 top-quintile reaction (month), long, TEST h=20",
+   "verdict": "CONFIRMED",
+   "claimed": 0.098,
+   "recomputed": 0.094,
+   "recomputed_ci": "[-0.585, 0.789]; n=4870; p=0.40; years+ 9/12=0.75 (claimed 0.667; the 96 boundary events flip one year)",
+   "lookahead_found": false,
+   "note": "Mean, CI and n reproduce. Fails: lower CI < 0, control excess negative, Holm p=1. Years+ passes in both versions but is not sufficient."
+  },
+  {
+   "cell": "C1 h=20 matched-control excess (event net minus mean control net; controls same date, same ADV decile, |day-0 excess diff|<=1pp, no 8-K 2.02 within +-5 sessions)",
+   "verdict": "CONFIRMED",
+   "claimed": -0.22,
+   "recomputed": -0.17,
+   "recomputed_ci": "[-1.952, 1.862]; n=1104 events with >=1 control (22.6% coverage; claimed 1152 / 23.2%)",
+   "lookahead_found": false,
+   "note": "Independent control draw with default_rng(20260913). Candidate pools are empirically identical to PEAD_run.py's: n_ctrl matches on 99.9% of TEST rows and for every audited event with <5 candidates (where no random draw occurs) ctrl_net_20 agrees to the cent; the residual difference (-0.17 vs -0.22) is the RNG draw order over 5-of-N picks (corr 0.935 across all events). Sign and conclusion hold: matched no-news names with the same day-0 move earn at least as much over 20 sessions, so there is no news-specific drift. Code check (PEAD_run.py ll.222-245): base = eligible & ~evwin (the +-5-session 8-K window), entry On[i+1], own tier costs."
+  },
+  {
+   "cell": "C2 big-beat proxy (reaction>=+8%, vol>=3x), long, TEST h=20",
+   "verdict": "CONFIRMED",
+   "claimed": 0.746,
+   "recomputed": 0.746,
+   "recomputed_ci": "[-0.466, 1.847]; n=1569 (exact n match); p=0.11; years+ 10/12=0.833; ctrl excess +1.131 [-7.48, 10.26] on 92 events (5.9% coverage, only 4 years with >=10)",
+   "lookahead_found": false,
+   "note": "Exact reproduction of mean and n (C2 flags identical on all 1589 TEST events). Fails CI and Holm (0.52). The control statistic is essentially uninformative at 6% coverage, as the prereg caveat anticipated."
+  },
+  {
+   "cell": "EXTRA (not requested): C2 h=5",
+   "verdict": "CONFIRMED",
+   "claimed": -0.1,
+   "recomputed": -0.1,
+   "recomputed_ci": "[-0.500, 0.330]; n=1585",
+   "lookahead_found": false,
+   "note": "Exact match; ctrl excess -1.56 on 94 events."
+  },
+  {
+   "cell": "EXTRA: C3 bottom-quintile SHORT h=20",
+   "verdict": "CONFIRMED",
+   "claimed": 0.658,
+   "recomputed": 0.645,
+   "recomputed_ci": "[-0.055, 1.361]; n=4968; ctrl excess -0.385 [-2.69, 1.84] n=1114",
+   "lookahead_found": false,
+   "note": "Same boundary-convention n difference (mine 96 more). Lower CI just below zero; control excess negative; fails."
+  },
+  {
+   "cell": "EXTRA: C3 SHORT h=1 (descriptive, NOT registered)",
+   "verdict": "CONFIRMED",
+   "claimed": 0.271,
+   "recomputed": 0.267,
+   "recomputed_ci": "[0.142, 0.401]; n=5007; p<0.001; years+ 11/12; ctrl excess (h=1 not computed by me)",
+   "lookahead_found": false,
+   "note": "Reproduces, but it is outside the Holm family, was not pre-registered, ignores borrow cost, and is the cell most flattered by survivorship (delisted names absent). Descriptive only."
+  },
+  {
+   "cell": "EXTRA: C2 h=1 (descriptive, NOT registered)",
+   "verdict": "CONFIRMED",
+   "claimed": 0.278,
+   "recomputed": 0.278,
+   "recomputed_ci": "[0.040, 0.525]; n=1589; p=0.011",
+   "lookahead_found": false,
+   "note": "Reproduces; not registered; ctrl coverage 6%; descriptive only."
+  }
+ ],
+ "overall_assessment": "The PEAD memo's numbers are correct and free of look-ahead. From the raw SEC submissions files and daily bars, with code written before opening PEAD_run.py, I reproduce every TEST cell to within rounding: C1 h=5 -0.171% (claimed -0.167), C1 h=20 +0.094% (0.098), C2 h=20 +0.746% (0.746, exact n), C2 h=5 -0.100% (exact), C3 h=20 +0.645% (0.658), and the un-registered h=1 cells (+0.267% / +0.278%). The only systematic difference is a month-quintile boundary convention (pandas rank(pct=True) with q>0.8 vs my (rank-1)/n>=0.8), which adds 96 boundary events to their C1/C3 sets and moves means by <=0.013 pp; the prereg did not pin the convention, and neither choice changes any verdict. Look-ahead audit: all 40 randomly sampled trades pass all 20 checks (ET conversion, timing, R mapping, prev-close and ADV20 filters computed through R-1, tier cost, close_R, open_{R+1}, reaction/gap/volratio, C1/C2 flags, ret/spy/net at h=5 and 20, ce=net-ctrl); over the whole 32,452-row file, my independent R/timing/ticker mapping agrees on 100% of rows, ADV20(R-1) matches to 1e-6 on 100%, filters hold on 100%, and there are 0 dedupe violations. Control construction was verified both empirically (candidate pools identical to mine: n_ctrl matches 99.9%, exact control-return agreement wherever fewer than 5 candidates exist) and by reading PEAD_run.py after the fact (base = eligible & ~evwin, i.e. no 8-K 2.02 reaction day within +-5 sessions; entry at Open_{R+1}; controls charged their own tier). Preregistration hash matches PEAD_prereg_sha256.txt (e836e79f...), written 3 minutes before the first output. Survivorship caveat is stated in the report (line 259) and in the prereg; things_tried.csv carries 106 PEAD rows covering all 8 family cells and the descriptive variants (I appended 4 VPEAD rows). Substantively: for the operator's question, the most robust news-conditioned continuation anomaly in the literature (PEAD) does not survive retail costs in this 2015-2026 US large/mid-cap universe at 5-20 days, and matched non-event names with the same day-0 move do as well or better, so the earnings news itself adds nothing beyond the move. The only intervals clear of zero are 1-day effects of roughly +0.27% net (losers keep falling on R+1; big-beat names drift up on R+1), which were not pre-registered, are one-day-of-costs thin, and (for the short side) are flattered by survivorship. Nothing here supports building a real-time news-momentum system; if the h=1 cells are to be pursued they need a fresh pre-registration on data not yet used (post-2026-08 only), a delisting-inclusive universe, and borrow costs for the short side.",
+ "survivors_after_verification": [],
+ "concerns": [
+  "Month-quintile rank convention not specified in the prereg: PEAD_run.py uses pandas rank(pct=True) with q>0.8 (1-based rank/n); an equally valid (rank-1)/n>=0.8 removes 96 boundary events from C1 and adds 96 to C3. Immaterial to conclusions (\u0394mean <= 0.013 pp) but should be pinned in future registrations.",
+  "Matched-control test is underpowered: only 22.6% of C1 events and 5.9% of C2 events have any control within 1 pp of day-0 excess in the same ADV decile; control-excess CIs are +-2 pp (C1) and +-9 pp (C2). The 'news or move?' answer for C1 (controls do as well) is directional, not precise. The anydecile sensitivity run exists but I did not recompute it.",
+  "Survivorship is stated but not quantified: 1,008 of 5,213 8-K 2.02 filers have no bar file (delisted/non-universe), and the un-registered C3 short h=1 result is the cell most inflated by their absence; the h=1 long cells are mildly inflated too.",
+  "The descriptive h=1 cells (C3 short +0.27% [0.14,0.40], C2 +0.28% [0.04,0.53]) are the only intervals clear of zero and are not in the Holm family; they must not be reported as findings without a new pre-registration on unused data (only post-2026-08 remains) and short-side borrow costs.",
+  "The month-quintile threshold uses later events in the same month (disclosed mild look-ahead); I did not independently recompute the C1_trail trailing-threshold variant, so its look-ahead-free status rests on PEAD_run.py's own code (l.276: shift(1).rolling(250).quantile(0.8), which is correctly lagged on inspection).",
+  "Weekend/holiday filings between 09:30 and 16:00 ET are labelled 'intra' by PEAD_run.py (l.146 does not check trading-day status) though R is still the next session; my labelling differs on those rows but the trades file's timing column matched mine on 100% of rows, so no such filings survived the filters."
+ ]
+}

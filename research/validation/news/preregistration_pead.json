@@ -1,0 +1,80 @@
+{
+  "key": "PEAD",
+  "title": "Post-earnings-announcement drift from SEC 8-K Item 2.02 filings, 2005-2026",
+  "registered_at": "2026-09-13",
+  "registered_before_test_window_touched": true,
+  "run_policy": "single run; no threshold tuning; every extra variant logged to things_tried.csv",
+  "events": {
+    "source": "research/earn/sec_sub_raw_0..4.jsonl (SEC submissions API, 8-K filings carrying Item 2.02)",
+    "form_filter": "form == '8-K' only (8-K/A excluded: amendments/corrections, not the announcement)",
+    "ticker_mapping": "first CIK ticker (SEC order) that has a daily-bar file; symbol->yf mapping via us_common_symbols.csv",
+    "dedupe": "per ticker, drop a filing whose reaction day is within 5 sessions after a kept filing",
+    "acceptance_to_ET": "UTC acceptance -> ET with US DST rules (2007+: 2nd Sun Mar .. 1st Sun Nov; 2004-06: 1st Sun Apr .. last Sun Oct)",
+    "reaction_day_R": {
+      "pre": "ET time < 09:30 -> R = that session (next session if not a trading day)",
+      "intra": "09:30 <= ET time < 16:00 on a trading day -> R = same session, flagged 'intra'",
+      "post": "ET time >= 16:00 -> R = next session"
+    },
+    "calendar": "SPY daily file is the master trading calendar; all bars reindexed to it (7-session hole 2024-09-03..11 becomes NaN and drops any trade whose entry/exit needs it)"
+  },
+  "universe_filters_through_R_minus_1": {
+    "prev_close_min_usd": 5,
+    "adv20_dollar_min_usd": 50000000,
+    "adv20_definition": "mean(close*volume) over the 20 sessions ending R-1 (min 15 observations)"
+  },
+  "signal_at_close_of_R": {
+    "reaction": "close_R/close_{R-1} - 1 minus SPY close-to-close same day",
+    "gap": "open_R/close_{R-1} - 1",
+    "volume_ratio": "volume_R / mean share volume over the 20 sessions ending R-1"
+  },
+  "trade": {
+    "entry_primary": "Open_{R+1}",
+    "entry_sensitivity": "Close_R (reported, not in the Holm family)",
+    "exit": "Close_{R+h}, h in {1,5,20,60} sessions after R",
+    "costs_round_trip": {"adv20_dollar_ge_100M": "10 bp (5 bp/side)", "adv20_dollar_50_to_100M": "20 bp (10 bp/side)"},
+    "net_excess": "(exit/entry - 1) - (SPY exit/SPY entry - 1 over the identical bars) - round-trip cost"
+  },
+  "benchmarks": {
+    "spy": "SPY over the identical entry/exit bars",
+    "matched_controls": {
+      "pool": "names eligible on R (same filters through R-1) that are not the event name",
+      "same_date": true,
+      "same_adv_decile": "decile of ADV20$ among eligible names on R (rank-based, floor(rank*10/n))",
+      "day0_excess_within": "|control exc_R - event exc_R| <= 0.01 (1 pp)",
+      "no_8k": "no Item 2.02 8-K reaction day within +-5 sessions of R",
+      "sample": "up to 5 controls per event, numpy default_rng(20260913), fixed draw order (events sorted by R then ticker)",
+      "statistic": "event net excess minus mean control net excess (controls charged their own tier costs); events with zero controls excluded from the control statistic and their share reported"
+    }
+  },
+  "cells_holm_family_of_8": {
+    "C1_h5":  "top quintile of reaction among eligible events in the same calendar month (>=10 events in month); long; h=5",
+    "C1_h20": "same; h=20",
+    "C2_h5":  "big-beat proxy: reaction >= +0.08 AND volume_ratio >= 3.0; long; h=5",
+    "C2_h20": "same; h=20",
+    "C3_h5":  "bottom quintile of reaction within calendar month; evaluated as SHORT (stat = -long net excess, same costs, no borrow fee); h=5",
+    "C3_h20": "same; h=20",
+    "C4_h20": "top quintile AND 50M <= ADV20$ < 500M; long; h=20",
+    "C5_h20": "top quintile AND ADV20$ in the top tercile of eligible events in the same calendar month; long; h=20"
+  },
+  "descriptive_only_not_in_family": ["h=1 and h=60 for every cell", "entry at Close_R", "discovery-window numbers", "C1 with a trailing-250-event 80th-percentile threshold (look-ahead-free variant of the month quintile)", "timing/size/regime splits", "per-capital K=10 series"],
+  "windows": {
+    "discovery": "R in 2005-01-01..2014-12-31 (bars1d_2004_2013 + 2014 part of bars1d_10y; 1,225-name survivor universe before 2014)",
+    "test": "R in 2015-01-01..2026-08-31 (bars1d_10y + bars1d_all)"
+  },
+  "inference": {
+    "ci": "95% percentile cluster bootstrap, 2,000 reps, clusters = R date and calendar quarter of R; the wider interval is reported",
+    "p": "one-sided bootstrap p (share of resampled means on the wrong side of zero), max over the two cluster levels, floored at 1/(2*reps)",
+    "holm": "Holm step-down over the 8 family cells, TEST window only"
+  },
+  "pass_criteria_TEST_all_required": {
+    "net_excess_lower_ci_gt_0": true,
+    "matched_control_excess_gt_0_and_lower_ci_gt_0": true,
+    "years_positive_share_ge": 0.60,
+    "years_positive_definition": "calendar years of R in TEST with >= 10 trades in the cell",
+    "n_min": 500,
+    "holm_p_lt": 0.05
+  },
+  "also_report": ["yearly table", "by timing pre/post/intra", "by ADV tier 50-100M / 100-500M / 500M-2B / >2B", "2020-2024 vs other TEST years", "per-capital K=10 equal-weight (1/K fixed weights, max 10 concurrent, first-come by entry date then reaction desc) with max drawdown, C1_h20 and C2_h20", "share of C1 explained by matched controls (news or move?)"],
+  "known_caveats": ["survivorship: symbol list as of 2026-09, delisted names absent (favours long continuation, hurts C3 short)", "month-quintile threshold uses events later in the same month (mild look-ahead; trailing variant reported)", "8-K 2.02 coverage in 2004-2013 is partial (many filers used other channels early on)", "control matching within +-1 pp of day-0 excess may leave extreme reactions (C2) with few controls"],
+  "outputs": ["PEAD_cells.csv", "PEAD_trades.csv.gz", "PEAD_report.md", "things_tried.csv (append, who=PEAD)"]
+}
