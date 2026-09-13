@@ -1,0 +1,106 @@
+{
+  "start": "2026-06-17",
+  "resolve": {
+    "n_picks": 8053,
+    "n_traded_by_harness": 8047,
+    "n_no_data": 6,
+    "n_no_entry": 0,
+    "result_agreement_all": 0.9980131627964733,
+    "result_agreement_traded": 0.9987573008574624,
+    "resolve_secs": 18.2,
+    "price_diff_quantiles_traded": {
+      "0.5": 0.0,
+      "0.9": 0.009998687744138124,
+      "0.95": 0.04000390624998999,
+      "0.99": 0.2500001953124956,
+      "1.0": 30.940000000000055
+    },
+    "price_diff_lt_1c_share": 0.9054305952528893,
+    "price_diff_lt_5c_share": 0.9552628308686467,
+    "crosstab": {
+      "EOD": {
+        "EOD": 2785,
+        "LOSS": 0,
+        "WIN": 1
+      },
+      "LOSS": {
+        "EOD": 3,
+        "LOSS": 4383,
+        "WIN": 1
+      },
+      "WIN": {
+        "EOD": 2,
+        "LOSS": 3,
+        "WIN": 869
+      }
+    },
+    "R_abs_diff_quantiles": {
+      "0.5": 0.0,
+      "0.9": 0.011177251348131013,
+      "0.99": 0.10395008789973642,
+      "1.0": 3.5
+    },
+    "no_data_tickers": [
+      "ADP",
+      "CME",
+      "SATS",
+      "ZTS"
+    ],
+    "no_entry_reasons": {},
+    "n_disagree": 10,
+    "disagree_by_pair": {
+      "LOSS->WIN": 3,
+      "EOD->LOSS": 3,
+      "EOD->WIN": 2,
+      "WIN->LOSS": 1,
+      "WIN->EOD": 1
+    },
+    "disagree_by_ticker_top": {
+      "HON": 5,
+      "CRWD": 4,
+      "BRK-B": 1
+    },
+    "disagree_by_date_top": {
+      "2026-06-23": 2,
+      "2026-06-26": 2,
+      "2026-06-30": 2,
+      "2026-06-17": 1,
+      "2026-06-24": 1,
+      "2026-06-25": 1,
+      "2026-06-29": 1
+    },
+    "disagree_by_batch_minute_mod5": {
+      "0": 10
+    },
+    "all_by_batch_minute_mod5": {
+      "0": 7813,
+      "1": 217,
+      "4": 20,
+      "3": 3
+    }
+  },
+  "strong": {
+    "n_compared": 8047,
+    "n_no_reference_bar": 6,
+    "secs": 19.7,
+    "agree_sc_bar_green": 0.9803653535479061,
+    "live_true_rate_sc_bar_green": 0.7276003479557599,
+    "harness_true_rate_sc_bar_green": 0.7263576488132223,
+    "agree_sc_above_vwap": 0.9899341369454455,
+    "live_true_rate_sc_above_vwap": 0.8562197092084006,
+    "harness_true_rate_sc_above_vwap": 0.8553498198086243,
+    "agree_sc_new_hod": 0.9944078538585809,
+    "live_true_rate_sc_new_hod": 0.35280228656642226,
+    "harness_true_rate_sc_new_hod": 0.3559090344227662,
+    "agree_sc_pm_high_hold": 0.9900584068596993,
+    "live_true_rate_sc_pm_high_hold": 0.44538337268547284,
+    "harness_true_rate_sc_pm_high_hold": 0.43991549645830746,
+    "agree_strong_signal": 0.9915496458307443,
+    "live_true_rate_strong_signal": 0.2835839443270784,
+    "harness_true_rate_strong_signal": 0.2806014663849882,
+    "n_ext_compared": 6234,
+    "agree_ext_consec_green": 0.9650304780237408,
+    "agree_ext_range_pos_within_0.02": 0.9348732755854989,
+    "agree_ext_above_orb_high": 0.9968003011481272
+  }
+}

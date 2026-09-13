@@ -1,0 +1,79 @@
+{
+  "registered_at": "2026-09-13T08:15:00-04:00",
+  "registered_before_any_TEST_computation": true,
+  "windows": {
+    "intraday_DISC": ["2026-06-17", "2026-07-31"],
+    "intraday_TEST": ["2026-08-01", "2026-09-11"],
+    "daily_walkforward": {"start": "2024-09-15", "end": "2026-09-10", "fold": "calendar quarter", "rules_fixed": true}
+  },
+  "accounting": {
+    "entry": "open of the first 5-min bar starting after the signal bar closes; skip if that open is beyond stop or target",
+    "exit": "15:55 bar close if no barrier hit",
+    "same_bar_ambiguity": "loss",
+    "gap_aware_stops": true,
+    "cost_bps_per_side": {"ADV20_dollar>=1e8": 5, "2e7<=ADV20_dollar<1e8": 10, "report_also": [10, 15]},
+    "dedupe": "one position per ticker-day; no re-entry after exit",
+    "per_capital": {"concurrency_cap_K": [5, 10], "risk_per_trade_pct": 1.0, "fill_order": "first-come by signal time"},
+    "ci": "day-cluster bootstrap, >=1000 reps, 95%"
+  },
+  "decision_metric": "net avgR in own-R units (and net pnl_pct per trade); excess over the universe's own random-bar / all-watchlist benchmark",
+  "pass_criteria_TEST": {
+    "net_avgR_lower_CI_gt_0": true,
+    "excess_over_benchmark_gt_0": true,
+    "min_picks": 300,
+    "min_days": 25,
+    "multiple_testing": "Holm across the whole family listed below (11 rule x structure cells)",
+    "must_not_be_equal_size_in_benchmark": true
+  },
+  "families": {
+    "U1_inplay_intraday": {
+      "universe": "US common stocks (nasdaqtrader lists, ex ETFs/warrants/units/preferreds), prev close >= $5, ADV20 dollar >= $20M; DAILY WATCHLIST = names with ex-ante gap (RTH open vs prior close) >= +3%, ranked by gap%, top 20 per day; gap-downs excluded for longs",
+      "data": "bars5m_inplay (60d, prepost) + bars1d_all; watchlist from inplay_candidates.csv (ex-ante fields only: gap_pct, prev_close, adv20_dollar)",
+      "exploration_disclosure": "DISC-only base rates were inspected on 2026-09-13 (12 slices: all/up/down, gap>=5/8, above open, holding gap, 09:35-10:00 vs 10:05-11:00, ADV<>$100M). No TEST data has been read. Thresholds below were chosen from those DISC looks; family size counts them.",
+      "structures": {
+        "S_a_scanner": "stop = entry - 2xATR14(5m, RTH+PM frame as scanner), target = +2.5R",
+        "S_b_orlow": "stop = min(day low so far at signal, entry*(1-0.01)) i.e. opening-range/day low with a 1% floor; no target; exit 15:55"
+      },
+      "rules": {
+        "R0_benchmark_all_watchlist_1005": "buy every watchlist name at the 10:05 bar open (structures S_a and S_b). This is the universe base rate / benchmark for excess.",
+        "R1_gap_and_hold_1005": "at the close of the 10:00 bar: price > RTH open AND price > session VWAP (from 04:00) AND price >= 0.5% above RTH open; enter 10:05 open; structures S_a, S_b",
+        "R2_first_vwap_pullback": "between 10:00 and 12:00, the FIRST bar whose low <= session VWAP and close > VWAP and close > open; enter next bar open; S_a with stop = pullback bar low - 0.25xATR14; S_b variant: stop = pullback low, no target",
+        "R3_orb15": "first close above the 09:30-09:45 range high, after 09:45 and before 11:00, with close > VWAP; enter next bar open; stop = OR low (floor 1%); target +2R (S_a-like) and no-target (S_b)",
+        "R4_small_cap_tilt": "R1 restricted to ADV20 dollar in [$20M, $100M) with 10 bp/side",
+        "R5_big_gap_tilt": "R1 restricted to gap >= +5%"
+      },
+      "K_per_day": 5,
+      "cells_in_family": 11,
+      "benchmarks": ["R0 same structure", "random watchlist bar in the same 15-min bucket on the same day"]
+    },
+    "U2_static_control_arm": {
+      "universe": "current 211-name scanner universe; current live picks from picks_master (post-06-17)",
+      "rules": {
+        "C0": "all picks, realistic accounting (reference)",
+        "C1": "fixed K=10/day first-come, no entries 12:00-13:00, stop floor 0.6%, dedupe",
+        "C2": "C1 + opening-tape gate (SPY and QQQ above prior close at 09:35) as beta management"
+      },
+      "purpose": "the 'do less harm' baseline; NOT expected to be positive; reported per-capital with K=10"
+    },
+    "U3_multiday_swing": {
+      "universe": "bars1d_all: US common stocks, prev close >= $5, ADV20 dollar >= $50M (2,814 names with 2y daily bars); survivorship caveat: list is as of 2026-09-13",
+      "accounting": "enter at next day's OPEN after the signal close (T+1 open), exit at close of holding day; 10 bp per side; max 10 concurrent positions, equal risk; benchmark = SPY over the same holding window (excess return)",
+      "rules": {
+        "W1_gap_continuation_3d": "signal day: gap >= +5%, close in top third of day range, volume >= 2x ADV20; hold 3 sessions",
+        "W2_breakout_rs_5d": "close > prior 20-day high AND 20d return > SPY 20d return AND close > MA50; hold 5 sessions; max 10 new entries/day ranked by 20d RS",
+        "W3_big_gap_drift_5d": "gap >= +8% AND volume >= 3x ADV20 AND close > open; hold 5 sessions",
+        "W0_benchmark": "all names with gap >= +3% held 3 sessions (universe base rate)"
+      },
+      "pass_criteria": "mean net excess return over SPY per trade > 0 with quarter-cluster CI > 0 AND positive in >= 6 of 8 quarters; n >= 300 trades",
+      "cells_in_family": 4
+    }
+  },
+  "not_to_be_run": [
+    "any exit/stop/target/trail/time-stop sweep on current picks",
+    "any payload re-weighting or ML on current payload",
+    "ticker/sector white/blacklists",
+    "prior-day regime gates",
+    "random-date cross-validation"
+  ],
+  "things_tried_log": "validators must append every additional variant they evaluate to research/things_tried.csv with window and result"
+}

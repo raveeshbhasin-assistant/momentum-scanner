@@ -1,0 +1,159 @@
+{
+ "verified_facts": [
+  "1. No selection edge over random universe bars at the same times: scanner-bar excess vs same-day-same-bucket random bar -0.011R [-0.041,+0.021] (n=7,657; V -0.022); scanner minus time-matched naive benchmark -0.020R [-0.049,+0.011] (n=8,053, 60 d, no trend); daily corr with benchmark 0.87. Recipe: V_allbars_labels.csv.gz, mean(R_picked - mean R of non-picked bars on same date,b) -> -0.022.",
+  "2. The trade structure (long, 2xATR 5-min stop, 2.5R target, EOD) is negative from every decision bar on this universe: random bar avgR -0.066R [-0.126,-0.005], n=753,480, 60/60 decision times <0 (~-0.19R net); scanner post-06-17 -0.09R equals this base rate. Recipe: V_allbars_labels.csv.gz R.mean() -> -0.067.",
+  "3. Costs, not measurement, drive the deficit: log replica agreement 99.88%; realistic entry (next-bar open) + 5 bp/side gives -0.234R [-0.290,-0.173] (n=7,897), TEST -0.214 [-0.293,-0.121]; slippage ~0.01R; cost 0.126R median / 0.15R mean; 22.7% of picks have stops <0.5% where cost is 0.2-0.3R. Recipe: picks_master date>=07-01: (r_realized - 0.10/stop_pct).mean() -> -0.227; cost mean 0.151.",
+  "4. Daily P&L is beta: SPY o->c explains R2 0.33 of daily avgR (+0.284R per +1%); positive only on SPY up>+0.3% days (+0.191 [0.106,0.287], 29 d), flat -0.115, down -0.150; yet only 3.6% of pick-level R variance is the day. Recipe: bars1d/SPY by UTC date, spy_oc=Close/Open-1, WLS of daily mean r_realized weights=n.",
+  "5. Mechanism: gates barely bind, so ~122 picks/day = 52% of the universe daily (cap binds in 4.9% of scans; 25th-pct rvol 1.53 vs gate 1.33). Recipe: picks_master groupby(date).ticker.nunique().mean()/211.",
+  "6. Every shipped tier and every feature is uninformative OOS: STRONG -0.088 (n=1,951 TEST), TRADEABLE -0.064, ELITE -0.114; 0/28 payload features stable (max |rho_TEST| 0.03); composite corr 0.009, inverted in TEST; 12 models top-decile OOS <=0 (<=-0.12 net); 19 stock-level context features |rho|<=0.04; HGB top decile +0.012 [-0.104,+0.146]; no ticker (rho -0.067, n=184) or sector persistence; 172 prior-day regime rules Spearman(DISC,TEST) 0.04. Recipe: df[(date>='2026-07-01')&(strong_signal=='True')].r_realized.mean() -> -0.088.",
+  "7. The loss is set at emission by adverse drift: close-based R -0.066 at +5 min, -0.20 at EOD with no stop; MAE -1.47R > MFE +1.29R; 42% reach +1R, 11% reach +2.5R (n=8,047, both halves); picks sit at range_pos 0.80, +0.42% above VWAP; 70% of first emissions come after the day's first winning bar (median 80 min late); TEST-half avgR -0.075 [-0.129,-0.007] rejects zero drift. Recipe: A4_mfe_out.md; A10_features merge on (ticker,date,slot).",
+  "8. Exits, entry delay, breakouts and freshness cannot rescue the pick set: 0/163 exit variants positive OOS net (best -0.149R vs baseline -0.203R, TEST n=3,827); 0/5/10/15-min delays -0.21..-0.23R; fresh STRONG signals -0.13R net both halves. Recipe: A4_exit_grid.csv period=='test' max avgR_net.",
+  "9. May->Sep decline is market + noise + in-sample selection, not skill decay: raw -0.225R/100 d -> -0.113 [-0.232,+0.010] after tape controls; excess vs benchmark flat; Apr-May +0.089 (28 d, CI incl. 0) sits on a friendly tape, an off-grid cron (97%/46%) and price-basis artifacts; 23/23 memo avgR claims have live CI upper bounds below the claim; 3/4 tiers had 0 shadow days; the +1.19R STRONG claim rests on backfilled flags. Recipe: A5_monthly_raw_vs_adjusted.csv; A6_claims_ledger.csv.",
+  "10. 12:00-13:00 entries are reliably the worst bucket: -0.130 [-0.227,-0.034], n=1,620, both halves and all 6 months, ~half of it universe-wide. Recipe: groupby(batch_time[:2]).r_realized.mean().",
+  "11. Pipeline defects are real but not the cause: entry is a ~30 s forming-bar snapshot (no R effect); STRONG flags ~97.5% faithful; pre-market bars make opening ATR stops 22% WIDER (n=11,597 ticker-days) and shift RSI 11.7 pts; intraday ATR decay 0.95%->0.40% stops; opening RVOL ~2x inflated; 9% re-emits while open; 5 payload fields dead; leadership 52% UNKNOWN, LEADER<UNKNOWN; earnings never fired. Recipe: A2_indicator_grid.csv 09:35 ratio -> 1.22.",
+  "12. A small stable stock-selection lift exists (P(ideal ticker-day|pick) 0.61 vs 0.52, x1.16 every month) but bar timing is x0.92 and avgR excess is 0. Recipe: A10 ideal-day table merge.",
+  "13. Data caveats: bars1d timestamps one day early (use UTC date); resolve_time populated 65/12,203; A10 orb_dist_pct look-ahead in slots 0-2; random-date CV inflates context value 2-5x."
+ ],
+ "contradictions": [
+  "F1-1 'driftless barrier; deficit entirely the EOD bucket' vs F2-6/V 'adverse drift from the first 5 min; TEST drift significantly negative'. Evidence favours F2/V: the identity is an accounting convention, E[R|EOD] is +0.56, TEST avgR CI excludes 0, drift visible at +5 min.",
+  "F1 'redirect to exit/holding design' vs F2 'exits are done (0/163 OOS)' and F5 'abandon the barrier or stop searching for a bar-state rescue'. Favour F2/F5; only A5's trend-conditional exit remains untested.",
+  "A5-F6 opening-tape gate labelled verified-oos vs V/F4-1 'DISC-absent, beta, four definitions tried, net negative'. Favour V: it is a beta-management hypothesis, not a validated rule (DISC diff +0.011 [-0.15,+0.18]; TEST +0.19; same size in the naive benchmark; kept book -0.14R net).",
+  "F3-3 'pre-market bars make opening stops wider' vs the project's 'ATR shrink' narrative. Favour F3 (n=11,597). F3 'stop pathology = afternoon decay' and F2-6 'stop width has no OOS relation to expectancy' are both true: a stop floor is a cost fix, not an edge.",
+  "F5 'wrong bar, small stock lift x1.16' vs F2 'loss set by which picks are selected' vs A5 'regime decides whether, not which'. Compatible: no exploitable stock skill; the hit-rate lift vanishes in avgR; F5's own dip inversion is at base rate.",
+  "F1-3 'opening window is faster resolution, not expectancy' vs F4-10 'conversion 0.74 vs 0.38' and A5's '09:35 is the only slot at benchmark'. Favour F1: 09:30-10:00 DISC +0.150 -> TEST -0.037; F4-10 uses a whole-day-High hindsight bound.",
+  "Baseline 'Apr/May +0.09 good months' vs F2-4 price-basis artifacts, F3-11 off-grid cron, A5-F4 CI includes 0. Favour the sceptics: Apr-May is not evidence of a working regime.",
+  "Flag fidelity: F3 99.2% vs F2's 87.9% new_hod agreement. Settled by V at 96-97.5%; ~2.5% label noise."
+ ],
+ "weak_or_overclaimed": [
+  "A5-F6 opening-tape gate as 'the only ex-ante rule with OOS support': DISC-absent, beta, multiple definitions, still -0.14R net -> hypothesis for beta management only.",
+  "F1-1 'driftless / entirely EOD bucket': refuted as stated; keep only the midday-bucket result.",
+  "F4-1 'no context feature reaches |rho| 0.04': exception spy_gap (TEST +0.095), which is A5-F6 again.",
+  "F4-9 gap-down exclusion (+0.03R) and pullback-in-strength (& gap>=-0.25%: TEST +0.060 [-0.065,+0.191], 9/day): sign-stable but sub-cost, post-hoc, ~143 looks.",
+  "F4 ex-ante HGB 6/day slice +0.052 [-0.174,+0.249]: post-hoc, regime-sensitive.",
+  "F1 SOLO_MOVER +0.199 (n=97, DISC ~0) and the 10 slice-search survivors (134 expected under null): noise.",
+  "F5-4 x1.16 stock lift: hit-rate only, undecomposed, zero avgR effect.",
+  "F1-7 residual hit-rate decline -0.19/100 d (R2 0.05): confounded with v3.7.x emission changes.",
+  "F3-4 RVOL ~2x inflation: Yahoo bars with zero pre-market volume; live factor 1.2-2x; per-pick join failed.",
+  "F3 stop-floor recommendation: cost arithmetic solid, net-expectancy effect untested.",
+  "A5-F3 'positive only on SPY up>0.3%': oracle and definition-dependent (c->c up days CI includes 0).",
+  "A5 trend-conditional exit (SPY<VWAP at 12:00, R2 0.09, 60 d): never simulated at pick level.",
+  "F4-10 'target reachable for ~25%': whole-day-High upper bound; F2's 11% reach +2.5R pre-stop is the tighter number.",
+  "F2-9 ELITE TEST point estimates (n=58), ELEVATED/HIGH VIX days (11/4 d): unclaimable.",
+  "'0/36 rules', MC drift fit, F5 volatility terciles, F5-1 'negative every month' (Jul/Aug CIs include 0), vendor independence, within-ticker control: not re-verified."
+ ],
+ "missing_analyses": [
+  {
+   "gap": "Per-capital simulation with concurrency cap K in {5,10,20} under realistic accounting (next-bar open, 5/10 bp, dedupe).",
+   "why_it_matters": "All headlines are per-pick avgR; taking every pick means 23-56 open positions. A fixed-K book is the only deployable form and its return/drawdown is unknown; it is also the control arm for any v4.",
+   "how_to_do_it": "One harness script over V_pick_replica.csv: first-come K, daily per-capital return, MaxDD, both halves, day-cluster CI."
+  },
+  {
+   "gap": "Base rate of alternative trade structures on the all-bars table (stop 1-4x ATR, stop floor 0.6%/daily-ATR, targets 1-4R/hold-to-close/time stops) and the short side.",
+   "why_it_matters": "F5-1 shows the current structure is negative from every bar; nobody asked whether ANY structure on this universe is positive gross in both halves. Decides selection problem vs strategy-class problem.",
+   "how_to_do_it": "Relabel the 755k-bar table with the harness for ~8 geometries x long/short; DISC 06-17->07-31 first, TEST once."
+  },
+  {
+   "gap": "Fade/short test on the scanner's own picks.",
+   "why_it_matters": "Drift of -0.20R by EOD without a stop, MAE>MFE, picks at range_pos 0.80 above VWAP; obvious and never simulated.",
+   "how_to_do_it": "Invert the barrier on V_pick_replica.csv, realistic fills, add ~10 bp borrow proxy, both halves; compare to random-bar short base rate."
+  },
+  {
+   "gap": "Real-time first-trigger bar-level rules on strictly causal features, scored as excess over the same-day-bucket random bar net of 0.15R.",
+   "why_it_matters": "F5-5's intraday position features have the largest effect sizes in the study (|d| 0.4-0.7) but only one real-time rule was tested; top-K work was look-ahead contaminated.",
+   "how_to_do_it": "Fix orb_dist_pct (NaN slots 0-2); features: range_pos, dist_vwap, RS vs SPY/sector ETF from open, cumulative breadth at bar t, minutes since day high/low, RTH-only volume ratio; threshold grid + small logistic in DISC; log family size."
+  },
+  {
+   "gap": "Decompose the x1.16 ideal-day stock lift by scanner component.",
+   "why_it_matters": "It is the only stable positive signal; tells v4 what, if anything, to keep from the current scorer.",
+   "how_to_do_it": "Ticker-day logistic ideal ~ rvol, sector, sentiment, score, leadership with day fixed effects; DISC/TEST."
+  },
+  {
+   "gap": "Causal intraday index gate/exit (SPY vs VWAP at 10:30/12:00) vs the same rule on the naive benchmark.",
+   "why_it_matters": "Positive expectancy exists only on trending-up index days (oracle); the causal version was never simulated and is not in F2's grid.",
+   "how_to_do_it": "Harness variants: suppress entries / exit positions while SPY<VWAP; label as beta if present in the benchmark to the same size."
+  },
+  {
+   "gap": "Cost model by price/liquidity tier.",
+   "why_it_matters": "Flat 5 bp is optimistic for sub-$30 and thin names; the sub-0.5%-stop picks (22.7%) are where cost dominates.",
+   "how_to_do_it": "Proxy spread by price tier and median 5-min range/close; recompute net avgR by tier on picks."
+  },
+  {
+   "gap": "Constant-rule re-scan from bars 06-17->09-11.",
+   "why_it_matters": "Separates v3.7.x rule churn from market in the residual hit-rate decline.",
+   "how_to_do_it": "Approximate emission rules on bars5m prepost frame per F3's indicator documentation; compare monthly emission counts and avgR with the log."
+  },
+  {
+   "gap": "Two-year daily-bar structural check and overnight/multi-day horizon.",
+   "why_it_matters": "Whether down-gap days are structurally bad and whether the base rate is regime-specific; whether multi-day slices express over days.",
+   "how_to_do_it": "bars1d UTC dates: daily-range barrier approximation per ticker-day by quarter; next-day o->c/c->c of picked tickers vs universe."
+  },
+  {
+   "gap": "Within-ticker control for the random-bar comparison; F5 volatility terciles.",
+   "why_it_matters": "Closes the verifier's last gaps on facts 1 and 2.",
+   "how_to_do_it": "Same-ticker-same-day non-picked bars as control on V_allbars_labels; tercile split by 20d vol."
+  },
+  {
+   "gap": "Live per-pick payload logging and feature-health monitors (F3 section 5).",
+   "why_it_matters": "Without data_source, bar timestamps, n_candidates_pre_cap, raw sentiment and denominator composition, future lenses cannot separate vendor artefacts from signal.",
+   "how_to_do_it": "Production change requiring operator approval; not research."
+  }
+ ],
+ "design_constraints_for_v4": [
+  "Accounting: entry at the open of the first bar after the batch; skip picks whose open is beyond stop/target; charge >=5 bp/side (also report 10 bp) on the pick's own stop; dedupe re-emits while a position is open; 15:55 EOD; report per-pick avgR AND per-capital P&L under an explicit concurrency cap; day-cluster bootstrap >=1,000 reps.",
+  "Benchmarks: report every candidate as excess over (a) the time-matched naive all-universe benchmark and (b) the same-day-same-bucket random bar of the all-bars table, both windows, net of costs; raw avgR and hit rate are not decision metrics.",
+  "Validation: pre-registered rule file (thresholds, features with live-since dates, family size, metric) before any TEST computation; temporal split then monthly walk-forward; random-date CV banned; >=300 picks and >=40 days per cell; Holm across family; net avgR lower CI >0 in TEST; shadow >=40 d/>=400 picks before display, >=80 d with lower CI >0 before capital; kill on trailing-40-d CI upper <0; report things tried.",
+  "Pick volume: fixed K between 10 and 20 per day by rank, not threshold gates that emit half the universe; 10/day needs ~74 days to detect +0.15R, 5/day ~128; a 3/day tier cannot be validated within a year.",
+  "Edge target: gross >= +0.15R per trade at the 0.8% stop (net >0 with lower CI >0), or a stop construction with cost <0.10R (floor >=0.6% or daily-ATR fraction), noting the floor's net effect is untested.",
+  "Trade construction: no further work on exits, trails, time stops, breakeven, scale-out, entry delay, confirmation breakouts or freshness gates for the current pick set; the 2xATR/2.5R/EOD structure is negative on random bars, so v4 must show positive excess over the random bar in both windows or change structure and re-establish a base rate first; no stops <0.5%; no 12:00-13:00 entries.",
+  "Universe: no historical ticker/sector white/blacklists; high-beta/high-vol/gap-up/Semis are beta exposure, not quality; fixed versioned universe; prune the 20 never-emittable and 5 bar-less names.",
+  "Features: live-only, never backfilled; drop composite, technical, sentiment, leadership, earnings, all multi-day context and all prior-day regime features from selection; RTH-only logged indicator frame; RVOL denominator from same-minute RTH bars; fix ORB look-ahead; join daily bars by UTC date.",
+  "Market gating: prior-day state features banned; the opening-tape gate (SPY and QQQ above prior close at 09:35, picks >=10:05) allowed only as pre-registered beta management that must also appear in the benchmark, removes ~40% of days and does not count toward the edge target; any regime rule must clear 0.15R net."
+ ],
+ "most_promising_directions": [
+  {
+   "direction": "A 'do less harm' v4 baseline / control arm: fixed K<=10-20 picks/day, concurrency cap, no sub-0.5% stops, no 12:00-13:00 entries, dedupe, realistic accounting, opening-tape gate as pre-registered beta management.",
+   "evidence": "F3 power table, F2 concurrency (23-56 open), V's robust midday bucket (-0.13 both halves), A5-F6 TEST diff +0.19 [0.08,0.30] present in the benchmark too. Mechanics verified; the gate is a hypothesis.",
+   "risk": "Reduces bleed but cannot make the current pick set positive net (kept book -0.14R net); it is the control, not the strategy."
+  },
+  {
+   "direction": "Real-time intraday-position / relative-strength entry rules (dips below VWAP, low range position, RS vs SPY/sector, cumulative breadth) evaluated first-trigger against the random-bar benchmark. HYPOTHESIS.",
+   "evidence": "F5-5 anatomy of first winning bars (range_pos 0.31, below VWAP, RSI 42, negative RS; |d| 0.4-0.7), the largest effect sizes found; A5 share-of-universe-up is the best day factor (R2 0.42).",
+   "risk": "The one real-time dip rule tested is at base rate and OOS AUC is 0.51; 'being at the low' is a hindsight construct; look-ahead already produced one false positive; breadth may be beta."
+  },
+  {
+   "direction": "Change the strategy class: re-establish base rates for other structures (wider/daily-ATR stops with smaller targets, hold-to-close on gated days) and the short/fade side. HYPOTHESIS.",
+   "evidence": "F5-1 current structure negative from every bar; F2-6 persistent adverse drift after emission (-0.20R by EOD, MAE>MFE); A5-F3 positive only on trending-up days.",
+   "risk": "Adverse drift is only ~-0.17% of notional realistically, likely inside costs plus borrow; part is TEST-window beta; gap-up tail risk on shorts; never simulated."
+  },
+  {
+   "direction": "New information rather than re-weighted payload: intraday cross-sectional ranks, sector-ETF RS from the open, real-time breadth, and quote/order-flow data if acquired. HYPOTHESIS.",
+   "evidence": "F1-6/F4-2: payload and context are informationally exhausted (top-decile OOS <=0); A5: concurrent breadth explains the day.",
+   "risk": "Causal breadth may be pure beta; order-flow data not available; same overfitting trap without pre-registration."
+  },
+  {
+   "direction": "Pre-registered live/shadow test of the sign-stable context slices (gap-down exclusion; pullback-in-strength & gap>=-0.25%, ~9/day) and the ex-ante HGB 6/day slice. WEAK HYPOTHESIS.",
+   "evidence": "F4-9 sign-stable in 5/6 months; TEST +0.060 [-0.065,+0.191]; HGB slice +0.052 [-0.174,+0.249].",
+   "risk": "Sub-cost, post-hoc, 1 of ~143 comparisons; needs >=50 live days; expected to fail like every prior slice."
+  },
+  {
+   "direction": "Multi-day horizon for the same or new signals. HYPOTHESIS.",
+   "evidence": "None in-house; motivated only by every intraday construction being negative and the only sign-stable slices being multi-day objects.",
+   "risk": "Overnight gap risk; different capital/risk model; effectively a different product."
+  }
+ ],
+ "next_round_tasks": [
+  "D1. Freeze the evaluation harness (copy of SP/research/harness): next-bar-open entry with skip-beyond, 5/10 bp on own stop, re-emit dedupe, concurrency cap K and per-capital P&L, both benchmarks (A5 time-matched naive; F5 same-day-bucket random bar), day-cluster CIs, DISC/TEST + monthly walk-forward, family-size logging. Acceptance: reproduce F2 -0.234 [-0.290,-0.173] and F5 -0.066 [-0.126,-0.005].",
+  "D2. Data hygiene: orb_dist_pct NaN for slots 0-2; UTC-date joins for bars1d; exclude pre-06-17 price-basis rows (CRWD/HON/FDX/SNOW/SATS); version the 211-name universe; mark resolve_time unusable.",
+  "D3. Write the pre-registration template (F3 section 4) and register the round-2 family (rules, thresholds, live-since features, metric, K, cost) before any TEST computation.",
+  "D4. Run the per-capital control arm (K in {5,10,20}) on current picks with/without opening-tape gate, midday exclusion and stop floor; this is the 'do less harm' baseline.",
+  "D5. Structure sweep on the all-bars table (long and short, ~8 geometries) plus fade test on picks, DISC only. Decision gate: if no structure is positive gross in DISC with CI excluding zero, v4 becomes a strategy-class change or a stop; do not proceed to feature work on the current structure.",
+  "D6. Build the causal bar-level feature set and run first-trigger threshold rules plus one small logistic in DISC against the random-bar excess metric net of 0.15R; log every variant.",
+  "D7. Single-script side studies, DISC only: decompose the x1.16 lift; causal SPY-vs-VWAP gate/exit vs benchmark; cost by price/liquidity tier; overnight horizon; optional constant-rule re-scan and 2-year daily check.",
+  "D8. Freeze <=3 candidate rule sets (K, structure, features, gate) in the pre-registration file.",
+  "V1. Run each frozen candidate once on TEST (bars 08-01->09-11; log >=07-01); Holm across the family; pass only if net avgR lower CI >0, excess over both benchmarks >0, n>=300 and >=40 days, and the effect is not the same size in the naive benchmark.",
+  "V2. Survivors to shadow from the next trading day: >=40 d/>=400 picks before display, >=80 d with lower CI >0 before capital; kill rule trailing-40-d CI upper <0; record non-survivors in the ledger.",
+  "V3. Pre-register and shadow without capital the F4 slices (gap-down exclusion; pullback & gap; HGB 6/day) and the opening-tape gate so their live fate is settled by data.",
+  "V4. Production (operator approval required): log the full per-pick payload, add feature-health monitors, retire backtest.py as validation, remove dead plumbing and the backfill endpoint, fix indicator frame and RVOL denominator, prune the universe.",
+  "V5. If nothing survives V1-V2, document that this universe/structure has no intraday long edge at retail costs and decide between a strategy-class change (per D5) and stopping, not another tier."
+ ]
+}

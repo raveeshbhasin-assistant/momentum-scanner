@@ -1,0 +1,130 @@
+{
+ "lookahead_risks": [
+  {
+   "rule": "ALL U1 cells (calibration reference)",
+   "risk": "The DISC base-rate script (explore_inplay_baserate.py) enters at the CLOSE of the decision bar (e=C[i]) and scans barriers from i+1; the registration says next-bar OPEN. On continuation names the next open is systematically above the prior close, so the section-2 DISC figures (+0.08..+0.16R) are optimistic relative to registered accounting.",
+   "fix": "TEST accounting fixed: E = Open of the bar starting 5 min after the signal bar; barrier scanning INCLUDES the entry bar. Validator prints DISC under both accountings once so the haircut (expected 0.03-0.08R) is documented before TEST is opened."
+  },
+  {
+   "rule": "ALL U1 cells",
+   "risk": "Script filter `if len(rth)<70: continue` uses the total number of RTH bars in the day, unknown at signal time; it silently drops trading-halted gappers (LULD halts on news) and half-days, i.e. the fat tails.",
+   "fix": "No day-length filter. Only per-bar requirements: the signal bar and the entry bar must exist. Missing bars after entry are treated as normal gaps (next available Open used for gap-through). Report count of ticker-days with <70 RTH bars per cell; show halted-name extremes in a tail table, never trimmed."
+  },
+  {
+   "rule": "ALL U1/U2 cells (exit)",
+   "risk": "Script exits at C[-2] (the 15:50 bar close) and stops scanning at mins>=955, so the 15:55 bar is never scanned; registration says '15:55 bar close' which is ambiguous between start-15:55 and end-15:55.",
+   "fix": "Locked: exit = Close of the bar STARTING 15:55 (~16:00 print); barriers scanned through the 15:55 bar inclusive; if missing, Close of last available RTH bar."
+  },
+  {
+   "rule": "R1, R2, R3, R4, R5 (VWAP)",
+   "risk": "'Session VWAP from 04:00' collapses to RTH VWAP for names whose yfinance PM bars have zero volume but not for names with real PM prints, so one rule silently uses two VWAP definitions across names (and live will use a third).",
+   "fix": "Locked: VWAP_t = sum(TP*V)/sum(V) over RTH bars 09:30..t inclusive, TP=(H+L+C)/3; undefined (no signal) if sum(V)=0. Recorded as a known live-vs-backtest divergence."
+  },
+  {
+   "rule": "S_a structure (R0, R1, R2, R4, R5) and R2 stop offset",
+   "risk": "ATR14 in the script is Wilder EWM over the entire prepost file (PM+RTH+AH, overnight TR included). Zero-volume PM bars with H=L=C give TR~0 and depress ATR at 09:30-10:00, tightening stops; 'as scanner' is not what was computed. Also ambiguous whether ATR is taken at the signal or the entry bar.",
+   "fix": "Locked: keep the script's exact causal computation for DISC continuity, evaluated at the SIGNAL bar only; global stop-distance floor 0.5% of E. Report median and 10th-pct stop% and the share of PM bars with V=0 and H=L per cell so the artefact is visible; any alternative ATR frame is a logged variant."
+  },
+  {
+   "rule": "S_b structure (R0, R1, R4, R5)",
+   "risk": "'Day low so far at signal' could include the entry bar's 5 unknown minutes or PM lows.",
+   "fix": "Locked: DL_s = min Low over RTH bars 09:30..s inclusive of the signal bar, exclusive of the entry bar; stop = min(DL_s, 0.99*E)."
+  },
+  {
+   "rule": "R1, R4, R5 ('price > RTH open')",
+   "risk": "Two RTH-open sources: csv `open` (daily bar, official print, possibly adjusted) vs 5m 09:30 bar Open (unadjusted, first print). Cross-source comparison can flip signals on adjusted names.",
+   "fix": "Locked: watchlist from csv fields only; every intraday comparison uses the 5m series with RTH open := Open of the 09:30 bar. Ticker-days with missing 09:30 bar or |5m open/csv open - 1| > 2% excluded from ALL cells including R0 and reported."
+  },
+  {
+   "rule": "Watchlist / R0 (all U1 cells)",
+   "risk": "inplay_candidates.csv is not pre-cut (~125 rows/day incl. gap-downs); tie order and back-filling of names lacking 5m files are unspecified, allowing favourable selection.",
+   "fix": "Locked: filter gap_pct>=3.0 AND prev_close>=5 AND adv20_dollar>=2e7, sort gap_pct desc, tie adv20_dollar desc, take 20 per date; THEN check 5m coverage; missing names dropped and reported, never back-filled; the same 20 define R0."
+  },
+  {
+   "rule": "ALL U1 cells (csv fields)",
+   "risk": "vol_ratio_day, range_pct_day, oc_ret_pct are full-day quantities; any use (filter, rank, tie-break, data-quality exclusion) is look-ahead.",
+   "fix": "Forbidden for every purpose; validator script must be grepped for these names and fail if found. ret_20d_prev is ex-ante but not in any registered rule, so also unused."
+  },
+  {
+   "rule": "U3 W0-W3 (universe filters)",
+   "risk": "Applying 'prev close >= $5, ADV20 dollar >= $50M' as-of-today selects names that became liquid by rallying (look-ahead).",
+   "fix": "Locked: per signal day T using data through T-1 only: Close_{T-1} >= 5, mean(Close*Volume)_{T-20..T-1} >= 5e7; volume multiples use share ADV20sh = mean(Volume_{T-20..T-1}) excluding day T."
+  },
+  {
+   "rule": "U3 W0-W3 (entry/exit/SPY window)",
+   "risk": "'Hold h sessions' and the SPY window can drift by a day; halted/missing exit bars unhandled.",
+   "fix": "Locked: signal uses day-T OHLCV; entry Open_{T+1}; exit Close_{T+h} (h=3 or 5); SPY benchmark = SPY Close_{T+h}/SPY Open_{T+1} - 1 on identical dates, gross; missing exit bar -> next available Close with SPY re-aligned to the actual exit date."
+  },
+  {
+   "rule": "U3 W2",
+   "risk": "'Prior 20-day high' (High vs Close, inclusive of T?) and MA50 inclusivity unspecified; RS ranking tie-break unspecified.",
+   "fix": "Locked: PH20 = max(High_{T-20..T-1}); ret20 = Close_T/Close_{T-20}-1 (same for SPY); MA50 = mean(Close_{T-49..T}); max 10 new/day by RS=ret20-ret20_SPY desc, tie adv20_dollar desc; requires >=50 prior rows (report per-fold n)."
+  },
+  {
+   "rule": "U2 C2 (tape gate)",
+   "risk": "'SPY and QQQ above prior close at 09:35' could mean 09:35 Open, 09:30-bar Close, or a quote; plan 3.6 says 'halve size' while the registration says 'gate'.",
+   "fix": "Locked: gate ON iff Close of the 09:30 5m bar of SPY > prior regular-session close AND same for QQQ; evaluated once per day; C2 = no entries when off (binary, registered variant). Days lacking SPY/QQQ bars excluded from C1 and C2 alike."
+  },
+  {
+   "rule": "U2 C0-C2 (realistic accounting)",
+   "risk": "Pick timestamps are scan times; the entry bar is unspecified; stop floor and target recomputation unspecified; some picks_master fields did not exist for the whole window.",
+   "fix": "Locked: E = Open of the first 5m bar starting strictly after the pick timestamp (ET); stop = min(pick_stop, E*(1-0.006)) for C1/C2 (0.5% global floor for C0); target = E + 2.5*(E-stop) recomputed; only fields present for all picks in the window may be used and must be named."
+  },
+  {
+   "rule": "R2 first VWAP pullback",
+   "risk": "'Between 10:00 and 12:00' plus next-bar entry could produce 12:00 entries (violating the no-12:00-13:00 rule); 'first bar' after a skipped entry could be re-armed; a 'reclaim from below' qualifies under the literal text.",
+   "fix": "Locked: candidate signal bars start in [10:00, 11:50] so entries start <= 11:55; first qualifying bar only, no re-arm after a skip; literal registered condition L_b<=VWAP_b AND C_b>VWAP_b AND C_b>O_b (adding a prior-bar-above-VWAP precondition is a new logged variant)."
+  },
+  {
+   "rule": "R3 ORB15",
+   "risk": "'After 09:45 and before 11:00' is ambiguous for the 10:55 bar; OR definition, strictness, and the 2R (not 2.5R) target could be swapped.",
+   "fix": "Locked: OR = bars 09:30/09:35/09:40 (all must exist), ORH=max High, ORL=min Low; signal bars start in [09:45, 10:50], C_b > ORH AND C_b > VWAP_b strict; stop = min(ORL, 0.99*E); R3-2R target = E + 2.0*(E-stop); R3-NT no target."
+  }
+ ],
+ "locked_rule_table": "Notation: 5-min bars labelled by bar START (America/New_York); 'bar 10:00' closes at 10:05:00. RTH bars start in [09:30, 15:55]. O30 = Open of the 09:30 bar (5m file). VWAP_t = sum(TP*V)/sum(V) over RTH bars 09:30..t inclusive, TP=(H+L+C)/3 (undefined -> no signal). ATR_t = Wilder EWM(alpha=1/14, adjust=False, min_periods=14) of true range over the full prepost 5m series, causal, evaluated at the SIGNAL bar. DL_t = min Low over RTH bars 09:30..t inclusive. W_d = watchlist: csv rows with gap_pct>=3.0 AND prev_close>=5 AND adv20_dollar>=2e7, sorted gap_pct desc (tie adv20_dollar desc), first 20 per date; then 5m-coverage check, missing names dropped and reported, never back-filled. Entry E = Open of the bar starting 5 min after the signal bar s; skip (count) if E<=stop or E>=target; no re-arm; one position per ticker-day. Global floor: stop <= 0.995*E. Barrier scan from the entry bar through the 15:55 bar inclusive: if O_j<=stop -> exit O_j; elif L_j<=stop -> exit stop; if O_j>=target -> exit O_j; elif H_j>=target -> exit target; both in one bar -> LOSS. Else exit = Close of the 15:55 bar (last available RTH Close if missing). Costs: tiered primary (5 bp/side if adv20_dollar>=1e8, 10 bp/side if 2e7<=adv20_dollar<1e8); flat 10 and flat 15 bp/side mandatory sensitivity. Net R = (exit - E - E*2*bps/1e4)/(E - stop). Per-capital: $100k fixed equity, 1% risk, 25% notional cap per position (also report uncapped), K=5 CONCURRENT primary / K=10 secondary, per cell (never pooled), slot freed at bar j+1 after an exit in bar j; equal signal times broken at RANDOM over seeds 0..199 (mean and 5-95% band). DISC 2026-06-17..07-31 calibration only; TEST 2026-08-01..09-11 decision.\n\nU1 R0-S_a | every name in W_d | s = bar 10:00 unconditional | E = O_{10:05} | stop = min(E - 2*ATR_{10:00}, 0.995*E) | target = E + 2.5*(E-stop) | exit barrier/C_{15:55} | benchmark\nU1 R0-S_b | every name in W_d | s = bar 10:00 unconditional | E = O_{10:05} | stop = min(DL_{10:00}, 0.99*E) | no target | exit barrier/C_{15:55} | benchmark\nU1 R1-S_a | W_d | s = 10:00: C_s >= 1.005*O30 AND C_s > VWAP_s | E = O_{10:05} | stop = min(E - 2*ATR_s, 0.995*E) | target E + 2.5*(E-stop) | exit as above\nU1 R1-S_b | W_d | same signal as R1-S_a | E = O_{10:05} | stop = min(DL_s, 0.99*E) | no target | exit as above\nU1 R2-S_a | W_d | first bar b with start in [10:00, 11:50] s.t. L_b <= VWAP_b AND C_b > VWAP_b AND C_b > O_b | E = O_{b+5} | stop = min(L_b - 0.25*ATR_b, 0.995*E) | target E + 2.5*(E-stop) | exit as above | literal text, no prior-bar precondition\nU1 R2-S_b | W_d | same signal as R2-S_a | E = O_{b+5} | stop = min(L_b, 0.995*E) | no target | exit as above\nU1 R3-2R | W_d with bars 09:30/09:35/09:40 present; ORH = max High, ORL = min Low of those 3 bars | first bar b with start in [09:45, 10:50] s.t. C_b > ORH AND C_b > VWAP_b | E = O_{b+5} (entries 09:50-10:55) | stop = min(ORL, 0.99*E) | target E + 2.0*(E-stop) | exit as above\nU1 R3-NT | same | same | E = O_{b+5} | stop = min(ORL, 0.99*E) | no target | exit as above\nU1 R4-S_a | W_d AND 2e7 <= adv20_dollar < 1e8 | identical to R1-S_a | E = O_{10:05} | as R1-S_a | as R1-S_a | cost 10 bp tier, 15 bp line mandatory | likely n<300\nU1 R4-S_b | same universe | identical to R1-S_b | E = O_{10:05} | as R1-S_b | no target\nU1 R5-S_a | W_d AND gap_pct >= 5.0 | identical to R1-S_a | E = O_{10:05} | as R1-S_a | as R1-S_a | likely n<300\nU1 R5-S_b | same universe | identical to R1-S_b | E = O_{10:05} | as R1-S_b | no target\nU2 C0 | picks_master post-06-17, TEST and DISC reported separately | every live pick | E = Open of first 5m bar starting strictly after the pick timestamp | stop = min(pick_stop, 0.995*E) | target E + 2.5*(E-stop) | exit barrier/C_{15:55} | reference only, K=10 per-capital\nU2 C1 | same | C0 minus entries whose entry bar starts in [12:00, 12:55]; one position per ticker-day | same E | stop = min(pick_stop, 0.994*E) | target E + 2.5*(E-stop) | K=10 concurrent first-come by pick timestamp, tie random\nU2 C2 | same | C1 AND day gate: Close of 09:30 bar of SPY > prior regular close AND same for QQQ (binary; days lacking SPY/QQQ bars excluded from C1 and C2) | same | as C1 | as C1\nU3 common | bars1d_all names with >= 480 rows; per signal day T: Close_{T-1} >= 5 AND mean(Close*Volume)_{T-20..T-1} >= 5e7; ADV20sh = mean(Volume_{T-20..T-1}); gap_T = Open_T/Close_{T-1} - 1; entry Open_{T+1}; exit Close_{T+h}; 10 bp/side; excess = net return - SPY(Close_{T+h}/Open_{T+1} - 1) gross on identical dates; one open position per ticker (new signal while open ignored); no stops; per-trade metric uses all qualifying trades; 10-concurrent equal-dollar portfolio reported separately; folds = [2024-09-15..12-31], 2025Q1..Q4, 2026Q1, 2026Q2, [2026-07-01..09-10] by entry date\nU3 W0 | gap_T >= 0.03 | hold h=3 (exit Close_{T+3}) | benchmark\nU3 W1 | gap_T >= 0.05 AND (Close_T-Low_T)/(High_T-Low_T) >= 2/3 (High_T>Low_T) AND Volume_T >= 2*ADV20sh | h=3\nU3 W2 | needs >= 50 prior rows; Close_T > max(High_{T-20..T-1}) AND (Close_T/Close_{T-20}-1) > (SPY same) AND Close_T > mean(Close_{T-49..T}); max 10 new/day by RS = ret20 - ret20_SPY desc, tie adv20_dollar desc | h=5\nU3 W3 | gap_T >= 0.08 AND Volume_T >= 3*ADV20sh AND Close_T > Open_T | h=5\n\nPASS U1 (TEST only, per cell): pooled pick-weighted net avgR with day-cluster bootstrap (>=2000 reps, seed 20260913) 95% lower bound > 0 AND net avgR - R0(same structure) >= +0.05R AND net avgR - random-bar benchmark >= +0.05R (random-bar: same day, uniform name from W_d, uniform bar in the 15-min bucket containing the entry bar, same structure, seeds 0..199) AND n_picks >= 300 AND signal days >= 25 AND Holm-adjusted two-sided bootstrap p < 0.05 with m = 11 + one per extra variant. PASS U3: mean net excess over SPY per trade > 0 with quarter-cluster AND month-cluster 95% lower bounds > 0 AND positive in >= 6 of 8 folds AND n >= 300. U2: no pass test. Cells below n/days minimum = INCONCLUSIVE (never 'failed', never rescued).",
+ "validator_instructions": [
+  "Before touching TEST: print per-file min/max timestamps of bars5m_inplay/*.csv and, for each trading day 2026-06-17..09-11, the count of top-20 watchlist names with 5m bars. yfinance caps 5m history at ~60 calendar days from the pull date, so DISC+TEST (86 calendar days) cannot be fully covered by one pull; if TEST coverage is < 25 days, report it and STOP rather than shrink min_days. Any top-up pull must use identical parameters (5m, prepost=True) and must not alter DISC bars (assert unchanged).",
+  "Build W_d exactly as locked from csv columns date, ticker, gap_pct, prev_close, adv20_dollar only. Grep the validator script for vol_ratio_day, range_pct_day, oc_ret_pct, ret_20d_prev and fail the run if any appears.",
+  "Publish the exclusion table before results: missing 09:30 bar, missing 10:00/10:05 bars, |5m 09:30 Open / csv open - 1| > 2%, < 70 RTH bars, watchlist names without a 5m file (per day). No back-filling.",
+  "Implement ONE shared engine (signal bar -> next-bar Open entry -> barrier scan including the entry bar and the 15:55 bar -> exit) used by every U1 and U2 cell; unit-test on synthetic days for (a) gap-through stop at open, (b) same-bar stop+target = loss, (c) entry open beyond stop = skipped.",
+  "Run DISC first for all cells under registered accounting and print next to the section-2 table (entry-at-close) so the next-open haircut is documented; DISC is calibration only and cannot change any threshold.",
+  "Run TEST exactly once. Per cell report: n_picks, signal days, skipped count, gross and net avgR at tiered/10/15 bp, pooled mean and mean-of-daily-means, day-cluster CI (>= 2000 reps, seed 20260913), hit/stop/EOD shares, median and 10th-pct stop%, share of PM bars with V=0 and H=L, R0 and random-bar excess with paired-day CIs, Holm-adjusted p (m = 11 + variants), per-capital pnl% at K=5 and K=10 with 25% notional cap (primary) and uncapped, random tie-break seed band.",
+  "U3: apply universe filters through T-1 only, indicators as locked, 8 folds by entry date; report per fold, for the adv20_dollar >= 2e8 subset, quarter- and month-cluster CIs, the share of names excluded by the 480-row cut, trades lost to one-position-per-ticker, and flag any W-cell with excess <= 0 in the last two folds as survivorship-suspect.",
+  "U2: state the picks_master field names used for timestamp/entry/stop, confirm they exist for every pick in the window, report TEST and DISC separately and never pooled; C2 gate from the 09:30 5m bar Close of SPY and QQQ versus prior regular close; exclude days lacking SPY/QQQ bars from both C1 and C2.",
+  "Append every additional variant (any changed threshold, window, precondition, tie-break, cost, ATR frame) to research/things_tried.csv with window and result, and add one to Holm's m per variant.",
+  "Cells with n < 300 or days < 25 are labelled INCONCLUSIVE with the counts; do not lower thresholds, do not pool DISC+TEST, do not extend the window."
+ ],
+ "cost_and_fill_concerns": [
+  "Tiered cost (5 bp >= $100M ADV, 10 bp $20-100M) is the registered primary line, but 10 bp/side is optimistic for R4 ($20-100M names at 10:05 on a +3% gap day: half-spread alone is commonly 5-10 bp before impact); flat 10 and flat 15 bp/side are mandatory lines and a cell passing only at registered cost must be labelled as such.",
+  "Entry at the yfinance 5-min bar Open is the first print in the bar (can be stale or odd-lot); no better proxy exists in the data, so the 15 bp line is the only cushion.",
+  "Intrabar stop fills at exactly the stop price are optimistic on fast gappers; gap-through (Open <= stop) is filled at the Open as registered; same-bar stop+target ambiguity resolved as loss.",
+  "Exit at the Close of the 15:55-start bar (~16:00 print) is realistic only for a MOC or 15:59 market order; the DISC script effectively used the 15:50 close.",
+  "Per-capital results need a notional cap: 1% risk with 1-2% stops implies 50-100% of equity per name and 250-500% gross at K=5; a 25% notional cap per position is locked as primary with uncapped reported alongside, and the cap will dominate the per-capital figure for S_b day-low stops.",
+  "K is a CONCURRENT cap per cell (the JSON key K_per_day is a misnomer); R0/R1/R4/R5 signals all share the 10:05:00 signal time so the K queue is a pure tie; random tie-break over 200 seeds is locked so no favourable ordering (e.g. gap rank) can be chosen.",
+  "Net R must include both sides of cost in the R denominator: (exit - E - E*2*bps/1e4)/(E - stop); with ~2% ATR stops 5 bp/side is ~0.05R, which is why the excess-over-benchmark margin is locked at +0.05R."
+ ],
+ "survivorship_and_data_concerns": [
+  "bars1d_all, inplay_candidates.csv and the 5m download list all derive from a symbol list as of 2026-09-13; names delisted between 2024-09 and 2026-09 are absent. U3 bias is UPWARD for long rules (bankrupt names removed; buyout targets removed, roughly neutral), larger in older folds, and inherited fully by 'excess over SPY' since SPY is survivorship-free.",
+  "U1 bias is SLIGHTLY FAVOURABLE to the rules: the gappers most likely missing over a 3-month window are cash-takeover targets (gap up then pinned: tiny ATR -> 0.5%-floor stops -> noise stop-outs, i.e. small losers under S_a); bounded by the count of such names, expected ~1-2% of watchlist ticker-days; report top-20 names lacking 5m files per day.",
+  "Bounding for U3: run on names with >= 480 daily rows and report the excluded share (these are IPOs/spin-offs, i.e. survivors, so the cut removes warm-up artefacts rather than bias); report per fold and for the adv20_dollar >= 2e8 subset where delisting risk is lowest; a genuine effect should not decay toward the present, so excess <= 0 in the last two folds flags the cell as survivorship-suspect (recommended guard, separate from the registered pass).",
+  "5m coverage risk: yfinance limits 5m history to ~60 calendar days; DISC (06-17..07-31) plus TEST (08-01..09-11) span 86 days, so either late-TEST days are missing (min_days unattainable by construction) or a top-up pull is needed whose DISC portion may differ from the earlier pull; coverage must be printed before TEST is run and DISC bars asserted unchanged.",
+  "Zero-volume PM bars in the prepost files (a) make 'VWAP from 04:00' collapse to RTH VWAP inconsistently across names (locked to RTH VWAP) and (b) depress ATR14 at the open via TR~0 flat bars, tightening S_a stops relative to a true ATR; the share of PM bars with V=0 and H=L must be reported per cell.",
+  "The csv `open` (daily, possibly adjusted) and the 5m 09:30 Open (unadjusted first print) can disagree; all intraday comparisons use the 5m series and ticker-days with |ratio-1| > 2% are excluded from all cells and reported.",
+  "The DISC base-rate table was computed on ALL gap ticker-days (~119/day), not the top-20 watchlist, with entry at the signal-bar close, a 15:50 exit and a <70-RTH-bar filter that removes halted names; its figures are calibration only and are optimistic relative to the registered accounting.",
+  "U2 picks_master fields were not persisted uniformly across the window (strong from 05-12, elite/tradeable from 07-08 per memory); C-cells must use only fields present for every pick in the window and must name them.",
+  "U3 W2 needs 50 prior rows, so the first ~50 sessions of the window have no W2 signals; the first fold is thin and per-fold n must be reported; the quarter-cluster CI with 8 clusters is anti-conservative, hence the added month-cluster CI requirement."
+ ],
+ "expected_failure_modes": [
+  "R4 and R5 (subsets of R1) fall short of n >= 300 in a 29-trading-day TEST window (R0 maximum is 20 x 29 = 580 picks) -> INCONCLUSIVE, with pressure to pool DISC+TEST or relax the minimum; forbidden.",
+  "Day-cluster CIs on 25-29 days need roughly +0.15..0.20R net to clear zero while DISC point estimates were +0.08..+0.16R gross before the next-open haircut and costs; most likely outcome is positive point estimates for the R1 family with CIs including zero -> 'not confirmed'.",
+  "R1's excess over R0-S_b is small because R0 on gap-up names already carries the positive EOD drift; the honest finding may be 'the universe is the edge, the rule adds little' (fails the +0.05R excess margin) and must be reported as such.",
+  "S_a stop-out rates exceed DISC because ATR is depressed by flat zero-volume PM bars; visible in the median/10th-pct stop% columns; must not be fixed post hoc (any alternative ATR frame is a logged variant).",
+  "S_b day-low stops on late R2 entries are 3-8% wide: avgR can be positive while net pnl% per trade is near zero and the notional cap dominates per-capital; a cell passing on R but not on pnl% is reported as such.",
+  "The random-bar benchmark in the same 15-min bucket is itself positive on gap-up days, so R2/R3 excess may fall below +0.05R even with positive own avgR.",
+  "R3 fires at 09:45-09:50 on most gappers (opening range broken immediately) and inherits the 09:35-10:00 noise that DISC already showed to be the weakest slice.",
+  "5m coverage gap: files pulled in mid-August leave late-TEST days missing and min_days fails by construction; a top-up pull now may revise DISC bars (yfinance revisions) -> assert DISC unchanged.",
+  "U3: W0/W1/W3 inflated by survivorship (upward, concentrated in the 2024-2025 folds); W2 likely fails the 6-of-8 folds test through the 2025 H1 drawdown regime; W2 per-capital far below per-trade because the 10-concurrent cap binds almost every day.",
+  "U2: C0 negative as expected; C2 removes roughly 40% of days and its remaining sample supports no inference (reference only).",
+  "Halted names produce a handful of extreme R values in both directions once the <70-bar filter is removed; they stay in the sample and appear in a tail table rather than being trimmed."
+ ]
+}

@@ -1,0 +1,6 @@
+who,variant,window,n,avgR_net,note
+orchestrator,explore_inplay_baserate: 12 DISC slices (all/up/down; gap>=5/8; above open; holding gap; 09:35-10:00 vs 10:05-11:00; ADV<>100M),DISC,66177,see file,exploratory base rate before registration; pick-weighted; entry at signal close; gross
+orchestrator,VAL1_reconcile: entry close vs next-open; top-20 cap; decision window; costs,DISC,110440,-0.107 (all gap-ups 09:35-14:30 net),reconciliation: pick-weighting explained the exploratory lift; not a rule
+orchestrator,VAL3 observation: W3 big-gap (>=8%) 5-day excess strongly negative,2y,502,-1.88% excess,observation only; a fade rule was NOT registered and is NOT proposed
+orchestrator,explore_fade_disc: 6 short-side cells (static extension fade; gap-up watchlist short; fade scanner picks) x (2.5R target / no target),DISC,see file,FS +0.08/+0.10; FG +0.02/-0.01; FP -0.05/-0.05,exploratory only; June-positive July-flat/negative; sign-unstable; NOT registered; not pursued
+orchestrator,VAL1 TEST sensitivity: remove <70-RTH-bar day filter (red-team fix),TEST,see VAL1_cells_TEST_minbars2.csv,see file,labelled sensitivity per red team; registered result remains the 70-bar run

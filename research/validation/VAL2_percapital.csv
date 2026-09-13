@@ -1,0 +1,7 @@
+cell,window,K,total_return_pct,max_drawdown_pct,days_positive_share,trades
+C0_all_realistic,DISC,10,-32.2,-42.3,0.419,310
+C1_K10_nomidday_floor06,DISC,10,-25.26,-37.51,0.419,310
+C2_C1_plus_tapegate,DISC,10,-26.64,-23.99,0.412,170
+C0_all_realistic,TEST,10,-28.57,-31.44,0.345,290
+C1_K10_nomidday_floor06,TEST,10,-27.59,-32.8,0.345,290
+C2_C1_plus_tapegate,TEST,10,-21.9,-22.93,0.25,120

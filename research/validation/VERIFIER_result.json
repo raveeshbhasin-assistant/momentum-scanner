@@ -1,0 +1,101 @@
+{
+ "verdicts": [
+  {
+   "claim_id": "F1-1",
+   "verdict": "PARTIALLY_CONFIRMED",
+   "refuted": true,
+   "recomputed_numbers": "n=12203: hit 0.1229, stop 0.5336, EOD 0.3435, E[R|EOD] +0.559 CI[0.521,0.600], identity -0.0341 = avgR -0.0340, zero-drift-required 0.659 (all match). avgR CI[-0.089,+0.021] full; DISC +0.017 CI[-0.065,+0.099]; TEST -0.075 CI[-0.129,-0.007]. WIN/LOSS terms -0.226R, EOD term +0.192R. Bucket 12-13: -0.130 CI[-0.227,-0.034] n=1620, diff vs others CI[-0.202,-0.022], negative all 6 months, DISC -0.172/TEST -0.102.",
+   "corrected_claim": "The barrier identity reproduces; full-sample drift is not distinguishable from zero but the TEST half has significantly negative drift (-0.075). Attributing the shortfall 'entirely' to the EOD bucket is a model-dependent accounting (E[R|EOD] is +0.56). The robust part: 12:00-13:00 entries are ~0.10R worse than other buckets, partly a universe time-of-day effect (random-bar base rate is also most negative after 12:35).",
+   "methodology_concerns": "Proper zero-drift test is avgR vs 0 (not E[R|EOD] vs a required value that is itself random); 7 buckets tested, others flip sign across halves; MC drift fit not re-run."
+  },
+  {
+   "claim_id": "F1-2",
+   "verdict": "CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "STRONG disc(05-12..06-30) n=1139 +0.100 CI[-0.038,0.256]; test n=1951 -0.088 CI[-0.181,0.006]; diff vs nonSTRONG disc CI[0.021,0.229], test CI[-0.113,0.074]. TRADEABLE-recon disc n=532 +0.269 CI[0.103,0.461] -> test n=834 -0.064 CI[-0.202,0.074]; tradeable col n=756 -0.093. ELITE recon = elite col 116/116; disc n=71 +0.439 -> test n=129 -0.114 CI[-0.345,0.159]. rvol3-5 disc +0.629 (n=94) -> test -0.018 (n=186). anti_ext diff CI[-0.046,0.103].",
+   "corrected_claim": "All six headline tiers replicate on their fit windows and are <=0 with CIs spanning zero in the pre-registered test window; the DISC STRONG edge was concentrated in the 09:30-10 bucket and in TEST non-STRONG early picks (-0.009) beat TRADEABLE (-0.064). The '0/36' count was not re-verified.",
+   "methodology_concerns": "Disc windows are the memo fit windows (tautological replication); test n too small to separate -0.1 from 0 for ELITE/TRADEABLE; time-of-day confound in DISC."
+  },
+  {
+   "claim_id": "F2-1",
+   "verdict": "CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "Replica from bars5m starting at F0: n=8047/8053 matched, result agreement 0.9986 (diag 2785/4383/868), avgR log -0.0860 vs replica -0.0859, mean|dR| 0.0086, r_realized formula err 1e-5, 0 same-bar both-touch, EOD exit within 1c of 15:55 close 72.9% (mean EOD R 0.543 vs 0.542). Start at F0+1: agreement 0.9970, avgR -0.0819.",
+   "corrected_claim": "As stated; the resolver counts the entry bar's own extremes (0.004R effect).",
+   "methodology_concerns": "Log resolver and replica may share a similar bar vendor, so agreement partly tests the data source; 27% of EOD exits differ from the 15:55 close by >1c but without mean bias."
+  },
+  {
+   "claim_id": "F2-2",
+   "verdict": "CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "Entry within 5bp of F0 open 63.3% / F1 close 59.9% / next open 19.7%; median |entry-next open| 15.7bp. Same rows n=7897 (150 unenterable): S0 -0.075 -> S4 -0.083 (delta -0.008R) -> S5 5bp/side -0.233 CI[-0.287,-0.171] -> 10bp -0.382; cost median 0.126R mean 0.149R. TEST ALL S5 -0.221 CI[-0.278,-0.151]; STRONG test S5 -0.200 CI[-0.292,-0.098] (they -0.151); TRADEABLE-recon test -0.143 (they -0.122).",
+   "corrected_claim": "As stated; tier/test cells differ by up to 0.05R from theirs, conclusion unchanged.",
+   "methodology_concerns": "'Unattainable' is a latency assertion not testable from bars; unenterable exclusion is a small selection (1.9%)."
+  },
+  {
+   "claim_id": "F3-1",
+   "verdict": "CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "Median |entry-F0.open| 2.9bp (09:35: 9.5bp) identical. Exact-match shares depend on tolerance: <0.5bp F0 open 24.2%, F1 close 20.0%, inside F0 range 92.8% (theirs 34.9/29.8/97.6 with half-cent tolerance). STRONG gap -10..10bp disc n=820 -0.154 CI[-0.27,-0.05], test n=816 -0.027 CI[-0.167,0.13]; Spearman(gap,R) -0.006.",
+   "corrected_claim": "Entry is a near-open snapshot of F0; no consistent R pattern by entry gap.",
+   "methodology_concerns": "Low power (F0 open and F1 close are consecutive prices); the informative latency test is S4 in F2-2."
+  },
+  {
+   "claim_id": "F3-2",
+   "verdict": "PARTIALLY_CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "F1 recompute n=8047: bar_green agree 0.980, above_vwap 0.990, pm_high_hold 0.990 (close>PM high), new_hod best 0.963 (PM+RTH highs; RTH-only 0.874). STRONG AND-of-flags vs strong_signal 0.975 (182 live-True/recon-False, 21 reverse); live rate 28.4% vs recon 26.4%.",
+   "corrected_claim": "Three of four flags reproduce at 98-99% on the closed bar F1; new_hod at 96% under the best of three definitions; STRONG flag 97.5% agreement. Flags are usable with ~2.5% label noise; their 99.4%/99.2% not reached; complete_bar_used not verifiable from picks_master.",
+   "methodology_concerns": "Definitional freedom in new_hod; forming-bar evaluation cannot be fully excluded but is inconsistent with 98% bar_green agreement."
+  },
+  {
+   "claim_id": "F4-1",
+   "verdict": "PARTIALLY_CONFIRMED",
+   "refuted": true,
+   "recomputed_numbers": "Features rebuilt from bars1d (UTC dates), coverage 99.8%. Spearman DISC/TEST: gap_pct +0.097/+0.011, vol_20d +0.035/-0.030, atr14 +0.034/-0.021, ret_5d -0.024/-0.026, ret_20d +0.020/+0.021, rs_vs_spy_20d +0.013/+0.027, spy_dist_ma20 +0.034/-0.018 (match to 3 dp). TEST Q5-Q1 all stock features span 0 (gap_pct +0.054 CI[-0.123,0.222]). EXCEPTION spy_gap: TEST rho +0.095, Q5-Q1 +0.286 CI[0.127,0.429], DISC rho +0.005.",
+   "corrected_claim": "No stock-level multi-day feature carries OOS expectancy; the one context feature above the |0.04| TEST ceiling is the market-level SPY opening gap (rho +0.095), which is absent in DISC, identical to A5-F6, and beta.",
+   "methodology_concerns": "Universal 'no feature' wording fails for spy_gap; sign-consistency across months not a validation; rs_vs_spy_20d Q5-Q1 borderline (CI[-0.001,0.285]) with no DISC support."
+  },
+  {
+   "claim_id": "F4-2",
+   "verdict": "CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "Payload HGB: TEST AUC 0.568, top decile n=679 -0.013 CI[-0.153,0.129] (identical). Payload+10 context: AUC 0.595 (train 0.803), top decile -0.046 CI[-0.169,0.086] hit 21.1%; ex-ante DISC-thr n=395 -0.057; bottom20% -0.117; monthly top-quintile Jul -0.127/Aug +0.019/Sep -0.106. Increment over payload -0.033R (theirs +0.025), n.s. 85-95% of top decile is the 09:30-10 bucket.",
+   "corrected_claim": "As stated; with my feature set the context increment is slightly negative; hit-rate AUC gain reflects early/wide-stop entries, not expectancy.",
+   "methodology_concerns": "Top-decile threshold from TEST quantile (mild); heavy train/test AUC gap; their +0.012 not reproduced but irrelevant to the null conclusion."
+  },
+  {
+   "claim_id": "F5-1",
+   "verdict": "CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "All-bars label n=755,459 (210 tickers, 60 days): hit 11.4% stop 54.2% EOD 34.4%, avgR -0.067 CI[-0.127,-0.005], pnl -0.053%, median stop 0.63%; 60/60 decision times negative (-0.016 at 09:35 to -0.131); months Jun -0.213 CI[-0.372,-0.080], Jul -0.033 CI[-0.135,0.073], Aug -0.014 CI[-0.103,0.085], Sep -0.136 CI[-0.262,-0.009]. Picked-bar label -0.0908 vs log -0.0912 (n=7695).",
+   "corrected_claim": "Base rate reproduces to 0.003R under a different ATR convention; 'negative in every month' is point-estimate only (Jul/Aug CIs include 0); volatility terciles not re-checked.",
+   "methodology_concerns": "60-day window coincides with the scanner's weak stretch; ATR/entry conventions differ but results insensitive."
+  },
+  {
+   "claim_id": "F5-2",
+   "verdict": "CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "Picked n=7695 hit 10.6% avgR -0.091 vs bucket-mix expectation 10.5%/-0.069; same-day-same-bucket excess avgR -0.022 CI[-0.053,+0.010], excess hit +0.15pp CI[-0.60,+0.80]; disc -0.009 CI[-0.047,0.028], test -0.036 CI[-0.084,0.013]. 09:35: picked 18.4%/+0.005 vs 13.8%/-0.048; disc +0.126 CI[-0.016,0.251] -> test -0.028 CI[-0.173,0.138]. STRONG n=2222 label -0.085 excess -0.022 CI[-0.086,0.044]; TRADEABLE 756 -0.092; ELITE 116 -0.074.",
+   "corrected_claim": "No positive selection edge: point estimate is slightly worse than random same-time bars (-0.02R); CI excludes any edge above +0.01R before costs; the 09:35 gap flips OOS.",
+   "methodology_concerns": "Control pools all tickers same day/bucket; no within-ticker control; labels use my ATR stop (agrees with log within 0.001R)."
+  },
+  {
+   "claim_id": "A5-F3",
+   "verdict": "CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "SPY o->c >+0.3%: 29 days n=3546 +0.191 CI[0.106,0.287]; flat 48 d n=5769 -0.115 CI[-0.175,-0.056]; down 23 d n=2888 -0.150 CI[-0.234,-0.054]; DISC +0.241 TEST +0.133; corr(daily avgR, SPY o->c) 0.58. Close->close: up +0.084 CI[-0.001,0.162], flat -0.009, down -0.206.",
+   "corrected_claim": "Exact as a concurrent (oracle) description of beta; 'only' holds for o->c, not c->c; not an ex-ante signal.",
+   "methodology_concerns": "Conditioning on the same-day full-session return is look-ahead by construction; A5's own JSON flags it as not tradeable."
+  },
+  {
+   "claim_id": "A5-F6",
+   "verdict": "CONFIRMED",
+   "refuted": false,
+   "recomputed_numbers": "SPY 09:35 (close of 09:30 bar) > prior official close, Jul-Sep: kept n=3882 (57%) +0.007 CI[-0.067,0.086] vs dropped n=2908 -0.184 CI[-0.248,-0.114], diff CI[0.084,0.289]; kept after 0.15R cost -0.143. SPY&QQQ: kept 46% +0.010 vs -0.147, diff CI[0.042,0.275]. Daily-open proxy (94% agreement): Apr-Jun diff CI[-0.154,0.185], Jul-Sep CI[0.067,0.288]. Kept-day SPY o->c +0.10% vs dropped -0.10%; kept beats dropped only for picks after 10:00.",
+   "corrected_claim": "Numbers reproduce, but a gate present only in the test window and absent in discovery fails the two-window discipline; it is a gap-continuation beta proxy that never yields positive expectancy (kept book -0.14R after costs). 'The only ex-ante signal' is unverifiable.",
+   "methodology_concerns": "Test-window-only discovery; several gate definitions tried (SPY-only, SPY&QQQ, either, daily proxy); regime dependence likely; still negative after costs."
+  }
+ ],
+ "notes": "Verifier (V). Tool calls used: 5 of 14. Files: SP/research/V_all_claims.py (one independent script, no analyst imports), SP/research/V_all_claims_out.txt (153-line printed block, one per claim with my number vs theirs, n, window, cluster-bootstrap CI by date 1000 reps seed 0), SP/research/V_report.md (full report), SP/research/V_pick_replica.csv (8,053 picks >=06-17 with replica outcomes, S4/S5, timing, F1 flags), SP/research/V_allbars_labels.csv.gz (755,459 all-bars labels). Recompute recipes: every number above is printed by V_all_claims.py; e.g. F1-2: df=read_csv(picks_master); s=df[(df.date>='2026-07-01')&(df.strong_signal.astype(str)=='True')]; s.r_realized.mean() -> -0.088 n=1951. F5-2: L=read_csv(V_allbars_labels.csv.gz); m=L[~L.picked].groupby(['date','b']).R.mean(); X=L[L.picked].join(m.rename('Rnp'),on=['date','b']); (X.R-X.Rnp).mean() -> -0.022. A5-F6: spy=bars1d/SPY with UTC dates, prev close = close.shift(1); s935 = bars5m/SPY close of the 09:30 bar per date; kept = picks Jul-Sep on dates with s935>prev; kept avgR +0.007 (n=3882) vs dropped -0.184. Scorecard: 8 CONFIRMED, 3 PARTIALLY_CONFIRMED (F1-1, F3-2, F4-1), 0 REFUTED; F1-1 and F4-1 refuted as literally stated (TEST-half drift significantly negative and EOD attribution model-dependent; spy_gap exceeds the claimed |rho| ceiling in TEST but is DISC-absent and beta). The finishers' arithmetic reproduces to ~3 decimals across the board; the only over-reach is in wording. Not verified within budget: the '36 rules' count and MC drift fit (F1), complete_bar_used (F3-2), volatility terciles (F5-1), vendor independence of the log's bars (F2-1), within-ticker control (F5-2). Overall conclusion stands: no tier, feature, model, or gate shows positive expectancy out of sample; the book is beta plus ~0.15R/trade of unmodelled cost."
+}
