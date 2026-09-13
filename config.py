@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 # (_head.html). Before v3.8.3 each surface was hand-bumped and drifted
 # (footer was stuck at 3.7.4, cache-bust at 3.8.0 while the app was 3.8.2).
 # Bump THIS on every release; the pre-push hygiene hook checks the rest.
-APP_VERSION = "3.8.3"
+APP_VERSION = "3.8.4"
 
 # ── Timezone ─────────────────────────────────────────────────
 ET = ZoneInfo("America/New_York")

@@ -16,7 +16,7 @@ Intraday day-trading signals. Run: `python app.py`. Scans ~200 tickers every 15 
 - **STRONG** = 4-way AND on the last *closed* RTH bar: `bar_green ∧ above_vwap ∧ new_hod ∧ pm_high_hold`.
 - **ELITE** = `config.is_elite()` — the single source of truth. STRONG + cat D + RVOL∈[2,5) + RSI≥68 + entry 09:30–10:00 ET + stop≥0.9%.
 - Persistence: picks → `data/{date}.json`; post-market P&L (4:15p) → `data/performance_log.json`. `data_seed/` bootstraps the Railway volume. (`data/` is gitignored — local runtime only.)
-- Email: `notifier.py` via Resend API, gated ELITE-only by default (`NOTIFY_ELITE_ONLY=1`).
+- Email: `notifier.py` via Resend API. **Off by default since v3.8.4** (`NOTIFY_ENABLED` defaults to false; the 100-day review found no edge). When enabled, gated ELITE-only (`NOTIFY_ELITE_ONLY=1`).
 - Config lives in `config.py`; every threshold cites a backtest window — preserve/extend the citation when changing one.
 
 ## Service 2 — Themes Research (`themes/` + `themes_web/`, separate FastAPI)

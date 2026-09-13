@@ -34,7 +34,9 @@ Configuration (env vars):
                               the Resend sandbox sender. For multi-recipient
                               delivery, this must be on a verified custom domain.
     NOTIFY_EMAIL            — comma-separated recipient list. Required.
-    NOTIFY_ENABLED          — "true"/"false". Defaults to "true".
+    NOTIFY_ENABLED          — "true"/"false". Defaults to "false" since v3.8.4
+                              (emails off unless explicitly enabled; the 100-day live
+                              review found no tradeable edge in the picks).
     NOTIFY_MIN_SIGNALS      — int, minimum matching-signal count to trigger
                               an email. Defaults to 1.
     NOTIFY_CATEGORIES       — comma-separated subset of {A,B,C,D}. Defaults
@@ -88,7 +90,10 @@ def _env(name: str, default: str = "") -> str:
 
 
 def _enabled() -> bool:
-    return _env("NOTIFY_ENABLED", "true").lower() in ("1", "true", "yes", "on")
+    # v3.8.4: default OFF. The 100-day live review (research_findings_100day_review.md)
+    # found the picks have no edge (-0.03R gross, ~-0.23R net per trade); the operator
+    # asked to stop the emails. Set NOTIFY_ENABLED=true in the environment to re-enable.
+    return _env("NOTIFY_ENABLED", "false").lower() in ("1", "true", "yes", "on")
 
 
 def _is_configured() -> bool:
