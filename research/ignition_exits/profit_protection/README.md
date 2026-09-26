@@ -159,6 +159,59 @@ had *higher* average returns than the ones it took: +45% vs +21% on train,
 Hold-252 with no sell line beat R0 in both periods at K=20. That is mostly the
 survivorship bias noted above, and is a reference only.
 
+## Trimming winners (same day)
+
+The portfolio test found the current rule is capital-bound: winners are never
+trimmed. So I tested trimming, keeping the current exit rule. `TRIM_PREREG.md`
+was written first. Two independent builds (`trim_A.py`, `trim_B.py`) agree to
+1e-14, and their T0 reproduces R0 exactly.
+
+| Variant (10 bps) | Train K=20 CAGR / maxDD | Train K=10 | Holdout K=20 CAGR / maxDD | Holdout K=10 |
+|---|---|---|---|---|
+| **T0 no trim (current)** | **23.3% / −37.0%** | **29.8%** | **24.5% / −31.7%** | **16.6%** |
+| T1 above 2× target → back to target | 20.7% / −35.3% | 28.8% | 20.9% / −26.8% | 18.5% |
+| T2 above 3× → back to target | 21.9% / −37.1% | 28.4% | 21.6% / −30.5% | 17.4% |
+| T3 hard cap at 2× | 22.6% / −36.4% | 28.5% | 24.1% / −29.5% | 18.0% |
+| T4 hard cap at 3× | 23.4% / −37.0% | 29.5% | 26.5% / −31.8% | 16.6% |
+| **T5 trim to fund a new entry** | **23.8% / −35.1%** | **30.6%** | **27.8% / −31.1%** | **21.0%** |
+| T6 quarterly trim-only | 21.7% / −35.0% | 28.0% | 21.7% / −28.0% | 18.3% |
+| T7 monthly full rebalance | 22.9% / −34.9% | 27.9% | 21.7% / −27.1% | 19.1% |
+
+**By the protocol, T5 passes on train and is confirmed on holdout.**
+- Train: +0.5 pp CAGR, a shallower drawdown and a higher Sharpe.
+- Holdout: +3.2 pp CAGR, and a Sharpe of 1.03 vs 0.90.
+- The mechanism works as intended. When a new fire arrives and cash is short,
+  T5 sells from the most overweight positions. The money funded entries that
+  beat the slices sold: 0.53 vs 0.38 of initial capital on train (K=20). This
+  holds in all four period/K cells.
+
+**The skeptic's verdict: fragile, so the CAGR edge is not established.**
+- Across every K from 8 to 40, T5 beats no-trim at only **5 of 33 K on train**.
+  The pre-registered 10 and 20 happen to be two of them. On holdout it wins
+  13 of 33. The median effect is about −1.2 pp.
+- T5 fails the train decision under 5 of 13 same-day tie-break orders.
+- No-trim's own CAGR swings 1.6 pp just from tie-break order. That is three
+  times T5's train margin.
+- A holdout starting 2022-07 reverses the confirmation (−5.5 pp).
+- Caveat on my own design: the GME gate (P4) was vacuous. The current rule
+  never held GME in any variant, so P4 only repeated P1.
+
+**The reliable effect of trimming is risk, not return.**
+- On holdout, T5 had a shallower drawdown at 32 of 33 K.
+- The steadiest risk reducer is **T3, a hard cap at 2× target weight**. Across
+  K, it gives a better Sharpe at 27/33 (train) and 26/33 (holdout), and a
+  shallower drawdown at 28/33 and 31/33, for a median of about −0.5 pp CAGR.
+- Turnover and costs are negligible: trimmed value is 0.1-0.3× equity per year.
+
+Combining trim-to-fund with the 6-month exit made the 6-month rule *worse* at
+K=20 in both periods, so the two ideas don't stack.
+
+**Wider lesson.** For this signal, portfolio CAGR differences of a few points
+are inside the path noise. The noise comes from which trades a
+capital-constrained book happens to catch in bursts like Mar-2020, and it
+shows up across K, tie-break order and start date. Portfolio-level claims
+need a sweep across those, not one configuration.
+
 ## Decision
 - **The current sell rule is unchanged.** Neither study passed its
   pre-registered bar.
@@ -170,6 +223,11 @@ The evidence is now split by regime. 2016-21 (one GME-sized outlier) says no;
 2022-26 says A10 compounds faster *and* with a shallower drawdown. Per trade,
 it costs ~6 pp of mean. As a portfolio, its recycled capital more than repaid
 that in the holdout.
+
+**Trimming (above):** T5 passed the pre-registered test, but its return edge
+does not survive a sweep of K and tie-break order. If trimming is wanted, adopt
+it for risk: a 2× weight cap (T3) smooths the ride for ~0.5 pp CAGR. Don't
+adopt it for return.
 
 The honest next step is forward evidence, not more backtest variants. Track
 the flag's live what-if against the live rule, and revisit when a meaningful

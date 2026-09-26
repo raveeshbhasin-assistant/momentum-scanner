@@ -100,5 +100,11 @@ exploratory only: sell at session 126 if up 0-30%.
 passed on train, and that result hinges on one trade (GME 2020). On the
 2022-26 holdout, the 126-session rule beat the current rule: 37.0% vs 24.5%
 CAGR, with a shallower drawdown. The current rule is capital-bound: it never
-trims winners and skips ~37% of new fires. Full study:
+trims winners and skips ~37% of new fires.
+
+**Trimming winners:** "trim to fund a new entry" passed the pre-registered
+test (+0.5 pp train, +3.2 pp holdout CAGR at K=20). But it wins at only 5 of
+33 portfolio sizes and fails under 5 of 13 tie-break orders, so the return
+edge is not established. The robust effect is risk: a 2× weight cap cuts
+drawdown at nearly every K for ~0.5 pp CAGR. Full study:
 `profit_protection/README.md`.
