@@ -42,6 +42,7 @@ from themes_web.render import (
 from themes_web.scheduler import (
     refresh_ignition,
     refresh_referrals,
+    run_local_ignition_scan,
     start_scheduler,
     stop_scheduler,
     trigger_manual_refresh,
@@ -467,24 +468,48 @@ def api_refresh_referrals():
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 
-_IGNITION_LATEST = _HERE.parent / "ignition" / "data" / "latest.json"
+_IGNITION_DIR = _HERE.parent / "ignition" / "data"
+_STATUS_ORDER = {"SELL_PENDING": 0, "NEW": 1, "REFIRED": 2, "HOLD": 3, "EDGE_EXPIRED": 4}
 
 
 def _load_ignition() -> Optional[dict]:
-    if not _IGNITION_LATEST.exists():
+    latest = _IGNITION_DIR / "latest.json"
+    if not latest.exists():
         return None
     try:
-        return json.loads(_IGNITION_LATEST.read_text(encoding="utf-8"))
+        ig = json.loads(latest.read_text(encoding="utf-8"))
     except Exception:
         logger.exception("Could not read ignition/data/latest.json")
         return None
+    if ig.get("version") != 2:
+        return None
+    runs = []
+    runs_path = _IGNITION_DIR / "runs.jsonl"
+    if runs_path.exists():
+        for line in runs_path.read_text(encoding="utf-8").splitlines():
+            try:
+                runs.append(json.loads(line))
+            except Exception:
+                continue
+    source = _IGNITION_DIR / "source.txt"
+    ig["runs"] = runs[::-1]
+    ig["source"] = source.read_text(encoding="utf-8").strip() if source.exists() else "unknown"
+    return ig
 
 
 @app.get("/ignition", response_class=HTMLResponse)
 def ignition_page(request: Request):
-    """Ignition Watch — daily scan of the S&P 500+400 for the backtested
-    momentum-ignition signal. Data comes from the standalone ignition/
-    module (weekdays 17:00 ET, or POST /api/refresh_ignition)."""
+    """Ignition Watch — the ignition-signal position ledger (fires, holds,
+    sell signals) plus the run log. Data: the `ignition-data` branch, written
+    by the daily GitHub Actions scan (see ignition/README.md)."""
+    ig = _load_ignition()
+    open_pos, closed_pos = [], []
+    if ig:
+        open_pos = sorted((p for p in ig["positions"] if p["status"] != "CLOSED"),
+                          key=lambda p: (_STATUS_ORDER.get(p["status"], 9),
+                                         -int(p["fired"].replace("-", ""))))
+        closed_pos = sorted((p for p in ig["positions"] if p["status"] == "CLOSED"),
+                            key=lambda p: p["sell_signal"] or "", reverse=True)
     return templates.TemplateResponse(
         request=request,
         name="ignition.html",
@@ -493,7 +518,9 @@ def ignition_page(request: Request):
             "active_page": "ignition",
             "tracker": None,
             "all_themes": discover_themes_full(),
-            "ig": _load_ignition(),
+            "ig": ig,
+            "open_pos": open_pos,
+            "closed_pos": closed_pos,
         },
     )
 
@@ -503,15 +530,15 @@ def api_ignition():
     ig = _load_ignition()
     if ig is None:
         return JSONResponse({"error": "No scan yet — POST /api/refresh_ignition"}, status_code=404)
-    ig.pop("first_seen", None)
     return ig
 
 
 @app.post("/api/refresh_ignition", response_class=JSONResponse)
-def api_refresh_ignition():
-    """Manually rerun the Ignition Watch scan. Blocks ~1-2 min."""
-    result = refresh_ignition()
-    return {"ok": result.get("returncode") == 0, "result": result}
+def api_refresh_ignition(local: int = 0):
+    """Pull the latest run from the ignition-data branch (fast). With
+    ?local=1, run the scan on this container instead (~1-2 min)."""
+    result = run_local_ignition_scan() if local else refresh_ignition()
+    return {"ok": result.get("ok", result.get("returncode") == 0), "result": result}
 
 
 @app.post("/api/rescore/{slug}", response_class=JSONResponse)

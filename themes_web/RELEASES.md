@@ -7,7 +7,49 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.5.0 — 2026-09-26 **(current)**
+## v1.6.0 — 2026-09-26 **(current)**
+
+**What** Ignition Watch becomes a position ledger with a sell signal and a
+permanent run log.
+- `ignition/scan.py` replays every fire since 2025-01-02 as a position
+  (bought at the next open). Statuses: NEW / HOLD / REFIRED /
+  EDGE_EXPIRED / SELL_PENDING / CLOSED. A position sells on **ignition
+  failed** (a close below the pre-ignition base) or ages out after 252
+  sessions without a re-fire. The ledger is rebuilt from prices each run,
+  so skipped runs can't lose events. Anything since the previous run is
+  reported as new.
+- New `.github/workflows/ignition-daily.yml` is now the scan of record. It
+  runs weekdays at 21:30 UTC and commits every run (`latest.json`,
+  `runs.jsonl`, `history/`) to the `ignition-data` branch. That branch is
+  not main, so there's no redeploy. themes_web now **syncs** from the
+  branch every 30 minutes and at boot, replacing the 17:00 ET in-app scan.
+  Local scan remains as a fallback only, via
+  `POST /api/refresh_ignition?local=1`.
+- `/ignition` page redone: alerts since the previous run, KPIs, open
+  positions with each one's sell line and room to it, closed positions,
+  run log, near misses and RS leaders.
+- Research: `research/ignition_exits/` — 28 exit rules on 748 trades,
+  train/holdout/live splits.
+
+**Why** Operator: remember every run's outcome, and say when a breakout is
+unlikely to continue so the stock should be sold. The operator also asked
+whether dropping off the list (CNH) means sell. It doesn't: that was the
+worst of 28 rules. Stocks that were off the list the next day still
+returned +11.6% over 3 months, vs +4.6% for all stocks. The pre-ignition
+base close was the only exit near the top in all three splits.
+
+**Verified** `pytest` green (43, including 6 new ledger and render tests
+on synthetic prices). Full scan run end to end on live Yahoo data: 107
+positions since 2025, CNH = HOLD with its sell line at $11.83. `/ignition`
+and `/api/ignition` render from real output. The workflow is confirmed on
+its first run after the push.
+
+**Rollback** Revert the commit. The `ignition-data` branch can stay
+(inert) or be deleted.
+
+---
+
+## v1.5.0 — 2026-09-26
 
 **What** New `/ignition` page: Ignition Watch. A daily scan of the S&P 500
 + 400 (903 stocks) for the momentum-ignition signal: a +12% week on 1.5×

@@ -7,14 +7,18 @@ Also exposes a manual trigger via POST /api/refresh.
 """
 from __future__ import annotations
 
+import json
 import logging
+import os
 import subprocess
 import sys
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 
 logger = logging.getLogger(__name__)
 
@@ -98,25 +102,56 @@ def refresh_referrals() -> dict:
     return result
 
 
-_IGNITION_LATEST = _PROJECT_ROOT / "ignition" / "data" / "latest.json"
+_IGNITION_DATA = _PROJECT_ROOT / "ignition" / "data"
+_IGNITION_LATEST = _IGNITION_DATA / "latest.json"
+# The scan of record runs in GitHub Actions (.github/workflows/ignition-daily.yml)
+# and commits to the `ignition-data` branch, which survives Railway redeploys.
+IGNITION_DATA_URL = os.getenv(
+    "IGNITION_DATA_URL",
+    "https://raw.githubusercontent.com/raveeshbhasin-assistant/momentum-scanner/ignition-data/ignition/data",
+)
 
 
-def refresh_ignition() -> dict:
-    """
-    Rerun the Ignition Watch scan (ignition/ is a standalone module —
-    subprocess keeps the no-cross-import rule). ~1-2 min: downloads 2.5y of
-    daily bars for ~900 tickers. Also callable via POST /api/refresh_ignition.
-    """
-    logger.info("[scheduler] ignition scan starting")
+def run_local_ignition_scan() -> dict:
+    """Run ignition/scan.py here (subprocess keeps the no-cross-import rule).
+    ~1-2 min. Fallback only — its output lives on this container's disk."""
+    logger.info("[scheduler] local ignition scan starting")
     try:
         r = subprocess.run([_PYTHON, "ignition/scan.py"], cwd=_PROJECT_ROOT,
                            capture_output=True, text=True, timeout=1200)
         if r.returncode != 0:
             logger.warning(f"[scheduler] ignition scan non-zero: {r.returncode}")
-        return {"returncode": r.returncode, "tail": (r.stdout + r.stderr)[-400:]}
+        (_IGNITION_DATA / "source.txt").write_text("local", encoding="utf-8")
+        return {"source": "local", "returncode": r.returncode, "tail": (r.stdout + r.stderr)[-400:]}
     except Exception as e:
         logger.exception(f"[scheduler] ignition scan failed: {e}")
-        return {"error": str(e)}
+        return {"source": "local", "error": str(e)}
+
+
+def refresh_ignition() -> dict:
+    """
+    Sync Ignition Watch data from the `ignition-data` branch (the durable run
+    log). Falls back to a local scan only when GitHub is unreachable and there
+    is no data on disk. Also callable via POST /api/refresh_ignition.
+    """
+    _IGNITION_DATA.mkdir(parents=True, exist_ok=True)
+    try:
+        got = {}
+        for name in ("latest.json", "runs.jsonl"):
+            with urllib.request.urlopen(f"{IGNITION_DATA_URL}/{name}", timeout=30) as resp:
+                got[name] = resp.read()
+        json.loads(got["latest.json"])  # refuse to install a truncated/invalid file
+        for name, body in got.items():
+            tmp = _IGNITION_DATA / f"{name}.tmp"
+            tmp.write_bytes(body)
+            tmp.replace(_IGNITION_DATA / name)
+        (_IGNITION_DATA / "source.txt").write_text("github", encoding="utf-8")
+        return {"source": "github", "ok": True}
+    except Exception as e:
+        logger.warning(f"[scheduler] ignition sync from GitHub failed: {e}")
+        if not _IGNITION_LATEST.exists():
+            return run_local_ignition_scan()
+        return {"source": "github", "ok": False, "error": str(e)}
 
 
 def _scheduled_job():
@@ -163,25 +198,22 @@ def start_scheduler() -> BackgroundScheduler:
         replace_existing=True,
         misfire_grace_time=6 * 3600,
     )
-    # Ignition Watch: 17:00 ET weekdays — an hour after the close so Yahoo's
-    # daily bars are final, and before the 18:00 themes job.
+    # Ignition Watch: the scan itself runs in GitHub Actions after the close;
+    # this just pulls the latest run from the ignition-data branch. It runs
+    # right away at boot too, because the disk is wiped on every deploy.
     _scheduler.add_job(
         refresh_ignition,
-        trigger=CronTrigger(hour=17, minute=0, day_of_week="mon-fri",
-                            timezone="America/New_York"),
-        id="ignition_daily_scan",
-        name="Daily Ignition Watch scan",
+        trigger=IntervalTrigger(minutes=30),
+        next_run_time=datetime.now(),
+        id="ignition_sync",
+        name="Ignition Watch sync from ignition-data branch",
         replace_existing=True,
-        misfire_grace_time=3600,
+        max_instances=1,
+        misfire_grace_time=900,
     )
-    # The container's disk is wiped on every deploy, so rebuild the page
-    # right away rather than leaving /ignition empty until 17:00.
-    if not _IGNITION_LATEST.exists():
-        _scheduler.add_job(refresh_ignition, id="ignition_boot_scan",
-                           name="Ignition Watch boot scan", replace_existing=True)
     _scheduler.start()
     logger.info("[scheduler] Started. Daily refresh 18:00 ET weekdays; "
-                "ignition scan 17:00 ET weekdays; "
+                "ignition sync every 30 min; "
                 "referral refresh monthly (1st, 19:00 ET).")
     return _scheduler
 

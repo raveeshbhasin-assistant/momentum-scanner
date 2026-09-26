@@ -1,24 +1,35 @@
 """
-ignition/scan.py — daily Ignition Watch scan (standalone module).
+ignition/scan.py — Ignition Watch scan + position ledger (standalone module).
 
-Scans the S&P 500 + 400 universe (universe.txt) for the IGNITION signal and
-writes ignition/data/latest.json for themes_web's /ignition page. Run as a
-subprocess by themes_web/scheduler.py (weekdays 17:00 ET) or by hand:
+Scans the S&P 500 + 400 universe (universe.txt) for the IGNITION signal,
+replays every fire since LEDGER_START as a position, applies the exit rule,
+and writes ignition/data/{latest.json, runs.jsonl, history/<asof>.json}.
 
-    python ignition/scan.py
+    python ignition/scan.py            # full scan (needs Yahoo access)
 
-Signal (backtest 2016-2026, 903 tickers, 2.18M ticker-days — see README.md):
-    IGNITION = 5-day return > +12%
-               AND 21-day avg volume > 1.5x its 126-day avg
-               AND 50-DMA > 200-DMA
-               (price > $3, 21-day avg dollar volume > $5M)
-    After a fire: 26.9% traded >= +40% above entry within 63 sessions vs
-    4.6% baseline; mean 63-session return +17.0% vs +4.5%; 22.7% saw a
-    -20% drawdown first vs 11.7% baseline.
+Run of record: .github/workflows/ignition-daily.yml (weekdays after the
+close), which commits the data to the `ignition-data` branch so every run is
+kept in git. themes_web only reads that branch (scheduler.refresh_ignition).
 
-Fires are derived from price history, so the 90-session fire log rebuilds
-itself after a redeploy wipes the container. Only the "first seen" date and
-NEW badge use the previous latest.json, with a days-ago fallback when absent.
+SIGNAL (backtest 2016-2026, 903 tickers, 2.18M ticker-days — README.md):
+    IGNITION = 5-day return > +12% AND 21-day avg volume > 1.5x its 126-day
+    avg AND 50-DMA > 200-DMA (price > $3, 21-day avg dollar volume > $5M).
+
+EXIT (research/ignition_exits/README.md — 748 trades, train 2016-21, holdout
+2022-25, live 2025-26):
+    SELL  = close below the pre-ignition base (the close 5 sessions before
+            the fire: the whole ignition week given back). Sell next open.
+            Best price-based exit in train, holdout AND live.
+    Dropping off the signal list is NOT a sell — it was the worst of 28
+    rules tested; fires that are gone the next day still returned +11.6%
+    over 63 sessions vs +4.6% baseline.
+    EDGE EXPIRED = 63 sessions since the last fire without a re-fire. The
+            signal's excess return is concentrated in that window; a review
+            flag, not a sell.
+    A position with no re-fire for 252 sessions is closed as TIME.
+
+The ledger is rebuilt from prices every run, so a missed run never loses an
+event: anything that happened since the previous run is reported as new.
 """
 from __future__ import annotations
 
@@ -34,17 +45,22 @@ import pandas as pd
 HERE = Path(__file__).parent
 DATA_DIR = HERE / "data"
 LATEST = DATA_DIR / "latest.json"
+RUNS = DATA_DIR / "runs.jsonl"
 HISTORY_DIR = DATA_DIR / "history"
 ET = ZoneInfo("America/New_York")
 
-LOOKBACK_SESSIONS = 90   # fires shown on the page
-NEW_FALLBACK_DAYS = 3    # NEW = fired within this many sessions when no prior scan exists
+LEDGER_START = "2025-01-02"
 BATCH = 150
 
 R5_MIN = 0.12
 VOLR_MIN = 1.5
 MIN_PRICE = 3.0
 MIN_DOLLAR_VOL = 5e6
+BASE_LAG = 5          # pre-ignition base = close BASE_LAG sessions before the fire
+EDGE_WINDOW = 63      # sessions after the last fire where the edge lives
+REFIRE_GAP = 5        # a re-fire needs the signal off for this many sessions first
+REFIRE_HOT = 20       # re-fired within this many sessions = strongest state
+MAX_QUIET = 252       # close a position after this many sessions without a re-fire
 
 BACKTEST = {
     "window": "2016-2026, S&P 500+400 (903 tickers), 2.18M ticker-days, 2,271 fires",
@@ -54,166 +70,295 @@ BACKTEST = {
     "p_dd20_63d": 22.7, "p_dd20_baseline": 11.7,
     "years_positive": "10 of 11",
 }
+EXIT_RESEARCH = {
+    "trades": 748,
+    "dropoff_fwd63": 11.6, "stayon_fwd63": 15.4, "baseline_fwd63": 4.6, "p_off_next_day": 39.4,
+    "rules_tested": 28,
+    "base_fail_mean": {"train": 36.7, "holdout": 33.7, "live": 12.7},
+    "dropoff_mean": {"train": -1.8, "holdout": -0.5, "live": -1.1},
+    "refire_xs63": {"train": 4.3, "holdout": 16.7},
+    "no_refire_xs63": {"train": 0.3, "holdout": 5.3},
+}
 
 
 def load_universe() -> list[str]:
     tickers: set[str] = set()
     for line in (HERE / "universe.txt").read_text(encoding="utf-8").splitlines():
-        if line.startswith("#"):
-            continue
-        tickers.update(t for t in line.split() if t)
+        if not line.startswith("#"):
+            tickers.update(t for t in line.split() if t)
     return sorted(tickers)
 
 
-def download(tickers: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """~2.5 years of adjusted daily closes + volume (252d lookback + 200dma)."""
+def download(tickers: list[str]) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Adjusted daily open/close/volume from ~430 days before LEDGER_START."""
     import yfinance as yf
 
-    start = (datetime.now(timezone.utc) - timedelta(days=920)).strftime("%Y-%m-%d")
-    closes, vols = [], []
+    start = (pd.Timestamp(LEDGER_START) - timedelta(days=430)).strftime("%Y-%m-%d")
+    opens, closes, vols = [], [], []
     for i in range(0, len(tickers), BATCH):
         d = yf.download(tickers[i:i + BATCH], start=start, auto_adjust=True,
                         progress=False, threads=True)
         if d.empty:
             continue
+        opens.append(d["Open"].astype("float32"))
         closes.append(d["Close"].astype("float32"))
         vols.append(d["Volume"].astype("float32"))
     if not closes:
         raise RuntimeError("yfinance returned no data for any batch")
-    close = pd.concat(closes, axis=1)
-    vol = pd.concat(vols, axis=1)
-    close = close.loc[:, ~close.columns.duplicated()].sort_index()
-    vol = vol.loc[:, ~vol.columns.duplicated()].sort_index()
-    # Drop a trailing row that only a handful of tickers have (partial intraday bar).
-    if len(close) > 1 and close.iloc[-1].notna().mean() < 0.5:
-        close, vol = close.iloc[:-1], vol.iloc[:-1]
-    return close, vol
+
+    def join(parts):
+        df = pd.concat(parts, axis=1)
+        return df.loc[:, ~df.columns.duplicated()].sort_index()
+
+    o, c, v = join(opens), join(closes), join(vols)
+    # Drop a trailing row only a handful of tickers have (a partial intraday bar).
+    if len(c) > 1 and c.iloc[-1].notna().mean() < 0.5:
+        o, c, v = o.iloc[:-1], c.iloc[:-1], v.iloc[:-1]
+    return o, c, v
 
 
-def _pct(x: float) -> float | None:
+def _pct(x) -> float | None:
     return None if x is None or not np.isfinite(x) else round(float(x) * 100, 1)
 
 
-def compute(close: pd.DataFrame, vol: pd.DataFrame, prev: dict | None) -> dict:
+def _px(x) -> float | None:
+    return None if x is None or not np.isfinite(x) else round(float(x), 2)
+
+
+def signals(close: pd.DataFrame, vol: pd.DataFrame) -> dict:
     r5 = close.pct_change(5, fill_method=None)
     r63 = close.pct_change(63, fill_method=None)
     r252 = close.pct_change(252, fill_method=None)
     volr = vol.rolling(21).mean() / vol.rolling(126).mean()
     golden = close.rolling(50).mean() > close.rolling(200).mean()
     dollar_vol = (close * vol).rolling(21).mean()
-    hi252 = close.rolling(252).max()
-    rs63 = r63.sub(r63.mean(axis=1), axis=0)
     valid = (close > MIN_PRICE) & (dollar_vol > MIN_DOLLAR_VOL) & r252.notna()
     sig = (r5 > R5_MIN) & (volr > VOLR_MIN) & golden & valid
+    return {"r5": r5, "r63": r63, "volr": volr, "golden": golden, "valid": valid, "sig": sig,
+            "hi252": close.rolling(252).max()}
 
-    asof = close.index[-1]
-    scan_date = str(asof.date())
-    prev_first_seen: dict[str, str] = (prev or {}).get("first_seen", {})
-    prev_keys = set(prev_first_seen) if prev else None
 
-    # A halted or late-printing ticker can be missing today's bar; carry its
-    # last close so "now" columns stay numeric.
-    last_px = close.ffill(limit=5).iloc[-1]
-    last_r63 = close.ffill(limit=5).pct_change(63, fill_method=None).iloc[-1]
-    last_rs63 = last_r63 - last_r63.mean()
+def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[list, list]:
+    """Replay every fire since LEDGER_START as a position. Returns (positions, events)."""
+    dates = close.index
+    n = len(dates)
+    start_i = int(dates.searchsorted(pd.Timestamp(LEDGER_START)))
+    S, O, C = f["sig"].values, open_.values, close.values
+    R5, VR = f["r5"].values, f["volr"].values
+    ds = [str(d.date()) for d in dates]
+    positions, events = [], []
 
-    fires, first_seen = [], {}
-    recent = sig.iloc[-LOOKBACK_SESSIONS:]
-    n = len(close.index)
-    for t in recent.columns[recent.any().values]:
-        if not np.isfinite(last_px[t]):
-            continue
-        col = recent[t]
-        d0 = col[col].index[-1]
-        i = close.index.get_loc(d0)
-        key = f"{t}|{d0.date()}"
-        days_ago = n - 1 - i
-        is_new = (key not in prev_keys) if prev_keys is not None else days_ago < NEW_FALLBACK_DAYS
-        first_seen[key] = prev_first_seen.get(key, scan_date)
-        ret_since = last_px[t] / close[t].iloc[i] - 1
-        fires.append({
-            "ticker": t,
-            "fired": str(d0.date()),
-            "days_ago": int(days_ago),
-            "first_seen": first_seen[key],
-            "new": bool(is_new),
-            "r5_at_fire": _pct(r5[t].iloc[i]),
-            "volr_at_fire": round(float(volr[t].iloc[i]), 2),
-            "price_at_fire": round(float(close[t].iloc[i]), 2),
-            "price": round(float(last_px[t]), 2),
-            "ret_since": _pct(ret_since),
-            "r63": _pct(last_r63[t]) or 0.0,
-            "rs63": _pct(last_rs63[t]) or 0.0,
-            "pct_from_hi": _pct(last_px[t] / hi252[t].ffill().iloc[-1] - 1) or 0.0,
-            "hit_40": bool(close[t].iloc[i:].max() / close[t].iloc[i] - 1 >= 0.40),
-            "active": bool(days_ago <= 63),
-        })
-    fires.sort(key=lambda f: (f["fired"], f["r5_at_fire"] or 0), reverse=True)
+    for j, tk in enumerate(close.columns):
+        i = max(start_i, BASE_LAG)
+        while i < n:
+            if not S[i, j]:
+                i += 1
+                continue
+            fire = i
+            base = C[fire - BASE_LAG, j]
+            pos = {
+                "ticker": tk, "fired": ds[fire], "fire_close": _px(C[fire, j]),
+                "fire_r5": _pct(R5[fire, j]), "fire_volr": _px(VR[fire, j]),
+                "base": _px(base), "entry_date": None, "entry": None,
+                "refires": 0, "last_fire": ds[fire], "last_refire": None, "exit_date": None, "exit": None,
+                "exit_reason": None, "sell_signal": None,
+            }
+            events.append({"date": ds[fire], "ticker": tk, "type": "FIRE",
+                           "detail": f"+{_pct(R5[fire, j])}% week on {_px(VR[fire, j])}x volume"})
+            for e in range(fire + 1, min(fire + 6, n)):   # first tradable open (skips a halt)
+                if np.isfinite(O[e, j]):
+                    pos["entry_date"], pos["entry"] = ds[e], _px(O[e, j])
+                    break
+            last_fire, peak, expired_logged = fire, C[fire, j], False
+            d = fire + 1
+            closed = False
+            while d < n:
+                c = C[d, j]
+                if np.isfinite(c):
+                    peak = max(peak, c)
+                if S[d, j]:
+                    # Consecutive "on" days are the same ignition; only a fresh
+                    # fire after REFIRE_GAP sessions off counts as a re-fire.
+                    if not S[max(0, d - REFIRE_GAP):d, j].any():
+                        pos["refires"] += 1
+                        pos["last_refire"] = ds[d]
+                        events.append({"date": ds[d], "ticker": tk, "type": "REFIRE",
+                                       "detail": f"+{_pct(R5[d, j])}% week on {_px(VR[d, j])}x volume"})
+                    last_fire = d
+                    pos["last_fire"] = ds[d]
+                    expired_logged = False
+                quiet = d - last_fire
+                if not expired_logged and quiet >= EDGE_WINDOW:
+                    expired_logged = True
+                    events.append({"date": ds[d], "ticker": tk, "type": "EDGE_EXPIRED",
+                                   "detail": f"{EDGE_WINDOW} sessions since last fire"})
+                reason = None
+                if np.isfinite(c) and np.isfinite(base) and c < base:
+                    reason = "IGNITION_FAILED"
+                elif quiet >= MAX_QUIET:
+                    reason = "TIME"
+                if reason:
+                    pos["sell_signal"] = ds[d]
+                    pos["exit_reason"] = reason
+                    if d + 1 < n and np.isfinite(O[d + 1, j]):
+                        pos["exit_date"], pos["exit"] = ds[d + 1], _px(O[d + 1, j])
+                    detail = (f"closed {_px(c)} below pre-ignition base {_px(base)}"
+                              if reason == "IGNITION_FAILED" else f"{MAX_QUIET} sessions without a re-fire")
+                    events.append({"date": ds[d], "ticker": tk, "type": "SELL", "detail": detail})
+                    closed = True
+                    break
+                d += 1
+            last_c = pd.Series(C[fire:n, j]).ffill().iloc[-1] if not closed else None
+            pos["peak"] = _px(peak)
+            pos["sessions_since_fire"] = int(min(d, n - 1) - last_fire)
+            since_refire = (n - 1 - ds.index(pos["last_refire"])) if pos["last_refire"] else None
+            pos["status"] = _status(pos, closed, n - 1 - last_fire, since_refire)
+            if pos["entry"]:
+                mark = pos["exit"] if pos["exit"] else (last_c if not closed else C[d, j])
+                pos["ret"] = _pct(mark / pos["entry"] - 1)
+                pos["peak_ret"] = _pct(peak / pos["entry"] - 1)
+            else:
+                pos["ret"] = pos["peak_ret"] = None
+            if pos["entry_date"]:
+                end_i = ds.index(pos["exit_date"]) if pos["exit_date"] else (d if closed else n - 1)
+                pos["held"] = int(end_i - ds.index(pos["entry_date"]))
+            if not closed:
+                pos["price"] = _px(last_c)
+                pos["to_stop"] = _pct(base / last_c - 1) if np.isfinite(base) and np.isfinite(last_c) else None
+            positions.append(pos)
+            i = d + 1 if closed else n
+    events.sort(key=lambda e: (e["date"], e["ticker"]))
+    return positions, events
 
+
+def _status(pos: dict, closed: bool, since_last_fire: int, since_refire: int | None) -> str:
+    if closed:
+        return "SELL_PENDING" if pos["exit"] is None else "CLOSED"
+    if pos["entry"] is None:
+        return "NEW"
+    if since_refire is not None and since_refire <= REFIRE_HOT:
+        return "REFIRED"
+    if since_last_fire >= EDGE_WINDOW:
+        return "EDGE_EXPIRED"
+    return "HOLD"
+
+
+def extras(close: pd.DataFrame, vol: pd.DataFrame, f: dict) -> dict:
     last = pd.DataFrame({
-        "price": close.iloc[-1], "r63": r63.iloc[-1], "rs63": rs63.iloc[-1],
-        "volr": volr.iloc[-1], "pct_hi": close.iloc[-1] / hi252.iloc[-1] - 1,
-        "golden": golden.iloc[-1], "valid": valid.iloc[-1],
+        "price": close.iloc[-1], "r63": f["r63"].iloc[-1],
+        "rs63": f["r63"].iloc[-1] - f["r63"].iloc[-1].mean(),
+        "volr": f["volr"].iloc[-1], "pct_hi": close.iloc[-1] / f["hi252"].iloc[-1] - 1,
+        "golden": f["golden"].iloc[-1], "valid": f["valid"].iloc[-1],
     })
     lead = last[last.valid & last.golden & (last.pct_hi > -0.15) & (last.rs63 > 0.15)]
-    lead = lead.sort_values("rs63", ascending=False).head(15)
-    leaders = [{
-        "ticker": t, "price": round(float(r.price), 2), "r63": _pct(r.r63),
-        "rs63": _pct(r.rs63), "volr": round(float(r.volr), 2), "pct_from_hi": _pct(r.pct_hi),
-    } for t, r in lead.iterrows()]
+    leaders = [{"ticker": t, "price": _px(r.price), "r63": _pct(r.r63), "rs63": _pct(r.rs63),
+                "volr": _px(r.volr), "pct_from_hi": _pct(r.pct_hi)}
+               for t, r in lead.sort_values("rs63", ascending=False).head(15).iterrows()]
+    r5 = f["r5"].iloc[-1]
+    near = r5.between(0.08, R5_MIN) & (f["volr"].iloc[-1] > 1.3) & f["golden"].iloc[-1] & f["valid"].iloc[-1]
+    near_misses = sorted(({"ticker": t, "r5": _pct(r5[t]), "volr": _px(f["volr"].iloc[-1][t]),
+                           "price": _px(close.iloc[-1][t])} for t in near[near].index),
+                         key=lambda x: -(x["r5"] or 0))[:12]
+    return {"leaders": leaders, "near_misses": near_misses}
 
-    # Near misses: uptrend + heavy volume, weekly gain 8-12% — the watch-for-tomorrow list.
-    near = (r5.iloc[-1].between(0.08, R5_MIN)) & (volr.iloc[-1] > 1.3) & golden.iloc[-1] & valid.iloc[-1]
-    near_misses = sorted(({
-        "ticker": t, "r5": _pct(r5[t].iloc[-1]), "volr": round(float(volr[t].iloc[-1]), 2),
-        "price": round(float(close[t].iloc[-1]), 2),
-    } for t in near[near].index), key=lambda x: -(x["r5"] or 0))[:12]
 
-    active = [f for f in fires if f["active"]]
+def _stats(rets: list) -> dict:
+    rets = [r for r in rets if r is not None]
+    if not rets:
+        return {"n": 0, "avg": None, "median": None, "pct_up": None}
+    return {"n": len(rets), "avg": round(float(np.mean(rets)), 1),
+            "median": round(float(np.median(rets)), 1),
+            "pct_up": round(100 * float(np.mean([r > 0 for r in rets])), 1)}
+
+
+def summarize(positions: list, events: list, since: str | None, asof: str, recent_from: str) -> dict:
+    open_ = [p for p in positions if p["status"] not in ("CLOSED",)]
+    closed = [p for p in positions if p["status"] == "CLOSED"]
+    new_events = [e for e in events if (since is None and e["date"] == asof) or (since and e["date"] > since)]
     return {
-        "asof": scan_date,
+        "open": len(open_),
+        "by_status": {s: sum(p["status"] == s for p in positions)
+                      for s in ("NEW", "HOLD", "REFIRED", "EDGE_EXPIRED", "SELL_PENDING")},
+        "closed": len(closed),
+        # Closed trades are mostly stop-outs by construction (winners stay open),
+        # so judge the rule on everything: realized + open marked to market.
+        "all_positions": _stats([p["ret"] for p in positions]),
+        "open_positions": _stats([p["ret"] for p in open_]),
+        "closed_positions": _stats([p["ret"] for p in closed]),
+        "failed_positions": _stats([p["ret"] for p in closed if p["exit_reason"] == "IGNITION_FAILED"]),
+        "aged_out_positions": _stats([p["ret"] for p in closed if p["exit_reason"] == "TIME"]),
+        "recent_sells": sorted({e["ticker"] for e in events
+                                if e["type"] == "SELL" and e["date"] >= recent_from}),
+        "since": since,
+        "new_events": new_events,
+        "new_fires": sorted({e["ticker"] for e in new_events if e["type"] in ("FIRE", "REFIRE")}),
+        "new_sells": sorted({e["ticker"] for e in new_events if e["type"] == "SELL"}),
+        "new_expired": sorted({e["ticker"] for e in new_events if e["type"] == "EDGE_EXPIRED"}),
+    }
+
+
+def read_runs() -> list[dict]:
+    if not RUNS.exists():
+        return []
+    out = []
+    for line in RUNS.read_text(encoding="utf-8").splitlines():
+        try:
+            out.append(json.loads(line))
+        except Exception:
+            continue
+    return out
+
+
+def compute(open_: pd.DataFrame, close: pd.DataFrame, vol: pd.DataFrame, prev_asof: str | None) -> dict:
+    f = signals(close, vol)
+    positions, events = build_ledger(open_, close, f)
+    asof = str(close.index[-1].date())
+    since = prev_asof if prev_asof and prev_asof < asof else None
+    recent_from = str(close.index[max(0, len(close.index) - 20)].date())
+    return {
+        "version": 2,
+        "asof": asof,
         "scanned_at": datetime.now(ET).strftime("%Y-%m-%d %H:%M ET"),
         "universe": int(close.shape[1]),
+        "ledger_start": LEDGER_START,
         "rule": {"r5_min": R5_MIN, "volr_min": VOLR_MIN, "min_price": MIN_PRICE,
-                 "min_dollar_vol": MIN_DOLLAR_VOL, "lookback_sessions": LOOKBACK_SESSIONS},
+                 "min_dollar_vol": MIN_DOLLAR_VOL, "base_lag": BASE_LAG,
+                 "edge_window": EDGE_WINDOW, "refire_hot": REFIRE_HOT, "max_quiet": MAX_QUIET},
         "backtest": BACKTEST,
-        "summary": {
-            "fires_logged": len(fires),
-            "active": len(active),
-            "new": [f["ticker"] for f in fires if f["new"]],
-            "active_hit_40": sum(f["hit_40"] for f in active),
-        },
-        "fires": fires,
-        "leaders": leaders,
-        "near_misses": near_misses,
-        "first_seen": first_seen,
+        "exit_research": EXIT_RESEARCH,
+        "summary": summarize(positions, events, since, asof, recent_from),
+        "positions": positions,
+        "events": events,
+        **extras(close, vol, f),
     }
 
 
 def main() -> int:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     HISTORY_DIR.mkdir(parents=True, exist_ok=True)
-    prev = None
-    if LATEST.exists():
-        try:
-            prev = json.loads(LATEST.read_text(encoding="utf-8"))
-        except Exception:
-            prev = None
+    runs = read_runs()
+    prev_asof = runs[-1]["asof"] if runs else None
 
-    tickers = load_universe()
-    close, vol = download(tickers)
-    result = compute(close, vol, prev)
+    o, c, v = download(load_universe())
+    result = compute(o, c, v, prev_asof)
+    s = result["summary"]
 
     tmp = LATEST.with_suffix(".tmp")
     tmp.write_text(json.dumps(result, indent=1), encoding="utf-8")
     tmp.replace(LATEST)
-    (HISTORY_DIR / f"{result['asof']}.json").write_text(
-        json.dumps({k: result[k] for k in ("asof", "scanned_at", "summary", "fires")}, indent=1),
-        encoding="utf-8")
+    (HISTORY_DIR / f"{result['asof']}.json").write_text(json.dumps({
+        "asof": result["asof"], "scanned_at": result["scanned_at"], "summary": s,
+        "open_positions": [p for p in result["positions"] if p["status"] != "CLOSED"],
+    }, indent=1), encoding="utf-8")
+    run = {"run_at": result["scanned_at"], "asof": result["asof"], "since": s["since"],
+           "fires": s["new_fires"], "sells": s["new_sells"], "expired": s["new_expired"],
+           "open": s["open"], "closed": s["closed"]}
+    with RUNS.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(run) + "\n")
 
-    s = result["summary"]
-    print(f"ignition scan asof={result['asof']} universe={result['universe']} "
-          f"fires={s['fires_logged']} active={s['active']} new={','.join(s['new']) or '-'}")
+    print(f"ignition scan asof={result['asof']} universe={result['universe']} open={s['open']} "
+          f"closed={s['closed']} fires={','.join(s['new_fires']) or '-'} "
+          f"sells={','.join(s['new_sells']) or '-'} since={s['since']}")
     return 0
 
 

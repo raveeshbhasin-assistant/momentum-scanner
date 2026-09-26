@@ -41,18 +41,40 @@ exception). Caveats: no costs or slippage, and the universe is *current*
 index membership, so there is survivorship bias. Treat the edge as an upper
 bound.
 
+## Positions and the sell rule (v1.6.0)
+
+Every fire since 2025-01-02 is replayed as a position: bought at the next
+open, then tracked. Full study: `research/ignition_exits/README.md`.
+
+| Status | Meaning |
+|---|---|
+| NEW | Fired on the last session; entry is at the next open |
+| HOLD | Ignition intact, within 63 sessions of the last fire |
+| REFIRED | Fresh ignition within the last 20 sessions: the strongest hold state |
+| EDGE_EXPIRED | 63+ sessions since the last fire. A review flag, not a sell |
+| SELL_PENDING | Sell signal on the last close; sell at the next open |
+| CLOSED | Sold, for one of two reasons (below) |
+
+**IGNITION_FAILED** means a close below the pre-ignition base (the close 5
+sessions before the fire). It was the only exit near the top in train,
+holdout and live data. **TIME** closes the position after 252 sessions
+without a re-fire. Dropping off the signal list is *not* a sell.
+
 ## Operation
 
-- `python ignition/scan.py` downloads ~2.5y of Yahoo daily bars for
-  `universe.txt` (~1–2 min) and writes `data/latest.json` plus
-  `data/history/<date>.json`.
-- themes_web runs it weekdays at **17:00 ET** and once at boot when
-  `latest.json` is missing, because Railway's disk is wiped on redeploy. You
-  can also trigger it with `POST /api/refresh_ignition`.
-- Fires are derived from price history, so the 90-session log rebuilds
-  itself after a redeploy. Only "first seen" and the NEW badge depend on the
-  previous `latest.json`. Without one, NEW means "fired in the last 3
-  sessions".
+- **Scan of record:** `.github/workflows/ignition-daily.yml` runs
+  `python ignition/scan.py` weekdays at 21:30 UTC, after the close. It
+  commits `latest.json`, `runs.jsonl` (one line per run) and
+  `history/<asof>.json` to the **`ignition-data` branch**. Git keeps every
+  run, and pushes to that branch don't redeploy Railway. You can also run
+  it on demand from the Actions tab (workflow_dispatch).
+- **themes_web** syncs from that branch every 30 minutes and at boot
+  (`scheduler.refresh_ignition`). If GitHub is unreachable and there is no
+  data on disk, it falls back to a local scan, and the page says so.
+  `POST /api/refresh_ignition` syncs now; `?local=1` scans on the container.
+- **No lost days:** the ledger is rebuilt from prices on every run. If runs
+  are skipped, the next run reports everything since the previous run's
+  data date as new.
 - `universe.txt` is pinned (S&P 500 + 400 as of 2026-09-26). Refresh it when
   index membership drifts.
 - Standalone module: it imports nothing from the scanner or themes, and
