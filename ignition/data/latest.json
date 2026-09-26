@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-09-25",
- "scanned_at": "2026-09-26 14:48 ET",
+ "scanned_at": "2026-09-26 16:17 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -12,7 +12,9 @@
   "base_lag": 5,
   "edge_window": 63,
   "refire_hot": 20,
-  "max_quiet": 252
+  "max_quiet": 252,
+  "checkpoint_after": 126,
+  "weight_cap": 2.0
  },
  "backtest": {
   "window": "2016-2026, S&P 500+400 (903 tickers), 2.18M ticker-days, 2,271 fires",
@@ -116,7 +118,11 @@
    "avg": 22.1,
    "median": -10.1,
    "pct_up": 42.1
-  }
+  },
+  "cap_review": [
+   "BE",
+   "LITE"
+  ]
  },
  "positions": [
   {
@@ -144,7 +150,9 @@
    "ret": -13.2,
    "peak_ret": 3.8,
    "whatif_ret": -13.2,
-   "held": 15
+   "held": 15,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "AEIS",
@@ -171,7 +179,9 @@
    "ret": -14.2,
    "peak_ret": 24.6,
    "whatif_ret": -14.2,
-   "held": 115
+   "held": 115,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "AKAM",
@@ -198,7 +208,9 @@
    "ret": -15.2,
    "peak_ret": 1.1,
    "whatif_ret": -15.2,
-   "held": 4
+   "held": 4,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "ALGM",
@@ -225,7 +237,9 @@
    "ret": -19.1,
    "peak_ret": 8.8,
    "whatif_ret": -19.1,
-   "held": 22
+   "held": 22,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "AMAT",
@@ -252,7 +266,9 @@
    "ret": -18.1,
    "peak_ret": 8.2,
    "whatif_ret": -18.1,
-   "held": 4
+   "held": 4,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "AMKR",
@@ -279,7 +295,9 @@
    "ret": -14.4,
    "peak_ret": 6.1,
    "whatif_ret": -14.4,
-   "held": 8
+   "held": 8,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "ANET",
@@ -306,7 +324,9 @@
    "ret": -3.1,
    "peak_ret": 6.9,
    "whatif_ret": -3.1,
-   "held": 2
+   "held": 2,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "APP",
@@ -333,7 +353,9 @@
    "ret": -32.0,
    "peak_ret": 15.6,
    "whatif_ret": -32.0,
-   "held": 14
+   "held": 14,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "ARES",
@@ -360,7 +382,9 @@
    "ret": -17.7,
    "peak_ret": 37.6,
    "whatif_ret": 10.2,
-   "held": 216
+   "held": 216,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "AVAV",
@@ -387,7 +411,9 @@
    "ret": -34.3,
    "peak_ret": 44.5,
    "whatif_ret": 5.0,
-   "held": 188
+   "held": 188,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "BE",
@@ -416,7 +442,9 @@
    "whatif_ret": 722.7,
    "held": 291,
    "price": 288.7,
-   "to_stop": -91.0
+   "to_stop": -91.0,
+   "weight_x": 4.53,
+   "cap_trim": 55.8
   },
   {
    "ticker": "BHF",
@@ -443,7 +471,9 @@
    "ret": -15.4,
    "peak_ret": 5.2,
    "whatif_ret": -15.4,
-   "held": 24
+   "held": 24,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "BHF",
@@ -470,7 +500,9 @@
    "ret": -17.2,
    "peak_ret": 4.5,
    "whatif_ret": -17.2,
-   "held": 14
+   "held": 14,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "BTSG",
@@ -499,7 +531,9 @@
    "whatif_ret": 67.9,
    "held": 230,
    "price": 56.59,
-   "to_stop": -48.0
+   "to_stop": -48.0,
+   "weight_x": 0.92,
+   "cap_trim": null
   },
   {
    "ticker": "BURL",
@@ -528,7 +562,9 @@
    "whatif_ret": -0.4,
    "held": 2,
    "price": 254.69,
-   "to_stop": -10.8
+   "to_stop": -10.8,
+   "weight_x": 0.55,
+   "cap_trim": null
   },
   {
    "ticker": "CAR",
@@ -555,7 +591,9 @@
    "ret": -46.3,
    "peak_ret": 62.8,
    "whatif_ret": -46.3,
-   "held": 5
+   "held": 5,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "CBOE",
@@ -584,7 +622,9 @@
    "whatif_ret": -5.8,
    "held": 52,
    "price": 258.03,
-   "to_stop": -5.3
+   "to_stop": -5.3,
+   "weight_x": 0.52,
+   "cap_trim": null
   },
   {
    "ticker": "CDE",
@@ -611,7 +651,9 @@
    "ret": -8.8,
    "peak_ret": 19.6,
    "whatif_ret": -8.8,
-   "held": 23
+   "held": 23,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "CDE",
@@ -638,7 +680,9 @@
    "ret": -18.3,
    "peak_ret": 10.6,
    "whatif_ret": -18.3,
-   "held": 46
+   "held": 46,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "CF",
@@ -665,7 +709,9 @@
    "ret": -19.7,
    "peak_ret": 7.5,
    "whatif_ret": -19.7,
-   "held": 69
+   "held": 69,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "CHRW",
@@ -692,7 +738,9 @@
    "ret": -11.3,
    "peak_ret": 2.5,
    "whatif_ret": -11.3,
-   "held": 21
+   "held": 21,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "CNH",
@@ -721,7 +769,9 @@
    "whatif_ret": -4.0,
    "held": 12,
    "price": 13.09,
-   "to_stop": -9.6
+   "to_stop": -9.6,
+   "weight_x": 0.53,
+   "cap_trim": null
   },
   {
    "ticker": "COF",
@@ -748,7 +798,9 @@
    "ret": 5.3,
    "peak_ret": 41.0,
    "whatif_ret": 23.9,
-   "held": 253
+   "held": 253,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "COHR",
@@ -775,7 +827,9 @@
    "ret": -15.9,
    "peak_ret": -0.6,
    "whatif_ret": -15.9,
-   "held": 3
+   "held": 3,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "COHR",
@@ -804,7 +858,9 @@
    "whatif_ret": 188.2,
    "held": 262,
    "price": 295.83,
-   "to_stop": -70.3
+   "to_stop": -70.3,
+   "weight_x": 1.59,
+   "cap_trim": null
   },
   {
    "ticker": "COLM",
@@ -831,7 +887,9 @@
    "ret": -14.0,
    "peak_ret": 4.6,
    "whatif_ret": -14.0,
-   "held": 22
+   "held": 22,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "CORT",
@@ -858,7 +916,9 @@
    "ret": -68.8,
    "peak_ret": -0.4,
    "whatif_ret": -68.8,
-   "held": 190
+   "held": 190,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "CVNA",
@@ -885,7 +945,9 @@
    "ret": 92.5,
    "peak_ret": 139.2,
    "whatif_ret": 92.5,
-   "held": 255
+   "held": 255,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "CYTK",
@@ -914,7 +976,9 @@
    "whatif_ret": 19.9,
    "held": 247,
    "price": 64.66,
-   "to_stop": -24.9
+   "to_stop": -24.9,
+   "weight_x": 0.65,
+   "cap_trim": null
   },
   {
    "ticker": "DAL",
@@ -943,7 +1007,9 @@
    "whatif_ret": 31.8,
    "held": 130,
    "price": 84.94,
-   "to_stop": -32.1
+   "to_stop": -32.1,
+   "weight_x": 0.73,
+   "cap_trim": null
   },
   {
    "ticker": "DASH",
@@ -970,7 +1036,9 @@
    "ret": -13.9,
    "peak_ret": 8.6,
    "whatif_ret": -13.9,
-   "held": 44
+   "held": 44,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "DLR",
@@ -999,7 +1067,9 @@
    "whatif_ret": -10.1,
    "held": 43,
    "price": 178.61,
-   "to_stop": -3.3
+   "to_stop": -3.3,
+   "weight_x": 0.5,
+   "cap_trim": null
   },
   {
    "ticker": "DOCN",
@@ -1028,7 +1098,9 @@
    "whatif_ret": 64.0,
    "held": 110,
    "price": 139.75,
-   "to_stop": -45.9
+   "to_stop": -45.9,
+   "weight_x": 0.9,
+   "cap_trim": null
   },
   {
    "ticker": "DUOL",
@@ -1055,7 +1127,9 @@
    "ret": -11.6,
    "peak_ret": 79.8,
    "whatif_ret": -11.6,
-   "held": 116
+   "held": 116,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "ECHO",
@@ -1084,7 +1158,9 @@
    "whatif_ret": 53.5,
    "held": 270,
    "price": 90.11,
-   "to_stop": -69.3
+   "to_stop": -69.3,
+   "weight_x": 0.85,
+   "cap_trim": null
   },
   {
    "ticker": "EHC",
@@ -1111,7 +1187,9 @@
    "ret": -12.8,
    "peak_ret": 9.9,
    "whatif_ret": 1.2,
-   "held": 178
+   "held": 178,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "EXPE",
@@ -1138,7 +1216,9 @@
    "ret": -15.7,
    "peak_ret": 4.5,
    "whatif_ret": -15.7,
-   "held": 19
+   "held": 19,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "EXPE",
@@ -1167,7 +1247,9 @@
    "whatif_ret": 27.2,
    "held": 143,
    "price": 264.17,
-   "to_stop": -29.0
+   "to_stop": -29.0,
+   "weight_x": 0.71,
+   "cap_trim": null
   },
   {
    "ticker": "F",
@@ -1194,7 +1276,9 @@
    "ret": -13.8,
    "peak_ret": 6.9,
    "whatif_ret": -13.8,
-   "held": 99
+   "held": 99,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "FIX",
@@ -1223,7 +1307,9 @@
    "whatif_ret": 50.1,
    "held": 173,
    "price": 1658.91,
-   "to_stop": -41.5
+   "to_stop": -41.5,
+   "weight_x": 0.83,
+   "cap_trim": null
   },
   {
    "ticker": "FLEX",
@@ -1250,7 +1336,9 @@
    "ret": -9.7,
    "peak_ret": 8.3,
    "whatif_ret": -9.7,
-   "held": 29
+   "held": 29,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "FLS",
@@ -1279,7 +1367,9 @@
    "whatif_ret": 1.4,
    "held": 83,
    "price": 73.82,
-   "to_stop": -13.3
+   "to_stop": -13.3,
+   "weight_x": 0.56,
+   "cap_trim": null
   },
   {
    "ticker": "GLW",
@@ -1306,7 +1396,9 @@
    "ret": -21.2,
    "peak_ret": 4.3,
    "whatif_ret": -21.2,
-   "held": 8
+   "held": 8,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "GLW",
@@ -1333,7 +1425,9 @@
    "ret": -7.7,
    "peak_ret": 2.8,
    "whatif_ret": -7.7,
-   "held": 3
+   "held": 3,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "GWRE",
@@ -1360,7 +1454,9 @@
    "ret": -16.7,
    "peak_ret": 6.9,
    "whatif_ret": -16.7,
-   "held": 28
+   "held": 28,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "HALO",
@@ -1387,7 +1483,9 @@
    "ret": 28.6,
    "peak_ret": 51.4,
    "whatif_ret": 28.6,
-   "held": 252
+   "held": 252,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "HIMS",
@@ -1414,7 +1512,9 @@
    "ret": -30.1,
    "peak_ret": 37.9,
    "whatif_ret": -30.1,
-   "held": 138
+   "held": 138,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "HOOD",
@@ -1441,7 +1541,9 @@
    "ret": -24.8,
    "peak_ret": 18.5,
    "whatif_ret": -24.8,
-   "held": 14
+   "held": 14,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "HOOD",
@@ -1468,7 +1570,9 @@
    "ret": 60.6,
    "peak_ret": 238.7,
    "whatif_ret": 60.6,
-   "held": 261
+   "held": 261,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "HPE",
@@ -1497,7 +1601,9 @@
    "whatif_ret": 19.4,
    "held": 78,
    "price": 62.94,
-   "to_stop": -41.2
+   "to_stop": -41.2,
+   "weight_x": 0.66,
+   "cap_trim": null
   },
   {
    "ticker": "IDCC",
@@ -1524,7 +1630,9 @@
    "ret": -13.0,
    "peak_ret": 9.1,
    "whatif_ret": -13.0,
-   "held": 16
+   "held": 16,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "ILMN",
@@ -1553,7 +1661,9 @@
    "whatif_ret": 11.8,
    "held": 4,
    "price": 270.0,
-   "to_stop": -23.5
+   "to_stop": -23.5,
+   "weight_x": 0.62,
+   "cap_trim": null
   },
   {
    "ticker": "IPGP",
@@ -1580,7 +1690,9 @@
    "ret": -15.2,
    "peak_ret": 41.1,
    "whatif_ret": -15.2,
-   "held": 60
+   "held": 60,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "JAZZ",
@@ -1607,7 +1719,9 @@
    "ret": -12.2,
    "peak_ret": 6.9,
    "whatif_ret": -12.2,
-   "held": 8
+   "held": 8,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "JAZZ",
@@ -1636,7 +1750,9 @@
    "whatif_ret": 28.6,
    "held": 212,
    "price": 237.95,
-   "to_stop": -42.4
+   "to_stop": -42.4,
+   "weight_x": 0.73,
+   "cap_trim": null
   },
   {
    "ticker": "JEF",
@@ -1663,7 +1779,9 @@
    "ret": -21.2,
    "peak_ret": 19.2,
    "whatif_ret": -21.2,
-   "held": 86
+   "held": 86,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "JLL",
@@ -1692,7 +1810,9 @@
    "whatif_ret": 22.8,
    "held": 149,
    "price": 321.91,
-   "to_stop": -13.0
+   "to_stop": -13.0,
+   "weight_x": 0.56,
+   "cap_trim": null
   },
   {
    "ticker": "KRYS",
@@ -1719,7 +1839,9 @@
    "ret": -13.7,
    "peak_ret": 0.6,
    "whatif_ret": -13.7,
-   "held": 2
+   "held": 2,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "KTOS",
@@ -1746,7 +1868,9 @@
    "ret": -17.2,
    "peak_ret": 3.2,
    "whatif_ret": -17.2,
-   "held": 20
+   "held": 20,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "KTOS",
@@ -1773,7 +1897,9 @@
    "ret": 64.8,
    "peak_ret": 348.9,
    "whatif_ret": 64.8,
-   "held": 343
+   "held": 343,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "LEN",
@@ -1800,7 +1926,9 @@
    "ret": -15.1,
    "peak_ret": 1.5,
    "whatif_ret": -15.1,
-   "held": 15
+   "held": 15,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "LITE",
@@ -1829,7 +1957,9 @@
    "whatif_ret": 531.9,
    "held": 263,
    "price": 941.65,
-   "to_stop": -85.9
+   "to_stop": -85.9,
+   "weight_x": 3.48,
+   "cap_trim": 42.5
   },
   {
    "ticker": "LSCC",
@@ -1856,7 +1986,9 @@
    "ret": 152.0,
    "peak_ret": 155.4,
    "whatif_ret": 26.7,
-   "held": 255
+   "held": 255,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "LSTR",
@@ -1883,7 +2015,9 @@
    "ret": -8.2,
    "peak_ret": 2.9,
    "whatif_ret": -8.2,
-   "held": 8
+   "held": 8,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "LUV",
@@ -1910,7 +2044,9 @@
    "ret": -22.4,
    "peak_ret": 7.8,
    "whatif_ret": -22.4,
-   "held": 14
+   "held": 14,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "LYB",
@@ -1937,7 +2073,9 @@
    "ret": -18.4,
    "peak_ret": 0.3,
    "whatif_ret": -18.4,
-   "held": 13
+   "held": 13,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "MKSI",
@@ -1964,7 +2102,9 @@
    "ret": -21.8,
    "peak_ret": 0.7,
    "whatif_ret": -21.8,
-   "held": 16
+   "held": 16,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "MMM",
@@ -1991,7 +2131,9 @@
    "ret": -10.8,
    "peak_ret": 1.7,
    "whatif_ret": -10.8,
-   "held": 20
+   "held": 20,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "MP",
@@ -2018,7 +2160,9 @@
    "ret": -21.2,
    "peak_ret": -5.8,
    "whatif_ret": -21.2,
-   "held": 4
+   "held": 4,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "MP",
@@ -2045,7 +2189,9 @@
    "ret": 106.0,
    "peak_ret": 264.2,
    "whatif_ret": 106.0,
-   "held": 296
+   "held": 296,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "MRNA",
@@ -2074,7 +2220,9 @@
    "whatif_ret": 32.5,
    "held": 25,
    "price": 198.88,
-   "to_stop": -68.0
+   "to_stop": -68.0,
+   "weight_x": 0.73,
+   "cap_trim": null
   },
   {
    "ticker": "MRVL",
@@ -2103,7 +2251,9 @@
    "whatif_ret": 65.9,
    "held": 107,
    "price": 261.94,
-   "to_stop": -48.6
+   "to_stop": -48.6,
+   "weight_x": 0.91,
+   "cap_trim": null
   },
   {
    "ticker": "MU",
@@ -2132,7 +2282,9 @@
    "whatif_ret": 160.7,
    "held": 118,
    "price": 1082.28,
-   "to_stop": -70.3
+   "to_stop": -70.3,
+   "weight_x": 1.44,
+   "cap_trim": null
   },
   {
    "ticker": "NTAP",
@@ -2161,7 +2313,9 @@
    "whatif_ret": 10.2,
    "held": 80,
    "price": 201.15,
-   "to_stop": -30.9
+   "to_stop": -30.9,
+   "weight_x": 0.61,
+   "cap_trim": null
   },
   {
    "ticker": "NTRS",
@@ -2188,7 +2342,9 @@
    "ret": 47.2,
    "peak_ret": 48.5,
    "whatif_ret": 17.1,
-   "held": 254
+   "held": 254,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "NVST",
@@ -2215,7 +2371,9 @@
    "ret": -19.5,
    "peak_ret": 3.9,
    "whatif_ret": -19.5,
-   "held": 68
+   "held": 68,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "ORCL",
@@ -2242,7 +2400,9 @@
    "ret": -30.9,
    "peak_ret": 7.3,
    "whatif_ret": -30.9,
-   "held": 45
+   "held": 45,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "P",
@@ -2271,7 +2431,9 @@
    "whatif_ret": 13.1,
    "held": 3,
    "price": 126.0,
-   "to_stop": -25.6
+   "to_stop": -25.6,
+   "weight_x": 0.62,
+   "cap_trim": null
   },
   {
    "ticker": "PEN",
@@ -2300,7 +2462,9 @@
    "whatif_ret": -10.9,
    "held": 170,
    "price": 318.89,
-   "to_stop": -5.6
+   "to_stop": -5.6,
+   "weight_x": 0.49,
+   "cap_trim": null
   },
   {
    "ticker": "PSKY",
@@ -2327,7 +2491,9 @@
    "ret": -27.1,
    "peak_ret": 32.8,
    "whatif_ret": -27.1,
-   "held": 119
+   "held": 119,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "PWR",
@@ -2354,7 +2520,9 @@
    "ret": 113.3,
    "peak_ret": 118.0,
    "whatif_ret": 113.3,
-   "held": 252
+   "held": 252,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "QCOM",
@@ -2381,7 +2549,9 @@
    "ret": -18.8,
    "peak_ret": 6.4,
    "whatif_ret": -18.8,
-   "held": 10
+   "held": 10,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "RGLD",
@@ -2408,7 +2578,9 @@
    "ret": -11.6,
    "peak_ret": 5.0,
    "whatif_ret": -11.6,
-   "held": 65
+   "held": 65,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "RH",
@@ -2435,7 +2607,9 @@
    "ret": -45.8,
    "peak_ret": 0.2,
    "whatif_ret": -45.8,
-   "held": 8
+   "held": 8,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "RMBS",
@@ -2462,7 +2636,9 @@
    "ret": 0.1,
    "peak_ret": 68.2,
    "whatif_ret": 7.0,
-   "held": 255
+   "held": 255,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "ROKU",
@@ -2491,7 +2667,9 @@
    "whatif_ret": 10.9,
    "held": 67,
    "price": 152.68,
-   "to_stop": -21.6
+   "to_stop": -21.6,
+   "weight_x": 0.61,
+   "cap_trim": null
   },
   {
    "ticker": "SANM",
@@ -2518,7 +2696,9 @@
    "ret": 68.6,
    "peak_ret": 141.2,
    "whatif_ret": 20.7,
-   "held": 255
+   "held": 255,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "SHC",
@@ -2545,7 +2725,9 @@
    "ret": -14.5,
    "peak_ret": 11.7,
    "whatif_ret": -14.5,
-   "held": 67
+   "held": 67,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "SHC",
@@ -2574,7 +2756,9 @@
    "whatif_ret": 23.8,
    "held": 119,
    "price": 18.34,
-   "to_stop": -28.4
+   "to_stop": -28.4,
+   "weight_x": 0.68,
+   "cap_trim": null
   },
   {
    "ticker": "SITM",
@@ -2601,7 +2785,9 @@
    "ret": -15.3,
    "peak_ret": 0.6,
    "whatif_ret": -15.3,
-   "held": 2
+   "held": 2,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "SITM",
@@ -2628,7 +2814,9 @@
    "ret": -27.9,
    "peak_ret": 13.1,
    "whatif_ret": -27.9,
-   "held": 13
+   "held": 13,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "SLAB",
@@ -2657,7 +2845,9 @@
    "whatif_ret": 7.5,
    "held": 160,
    "price": 221.24,
-   "to_stop": -34.8
+   "to_stop": -34.8,
+   "weight_x": 0.6,
+   "cap_trim": null
   },
   {
    "ticker": "SMTC",
@@ -2686,7 +2876,9 @@
    "whatif_ret": 120.6,
    "held": 119,
    "price": 182.3,
-   "to_stop": -60.4
+   "to_stop": -60.4,
+   "weight_x": 1.21,
+   "cap_trim": null
   },
   {
    "ticker": "SNPS",
@@ -2713,7 +2905,9 @@
    "ret": -15.0,
    "peak_ret": 5.1,
    "whatif_ret": -15.0,
-   "held": 32
+   "held": 32,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "TEX",
@@ -2740,7 +2934,9 @@
    "ret": -13.1,
    "peak_ret": -0.7,
    "whatif_ret": -13.1,
-   "held": 17
+   "held": 17,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "TTMI",
@@ -2769,7 +2965,9 @@
    "whatif_ret": 178.3,
    "held": 269,
    "price": 129.17,
-   "to_stop": -68.4
+   "to_stop": -68.4,
+   "weight_x": 1.53,
+   "cap_trim": null
   },
   {
    "ticker": "TWLO",
@@ -2796,7 +2994,9 @@
    "ret": 109.4,
    "peak_ret": 143.8,
    "whatif_ret": 4.6,
-   "held": 252
+   "held": 252,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "ULS",
@@ -2823,7 +3023,9 @@
    "ret": 48.1,
    "peak_ret": 56.6,
    "whatif_ret": 27.7,
-   "held": 256
+   "held": 256,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "USFD",
@@ -2850,7 +3052,9 @@
    "ret": -12.8,
    "peak_ret": 1.3,
    "whatif_ret": -12.8,
-   "held": 58
+   "held": 58,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "VAL",
@@ -2879,7 +3083,9 @@
    "whatif_ret": 5.6,
    "held": 156,
    "price": 80.99,
-   "to_stop": -27.5
+   "to_stop": -27.5,
+   "weight_x": 0.54,
+   "cap_trim": null
   },
   {
    "ticker": "VIAV",
@@ -2906,7 +3112,9 @@
    "ret": -25.9,
    "peak_ret": -0.2,
    "whatif_ret": -25.9,
-   "held": 40
+   "held": 40,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "VIAV",
@@ -2935,7 +3143,9 @@
    "whatif_ret": 138.2,
    "held": 223,
    "price": 40.68,
-   "to_stop": -65.7
+   "to_stop": -65.7,
+   "weight_x": 1.31,
+   "cap_trim": null
   },
   {
    "ticker": "VICR",
@@ -2964,7 +3174,9 @@
    "whatif_ret": 234.2,
    "held": 231,
    "price": 281.96,
-   "to_stop": -79.7
+   "to_stop": -79.7,
+   "weight_x": 1.84,
+   "cap_trim": null
   },
   {
    "ticker": "WFRD",
@@ -2991,7 +3203,9 @@
    "ret": -11.7,
    "peak_ret": 16.2,
    "whatif_ret": -11.7,
-   "held": 62
+   "held": 62,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "WTS",
@@ -3018,7 +3232,9 @@
    "ret": -11.7,
    "peak_ret": 0.6,
    "whatif_ret": -11.7,
-   "held": 13
+   "held": 13,
+   "weight_x": null,
+   "cap_trim": null
   },
   {
    "ticker": "XPO",
@@ -3047,7 +3263,9 @@
    "whatif_ret": 5.0,
    "held": 156,
    "price": 173.17,
-   "to_stop": -2.1
+   "to_stop": -2.1,
+   "weight_x": 0.48,
+   "cap_trim": null
   },
   {
    "ticker": "XYZ",
@@ -3074,7 +3292,9 @@
    "ret": -16.6,
    "peak_ret": 3.7,
    "whatif_ret": -16.6,
-   "held": 10
+   "held": 10,
+   "weight_x": null,
+   "cap_trim": null
   }
  ],
  "events": [
