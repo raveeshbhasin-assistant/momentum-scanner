@@ -95,15 +95,82 @@ Four candidates were declared before this ran, one per idea; see
   The true cost of a profit lock is probably smaller than shown.
 - No costs or slippage. The per-trade view ignores capital recycling.
 
+## Portfolio test: does selling earlier free up capital that pays? (same day)
+
+The per-trade view ignores capital: an earlier exit makes less per trade but
+frees cash for the next fire. `PORTFOLIO_PREREG.md` was written before any run.
+- **Setup:** K equal slots, sized at 1/K of equity, 10 bps per side, starting
+  all cash.
+- **Train:** 2016-21. **Holdout:** 2022 to 2026-09.
+- **Rules:** the five time-gated exits from family A, compared with the
+  current rule (R0) and hold-252 (reference only).
+- **Two independent builds:** `portfolio_A.py` (on engine.py) and
+  `portfolio_B.py` (from raw prices) agree **bit-for-bit** on all 56 rows.
+
+| K=20, 10 bps | Train CAGR | Train maxDD | Train Sharpe | Holdout CAGR | Holdout maxDD | Holdout Sharpe |
+|---|---:|---:|---:|---:|---:|---:|
+| **R0 current rule** | **23.3%** | **−37.0%** | **1.09** | **24.5%** | **−31.7%** | **0.90** |
+| R2 = A10 (6-month review as a sell) | 27.6% | −45.7% | 0.82 | **37.0%** | **−29.2%** | **1.24** |
+| R3 = A09 (day 63, sell if up 0-30%) | 23.1% | −44.3% | 0.75 | 37.4% | −34.6% | 1.27 |
+| R4 = A08 (edge expired and up) | 26.9% | −46.4% | 0.84 | 21.5% | −24.9% | 1.03 |
+| R5 = A02 (day 63 and up) | 15.8% | −25.8% | 0.81 | 17.5% | −23.2% | 0.98 |
+| R6 = A06 (day 63, up, no re-fire) | 28.4% | −44.4% | 0.88 | 30.4% | −32.3% | 1.09 |
+| R1 hold 252, no sell line (reference) | 35.7% | −44.5% | 0.97 | 37.8% | −30.6% | 1.18 |
+| Equal-weight universe | 21.5% | −40.7% | 1.03 | 13.1% | −20.1% | 0.77 |
+
+At K=10 the current rule makes 29.8% on train and 16.6% on holdout. A10 makes
+23.5% and 37.7%.
+
+**Pre-registered verdict: no rule passed on train.**
+- R2, R4 and R6 beat R0's CAGR, but their drawdowns were 7.4-9.4 pp deeper, beyond
+  the 5 pp limit.
+- R2 also lost at K=10.
+- The skeptic could not overturn this under 36 same-day tie-break orders,
+  K=15/30, 25 bps costs, two later start dates, or dropping each rule's best
+  trade. There are no look-ahead or accounting bugs; a truncated-data rerun
+  matched exactly.
+
+**The train result rests on one trade.**
+- In Oct 2020, R0 was fully invested: it had bought the Mar-2020 wave and was
+  still holding it. So it skipped **GME** (fired 2020-10-08) for lack of cash.
+- The faster rules had recycled capital, so they took GME, which grew to
+  52-56% of their equity.
+- The Jan-Feb 2021 collapse is their entire drawdown failure. The same trade
+  is also their entire CAGR edge.
+- Without GME, their drawdowns are shallower than R0's but their CAGR is lower.
+  Train says "no" either way.
+
+**The holdout says the opposite, and more robustly.**
+- A10 made 37.0% vs 24.5% CAGR, with a shallower drawdown and a Sharpe of 1.24
+  vs 0.90.
+- It held under 23 of 30 random tie-break orders, at K=15 and K=30, from a
+  2022-07 start, and after dropping its best trades.
+- In the holdout, profits are spread across trades: the top trade is 17-36% of P&L.
+- R6 passed under 30 of 30 orders.
+- Reported only, per the pre-registration; it cannot overturn the train
+  decision.
+
+**Why recycling can matter: the current rule is capital-bound.** It never
+trims winners, so rising positions absorb the book. At K=20 it skipped ~37%
+of new fires for lack of cash (slots almost never bind). The fires it skipped
+had *higher* average returns than the ones it took: +45% vs +21% on train,
++38% vs +20% on holdout.
+
+Hold-252 with no sell line beat R0 in both periods at K=20. That is mostly the
+survivorship bias noted above, and is a reference only.
+
 ## Decision
-The current sell rule is unchanged. If the operator prefers a smoother ride,
-A10 is the evidence-backed option: a checkpoint at 126 sessions that sells
-positions up 0-30%, while bigger winners keep running under the floor.
+- **The current sell rule is unchanged.** Neither study passed its
+  pre-registered bar.
+- **The 6-month review is shown on `/ignition` as a flag with a what-if line**
+  (themes_web v1.7.0). Positions 126+ sessions in and up 0-30% are flagged,
+  and the ledger is also scored as if every flag had been sold.
 
-What A10 buys, from the exploratory holdout:
-- about half as many "was up 20%, sold at a loss" trades;
-- a win rate of about 49% instead of 39%;
-- a median trade of −6.9% instead of −12.2%.
+The evidence is now split by regime. 2016-21 (one GME-sized outlier) says no;
+2022-26 says A10 compounds faster *and* with a shallower drawdown. Per trade,
+it costs ~6 pp of mean. As a portfolio, its recycled capital more than repaid
+that in the holdout.
 
-It costs about 6 points of average return per trade. That is a preference
-trade-off, not a proven improvement.
+The honest next step is forward evidence, not more backtest variants. Track
+the flag's live what-if against the live rule, and revisit when a meaningful
+number of flagged positions has resolved.

@@ -94,5 +94,11 @@ Can the system sell with some gain left, instead of only below the base
 tested: time-gated, ratchet locks, armed trails, structure, scale-outs.
 **None passed.** Every rule that halved the "was up 20%, sold at a loss" trades
 cost 7+ points of mean return, because sold winners kept rising. Closest,
-exploratory only: sell at session 126 if up 0-30%. Full study:
+exploratory only: sell at session 126 if up 0-30%.
+
+**Portfolio test:** capital-constrained, two independent builds. No rule
+passed on train, and that result hinges on one trade (GME 2020). On the
+2022-26 holdout, the 126-session rule beat the current rule: 37.0% vs 24.5%
+CAGR, with a shallower drawdown. The current rule is capital-bound: it never
+trims winners and skips ~37% of new fires. Full study:
 `profit_protection/README.md`.

@@ -1,6 +1,7 @@
 """Download daily OHLCV (2015+) for ignition/universe.txt into <out_dir>/c*.pkl.
 Run: python download_prices.py ../../../ignition/universe.txt <out_dir>
-Then: IGN_PX=<out_dir> python family_A.py  (engine.py reads IGN_PX)."""
+Then: IGN_PX=<out_dir> python family_A.py  (engine.py and portfolio_B.py read IGN_PX;
+on Windows use a Windows-style path, e.g. from `cygpath -w`)."""
 import os, sys, time
 import yfinance as yf
 out = sys.argv[2]

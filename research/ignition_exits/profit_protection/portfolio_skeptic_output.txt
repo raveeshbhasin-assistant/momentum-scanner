@@ -1,0 +1,446 @@
+base reproduction vs portfolio_A_*.json: max abs metric diff 0.00e+00
+
+=== (a) tie-break train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  23.29% DD  -37.0%  CAGR10  29.81% DD  -36.9%  
+  R1_hold252  CAGR20  35.70% DD  -44.5%  CAGR10  24.57% DD  -46.4%  
+  R2_A10      CAGR20  27.55% DD  -45.7%  CAGR10  23.54% DD  -39.6%  P1----
+  R3_A09      CAGR20  23.08% DD  -44.3%  CAGR10  21.27% DD  -35.0%  ------
+  R4_A08      CAGR20  26.94% DD  -46.4%  CAGR10  42.99% DD  -62.0%  P1--P3
+  R5_A02      CAGR20  15.84% DD  -25.9%  CAGR10  26.24% DD  -42.8%  --P2--
+  R6_A06      CAGR20  28.39% DD  -44.4%  CAGR10  37.15% DD  -42.8%  P1--P3
+  order by CAGR@K20: R1 > R6 > R2 > R4 > R0 > R3 > R5   passers: NONE
+
+=== (a) tie-break train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 10bps order=alpha]
+  R0_current  CAGR20  23.76% DD  -35.8%  CAGR10  26.43% DD  -38.4%  
+  R1_hold252  CAGR20  35.73% DD  -44.5%  CAGR10  24.57% DD  -46.4%  
+  R2_A10      CAGR20  25.45% DD  -47.0%  CAGR10  21.59% DD  -36.9%  P1----
+  R3_A09      CAGR20  23.06% DD  -45.0%  CAGR10  19.09% DD  -34.2%  ------
+  R4_A08      CAGR20  27.11% DD  -46.4%  CAGR10  42.21% DD  -61.9%  P1--P3
+  R5_A02      CAGR20  15.84% DD  -24.9%  CAGR10  25.26% DD  -42.8%  --P2--
+  R6_A06      CAGR20  27.60% DD  -44.6%  CAGR10  36.84% DD  -52.0%  P1--P3
+  order by CAGR@K20: R1 > R6 > R4 > R2 > R0 > R3 > R5   passers: NONE
+
+=== (a) tie-break train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 10bps order=random seed=1]
+  R0_current  CAGR20  22.99% DD  -34.9%  CAGR10  27.79% DD  -35.2%  
+  R1_hold252  CAGR20  35.70% DD  -44.5%  CAGR10  23.78% DD  -46.3%  
+  R2_A10      CAGR20  25.94% DD  -48.0%  CAGR10  19.52% DD  -37.1%  P1----
+  R3_A09      CAGR20  21.03% DD  -44.4%  CAGR10  17.43% DD  -34.2%  ------
+  R4_A08      CAGR20  25.79% DD  -46.4%  CAGR10  39.98% DD  -62.0%  P1--P3
+  R5_A02      CAGR20  15.35% DD  -24.9%  CAGR10  26.10% DD  -42.8%  --P2--
+  R6_A06      CAGR20  28.15% DD  -44.7%  CAGR10  39.04% DD  -58.6%  P1--P3
+  order by CAGR@K20: R1 > R6 > R2 > R4 > R0 > R3 > R5   passers: NONE
+
+=== (a) tie-break train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 10bps order=random seed=2]
+  R0_current  CAGR20  22.97% DD  -35.1%  CAGR10  25.60% DD  -38.4%  
+  R1_hold252  CAGR20  33.78% DD  -46.2%  CAGR10  23.78% DD  -46.3%  
+  R2_A10      CAGR20  26.38% DD  -46.5%  CAGR10  21.10% DD  -37.0%  P1----
+  R3_A09      CAGR20  21.46% DD  -46.4%  CAGR10  18.72% DD  -34.2%  ------
+  R4_A08      CAGR20  26.63% DD  -46.4%  CAGR10  41.54% DD  -62.0%  P1--P3
+  R5_A02      CAGR20  15.55% DD  -24.9%  CAGR10  25.01% DD  -42.8%  --P2--
+  R6_A06      CAGR20  27.95% DD  -44.7%  CAGR10  23.85% DD  -37.1%  P1----
+  order by CAGR@K20: R1 > R6 > R4 > R2 > R0 > R3 > R5   passers: NONE
+
+=== (a) tie-break train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 10bps order=random seed=3]
+  R0_current  CAGR20  23.11% DD  -34.5%  CAGR10  27.55% DD  -35.6%  
+  R1_hold252  CAGR20  33.78% DD  -46.2%  CAGR10  23.78% DD  -46.3%  
+  R2_A10      CAGR20  26.48% DD  -47.8%  CAGR10  20.80% DD  -38.7%  P1----
+  R3_A09      CAGR20  25.09% DD  -44.1%  CAGR10  19.18% DD  -34.2%  P1----
+  R4_A08      CAGR20  27.08% DD  -46.4%  CAGR10  42.15% DD  -62.0%  P1--P3
+  R5_A02      CAGR20  16.48% DD  -24.9%  CAGR10  25.22% DD  -42.8%  --P2--
+  R6_A06      CAGR20  29.10% DD  -44.3%  CAGR10  27.55% DD  -35.5%  P1--P3
+  order by CAGR@K20: R1 > R6 > R4 > R2 > R3 > R0 > R5   passers: NONE
+
+=== (a) tie-break train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 10bps order=r5_asc]
+  R0_current  CAGR20  22.99% DD  -34.8%  CAGR10  26.01% DD  -39.5%  
+  R1_hold252  CAGR20  33.78% DD  -46.2%  CAGR10  23.78% DD  -46.3%  
+  R2_A10      CAGR20  25.96% DD  -47.3%  CAGR10  20.40% DD  -37.3%  P1----
+  R3_A09      CAGR20  21.45% DD  -46.4%  CAGR10  19.14% DD  -35.0%  ------
+  R4_A08      CAGR20  25.91% DD  -46.4%  CAGR10  41.09% DD  -61.9%  P1--P3
+  R5_A02      CAGR20  14.62% DD  -24.9%  CAGR10  24.49% DD  -42.8%  --P2--
+  R6_A06      CAGR20  27.89% DD  -44.2%  CAGR10  28.10% DD  -34.4%  P1--P3
+  order by CAGR@K20: R1 > R6 > R2 > R4 > R0 > R3 > R5   passers: NONE
+
+=== (a) tie-break holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  24.53% DD  -31.7%  CAGR10  16.57% DD  -28.2%  
+  R1_hold252  CAGR20  37.76% DD  -30.6%  CAGR10  33.83% DD  -36.2%  
+  R2_A10      CAGR20  37.00% DD  -29.2%  CAGR10  37.74% DD  -34.4%  P1P2P3 PASS
+  R3_A09      CAGR20  37.39% DD  -34.6%  CAGR10  51.35% DD  -40.1%  P1P2P3 PASS
+  R4_A08      CAGR20  21.46% DD  -24.9%  CAGR10  32.03% DD  -34.9%  --P2P3
+  R5_A02      CAGR20  17.53% DD  -23.2%  CAGR10  27.96% DD  -29.9%  --P2P3
+  R6_A06      CAGR20  30.40% DD  -32.3%  CAGR10  44.76% DD  -37.5%  P1P2P3 PASS
+  order by CAGR@K20: R1 > R3 > R2 > R6 > R0 > R4 > R5   passers: ['R2_A10', 'R3_A09', 'R6_A06']
+
+=== (a) tie-break holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 10bps order=alpha]
+  R0_current  CAGR20  20.82% DD  -29.0%  CAGR10  28.59% DD  -32.4%  
+  R1_hold252  CAGR20  37.76% DD  -29.6%  CAGR10  31.15% DD  -36.2%  
+  R2_A10      CAGR20  35.57% DD  -28.1%  CAGR10  32.69% DD  -35.3%  P1P2P3 PASS
+  R3_A09      CAGR20  35.93% DD  -33.6%  CAGR10  34.30% DD  -39.4%  P1P2P3 PASS
+  R4_A08      CAGR20  21.56% DD  -24.6%  CAGR10  31.72% DD  -38.3%  P1P2P3 PASS
+  R5_A02      CAGR20  17.26% DD  -23.0%  CAGR10  27.92% DD  -33.3%  --P2--
+  R6_A06      CAGR20  28.66% DD  -29.4%  CAGR10  33.32% DD  -38.0%  P1P2P3 PASS
+  order by CAGR@K20: R1 > R3 > R2 > R6 > R4 > R0 > R5   passers: ['R2_A10', 'R3_A09', 'R4_A08', 'R6_A06']
+
+=== (a) tie-break holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 10bps order=random seed=1]
+  R0_current  CAGR20  20.42% DD  -27.6%  CAGR10  21.86% DD  -27.2%  
+  R1_hold252  CAGR20  37.98% DD  -29.9%  CAGR10  32.28% DD  -36.2%  
+  R2_A10      CAGR20  37.54% DD  -28.1%  CAGR10  38.03% DD  -34.0%  P1P2P3 PASS
+  R3_A09      CAGR20  37.39% DD  -33.8%  CAGR10  50.23% DD  -39.9%  P1--P3
+  R4_A08      CAGR20  21.88% DD  -24.9%  CAGR10  32.07% DD  -34.9%  P1P2P3 PASS
+  R5_A02      CAGR20  17.55% DD  -23.2%  CAGR10  29.91% DD  -29.9%  --P2P3
+  R6_A06      CAGR20  31.03% DD  -32.0%  CAGR10  49.88% DD  -39.0%  P1P2P3 PASS
+  order by CAGR@K20: R1 > R2 > R3 > R6 > R4 > R0 > R5   passers: ['R2_A10', 'R4_A08', 'R6_A06']
+
+=== (a) tie-break holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 10bps order=random seed=2]
+  R0_current  CAGR20  27.10% DD  -34.3%  CAGR10  32.05% DD  -33.2%  
+  R1_hold252  CAGR20  40.15% DD  -30.0%  CAGR10  35.03% DD  -36.2%  
+  R2_A10      CAGR20  37.73% DD  -27.4%  CAGR10  27.44% DD  -34.3%  P1P2--
+  R3_A09      CAGR20  38.44% DD  -34.7%  CAGR10  36.67% DD  -38.4%  P1P2P3 PASS
+  R4_A08      CAGR20  20.74% DD  -24.9%  CAGR10  31.54% DD  -39.1%  --P2--
+  R5_A02      CAGR20  16.78% DD  -23.2%  CAGR10  28.57% DD  -33.4%  --P2--
+  R6_A06      CAGR20  31.47% DD  -32.3%  CAGR10  36.01% DD  -37.6%  P1P2P3 PASS
+  order by CAGR@K20: R1 > R3 > R2 > R6 > R0 > R4 > R5   passers: ['R3_A09', 'R6_A06']
+
+=== (a) tie-break holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 10bps order=random seed=3]
+  R0_current  CAGR20  24.82% DD  -31.5%  CAGR10  23.56% DD  -25.0%  
+  R1_hold252  CAGR20  38.83% DD  -29.5%  CAGR10  35.52% DD  -36.2%  
+  R2_A10      CAGR20  37.06% DD  -29.2%  CAGR10  36.42% DD  -34.2%  P1P2P3 PASS
+  R3_A09      CAGR20  38.15% DD  -34.0%  CAGR10  35.78% DD  -39.4%  P1P2P3 PASS
+  R4_A08      CAGR20  21.48% DD  -24.9%  CAGR10  34.25% DD  -35.2%  --P2P3
+  R5_A02      CAGR20  17.47% DD  -23.2%  CAGR10  29.93% DD  -29.2%  --P2P3
+  R6_A06      CAGR20  30.63% DD  -31.7%  CAGR10  47.30% DD  -37.6%  P1P2P3 PASS
+  order by CAGR@K20: R1 > R3 > R2 > R6 > R0 > R4 > R5   passers: ['R2_A10', 'R3_A09', 'R6_A06']
+
+=== (a) tie-break holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 10bps order=r5_asc]
+  R0_current  CAGR20  22.64% DD  -28.8%  CAGR10  30.58% DD  -30.1%  
+  R1_hold252  CAGR20  38.62% DD  -29.3%  CAGR10  33.79% DD  -36.2%  
+  R2_A10      CAGR20  35.40% DD  -28.9%  CAGR10  32.18% DD  -35.9%  P1P2P3 PASS
+  R3_A09      CAGR20  37.01% DD  -33.2%  CAGR10  35.22% DD  -39.4%  P1P2P3 PASS
+  R4_A08      CAGR20  21.92% DD  -24.6%  CAGR10  33.51% DD  -34.3%  --P2P3
+  R5_A02      CAGR20  17.42% DD  -23.0%  CAGR10  29.51% DD  -29.6%  --P2--
+  R6_A06      CAGR20  29.55% DD  -29.3%  CAGR10  35.63% DD  -34.4%  P1P2P3 PASS
+  order by CAGR@K20: R1 > R3 > R2 > R6 > R0 > R4 > R5   passers: ['R2_A10', 'R3_A09', 'R6_A06']
+
+=== (a+) 30 random tie-break seeds, train (counts of seeds passing each gate / 30)
+  R0 K20: CAGR 22.50..25.57%  maxDD -37.2..-34.6%
+  R2_A10   P1 30 P2  0 P3 15 PASS  0 | dCAGR20 med +3.5 [+1.7,+4.4]  dDD20 med -11.2 [-12.7,-8.1]  dCAGR10 med +0.5 [-7.0,+12.0]
+  R3_A09   P1  3 P2  1 P3  1 PASS  0 | dCAGR20 med -1.4 [-2.8,+0.9]  dDD20 med -9.3 [-11.6,-2.8]  dCAGR10 med -7.7 [-9.8,+0.7]
+  R4_A08   P1 30 P2  0 P3 30 PASS  0 | dCAGR20 med +2.9 [+1.8,+4.0]  dDD20 med -10.8 [-11.8,-9.2]  dCAGR10 med +14.5 [+10.6,+16.4]
+  R5_A02   P1  0 P2 30 P3  2 PASS  0 | dCAGR20 med -8.0 [-8.8,-6.9]  dDD20 med +10.7 [+9.8,+12.3]  dCAGR10 med -1.8 [-4.1,+0.4]
+  R6_A06   P1 30 P2  0 P3 20 PASS  0 | dCAGR20 med +4.9 [+3.7,+5.5]  dDD20 med -8.7 [-10.0,-7.0]  dCAGR10 med +1.0 [-4.3,+12.3]
+
+=== (a+) 30 random tie-break seeds, holdout (counts of seeds passing each gate / 30)
+  R0 K20: CAGR 20.42..27.45%  maxDD -34.2..-27.6%
+  R2_A10   P1 30 P2 30 P3 23 PASS 23 | dCAGR20 med +12.8 [+8.4,+17.1]  dDD20 med +1.0 [-2.2,+7.2]  dCAGR10 med +6.1 [-6.1,+23.1]
+  R3_A09   P1 30 P2 19 P3 30 PASS 19 | dCAGR20 med +14.1 [+8.5,+18.1]  dDD20 med -4.8 [-7.0,+1.4]  dCAGR10 med +15.0 [+0.8,+27.5]
+  R4_A08   P1  9 P2 30 P3 25 PASS  9 | dCAGR20 med -0.8 [-6.2,+2.1]  dDD20 med +4.2 [+2.8,+9.6]  dCAGR10 med +5.4 [-2.7,+18.2]
+  R5_A02   P1  0 P2 30 P3 20 PASS  0 | dCAGR20 med -5.5 [-10.8,-2.4]  dDD20 med +5.8 [+4.5,+11.2]  dCAGR10 med +2.4 [-5.5,+16.7]
+  R6_A06   P1 30 P2 30 P3 30 PASS 30 | dCAGR20 med +7.2 [+1.3,+11.5]  dDD20 med -2.2 [-5.0,+4.4]  dCAGR10 med +8.5 [+0.3,+35.5]
+
+=== (b) K=15 train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=15 Kr=10 10bps order=r5]
+  R0_current  CAGR15  30.45% DD  -36.7%  CAGR10  29.81% DD  -36.9%  
+  R1_hold252  CAGR15  36.54% DD  -52.1%  CAGR10  24.57% DD  -46.4%  
+  R2_A10      CAGR15  32.33% DD  -52.2%  CAGR10  23.54% DD  -39.6%  P1----
+  R3_A09      CAGR15  28.28% DD  -50.1%  CAGR10  21.27% DD  -35.0%  ------
+  R4_A08      CAGR15  33.99% DD  -52.9%  CAGR10  42.99% DD  -62.0%  P1--P3
+  R5_A02      CAGR15  20.85% DD  -30.6%  CAGR10  26.24% DD  -42.8%  --P2--
+  R6_A06      CAGR15  35.82% DD  -50.6%  CAGR10  37.15% DD  -42.8%  P1--P3
+  order by CAGR@K15: R1 > R6 > R4 > R2 > R0 > R3 > R5   passers: NONE
+
+=== (b) K=30 train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=30 Kr=10 10bps order=r5]
+  R0_current  CAGR30  22.25% DD  -32.1%  CAGR10  29.81% DD  -36.9%  
+  R1_hold252  CAGR30  36.56% DD  -35.0%  CAGR10  24.57% DD  -46.4%  
+  R2_A10      CAGR30  22.97% DD  -35.1%  CAGR10  23.54% DD  -39.6%  P1P2--
+  R3_A09      CAGR30  21.92% DD  -33.7%  CAGR10  21.27% DD  -35.0%  --P2--
+  R4_A08      CAGR30  20.60% DD  -38.8%  CAGR10  42.99% DD  -62.0%  ----P3
+  R5_A02      CAGR30  12.60% DD  -21.3%  CAGR10  26.24% DD  -42.8%  --P2--
+  R6_A06      CAGR30  21.95% DD  -35.4%  CAGR10  37.15% DD  -42.8%  --P2P3
+  order by CAGR@K30: R1 > R2 > R0 > R6 > R3 > R4 > R5   passers: NONE
+
+=== (b) K=15 holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=15 Kr=10 10bps order=r5]
+  R0_current  CAGR15  27.37% DD  -32.7%  CAGR10  16.57% DD  -28.2%  
+  R1_hold252  CAGR15  30.08% DD  -31.4%  CAGR10  33.83% DD  -36.2%  
+  R2_A10      CAGR15  34.49% DD  -30.3%  CAGR10  37.74% DD  -34.4%  P1P2P3 PASS
+  R3_A09      CAGR15  45.39% DD  -36.8%  CAGR10  51.35% DD  -40.1%  P1P2P3 PASS
+  R4_A08      CAGR15  29.78% DD  -27.3%  CAGR10  32.03% DD  -34.9%  P1P2P3 PASS
+  R5_A02      CAGR15  24.97% DD  -26.2%  CAGR10  27.96% DD  -29.9%  --P2P3
+  R6_A06      CAGR15  38.55% DD  -35.3%  CAGR10  44.76% DD  -37.5%  P1P2P3 PASS
+  order by CAGR@K15: R3 > R6 > R2 > R1 > R4 > R0 > R5   passers: ['R2_A10', 'R3_A09', 'R4_A08', 'R6_A06']
+
+=== (b) K=30 holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=30 Kr=10 10bps order=r5]
+  R0_current  CAGR30  30.63% DD  -32.0%  CAGR10  16.57% DD  -28.2%  
+  R1_hold252  CAGR30  33.56% DD  -31.6%  CAGR10  33.83% DD  -36.2%  
+  R2_A10      CAGR30  34.64% DD  -30.8%  CAGR10  37.74% DD  -34.4%  P1P2P3 PASS
+  R3_A09      CAGR30  25.40% DD  -33.5%  CAGR10  51.35% DD  -40.1%  --P2P3
+  R4_A08      CAGR30  13.62% DD  -17.1%  CAGR10  32.03% DD  -34.9%  --P2P3
+  R5_A02      CAGR30  12.28% DD  -16.0%  CAGR10  27.96% DD  -29.9%  --P2P3
+  R6_A06      CAGR30  22.19% DD  -28.7%  CAGR10  44.76% DD  -37.5%  --P2P3
+  order by CAGR@K30: R2 > R1 > R0 > R3 > R6 > R4 > R5   passers: ['R2_A10']
+
+=== (c) 25 bps train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 25bps order=r5]
+  R0_current  CAGR20  22.83% DD  -37.2%  CAGR10  29.31% DD  -37.1%  
+  R1_hold252  CAGR20  35.34% DD  -44.5%  CAGR10  24.22% DD  -46.4%  
+  R2_A10      CAGR20  26.99% DD  -45.7%  CAGR10  23.00% DD  -39.9%  P1----
+  R3_A09      CAGR20  22.38% DD  -44.4%  CAGR10  20.31% DD  -35.3%  ------
+  R4_A08      CAGR20  26.18% DD  -46.5%  CAGR10  41.73% DD  -62.0%  P1--P3
+  R5_A02      CAGR20  15.11% DD  -26.1%  CAGR10  25.04% DD  -42.9%  --P2--
+  R6_A06      CAGR20  27.69% DD  -44.5%  CAGR10  36.30% DD  -43.2%  P1--P3
+  order by CAGR@K20: R1 > R6 > R2 > R4 > R0 > R3 > R5   passers: NONE
+
+=== (c) 25 bps holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 25bps order=r5]
+  R0_current  CAGR20  23.96% DD  -31.7%  CAGR10  16.08% DD  -28.4%  
+  R1_hold252  CAGR20  37.38% DD  -30.7%  CAGR10  33.48% DD  -36.2%  
+  R2_A10      CAGR20  36.35% DD  -29.3%  CAGR10  36.97% DD  -34.4%  P1P2P3 PASS
+  R3_A09      CAGR20  36.50% DD  -34.7%  CAGR10  50.26% DD  -40.3%  P1P2P3 PASS
+  R4_A08      CAGR20  20.53% DD  -25.1%  CAGR10  30.67% DD  -35.1%  --P2P3
+  R5_A02      CAGR20  16.59% DD  -23.4%  CAGR10  26.62% DD  -30.1%  --P2P3
+  R6_A06      CAGR20  29.59% DD  -32.4%  CAGR10  43.84% DD  -37.6%  P1P2P3 PASS
+  order by CAGR@K20: R1 > R3 > R2 > R6 > R0 > R4 > R5   passers: ['R2_A10', 'R3_A09', 'R6_A06']
+
+=== (d) start shift train_2016H2  [2016-07-01..2021-12-31 fires 2016-07-01..2021-12-31  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  22.30% DD  -37.0%  CAGR10  37.42% DD  -37.5%  
+  R1_hold252  CAGR20  41.41% DD  -32.3%  CAGR10  50.54% DD  -44.4%  
+  R2_A10      CAGR20  27.93% DD  -45.7%  CAGR10  25.59% DD  -39.6%  P1----
+  R3_A09      CAGR20  22.40% DD  -44.3%  CAGR10  19.46% DD  -35.0%  P1----
+  R4_A08      CAGR20  28.37% DD  -46.4%  CAGR10  45.01% DD  -62.0%  P1--P3
+  R5_A02      CAGR20  16.19% DD  -25.9%  CAGR10  27.39% DD  -42.8%  --P2--
+  R6_A06      CAGR20  29.12% DD  -44.4%  CAGR10  39.39% DD  -42.8%  P1--P3
+  order by CAGR@K20: R1 > R6 > R4 > R2 > R3 > R0 > R5   passers: NONE
+
+=== (d) start shift train_2017  [2017-01-03..2021-12-31 fires 2017-01-01..2021-12-31  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  19.29% DD  -35.4%  CAGR10  26.48% DD  -40.7%  
+  R1_hold252  CAGR20  30.35% DD  -44.8%  CAGR10  26.45% DD  -37.9%  
+  R2_A10      CAGR20  27.88% DD  -45.7%  CAGR10  20.45% DD  -39.5%  P1----
+  R3_A09      CAGR20  23.39% DD  -44.3%  CAGR10  18.76% DD  -35.0%  P1----
+  R4_A08      CAGR20  28.64% DD  -46.4%  CAGR10  44.89% DD  -62.0%  P1--P3
+  R5_A02      CAGR20  15.66% DD  -25.9%  CAGR10  26.09% DD  -42.8%  --P2--
+  R6_A06      CAGR20  29.41% DD  -44.4%  CAGR10  39.11% DD  -42.8%  P1--P3
+  order by CAGR@K20: R1 > R6 > R4 > R2 > R3 > R0 > R5   passers: NONE
+
+=== (d) start shift holdout_2022H2  [2022-07-01..2026-09-25 fires 2022-06-30..2026-09-25  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  46.59% DD  -32.3%  CAGR10  28.36% DD  -31.1%  
+  R1_hold252  CAGR20  41.64% DD  -25.9%  CAGR10  36.01% DD  -27.9%  
+  R2_A10      CAGR20  48.93% DD  -29.2%  CAGR10  42.15% DD  -32.7%  P1P2P3 PASS
+  R3_A09      CAGR20  44.74% DD  -34.6%  CAGR10  66.71% DD  -40.1%  --P2P3
+  R4_A08      CAGR20  26.94% DD  -24.9%  CAGR10  38.16% DD  -34.9%  --P2P3
+  R5_A02      CAGR20  20.72% DD  -23.2%  CAGR10  32.22% DD  -29.9%  --P2P3
+  R6_A06      CAGR20  36.64% DD  -32.3%  CAGR10  60.23% DD  -37.9%  --P2P3
+  order by CAGR@K20: R2 > R0 > R3 > R1 > R6 > R4 > R5   passers: ['R2_A10']
+
+=== (e) best-trade concentration train (portfolio $ P&L, initial equity 1.0)
+  R0_current|K20   total  +2.512  top1 ['CELH@2020-05-26', np.float64(0.6832), np.float64(0.272)]  top2 ['ARWR@2017-09-21', np.float64(0.3329), np.float64(0.132)]
+  R0_current|K10   total  +3.785  top1 ['CELH@2020-05-26', np.float64(1.5073), np.float64(0.398)]  top2 ['CROX@2020-03-25', np.float64(0.5801), np.float64(0.153)]
+  R1_hold252|K20   total  +5.246  top1 ['GME@2020-10-08', np.float64(1.983), np.float64(0.378)]  top2 ['TSLA@2020-01-13', np.float64(0.4324), np.float64(0.082)]
+  R1_hold252|K10   total  +2.737  top1 ['CELH@2020-05-26', np.float64(1.1968), np.float64(0.437)]  top2 ['DOCU@2019-06-20', np.float64(0.3827), np.float64(0.14)]
+  R2_A10|K20       total  +3.308  top1 ['GME@2020-10-08', np.float64(1.5421), np.float64(0.466)]  top2 ['ARWR@2017-09-21', np.float64(0.3092), np.float64(0.093)]
+  R2_A10|K10       total  +2.556  top1 ['ARWR@2017-09-21', np.float64(0.6436), np.float64(0.252)]  top2 ['CROX@2020-03-25', np.float64(0.6172), np.float64(0.242)]
+  R3_A09|K20       total  +2.477  top1 ['GME@2020-10-08', np.float64(1.252), np.float64(0.505)]  top2 ['CROX@2020-03-25', np.float64(0.2164), np.float64(0.087)]
+  R3_A09|K10       total  +2.181  top1 ['CROX@2020-03-25', np.float64(0.5525), np.float64(0.253)]  top2 ['ARWR@2018-01-05', np.float64(0.2815), np.float64(0.129)]
+  R4_A08|K20       total  +3.184  top1 ['GME@2020-10-08', np.float64(2.0944), np.float64(0.658)]  top2 ['DOCU@2020-03-23', np.float64(0.1089), np.float64(0.034)]
+  R4_A08|K10       total  +7.551  top1 ['GME@2020-10-08', np.float64(6.0269), np.float64(0.798)]  top2 ['DOCU@2020-03-23', np.float64(0.2724), np.float64(0.036)]
+  R5_A02|K20       total  +1.417  top1 ['GME@2021-01-13', np.float64(0.3701), np.float64(0.261)]  top2 ['CVNA@2018-06-04', np.float64(0.0863), np.float64(0.061)]
+  R5_A02|K10       total  +3.049  top1 ['GME@2021-01-13', np.float64(1.0893), np.float64(0.357)]  top2 ['CVNA@2018-06-04', np.float64(0.1958), np.float64(0.064)]
+  R6_A06|K20       total  +3.481  top1 ['GME@2020-10-08', np.float64(1.5112), np.float64(0.434)]  top2 ['CELH@2020-05-26', np.float64(0.6038), np.float64(0.173)]
+  R6_A06|K10       total  +5.660  top1 ['GME@2020-10-08', np.float64(2.0984), np.float64(0.371)]  top2 ['CELH@2020-05-26', np.float64(1.4972), np.float64(0.265)]
+
+=== (e) drop own best 1 trade train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  21.34% DD  -37.0%  CAGR10  20.70% DD  -36.9%  
+  R1_hold252  CAGR20  30.86% DD  -43.3%  CAGR10  16.81% DD  -46.4%  
+  R2_A10      CAGR20  18.41% DD  -34.2%  CAGR10  16.69% DD  -39.6%  --P2--
+  R3_A09      CAGR20  16.04% DD  -31.5%  CAGR10  17.83% DD  -35.2%  --P2--
+  R4_A08      CAGR20  19.06% DD  -26.5%  CAGR10  21.61% DD  -33.7%  --P2P3
+  R5_A02      CAGR20  12.50% DD  -25.9%  CAGR10  21.15% DD  -32.5%  --P2P3
+  R6_A06      CAGR20  20.82% DD  -29.2%  CAGR10  29.72% DD  -37.2%  --P2P3
+  order by CAGR@K20: R1 > R0 > R6 > R4 > R2 > R3 > R5   passers: NONE
+
+=== (e) drop own best 2 trades train  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  18.25% DD  -37.1%  CAGR10  19.08% DD  -36.0%  
+  R1_hold252  CAGR20  25.83% DD  -41.5%  CAGR10  14.98% DD  -50.2%  
+  R2_A10      CAGR20  16.62% DD  -35.6%  CAGR10  13.72% DD  -39.8%  --P2--
+  R3_A09      CAGR20  13.21% DD  -31.0%  CAGR10  13.97% DD  -35.2%  --P2--
+  R4_A08      CAGR20  18.77% DD  -26.6%  CAGR10  19.37% DD  -34.8%  P1P2P3 PASS
+  R5_A02      CAGR20  11.41% DD  -25.9%  CAGR10  18.55% DD  -32.5%  --P2--
+  R6_A06      CAGR20  18.35% DD  -29.2%  CAGR10  25.97% DD  -37.2%  P1P2P3 PASS
+  order by CAGR@K20: R1 > R4 > R6 > R0 > R2 > R3 > R5   passers: ['R4_A08', 'R6_A06']
+
+=== (e) drop union of best trades from all rules train (5 trades)  [2016-01-04..2021-12-31 fires 2016-01-01..2021-12-31  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  17.15% DD  -36.6%  CAGR10  19.08% DD  -36.0%  
+  R1_hold252  CAGR20  27.56% DD  -43.3%  CAGR10  16.81% DD  -46.4%  
+  R2_A10      CAGR20  14.56% DD  -35.1%  CAGR10  13.72% DD  -39.8%  --P2--
+  R3_A09      CAGR20  13.16% DD  -31.0%  CAGR10  17.83% DD  -35.2%  --P2--
+  R4_A08      CAGR20  12.50% DD  -26.0%  CAGR10  20.68% DD  -33.9%  --P2P3
+  R5_A02      CAGR20  11.62% DD  -25.3%  CAGR10  19.36% DD  -32.7%  --P2P3
+  R6_A06      CAGR20  16.25% DD  -28.7%  CAGR10  25.17% DD  -37.5%  --P2P3
+  order by CAGR@K20: R1 > R0 > R6 > R2 > R3 > R4 > R5   passers: NONE
+
+=== (e) best-trade concentration holdout (portfolio $ P&L, initial equity 1.0)
+  R0_current|K20   total  +1.825  top1 ['LITE@2025-09-08', np.float64(0.4466), np.float64(0.245)]  top2 ['APP@2024-02-15', np.float64(0.3476), np.float64(0.191)]
+  R0_current|K10   total  +1.067  top1 ['VICR@2025-10-22', np.float64(0.3816), np.float64(0.358)]  top2 ['LITE@2025-11-24', np.float64(0.3339), np.float64(0.313)]
+  R1_hold252|K20   total  +3.556  top1 ['BE@2025-07-29', np.float64(0.8411), np.float64(0.237)]  top2 ['APP@2024-02-15', np.float64(0.5527), np.float64(0.155)]
+  R1_hold252|K10   total  +2.973  top1 ['APP@2024-02-15', np.float64(1.021), np.float64(0.343)]  top2 ['SMCI@2023-02-03', np.float64(0.5999), np.float64(0.202)]
+  R2_A10|K20       total  +3.438  top1 ['BE@2025-07-29', np.float64(0.5925), np.float64(0.172)]  top2 ['LITE@2025-09-08', np.float64(0.527), np.float64(0.153)]
+  R2_A10|K10       total  +3.553  top1 ['BE@2025-07-29', np.float64(1.1593), np.float64(0.326)]  top2 ['VICR@2025-10-22', np.float64(0.4676), np.float64(0.132)]
+  R3_A09|K20       total  +3.498  top1 ['LITE@2025-09-08', np.float64(0.5997), np.float64(0.171)]  top2 ['BE@2025-07-29', np.float64(0.5877), np.float64(0.168)]
+  R3_A09|K10       total  +6.112  top1 ['BE@2025-07-29', np.float64(1.6492), np.float64(0.27)]  top2 ['VICR@2025-10-22', np.float64(1.034), np.float64(0.169)]
+  R4_A08|K20       total  +1.510  top1 ['LITE@2025-09-08', np.float64(0.2611), np.float64(0.173)]  top2 ['BE@2025-07-29', np.float64(0.2482), np.float64(0.164)]
+  R4_A08|K10       total  +2.726  top1 ['LITE@2025-09-08', np.float64(0.5783), np.float64(0.212)]  top2 ['BE@2025-07-29', np.float64(0.572), np.float64(0.21)]
+  R5_A02|K20       total  +1.148  top1 ['BE@2025-07-29', np.float64(0.2128), np.float64(0.185)]  top2 ['LITE@2025-09-08', np.float64(0.1091), np.float64(0.095)]
+  R5_A02|K10       total  +2.212  top1 ['BE@2025-07-29', np.float64(0.5543), np.float64(0.251)]  top2 ['LITE@2025-09-08', np.float64(0.2773), np.float64(0.125)]
+  R6_A06|K20       total  +2.513  top1 ['LITE@2025-09-08', np.float64(0.5667), np.float64(0.225)]  top2 ['BE@2025-07-29', np.float64(0.4904), np.float64(0.195)]
+  R6_A06|K10       total  +4.760  top1 ['LITE@2025-09-08', np.float64(1.428), np.float64(0.3)]  top2 ['BE@2025-07-29', np.float64(1.1884), np.float64(0.25)]
+
+=== (e) drop own best 1 trade holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  24.02% DD  -34.1%  CAGR10  12.98% DD  -28.2%  
+  R1_hold252  CAGR20  34.80% DD  -30.6%  CAGR10  26.01% DD  -43.2%  
+  R2_A10      CAGR20  32.06% DD  -27.0%  CAGR10  29.17% DD  -31.5%  P1P2P3 PASS
+  R3_A09      CAGR20  37.12% DD  -36.7%  CAGR10  41.02% DD  -40.1%  P1P2P3 PASS
+  R4_A08      CAGR20  19.55% DD  -24.9%  CAGR10  28.21% DD  -34.9%  --P2P3
+  R5_A02      CAGR20  15.08% DD  -23.2%  CAGR10  23.87% DD  -29.9%  --P2P3
+  R6_A06      CAGR20  27.67% DD  -29.4%  CAGR10  41.34% DD  -37.5%  P1P2P3 PASS
+  order by CAGR@K20: R3 > R1 > R2 > R6 > R0 > R4 > R5   passers: ['R2_A10', 'R3_A09', 'R6_A06']
+
+=== (e) drop own best 2 trades holdout  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  19.63% DD  -34.7%  CAGR10   9.64% DD  -28.2%  
+  R1_hold252  CAGR20  29.05% DD  -34.0%  CAGR10  11.46% DD  -44.4%  
+  R2_A10      CAGR20  32.75% DD  -27.0%  CAGR10  25.79% DD  -31.5%  P1P2P3 PASS
+  R3_A09      CAGR20  32.64% DD  -32.1%  CAGR10  34.36% DD  -40.1%  P1P2P3 PASS
+  R4_A08      CAGR20  17.07% DD  -24.9%  CAGR10  23.79% DD  -34.9%  --P2P3
+  R5_A02      CAGR20  15.78% DD  -23.2%  CAGR10  25.50% DD  -29.9%  --P2P3
+  R6_A06      CAGR20  26.63% DD  -28.2%  CAGR10  33.06% DD  -37.5%  P1P2P3 PASS
+  order by CAGR@K20: R2 > R3 > R1 > R6 > R0 > R4 > R5   passers: ['R2_A10', 'R3_A09', 'R6_A06']
+
+=== (e) drop union of best trades from all rules holdout (4 trades)  [2022-01-03..2026-09-25 fires 2021-12-31..2026-09-25  Kp=20 Kr=10 10bps order=r5]
+  R0_current  CAGR20  15.02% DD  -30.6%  CAGR10  12.98% DD  -28.2%  
+  R1_hold252  CAGR20  29.05% DD  -34.0%  CAGR10  26.01% DD  -43.2%  
+  R2_A10      CAGR20  23.19% DD  -29.2%  CAGR10  25.79% DD  -31.5%  P1P2P3 PASS
+  R3_A09      CAGR20  28.94% DD  -31.3%  CAGR10  34.14% DD  -40.1%  P1P2P3 PASS
+  R4_A08      CAGR20  15.54% DD  -24.9%  CAGR10  21.43% DD  -34.9%  P1P2P3 PASS
+  R5_A02      CAGR20  14.38% DD  -23.2%  CAGR10  24.38% DD  -29.9%  --P2P3
+  R6_A06      CAGR20  25.34% DD  -28.1%  CAGR10  33.06% DD  -37.5%  P1P2P3 PASS
+  order by CAGR@K20: R1 > R3 > R6 > R2 > R4 > R0 > R5   passers: ['R2_A10', 'R3_A09', 'R4_A08', 'R6_A06']
+
+=== (f) utilisation train (10 bps); ret columns = per-trade return under the R0 exit rule
+  R0_current|K20   cand 477 taken 158 skSlot   2 skCash 295 skHeld 22 capSkip 0.62 expo 0.81 avgPos 14.89 daysFull 0.01 daysCashBound 0.27 R0ret taken +0.208 skipped 0.4461
+  R0_current|K10   cand 477 taken  86 skSlot  84 skCash 292 skHeld 15 capSkip 0.79 expo 0.92 avgPos  8.68 daysFull 0.30 daysCashBound 0.63 R0ret taken +0.273 skipped 0.3881
+  R1_hold252|K20   cand 477 taken 113 skSlot 288 skCash  44 skHeld 32 capSkip 0.70 expo 0.87 avgPos 17.11 daysFull 0.25 daysCashBound 0.33 R0ret taken +0.234 skipped 0.4088
+  R1_hold252|K10   cand 477 taken  60 skSlot 402 skCash   1 skHeld 14 capSkip 0.84 expo 0.91 avgPos  9.15 daysFull 0.69 daysCashBound 0.68 R0ret taken +0.236 skipped 0.3863
+  R2_A10|K20       cand 477 taken 183 skSlot   0 skCash 274 skHeld 20 capSkip 0.57 expo 0.73 avgPos 12.71 daysFull 0.00 daysCashBound 0.19 R0ret taken +0.247 skipped 0.442
+  R2_A10|K10       cand 477 taken 123 skSlot 281 skCash  60 skHeld 13 capSkip 0.71 expo 0.85 avgPos  8.13 daysFull 0.27 daysCashBound 0.44 R0ret taken +0.194 skipped 0.4278
+  R3_A09|K20       cand 477 taken 230 skSlot 200 skCash  38 skHeld  9 capSkip 0.50 expo 0.58 avgPos  9.82 daysFull 0.01 daysCashBound 0.09 R0ret taken +0.241 skipped 0.4851
+  R3_A09|K10       cand 477 taken 170 skSlot 252 skCash  48 skHeld  7 capSkip 0.63 expo 0.78 avgPos  7.35 daysFull 0.13 daysCashBound 0.24 R0ret taken +0.177 skipped 0.4728
+  R4_A08|K20       cand 477 taken 247 skSlot 200 skCash  21 skHeld  9 capSkip 0.46 expo 0.48 avgPos  8.92 daysFull 0.01 daysCashBound 0.04 R0ret taken +0.236 skipped 0.5083
+  R4_A08|K10       cand 477 taken 190 skSlot 262 skCash  19 skHeld  6 capSkip 0.59 expo 0.72 avgPos  7.07 daysFull 0.16 daysCashBound 0.17 R0ret taken +0.257 skipped 0.4408
+  R5_A02|K20       cand 477 taken 253 skSlot 203 skCash  14 skHeld  7 capSkip 0.46 expo 0.44 avgPos  8.57 daysFull 0.01 daysCashBound 0.03 R0ret taken +0.237 skipped 0.5143
+  R5_A02|K10       cand 477 taken 199 skSlot 258 skCash  15 skHeld  5 capSkip 0.57 expo 0.68 avgPos  6.79 daysFull 0.16 daysCashBound 0.17 R0ret taken +0.217 skipped 0.4749
+  R6_A06|K20       cand 477 taken 224 skSlot   0 skCash 237 skHeld 16 capSkip 0.50 expo 0.62 avgPos 10.82 daysFull 0.00 daysCashBound 0.09 R0ret taken +0.245 skipped 0.4759
+  R6_A06|K10       cand 477 taken 151 skSlot 274 skCash  39 skHeld 13 capSkip 0.66 expo 0.80 avgPos  7.43 daysFull 0.14 daysCashBound 0.34 R0ret taken +0.295 skipped 0.401
+
+=== (f) utilisation holdout (10 bps); ret columns = per-trade return under the R0 exit rule
+  R0_current|K20   cand 271 taken 145 skSlot   3 skCash 110 skHeld 13 capSkip 0.42 expo 0.86 avgPos 15.28 daysFull 0.01 daysCashBound 0.39 R0ret taken +0.198 skipped 0.3778
+  R0_current|K10   cand 271 taken  79 skSlot  91 skCash  94 skHeld  7 capSkip 0.68 expo 0.92 avgPos  8.67 daysFull 0.32 daysCashBound 0.61 R0ret taken +0.131 skipped 0.3434
+  R1_hold252|K20   cand 271 taken  97 skSlot  74 skCash  80 skHeld 20 capSkip 0.57 expo 0.90 avgPos 17.86 daysFull 0.34 daysCashBound 0.62 R0ret taken +0.301 skipped 0.2709
+  R1_hold252|K10   cand 271 taken  50 skSlot 208 skCash   0 skHeld 13 capSkip 0.77 expo 0.93 avgPos  9.49 daysFull 0.84 daysCashBound 0.79 R0ret taken +0.236 skipped 0.2918
+  R2_A10|K20       cand 271 taken 173 skSlot   0 skCash  80 skHeld 18 capSkip 0.29 expo 0.82 avgPos 14.44 daysFull 0.00 daysCashBound 0.27 R0ret taken +0.303 skipped 0.2439
+  R2_A10|K10       cand 271 taken 101 skSlot  58 skCash 103 skHeld  9 capSkip 0.59 expo 0.90 avgPos  8.46 daysFull 0.21 daysCashBound 0.56 R0ret taken +0.260 skipped 0.2942
+  R3_A09|K20       cand 271 taken 208 skSlot   5 skCash  42 skHeld 16 capSkip 0.17 expo 0.69 avgPos 11.81 daysFull 0.01 daysCashBound 0.14 R0ret taken +0.301 skipped 0.218
+  R3_A09|K10       cand 271 taken 125 skSlot  39 skCash  97 skHeld 10 capSkip 0.50 expo 0.82 avgPos  7.27 daysFull 0.10 daysCashBound 0.43 R0ret taken +0.392 skipped 0.1872
+  R4_A08|K20       cand 271 taken 247 skSlot   3 skCash   7 skHeld 14 capSkip 0.04 expo 0.62 avgPos 11.74 daysFull 0.02 daysCashBound 0.06 R0ret taken +0.273 skipped 0.3726
+  R4_A08|K10       cand 271 taken 168 skSlot  84 skCash   9 skHeld 10 capSkip 0.34 expo 0.76 avgPos  7.53 daysFull 0.26 daysCashBound 0.30 R0ret taken +0.304 skipped 0.2445
+  R5_A02|K20       cand 271 taken 250 skSlot   3 skCash   6 skHeld 12 capSkip 0.03 expo 0.56 avgPos 10.93 daysFull 0.01 daysCashBound 0.03 R0ret taken +0.263 skipped 0.5062
+  R5_A02|K10       cand 271 taken 173 skSlot  75 skCash  16 skHeld  7 capSkip 0.34 expo 0.73 avgPos  7.31 daysFull 0.23 daysCashBound 0.27 R0ret taken +0.311 skipped 0.2292
+  R6_A06|K20       cand 271 taken 208 skSlot   0 skCash  46 skHeld 17 capSkip 0.17 expo 0.72 avgPos 12.63 daysFull 0.00 daysCashBound 0.10 R0ret taken +0.304 skipped 0.2064
+  R6_A06|K10       cand 271 taken 118 skSlot  31 skCash 113 skHeld  9 capSkip 0.53 expo 0.85 avgPos  7.66 daysFull 0.12 daysCashBound 0.48 R0ret taken +0.363 skipped 0.2186
+
+=== drawdown episodes (K20 / K10, 10 bps): maxDD peak -> trough
+  train
+    R0_current|K20    -37.0%  2020-02-12 -> 2020-04-03
+    R0_current|K10    -36.9%  2020-01-17 -> 2020-04-03
+    R1_hold252|K20    -44.5%  2021-01-27 -> 2021-02-18
+    R1_hold252|K10    -46.4%  2019-12-06 -> 2020-03-18
+    R2_A10|K20        -45.7%  2021-01-27 -> 2021-02-18
+    R2_A10|K10        -39.6%  2020-02-19 -> 2020-04-03
+    R3_A09|K20        -44.3%  2021-01-27 -> 2021-02-18
+    R3_A09|K10        -35.0%  2020-02-19 -> 2020-04-03
+    R4_A08|K20        -46.4%  2021-01-27 -> 2021-02-18
+    R4_A08|K10        -62.0%  2021-01-27 -> 2021-02-18
+    R5_A02|K20        -25.9%  2020-02-19 -> 2020-04-03
+    R5_A02|K10        -42.8%  2021-01-27 -> 2021-02-18
+    R6_A06|K20        -44.4%  2021-01-27 -> 2021-02-23
+    R6_A06|K10        -42.8%  2021-01-27 -> 2021-02-23
+  holdout
+    R0_current|K20    -31.7%  2026-06-22 -> 2026-07-29
+    R0_current|K10    -28.2%  2025-01-22 -> 2025-04-08
+    R1_hold252|K20    -30.6%  2025-02-14 -> 2025-04-08
+    R1_hold252|K10    -36.2%  2022-02-09 -> 2022-11-09
+    R2_A10|K20        -29.2%  2026-06-02 -> 2026-07-29
+    R2_A10|K10        -34.4%  2026-06-22 -> 2026-07-29
+    R3_A09|K20        -34.6%  2026-06-22 -> 2026-07-29
+    R3_A09|K10        -40.1%  2025-02-19 -> 2025-04-08
+    R4_A08|K20        -24.9%  2025-02-19 -> 2025-04-08
+    R4_A08|K10        -34.9%  2025-02-19 -> 2025-04-07
+    R5_A02|K20        -23.2%  2025-02-19 -> 2025-04-08
+    R5_A02|K10        -29.9%  2025-02-19 -> 2025-04-08
+    R6_A06|K20        -32.3%  2026-06-02 -> 2026-07-29
+    R6_A06|K10        -37.5%  2025-01-22 -> 2025-04-08
+  train_2016H2
+    R0_current|K20    -37.0%  2020-02-12 -> 2020-04-03
+    R0_current|K10    -37.5%  2020-01-17 -> 2020-04-03
+    R1_hold252|K20    -32.3%  2020-02-19 -> 2020-03-18
+    R1_hold252|K10    -44.4%  2020-02-19 -> 2020-03-18
+    R2_A10|K20        -45.7%  2021-01-27 -> 2021-02-18
+    R2_A10|K10        -39.6%  2020-02-19 -> 2020-04-03
+    R3_A09|K20        -44.3%  2021-01-27 -> 2021-02-18
+    R3_A09|K10        -35.0%  2020-02-19 -> 2020-04-03
+    R4_A08|K20        -46.4%  2021-01-27 -> 2021-02-18
+    R4_A08|K10        -62.0%  2021-01-27 -> 2021-02-18
+    R5_A02|K20        -25.9%  2020-02-19 -> 2020-04-03
+    R5_A02|K10        -42.8%  2021-01-27 -> 2021-02-18
+    R6_A06|K20        -44.4%  2021-01-27 -> 2021-02-23
+    R6_A06|K10        -42.8%  2021-01-27 -> 2021-02-23
+  train_2017
+    R0_current|K20    -35.4%  2020-02-12 -> 2020-04-03
+    R0_current|K10    -40.7%  2020-01-17 -> 2020-04-03
+    R1_hold252|K20    -44.8%  2021-01-27 -> 2021-02-23
+    R1_hold252|K10    -37.9%  2019-12-06 -> 2020-03-16
+    R2_A10|K20        -45.7%  2021-01-27 -> 2021-02-18
+    R2_A10|K10        -39.5%  2020-02-19 -> 2020-04-03
+    R3_A09|K20        -44.3%  2021-01-27 -> 2021-02-18
+    R3_A09|K10        -35.0%  2020-02-19 -> 2020-04-03
+    R4_A08|K20        -46.4%  2021-01-27 -> 2021-02-18
+    R4_A08|K10        -62.0%  2021-01-27 -> 2021-02-18
+    R5_A02|K20        -25.9%  2020-02-19 -> 2020-04-03
+    R5_A02|K10        -42.8%  2021-01-27 -> 2021-02-18
+    R6_A06|K20        -44.4%  2021-01-27 -> 2021-02-23
+    R6_A06|K10        -42.8%  2021-01-27 -> 2021-02-23
+  holdout_2022H2
+    R0_current|K20    -32.3%  2026-06-22 -> 2026-07-29
+    R0_current|K10    -31.1%  2024-05-15 -> 2025-04-08
+    R1_hold252|K20    -25.9%  2025-02-14 -> 2025-04-08
+    R1_hold252|K10    -27.9%  2025-02-19 -> 2025-04-08
+    R2_A10|K20        -29.2%  2026-06-02 -> 2026-07-29
+    R2_A10|K10        -32.7%  2024-11-22 -> 2025-04-08
+    R3_A09|K20        -34.6%  2026-06-22 -> 2026-07-29
+    R3_A09|K10        -40.1%  2025-02-19 -> 2025-04-08
+    R4_A08|K20        -24.9%  2025-02-19 -> 2025-04-08
+    R4_A08|K10        -34.9%  2025-02-19 -> 2025-04-07
+    R5_A02|K20        -23.2%  2025-02-19 -> 2025-04-08
+    R5_A02|K10        -29.9%  2025-02-19 -> 2025-04-08
+    R6_A06|K20        -32.3%  2026-06-02 -> 2026-07-29
+    R6_A06|K10        -37.9%  2026-06-02 -> 2026-07-29
+
+=== (g) audit: equity recomputed from the trade log; exit/entry price & timing checks
+  train    R0_current  max|eq diff| 1.78e-15  bad 0  missing-open exits 0
+  train    R1_hold252  max|eq diff| 2.66e-15  bad 0  missing-open exits 0
+  train    R2_A10      max|eq diff| 1.78e-15  bad 0  missing-open exits 0
+  train    R3_A09      max|eq diff| 1.78e-15  bad 0  missing-open exits 0
+  train    R4_A08      max|eq diff| 2.22e-15  bad 0  missing-open exits 0
+  train    R5_A02      max|eq diff| 1.11e-15  bad 0  missing-open exits 0
+  train    R6_A06      max|eq diff| 1.78e-15  bad 0  missing-open exits 0
+  holdout  R0_current  max|eq diff| 1.33e-15  bad 0  missing-open exits 0
+  holdout  R1_hold252  max|eq diff| 1.78e-15  bad 0  missing-open exits 0
+  holdout  R2_A10      max|eq diff| 1.78e-15  bad 0  missing-open exits 0
+  holdout  R3_A09      max|eq diff| 3.55e-15  bad 0  missing-open exits 0
+  holdout  R4_A08      max|eq diff| 1.78e-15  bad 0  missing-open exits 0
+  holdout  R5_A02      max|eq diff| 2.22e-15  bad 0  missing-open exits 0
+  holdout  R6_A06      max|eq diff| 1.78e-15  bad 0  missing-open exits 0
+
+wrote C:\Users\ravee\AppData\Local\Temp\claude\C--Users-ravee-OneDrive-Documents-Claude-Projects-Trader-v3\418c87aa-6c93-415c-bb5e-6812d82e03ee\scratchpad\pe\portfolio_skeptic_results.json (19s)
