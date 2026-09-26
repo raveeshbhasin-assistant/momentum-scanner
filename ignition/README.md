@@ -103,6 +103,18 @@ together with the fraction to sell to get back to 2×.
 - **No lost days:** the ledger is rebuilt from prices on every run. If runs
   are skipped, the next run reports everything since the previous run's
   data date as new.
+- **Nothing recorded is ever forgotten (v1.9.0).** Every run is committed to
+  git, so a Railway redeploy can't lose data. The price rebuild itself could
+  drop a position: a ticker removed from `universe.txt`, a Yahoo gap, or an
+  adjusted-price revision. So each run carries forward everything the
+  previous run recorded:
+  - a closed trade keeps its recorded exit (`kept`);
+  - an open position the rebuild no longer produces is kept with its last
+    values, a `carried` reason and `carried_since`, and shows a grey "kept" tag.
+- **Partial scans are refused.** Failed download batches are retried, and a
+  scan with a last close for fewer than 97% of tickers is refused (normal
+  coverage is 100%). The Actions run then fails without committing, and the
+  page keeps the last good data.
 - `universe.txt` is pinned (S&P 500 + 400 as of 2026-09-26). Refresh it when
   index membership drifts.
 - Standalone module: it imports nothing from the scanner or themes, and

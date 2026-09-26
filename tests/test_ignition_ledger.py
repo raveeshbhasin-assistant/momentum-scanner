@@ -252,3 +252,94 @@ def test_page_renders_data_from_before_the_review_flags(monkeypatch, tmp_path):
     page = TestClient(web.app).get("/ignition")
     assert page.status_code == 200
     assert "pill CAP" not in page.text and "pill CHECKPOINT" not in page.text
+
+
+# ---- history is append-only (carry_forward / check_coverage) ----------------
+
+def _pos(tk, fired, status="HOLD", **kw):
+    return {"ticker": tk, "fired": fired, "status": status, "ret": kw.pop("ret", 5.0), **kw}
+
+
+def _close_with(tickers, last_nan=()):
+    idx = pd.bdate_range("2026-09-21", periods=5)
+    df = pd.DataFrame(1.0, index=idx, columns=list(tickers))
+    for t in last_nan:
+        df.loc[idx[-1], t] = np.nan
+    return df
+
+
+def test_open_position_for_a_ticker_with_no_data_is_carried_not_dropped():
+    prev = [_pos("GONE", "2026-06-01", ret=12.0)]
+    out = ig.carry_forward([], prev, _close_with(["AAA"]), "2026-09-24")
+    assert len(out) == 1 and out[0]["ticker"] == "GONE" and out[0]["ret"] == 12.0
+    assert "no price data" in out[0]["carried"] and out[0]["carried_since"] == "2026-09-24"
+    # a later run still keeps it, and keeps the original carried_since
+    again = ig.carry_forward([], out, _close_with(["AAA"]), "2026-09-25")
+    assert again[0]["carried_since"] == "2026-09-24"
+
+
+def test_open_position_the_rebuild_no_longer_produces_is_carried_with_reason():
+    prev = [_pos("AAA", "2026-06-01")]
+    out = ig.carry_forward([], prev, _close_with(["AAA"]), "2026-09-24")
+    assert "adjusted prices revised" in out[0]["carried"]
+
+
+def test_fresh_rebuild_replaces_a_carried_position_and_small_fire_shifts_match():
+    prev = [_pos("AAA", "2026-06-01", carried="x", carried_since="2026-09-01")]
+    fresh = [_pos("AAA", "2026-06-03", ret=20.0)]                  # fire moved 2 days: same position
+    out = ig.carry_forward(fresh, prev, _close_with(["AAA"]), "2026-09-24")
+    assert len(out) == 1 and out[0]["ret"] == 20.0 and not out[0].get("carried")
+
+
+def test_recorded_closed_trade_is_final():
+    rec = _pos("AAA", "2026-03-02", "CLOSED", exit_date="2026-05-04", exit=90.0, ret=-10.0)
+    # rebuild lost it entirely -> kept
+    out = ig.carry_forward([], [rec], _close_with(["AAA"]), "2026-09-24")
+    assert out[0]["exit_date"] == "2026-05-04" and out[0]["kept"]
+    # rebuild now says it never sold -> the recorded exit wins
+    out = ig.carry_forward([_pos("AAA", "2026-03-02", "HOLD")], [rec], _close_with(["AAA"]), "2026-09-24")
+    assert len(out) == 1 and out[0]["status"] == "CLOSED" and out[0]["exit_date"] == "2026-05-04"
+    # rebuild agrees -> untouched, no flag
+    same = dict(rec)
+    out = ig.carry_forward([same], [rec], _close_with(["AAA"]), "2026-09-24")
+    assert out[0] is same and not out[0].get("kept")
+
+
+def test_carried_positions_are_left_out_of_the_cap_review_book():
+    ps = [_pos("A", "2026-06-01", ret=0.0), _pos("B", "2026-06-01", ret=900.0, carried="x")]
+    ig.cap_review(ps)
+    assert ps[0]["weight_x"] == 1.0 and ps[1]["weight_x"] is None
+
+
+def test_partial_download_is_refused():
+    ig.check_coverage(_close_with([f"T{i}" for i in range(100)]), 100)          # 100% ok
+    with pytest.raises(RuntimeError, match="refusing to publish"):
+        ig.check_coverage(_close_with([f"T{i}" for i in range(100)],
+                                      last_nan=[f"T{i}" for i in range(5)]), 100)  # 95% < 97%
+
+
+def test_compute_keeps_history_across_runs_and_page_shows_it(monkeypatch, tmp_path):
+    import json
+
+    import themes_web.app as web
+    from fastapi.testclient import TestClient
+
+    close, open_, vol = _long_series(0.0003)
+    monkeypatch.setattr(ig, "LEDGER_START", str(close.index[300].date()))
+    prev = [_pos("OLD", "2025-11-03", ret=40.0, entry=10.0, price=14.0, base=8.0, to_stop=-42.9,
+                 peak_ret=50.0, sessions_since_fire=120, refires=0),
+            _pos("OLDC", "2025-10-01", "CLOSED", exit_date="2026-01-05", exit=9.0, entry=10.0, ret=-10.0,
+                 exit_reason="IGNITION_FAILED", sell_signal="2026-01-02", held=60, peak_ret=5.0)]
+    out = ig.compute(open_, close, vol, "2026-09-24", prev)
+    tickers = {p["ticker"] for p in out["positions"]}
+    assert {"T", "OLD", "OLDC"} <= tickers
+    assert out["summary"]["carried"] == ["OLD"] and out["summary"]["kept_closed"] == 1
+    (tmp_path / "latest.json").write_text(json.dumps(out))
+    (tmp_path / "runs.jsonl").write_text("")
+    monkeypatch.setattr(web, "_IGNITION_DIR", tmp_path)
+    monkeypatch.setattr(web, "start_scheduler", lambda: None)
+    page = TestClient(web.app).get("/ignition")
+    assert page.status_code == 200
+    assert "kept from earlier runs (no fresh data): OLD" in page.text
+    assert re.search(r'<span class="pill KEPT" title="Kept from earlier runs: [^"<>]*">kept · 2026-09-24</span>', page.text)
+    assert "(recorded)" in page.text

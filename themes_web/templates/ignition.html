@@ -48,7 +48,7 @@
   .pill.REFIRED, .pill.REFIRE, .pill.FIRE, .pill.NEW { background: var(--text-info-bg); color: var(--text-info); }
   .pill.HOLD { background: var(--text-success-bg); color: var(--text-success); }
   .pill.EDGE_EXPIRED, .pill.CHECKPOINT, .pill.CAP { background: var(--text-warning-bg); color: var(--text-warning); }
-  .pill.TIME, .pill.IGNITION_FAILED { background: var(--bg-elev-2); color: var(--text-secondary); }
+  .pill.TIME, .pill.IGNITION_FAILED, .pill.KEPT { background: var(--bg-elev-2); color: var(--text-secondary); }
 
   .flags { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
   .stopbar { display: inline-block; width: 48px; height: 5px; border-radius: 3px; background: var(--bg-elev-2); vertical-align: middle; margin-left: 8px; overflow: hidden; }
@@ -139,6 +139,7 @@
     <div class="kpi-value">{{ s.open }}</div>
     <div class="kpi-sub">{{ s.by_status.HOLD + s.by_status.REFIRED + s.by_status.NEW }} in the edge window · {{ s.by_status.EDGE_EXPIRED }} past it</div>
     {% if s.cap_review %}<div class="kpi-sub">over the 2× cap: {{ s.cap_review|join(', ') }}</div>{% endif %}
+    {% if s.carried %}<div class="kpi-sub">kept from earlier runs (no fresh data): {{ s.carried|join(', ') }}</div>{% endif %}
   </div>
   <div class="kpi">
     <div class="kpi-label">Exits, last 20 sessions</div>
@@ -171,7 +172,7 @@
     {% set room = -(p.to_stop or 0) %}
     <tr>
       <td class="l"><span class="tk">{{ p.ticker }}</span></td>
-      <td class="l"><div class="flags"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %}<span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}{% if p.cap_trim is defined and p.cap_trim is not none %}<span class="pill CAP" title="About {{ '%.1f'|format(p.weight_x) }}x an equal share (assumes equal dollars at each entry). Selling {{ '%.0f'|format(p.cap_trim) }}% brings it back to 2x.">2× cap · trim {{ '%.0f'|format(p.cap_trim) }}%</span>{% endif %}</div></td>
+      <td class="l"><div class="flags"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %}<span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}{% if p.cap_trim is defined and p.cap_trim is not none %}<span class="pill CAP" title="About {{ '%.1f'|format(p.weight_x) }}x an equal share (assumes equal dollars at each entry). Selling {{ '%.0f'|format(p.cap_trim) }}% brings it back to 2x.">2× cap · trim {{ '%.0f'|format(p.cap_trim) }}%</span>{% endif %}{% if p.carried %}<span class="pill KEPT" title="Kept from earlier runs: {{ p.carried }}. Values as of {{ p.carried_since }}.">kept · {{ p.carried_since }}</span>{% endif %}</div></td>
       <td class="l">{{ p.fired }}</td>
       <td class="opt">{{ money(p.entry) }}</td>
       <td>{{ money(p.price) }}</td>
@@ -207,7 +208,7 @@
       <td>{{ pct(p.ret) }}</td>
       <td>{{ pct(p.peak_ret) }}</td>
       <td>{{ p.held }}</td>
-      <td class="l"><span class="pill {{ p.exit_reason }}">{{ LABEL.get(p.exit_reason, p.exit_reason) }}</span></td>
+      <td class="l"><span class="pill {{ p.exit_reason }}">{{ LABEL.get(p.exit_reason, p.exit_reason) }}</span>{% if p.kept %} <span class="muted" title="{{ p.kept }}">(recorded)</span>{% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>

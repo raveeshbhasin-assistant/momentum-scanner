@@ -7,7 +7,41 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.8.2 — 2026-09-26 **(current)**
+## v1.9.0 — 2026-09-26 **(current)**
+
+**What** Ignition Watch history is now append-only.
+- **Carry-forward:** each run carries forward every position the previous run
+  recorded (`scan.carry_forward`).
+  - A closed trade keeps its recorded exit, even if revised prices would now
+    say otherwise (`kept`, shown as "(recorded)").
+  - An open position the price rebuild no longer produces is kept with its
+    last values, a reason, and a grey "kept · <date>" tag. If the data returns,
+    the fresh position replaces it.
+- **Download guard:** failed Yahoo batches are retried three times, and a
+  scan where under 97% of tickers have a last close is refused
+  (`check_coverage`; normal coverage is 100%). The Actions run fails without
+  committing, so the page keeps the last good data.
+- **Run log:** each line now records `carried`.
+
+**Why** Operator: history must survive every run and redeploy. Redeploys were
+already safe, since every run is committed to the `ignition-data` branch and
+Railway re-syncs at boot. But the ledger is rebuilt from prices each run, so
+three things could still silently erase a position: refreshing
+`universe.txt` (which the README tells you to do), a failed Yahoo batch (it
+was skipped silently), or an adjusted-price revision.
+
+**Verified** `pytest` green (58; 7 new tests cover carried/kept positions,
+fire-date shifts, the refusal of partial downloads, and page rendering).
+End-to-end on real prices: rerunning with BE and MRVL removed from the
+universe used to drop them (107 to 105 positions, losing BE's +723%). It now
+keeps both, flagged, with every other position and stat identical.
+
+**Rollback** Revert the commit. Positions already carried in `latest.json`
+stay in the data branch history.
+
+---
+
+## v1.8.2 — 2026-09-26
 
 **What** The Ignition Watch open-positions table fits without a horizontal
 scrollbar. At 1440px it was 1205px wide in a 1022px box.

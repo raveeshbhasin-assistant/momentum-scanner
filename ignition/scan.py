@@ -42,11 +42,21 @@ EXIT (research/ignition_exits/README.md — 748 trades, train 2016-21, holdout
 
 The ledger is rebuilt from prices every run, so a missed run never loses an
 event: anything that happened since the previous run is reported as new.
+
+HISTORY IS APPEND-ONLY. Every run is committed to the `ignition-data` branch,
+so a Railway redeploy can't lose anything. The rebuild itself could drop a
+position: a ticker removed from universe.txt, a Yahoo gap, or an adjusted-price
+revision nudging a borderline fire. So carry_forward() compares the rebuild
+with the previous run's positions. A closed trade keeps its recorded exit; an
+open position the rebuild no longer produces is kept, flagged `carried` with
+the reason. And a scan missing more than 3% of the universe is refused
+(check_coverage), so a failed download can't publish a thin ledger.
 """
 from __future__ import annotations
 
 import json
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -76,6 +86,8 @@ MAX_QUIET = 252       # close a position after this many sessions without a re-f
 CHECKPOINT_AFTER = 126            # 6-month review: sessions since entry ...
 CHECKPOINT_BAND = (0.0, 0.30)     # ... while the gain is inside this band (exclusive)
 WEIGHT_CAP = 2.0                  # 2x cap review: weight vs an equal share of the held book
+MIN_COVERAGE = 0.97               # refuse to publish if fewer tickers than this have a last close
+MATCH_DAYS = 7                    # carry_forward: same ticker, fire dates this close = same position
 
 BACKTEST = {
     "window": "2016-2026, S&P 500+400 (903 tickers), 2.18M ticker-days, 2,271 fires",
@@ -111,9 +123,18 @@ def download(tickers: list[str]) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFra
     start = (pd.Timestamp(LEDGER_START) - timedelta(days=430)).strftime("%Y-%m-%d")
     opens, closes, vols = [], [], []
     for i in range(0, len(tickers), BATCH):
-        d = yf.download(tickers[i:i + BATCH], start=start, auto_adjust=True,
-                        progress=False, threads=True)
-        if d.empty:
+        d = None
+        for attempt in range(3):                      # a failed batch is retried, not skipped
+            try:
+                d = yf.download(tickers[i:i + BATCH], start=start, auto_adjust=True,
+                                progress=False, threads=True)
+            except Exception as e:                    # noqa: BLE001 - retry any transport error
+                print(f"batch {i // BATCH} attempt {attempt + 1} failed: {e}", file=sys.stderr)
+                d = None
+            if d is not None and not d.empty:
+                break
+            time.sleep(15 * (attempt + 1))
+        if d is None or d.empty:
             continue
         opens.append(d["Open"].astype("float32"))
         closes.append(d["Close"].astype("float32"))
@@ -129,7 +150,18 @@ def download(tickers: list[str]) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFra
     # Drop a trailing row only a handful of tickers have (a partial intraday bar).
     if len(c) > 1 and c.iloc[-1].notna().mean() < 0.5:
         o, c, v = o.iloc[:-1], c.iloc[:-1], v.iloc[:-1]
+    check_coverage(c, len(tickers))
     return o, c, v
+
+
+def check_coverage(close: pd.DataFrame, n_tickers: int) -> None:
+    """Raise rather than publish a scan missing a chunk of the universe (e.g. a
+    Yahoo batch that failed three times). The Actions run then fails without
+    committing, and the page keeps the last good data. Normal coverage is 100%."""
+    have = int(close.iloc[-1].notna().sum()) if len(close) else 0
+    if have < MIN_COVERAGE * n_tickers:
+        raise RuntimeError(f"only {have}/{n_tickers} tickers have a close on the last date; "
+                           f"refusing to publish a partial scan (min {MIN_COVERAGE:.0%})")
 
 
 def _pct(x) -> float | None:
@@ -274,13 +306,57 @@ def _status(pos: dict, closed: bool, since_last_fire: int, since_refire: int | N
     return "HOLD"
 
 
+def carry_forward(positions: list, prev_positions: list | None, close: pd.DataFrame,
+                  prev_asof: str | None) -> list:
+    """Keep everything a previous run recorded (history is append-only).
+
+    - A CLOSED position keeps its recorded exit. A realised trade is final,
+      even if revised prices would now put the exit elsewhere or nowhere
+      (`kept` says why).
+    - An open position the rebuild no longer produces is carried forward with
+      its last recorded values (`carried` = the reason, `carried_since` = the
+      last data date it was seen fresh). If the ticker's data returns and the
+      rebuild produces it again, the fresh position replaces the carried one.
+    Positions match on ticker with fire dates within MATCH_DAYS calendar days.
+    """
+    if not prev_positions:
+        return positions
+    last = close.iloc[-1] if len(close) else pd.Series(dtype=float)
+    have_data = {t for t in close.columns if np.isfinite(last.get(t, np.nan))}
+    out = list(positions)
+    by_tk: dict[str, list[int]] = {}
+    for i, p in enumerate(out):
+        by_tk.setdefault(p["ticker"], []).append(i)
+
+    def match(q: dict) -> int | None:
+        for i in by_tk.get(q["ticker"], []):
+            if abs((pd.Timestamp(out[i]["fired"]) - pd.Timestamp(q["fired"])).days) <= MATCH_DAYS:
+                return i
+        return None
+
+    for q in prev_positions:
+        i = match(q)
+        if q.get("status") == "CLOSED":
+            if i is None:
+                out.append(dict(q, kept="no longer reproduced by the price rebuild; recorded exit kept"))
+            elif out[i].get("status") != "CLOSED" or out[i].get("exit_date") != q.get("exit_date"):
+                out[i] = dict(q, kept="prices revised since; recorded exit kept")
+        elif i is None:
+            reason = ("no price data (ticker missing from the latest download or universe)"
+                      if q["ticker"] not in have_data
+                      else "no longer reproduced by the price rebuild (adjusted prices revised)")
+            out.append(dict(q, carried=reason, carried_since=q.get("carried_since") or prev_asof))
+    return out
+
+
 def cap_review(positions: list) -> None:
     """Estimate each held position's weight vs an equal share, assuming equal
     dollars went into every entry: (1 + ret) / mean(1 + ret) over held positions
     (bought, not closed or pending sale). Sets weight_x, and cap_trim = the
     fraction of the position to sell to get back to WEIGHT_CAP when above it."""
     held = [p for p in positions
-            if p["status"] in ("HOLD", "REFIRED", "EDGE_EXPIRED") and p.get("ret") is not None]
+            if p["status"] in ("HOLD", "REFIRED", "EDGE_EXPIRED") and p.get("ret") is not None
+            and not p.get("carried")]
     for p in positions:
         p["weight_x"] = p["cap_trim"] = None
     if not held:
@@ -349,6 +425,8 @@ def summarize(positions: list, events: list, since: str | None, asof: str, recen
         # if every flag had been sold at the next open (same positions, same marks).
         "checkpoint_open": sorted(p["ticker"] for p in open_ if p.get("checkpoint")),
         "checkpoint_whatif": _stats([p.get("whatif_ret") for p in positions]),
+        "carried": sorted(p["ticker"] for p in open_ if p.get("carried")),
+        "kept_closed": sum(1 for p in closed if p.get("kept")),
         "cap_review": [p["ticker"] for p in sorted(positions, key=lambda p: -(p.get("weight_x") or 0))
                        if p.get("cap_trim") is not None],
     }
@@ -366,9 +444,11 @@ def read_runs() -> list[dict]:
     return out
 
 
-def compute(open_: pd.DataFrame, close: pd.DataFrame, vol: pd.DataFrame, prev_asof: str | None) -> dict:
+def compute(open_: pd.DataFrame, close: pd.DataFrame, vol: pd.DataFrame, prev_asof: str | None,
+            prev_positions: list | None = None) -> dict:
     f = signals(close, vol)
     positions, events = build_ledger(open_, close, f)
+    positions = carry_forward(positions, prev_positions, close, prev_asof)
     cap_review(positions)
     asof = str(close.index[-1].date())
     since = prev_asof or None   # a re-run on the same data date reports nothing new
@@ -397,9 +477,12 @@ def main() -> int:
     HISTORY_DIR.mkdir(parents=True, exist_ok=True)
     runs = read_runs()
     prev_asof = runs[-1]["asof"] if runs else None
+    prev_positions = None
+    if LATEST.exists():                       # restored from the ignition-data branch
+        prev_positions = json.loads(LATEST.read_text(encoding="utf-8")).get("positions")
 
     o, c, v = download(load_universe())
-    result = compute(o, c, v, prev_asof)
+    result = compute(o, c, v, prev_asof, prev_positions)
     s = result["summary"]
 
     tmp = LATEST.with_suffix(".tmp")
@@ -411,7 +494,7 @@ def main() -> int:
     }, indent=1), encoding="utf-8")
     run = {"run_at": result["scanned_at"], "asof": result["asof"], "since": s["since"],
            "fires": s["new_fires"], "sells": s["new_sells"], "expired": s["new_expired"],
-           "checkpoints": s["new_checkpoints"],
+           "checkpoints": s["new_checkpoints"], "carried": s["carried"],
            "open": s["open"], "closed": s["closed"]}
     with RUNS.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(run) + "\n")
