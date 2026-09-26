@@ -7,7 +7,22 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.7.0 — 2026-09-26 **(current)**
+## v1.7.1 — 2026-09-26 **(current)**
+
+**What** Fix: the "6-mo review" pill printed a stray `">` before its label.
+Its hover title used the `pct()` macro, which emits a `<span class="...">`,
+and the quotes closed the attribute early. The title now uses plain text.
+
+**Why** Found on the live page right after the v1.7.0 deploy.
+
+**Verified** `pytest` green (48). The page test now checks that the pill
+markup is well-formed, and it fails on v1.7.0's template.
+
+**Rollback** Revert the commit.
+
+---
+
+## v1.7.0 — 2026-09-26
 
 **What**
 - **6-month review** on Ignition Watch. A position 126+ sessions after entry

@@ -1,5 +1,6 @@
 """Ignition ledger rules (ignition/scan.py) on synthetic prices — no network."""
 import importlib.util
+import re
 from pathlib import Path
 
 import numpy as np
@@ -188,3 +189,4 @@ def test_page_renders_six_month_review(monkeypatch, tmp_path):
     page = TestClient(web.app).get("/ignition")
     assert page.status_code == 200
     assert "6-mo review" in page.text and "with the 6-month review" in page.text
+    assert re.search(r'<span class="pill CHECKPOINT" title="6-month review since [0-9-]+ at [+-][0-9.]+%">6-mo review</span>', page.text)

@@ -164,7 +164,7 @@
     {% set room = -(p.to_stop or 0) %}
     <tr>
       <td class="l"><span class="tk">{{ p.ticker }}</span></td>
-      <td class="l"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %} <span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ pct(p.checkpoint_ret) }}">6-mo review</span>{% endif %}</td>
+      <td class="l"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %} <span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}</td>
       <td class="l">{{ p.fired }}</td>
       <td>{{ money(p.entry) }}</td>
       <td>{{ money(p.price) }}</td>
