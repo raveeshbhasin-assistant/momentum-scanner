@@ -7,7 +7,37 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.6.4 — 2026-09-26 **(current)**
+## v1.7.0 — 2026-09-26 **(current)**
+
+**What**
+- **6-month review** on Ignition Watch. A position 126+ sessions after entry
+  that is up, but by less than +30%, gets a "6-mo review" pill and a
+  `CHECKPOINT` event, and appears in a new run-log column. It is a flag only:
+  statuses, sells and the existing stats are unchanged.
+- The "All positions" tile adds a what-if line: the same ledger scored as if
+  every flag had been sold at the next open. On data through 2026-09-25:
+  avg +22.1% vs +23.8% live, median −10.1% vs −11.6%, 42.1% vs 37.4% up.
+- The run-log column "Sell signals" is now "Exits" and is no longer red,
+  matching the v1.6.4 tile.
+
+**Why** Operator: "we only sell when the gains are gone." True: the sell
+line sits ~14% below entry, so every base sell is a loss. A pre-registered
+study (`research/ignition_exits/profit_protection/`) tested 60 profit-lock
+rules and none passed. The 6-month review was the most stable near-miss:
+about half the round-trips and a better median, for ~6 pp of mean. So it is
+shown, not enforced.
+
+**Verified** `pytest` green (48; new tests cover the flag, big winners
+running unflagged, and the page rendering old run-log lines). A real scan on
+2026-09-25 data gives an unchanged ledger (34 open / 73 closed), with 8 open
+positions flagged.
+
+**Rollback** Revert the commit. The next scan rewrites `latest.json` without
+the new fields, and the template guards on their absence.
+
+---
+
+## v1.6.4 — 2026-09-26
 
 **What** The Ignition Watch KPI tile "Sell signals, last 20 sessions" is
 now **"Exits, last 20 sessions"**, and it is no longer coloured red. It

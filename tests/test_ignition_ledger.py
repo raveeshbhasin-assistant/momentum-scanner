@@ -132,3 +132,59 @@ def test_rerun_on_same_data_date_reports_nothing_new(monkeypatch):
     assert first["summary"]["new_sells"] == ["T"]
     rerun = ig.compute(open_, close, vol, asof)
     assert rerun["summary"]["new_events"] == []
+
+
+def _long_series(daily: float, n: int = 520, fire: int = 330):
+    """Like _series but long enough to pass the 126-session review (n - fire > 126)."""
+    lr = np.full(n, 0.001)
+    lr[fire - 4:fire + 1] += 0.028
+    lr[fire + 1:] = daily
+    vol = np.ones(n)
+    vol[fire - 14:fire + 1] = 3.0
+    idx = pd.bdate_range("2025-01-01", periods=n)
+    close = pd.DataFrame({"T": 100 * np.exp(np.cumsum(lr))}, index=idx)
+    return close, close * 1.0, pd.DataFrame({"T": vol * 1e6}, index=idx)
+
+
+def test_six_month_review_flags_small_gain_without_selling(monkeypatch):
+    close, open_, vol = _long_series(0.0003)          # ~+4% after 126 sessions
+    positions, events = _run(close, open_, vol, monkeypatch)
+    p = positions[0]
+    entry_i = close.index.get_loc(pd.Timestamp(p["entry_date"]))
+    flag_i = close.index.get_loc(pd.Timestamp(p["checkpoint"]))
+    assert flag_i - entry_i == ig.CHECKPOINT_AFTER                 # first eligible session
+    assert 0 < p["checkpoint_ret"] < 30
+    assert p["exit_reason"] is None and p["status"] != "CLOSED"    # flag only, never a sell
+    assert p["checkpoint_exit"] == pytest.approx(open_["T"].iloc[flag_i + 1], rel=1e-3)
+    assert p["whatif_ret"] < p["ret"]                               # it kept drifting up after the flag
+    assert "CHECKPOINT" in [e["type"] for e in events]
+
+
+def test_six_month_review_lets_big_winners_run(monkeypatch):
+    close, open_, vol = _long_series(0.004)           # ~+65% by session 126
+    positions, events = _run(close, open_, vol, monkeypatch)
+    p = positions[0]
+    assert p["checkpoint"] is None and p["whatif_ret"] == p["ret"]
+    assert "CHECKPOINT" not in [e["type"] for e in events]
+
+
+def test_page_renders_six_month_review(monkeypatch, tmp_path):
+    import json
+
+    import themes_web.app as web
+    from fastapi.testclient import TestClient
+
+    close, open_, vol = _long_series(0.0003)
+    monkeypatch.setattr(ig, "LEDGER_START", str(close.index[300].date()))
+    out = ig.compute(open_, close, vol, None)
+    assert out["summary"]["checkpoint_open"] == ["T"]
+    assert out["summary"]["checkpoint_whatif"]["n"] == 1
+    (tmp_path / "latest.json").write_text(json.dumps(out))
+    (tmp_path / "runs.jsonl").write_text(json.dumps(
+        {"run_at": "x", "asof": out["asof"], "since": None, "fires": [], "sells": [],
+         "expired": [], "open": 1, "closed": 0}) + "\n")           # old run line: no "checkpoints" key
+    monkeypatch.setattr(web, "_IGNITION_DIR", tmp_path)
+    monkeypatch.setattr(web, "start_scheduler", lambda: None)
+    page = TestClient(web.app).get("/ignition")
+    assert page.status_code == 200
+    assert "6-mo review" in page.text and "with the 6-month review" in page.text

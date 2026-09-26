@@ -60,6 +60,22 @@ sessions before the fire). It was the only exit near the top in train,
 holdout and live data. **TIME** closes the position after 252 sessions
 without a re-fire. Dropping off the signal list is *not* a sell.
 
+### 6-month review (v1.7.0, flag only)
+The sell line sits a median 14% *below* entry, so IGNITION_FAILED only ever
+sells at a loss. The **6-month review** flags a position 126+ sessions after
+entry that is up, but by less than +30%. It is the one take-profit rule that
+held up across train, holdout and live data. It never closes a position.
+
+- **Why flag only:** it failed the pre-registered bar. It gives about half as
+  many "was up 20%, sold at a loss" trades and a better median, but it costs
+  ~6 pp of mean per trade (`research/ignition_exits/profit_protection/`).
+- **What-if stats:** the ledger scores the whole history as if every flag had
+  been sold at the next open (`summary.checkpoint_whatif`), shown next to the
+  live rule on the page.
+- **Data:** each position carries `checkpoint` (date), `checkpoint_ret`,
+  `checkpoint_exit` and `whatif_ret`. A `CHECKPOINT` event is logged once
+  per position.
+
 ## Operation
 
 - **Scan of record:** `.github/workflows/ignition-daily.yml` runs

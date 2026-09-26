@@ -27,6 +27,12 @@ EXIT (research/ignition_exits/README.md — 748 trades, train 2016-21, holdout
             signal's excess return is concentrated in that window; a review
             flag, not a sell.
     A position with no re-fire for 252 sessions is closed as TIME.
+    6-MONTH REVIEW (flag only; research/ignition_exits/profit_protection/):
+            126+ sessions after entry and up 0-30% on the close = "the
+            6-month take-profit rule would sell here". It failed the
+            pre-registered bar (it costs ~6 pp of mean per trade), so it never
+            closes a position; the ledger reports what following it would have
+            returned (summary.checkpoint_whatif) next to the live rule.
 
 The ledger is rebuilt from prices every run, so a missed run never loses an
 event: anything that happened since the previous run is reported as new.
@@ -61,6 +67,8 @@ EDGE_WINDOW = 63      # sessions after the last fire where the edge lives
 REFIRE_GAP = 5        # a re-fire needs the signal off for this many sessions first
 REFIRE_HOT = 20       # re-fired within this many sessions = strongest state
 MAX_QUIET = 252       # close a position after this many sessions without a re-fire
+CHECKPOINT_AFTER = 126            # 6-month review: sessions since entry ...
+CHECKPOINT_BAND = (0.0, 0.30)     # ... while the gain is inside this band (exclusive)
 
 BACKTEST = {
     "window": "2016-2026, S&P 500+400 (903 tickers), 2.18M ticker-days, 2,271 fires",
@@ -162,6 +170,7 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
                 "base": _px(base), "entry_date": None, "entry": None,
                 "refires": 0, "last_fire": ds[fire], "last_refire": None, "exit_date": None, "exit": None,
                 "exit_reason": None, "sell_signal": None,
+                "checkpoint": None, "checkpoint_ret": None, "checkpoint_exit": None,
             }
             events.append({"date": ds[fire], "ticker": tk, "type": "FIRE",
                            "detail": f"+{_pct(R5[fire, j])}% week on {_px(VR[fire, j])}x volume"})
@@ -169,6 +178,7 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
                 if np.isfinite(O[e, j]):
                     pos["entry_date"], pos["entry"] = ds[e], _px(O[e, j])
                     break
+            entry_i = ds.index(pos["entry_date"]) if pos["entry_date"] else None
             last_fire, peak, expired_logged = fire, C[fire, j], False
             d = fire + 1
             closed = False
@@ -192,6 +202,16 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
                     expired_logged = True
                     events.append({"date": ds[d], "ticker": tk, "type": "EDGE_EXPIRED",
                                    "detail": f"{EDGE_WINDOW} sessions since last fire"})
+                if (pos["checkpoint"] is None and entry_i is not None and d - entry_i >= CHECKPOINT_AFTER
+                        and np.isfinite(c)):
+                    r = c / pos["entry"] - 1
+                    if CHECKPOINT_BAND[0] < r < CHECKPOINT_BAND[1]:
+                        pos["checkpoint"], pos["checkpoint_ret"] = ds[d], _pct(r)
+                        if d + 1 < n and np.isfinite(O[d + 1, j]):
+                            pos["checkpoint_exit"] = _px(O[d + 1, j])
+                        events.append({"date": ds[d], "ticker": tk, "type": "CHECKPOINT",
+                                       "detail": f"{d - entry_i} sessions in, up {_pct(r):+.1f}% (under "
+                                                 f"+{CHECKPOINT_BAND[1]:.0%}): 6-month take-profit review"})
                 reason = None
                 if np.isfinite(c) and np.isfinite(base) and c < base:
                     reason = "IGNITION_FAILED"
@@ -219,6 +239,10 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
                 pos["peak_ret"] = _pct(peak / pos["entry"] - 1)
             else:
                 pos["ret"] = pos["peak_ret"] = None
+            # What following the 6-month review would have returned: sold at the
+            # next open after the flag (or marked now if that open hasn't happened).
+            pos["whatif_ret"] = (_pct(pos["checkpoint_exit"] / pos["entry"] - 1)
+                                 if pos["checkpoint_exit"] and pos["entry"] else pos["ret"])
             if pos["entry_date"]:
                 end_i = ds.index(pos["exit_date"]) if pos["exit_date"] else (d if closed else n - 1)
                 pos["held"] = int(end_i - ds.index(pos["entry_date"]))
@@ -294,6 +318,11 @@ def summarize(positions: list, events: list, since: str | None, asof: str, recen
         "new_fires": sorted({e["ticker"] for e in new_events if e["type"] in ("FIRE", "REFIRE")}),
         "new_sells": sorted({e["ticker"] for e in new_events if e["type"] == "SELL"}),
         "new_expired": sorted({e["ticker"] for e in new_events if e["type"] == "EDGE_EXPIRED"}),
+        "new_checkpoints": sorted({e["ticker"] for e in new_events if e["type"] == "CHECKPOINT"}),
+        # 6-month review: open positions flagged, and the whole ledger re-scored as
+        # if every flag had been sold at the next open (same positions, same marks).
+        "checkpoint_open": sorted(p["ticker"] for p in open_ if p.get("checkpoint")),
+        "checkpoint_whatif": _stats([p.get("whatif_ret") for p in positions]),
     }
 
 
@@ -352,6 +381,7 @@ def main() -> int:
     }, indent=1), encoding="utf-8")
     run = {"run_at": result["scanned_at"], "asof": result["asof"], "since": s["since"],
            "fires": s["new_fires"], "sells": s["new_sells"], "expired": s["new_expired"],
+           "checkpoints": s["new_checkpoints"],
            "open": s["open"], "closed": s["closed"]}
     with RUNS.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(run) + "\n")
