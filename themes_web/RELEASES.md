@@ -7,7 +7,26 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.6.0 — 2026-09-26 **(current)**
+## v1.6.1 — 2026-09-26 **(current)**
+
+**What** Fix: the Ignition Watch boot sync now runs immediately after a
+deploy.
+
+**Why** v1.6.0 scheduled the first sync with a naive `datetime.now()`.
+APScheduler reads that in the scheduler's America/New_York zone, so on
+Railway's UTC host the boot sync was queued about 4 hours in the future.
+After the v1.6.0 deploy, `/ignition` showed "Loading" until a manual
+`POST /api/refresh_ignition`.
+
+**Verified** New regression test (fails on the old line, passes on the
+fix); `pytest` green (44). On production, the manual sync loaded
+`source=github`, 107 positions and the first run-log entry.
+
+**Rollback** Revert the commit (restores v1.6.0 behavior).
+
+---
+
+## v1.6.0 — 2026-09-26
 
 **What** Ignition Watch becomes a position ledger with a sell signal and a
 permanent run log.

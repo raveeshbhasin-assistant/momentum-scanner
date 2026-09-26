@@ -13,7 +13,7 @@ import os
 import subprocess
 import sys
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -204,7 +204,9 @@ def start_scheduler() -> BackgroundScheduler:
     _scheduler.add_job(
         refresh_ignition,
         trigger=IntervalTrigger(minutes=30),
-        next_run_time=datetime.now(),
+        # Must be tz-aware: a naive now() is read in the scheduler's
+        # America/New_York zone, which on a UTC host lands hours ahead.
+        next_run_time=datetime.now(timezone.utc),
         id="ignition_sync",
         name="Ignition Watch sync from ignition-data branch",
         replace_existing=True,

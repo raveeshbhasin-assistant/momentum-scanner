@@ -100,6 +100,19 @@ def test_page_renders_from_scan_output(monkeypatch, tmp_path):
     assert client.get("/api/ignition").json()["runs"][0]["sells"] == ["T"]
 
 
+def test_ignition_sync_runs_at_boot_regardless_of_host_timezone(monkeypatch):
+    from datetime import datetime, timezone
+
+    import themes_web.scheduler as sch
+
+    monkeypatch.setenv("TZ", "UTC")
+    monkeypatch.setattr(sch.BackgroundScheduler, "start", lambda self, *a, **k: None)
+    monkeypatch.setattr(sch, "_scheduler", None)
+    job = sch.start_scheduler().get_job("ignition_sync")
+    delay = (job.next_run_time - datetime.now(timezone.utc)).total_seconds()
+    assert -5 < delay < 60
+
+
 def test_summary_reports_events_since_previous_run(monkeypatch):
     after = np.concatenate([np.full(3, 0.002), np.full(10, -0.04), np.full(N, 0.001)])
     close, open_, vol = _series(after)
