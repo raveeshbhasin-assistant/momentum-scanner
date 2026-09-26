@@ -313,7 +313,7 @@ def compute(open_: pd.DataFrame, close: pd.DataFrame, vol: pd.DataFrame, prev_as
     f = signals(close, vol)
     positions, events = build_ledger(open_, close, f)
     asof = str(close.index[-1].date())
-    since = prev_asof if prev_asof and prev_asof < asof else None
+    since = prev_asof or None   # a re-run on the same data date reports nothing new
     recent_from = str(close.index[max(0, len(close.index) - 20)].date())
     return {
         "version": 2,

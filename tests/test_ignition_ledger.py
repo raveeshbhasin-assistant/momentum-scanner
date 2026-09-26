@@ -121,3 +121,14 @@ def test_summary_reports_events_since_previous_run(monkeypatch):
     out = ig.compute(open_, close, vol, prev)
     assert out["summary"]["new_sells"] == ["T"]
     assert out["summary"]["new_fires"] == []
+
+
+def test_rerun_on_same_data_date_reports_nothing_new(monkeypatch):
+    after = np.concatenate([np.full(N - FIRE - 2, 0.001), [-0.30]])   # sell signal on the last session
+    close, open_, vol = _series(after)
+    monkeypatch.setattr(ig, "LEDGER_START", str(close.index[300].date()))
+    asof = str(close.index[-1].date())
+    first = ig.compute(open_, close, vol, str(close.index[-2].date()))
+    assert first["summary"]["new_sells"] == ["T"]
+    rerun = ig.compute(open_, close, vol, asof)
+    assert rerun["summary"]["new_events"] == []

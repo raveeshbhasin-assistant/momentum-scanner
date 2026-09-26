@@ -25,7 +25,7 @@ Human-owned, Claude-assisted long-term thesis investing. Run: `uvicorn themes_we
 - Per theme: `thesis.md` → `supply_chain.md` → `candidates.md/json` → `scoring` → `tracker.json/md` (top ~5–7 holdings).
 - Active themes: AI Data Center, Space Economy, Modern Defense, Robotics, GLP-1.
 - `themes/refresh_data.py` refreshes prices/fundamentals nightly (FMP→yfinance) into `candidates.json` + shared `themes/_benchmarks.json`.
-- `/ignition` (v1.6.1): standalone `ignition/` module — momentum-ignition signal (+12% week, 1.5× volume, 50>200 DMA) replayed as a position ledger with a sell rule (close below the pre-ignition base). The scan of record runs in GitHub Actions (`.github/workflows/ignition-daily.yml`, weekdays 21:30 UTC) and commits each run to the `ignition-data` branch; themes_web only syncs from that branch. Never push data to main (it would redeploy). Method: `ignition/README.md`, exits: `research/ignition_exits/README.md`.
+- `/ignition` (v1.6.2): standalone `ignition/` module — momentum-ignition signal (+12% week, 1.5× volume, 50>200 DMA) replayed as a position ledger with a sell rule (close below the pre-ignition base). The scan of record runs in GitHub Actions (`.github/workflows/ignition-daily.yml`, weekdays 21:30 UTC) and commits each run to the `ignition-data` branch; themes_web only syncs from that branch. Never push data to main (it would redeploy). Method: `ignition/README.md`; discovery study: `research/ignition_discovery/`; exits: `research/ignition_exits/README.md`.
 
 ## Release hygiene — every push is a deploy
 

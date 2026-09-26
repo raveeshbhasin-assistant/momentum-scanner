@@ -7,7 +7,34 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.6.1 — 2026-09-26 **(current)**
+## v1.6.2 — 2026-09-26 **(current)**
+
+**What**
+- The Ignition Watch research moved into this repo from the operator's
+  Test1 repo, as `research/ignition_discovery/`: the 628-episode discovery
+  study, its pipeline, `results.json`, and the standalone `report.html`.
+  All references now point here. Left out: the applied v1.5.0 deploy
+  patch, and `recent_fires.py`, which `ignition/scan.py` replaced. Both
+  remain in Test1's git history.
+- Fix: a second scan on the same data date (a manual re-run, or a code
+  push on a weekend) re-reported that day's fires and sells as "new". It
+  now reports nothing new.
+- The workflow's push trigger is narrowed to `ignition/scan.py`,
+  `ignition/universe.txt` and the workflow file, so doc edits don't start
+  a scan.
+
+**Why** Operator: keep all the momentum work in the trader repo. The
+re-run bug turned up while reviewing the workflow trigger.
+
+**Verified** `pytest` green (45; the new re-run test fails on the old
+line). Moved scripts and `results.json` parse. No remaining Test1
+references except the provenance note.
+
+**Rollback** Revert the commit.
+
+---
+
+## v1.6.1 — 2026-09-26
 
 **What** Fix: the Ignition Watch boot sync now runs immediately after a
 deploy.

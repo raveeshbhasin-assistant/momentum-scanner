@@ -13,8 +13,9 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main]
-    paths:
-      - "ignition/**"
+    paths:                    # code and universe only; doc edits don't need a scan
+      - "ignition/scan.py"
+      - "ignition/universe.txt"
       - ".github/workflows/ignition-daily.yml"
 
 permissions:

@@ -80,5 +80,5 @@ without a re-fire. Dropping off the signal list is *not* a sell.
 - Standalone module: it imports nothing from the scanner or themes, and
   themes_web calls it only by subprocess.
 
-Research pipeline and full episode catalog:
-github.com/raveeshbhasin-git/Test1, branch `claude/stock-momentum-patterns-op28f6`, `momentum/`.
+Discovery study (the 628-episode research that produced this signal):
+`research/ignition_discovery/`. Exit study: `research/ignition_exits/`.
