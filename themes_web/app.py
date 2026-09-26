@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -591,15 +592,15 @@ def api_quotes(slug: str):
     spy_price = None
     source = "stale"
     try:
-        import config
-        if config.FMP_API_KEY:
+        fmp_key = os.getenv("FMP_API_KEY", "")
+        if fmp_key:
             import httpx
             with httpx.Client(timeout=10) as client:
                 for tk in tickers + ["SPY"]:
                     try:
                         r = client.get(
                             "https://financialmodelingprep.com/stable/quote",
-                            params={"symbol": tk, "apikey": config.FMP_API_KEY},
+                            params={"symbol": tk, "apikey": fmp_key},
                         )
                         r.raise_for_status()
                         data = r.json()

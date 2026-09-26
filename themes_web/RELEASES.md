@@ -7,7 +7,27 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.6.2 — 2026-09-26 **(current)**
+## v1.6.3 — 2026-09-26 **(current)**
+
+**What**
+- Live quotes on the tracker read `FMP_API_KEY` straight from the
+  environment instead of importing the scanner's `config` module. Same key,
+  same behaviour; themes_web no longer loads scanner config at request time.
+- CLAUDE.md now describes the repo as it is: scanner + themes_web, plus
+  the standalone `ignition/` module. The import rule is spelled out
+  (themes may use `config`/`fmp_data`, never `app.py`/`scanner.py`;
+  ignition is never imported). Ignition data goes only to `ignition-data`.
+  themes_web releases bump `version.py` + this file.
+
+**Why** Operator: align the repo docs after Ignition Watch moved in.
+
+**Verified** `pytest` green; `themes_web.app` imports cleanly.
+
+**Rollback** Revert the commit.
+
+---
+
+## v1.6.2 — 2026-09-26
 
 **What**
 - The Ignition Watch research moved into this repo from the operator's
