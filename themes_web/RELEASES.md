@@ -7,7 +7,30 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.8.0 — 2026-09-26 **(current)**
+## v1.8.1 — 2026-09-26 **(current)**
+
+**What** Fix: `/ignition` returned HTTP 500 after the v1.8.0 deploy. The
+container still held `latest.json` from the previous scan, which has no
+`cap_trim` field.
+- **Cause:** in Jinja a missing key is Undefined, not None, so
+  `p.cap_trim is not none` was true and formatting `p.weight_x` raised an error.
+- **Fix:** the pill now checks `is defined` first.
+- **Recovery:** production was restored within minutes by syncing the new
+  scan (`POST /api/refresh_ignition`), before this fix shipped.
+
+**Why** A deploy can land before the next scan, so the page must render data
+written by an older `scan.py`.
+
+**Verified** `pytest` green (51). A new test renders the page from a
+`latest.json` with every v1.7/v1.8 field removed; it fails on the v1.8.0
+template. The page was also rendered locally from the real pre-v1.8
+`ignition-data` scan (e6dcbce).
+
+**Rollback** Revert the commit.
+
+---
+
+## v1.8.0 — 2026-09-26
 
 **What** Ignition Watch adds a **2× cap review**. A held position whose
 weight has reached 2× or more of an equal share gets a "2× cap · trim N%"

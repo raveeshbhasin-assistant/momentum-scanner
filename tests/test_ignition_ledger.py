@@ -224,3 +224,31 @@ def test_page_renders_cap_review(monkeypatch, tmp_path):
     page = TestClient(web.app).get("/ignition").text
     assert re.search(r'<span class="pill CAP" title="About 3\.1x an equal share[^"<>]*">2× cap · trim 36%</span>', page)
     assert "over the 2× cap: T" in page
+
+
+def test_page_renders_data_from_before_the_review_flags(monkeypatch, tmp_path):
+    """A deploy can land before the next scan: the page must render latest.json
+    written by an older scan.py that has none of the v1.7/v1.8 fields (the v1.8.0
+    deploy served a 500 for exactly this)."""
+    import json
+
+    import themes_web.app as web
+    from fastapi.testclient import TestClient
+
+    close, open_, vol = _long_series(0.0003)
+    monkeypatch.setattr(ig, "LEDGER_START", str(close.index[300].date()))
+    out = ig.compute(open_, close, vol, None)
+    for p in out["positions"]:
+        for k in ("checkpoint", "checkpoint_ret", "checkpoint_exit", "whatif_ret", "weight_x", "cap_trim"):
+            p.pop(k, None)
+    for k in ("new_checkpoints", "checkpoint_open", "checkpoint_whatif", "cap_review"):
+        out["summary"].pop(k, None)
+    (tmp_path / "latest.json").write_text(json.dumps(out))
+    (tmp_path / "runs.jsonl").write_text(json.dumps(
+        {"run_at": "x", "asof": out["asof"], "since": None, "fires": [], "sells": [],
+         "expired": [], "open": 1, "closed": 0}) + "\n")
+    monkeypatch.setattr(web, "_IGNITION_DIR", tmp_path)
+    monkeypatch.setattr(web, "start_scheduler", lambda: None)
+    page = TestClient(web.app).get("/ignition")
+    assert page.status_code == 200
+    assert "pill CAP" not in page.text and "pill CHECKPOINT" not in page.text

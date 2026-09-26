@@ -168,7 +168,7 @@
     {% set room = -(p.to_stop or 0) %}
     <tr>
       <td class="l"><span class="tk">{{ p.ticker }}</span></td>
-      <td class="l"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %} <span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}{% if p.cap_trim is not none %} <span class="pill CAP" title="About {{ '%.1f'|format(p.weight_x) }}x an equal share (assumes equal dollars at each entry). Selling {{ '%.0f'|format(p.cap_trim) }}% brings it back to 2x.">2× cap · trim {{ '%.0f'|format(p.cap_trim) }}%</span>{% endif %}</td>
+      <td class="l"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %} <span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}{% if p.cap_trim is defined and p.cap_trim is not none %} <span class="pill CAP" title="About {{ '%.1f'|format(p.weight_x) }}x an equal share (assumes equal dollars at each entry). Selling {{ '%.0f'|format(p.cap_trim) }}% brings it back to 2x.">2× cap · trim {{ '%.0f'|format(p.cap_trim) }}%</span>{% endif %}</td>
       <td class="l">{{ p.fired }}</td>
       <td>{{ money(p.entry) }}</td>
       <td>{{ money(p.price) }}</td>
