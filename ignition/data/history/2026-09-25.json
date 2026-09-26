@@ -1,6 +1,6 @@
 {
  "asof": "2026-09-25",
- "scanned_at": "2026-09-26 13:26 ET",
+ "scanned_at": "2026-09-26 13:42 ET",
  "summary": {
   "open": 34,
   "by_status": {
@@ -44,7 +44,7 @@
   "recent_sells": [
    "RMBS"
   ],
-  "since": null,
+  "since": "2026-09-25",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
