@@ -7,7 +7,23 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.6.3 — 2026-09-26 **(current)**
+## v1.6.4 — 2026-09-26 **(current)**
+
+**What** The Ignition Watch KPI tile "Sell signals, last 20 sessions" is
+now **"Exits, last 20 sessions"**, and it is no longer coloured red. It
+counts every close: failed ignitions *and* 12-month age-outs (e.g. RMBS on
+2026-09-23 aged out at +0.1%; TWLO aged out at +109%), so "sell signal"
+and red were misleading.
+
+**Why** Operator review of the live page.
+
+**Verified** `pytest` green; template parses; page renders locally.
+
+**Rollback** Revert the commit.
+
+---
+
+## v1.6.3 — 2026-09-26
 
 **What**
 - Live quotes on the tracker read `FMP_API_KEY` straight from the

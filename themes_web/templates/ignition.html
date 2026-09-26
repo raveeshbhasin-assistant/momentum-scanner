@@ -130,8 +130,8 @@
     <div class="kpi-sub">{{ s.by_status.HOLD + s.by_status.REFIRED + s.by_status.NEW }} in the edge window · {{ s.by_status.EDGE_EXPIRED }} past it</div>
   </div>
   <div class="kpi">
-    <div class="kpi-label">Sell signals, last 20 sessions</div>
-    <div class="kpi-value {{ 'negative' if s.recent_sells else '' }}">{{ s.recent_sells|length }}</div>
+    <div class="kpi-label">Exits, last 20 sessions</div>
+    <div class="kpi-value">{{ s.recent_sells|length }}</div>
     <div class="kpi-sub">{{ s.recent_sells|join(', ') if s.recent_sells else 'none' }}</div>
   </div>
   <div class="kpi">
