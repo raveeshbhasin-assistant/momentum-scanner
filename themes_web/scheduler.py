@@ -98,6 +98,27 @@ def refresh_referrals() -> dict:
     return result
 
 
+_IGNITION_LATEST = _PROJECT_ROOT / "ignition" / "data" / "latest.json"
+
+
+def refresh_ignition() -> dict:
+    """
+    Rerun the Ignition Watch scan (ignition/ is a standalone module —
+    subprocess keeps the no-cross-import rule). ~1-2 min: downloads 2.5y of
+    daily bars for ~900 tickers. Also callable via POST /api/refresh_ignition.
+    """
+    logger.info("[scheduler] ignition scan starting")
+    try:
+        r = subprocess.run([_PYTHON, "ignition/scan.py"], cwd=_PROJECT_ROOT,
+                           capture_output=True, text=True, timeout=1200)
+        if r.returncode != 0:
+            logger.warning(f"[scheduler] ignition scan non-zero: {r.returncode}")
+        return {"returncode": r.returncode, "tail": (r.stdout + r.stderr)[-400:]}
+    except Exception as e:
+        logger.exception(f"[scheduler] ignition scan failed: {e}")
+        return {"error": str(e)}
+
+
 def _scheduled_job():
     """Cron entry point — refresh every active theme that has a tracker."""
     # Discover active themes by scanning themes/ for tracker.json
@@ -142,8 +163,25 @@ def start_scheduler() -> BackgroundScheduler:
         replace_existing=True,
         misfire_grace_time=6 * 3600,
     )
+    # Ignition Watch: 17:00 ET weekdays — an hour after the close so Yahoo's
+    # daily bars are final, and before the 18:00 themes job.
+    _scheduler.add_job(
+        refresh_ignition,
+        trigger=CronTrigger(hour=17, minute=0, day_of_week="mon-fri",
+                            timezone="America/New_York"),
+        id="ignition_daily_scan",
+        name="Daily Ignition Watch scan",
+        replace_existing=True,
+        misfire_grace_time=3600,
+    )
+    # The container's disk is wiped on every deploy, so rebuild the page
+    # right away rather than leaving /ignition empty until 17:00.
+    if not _IGNITION_LATEST.exists():
+        _scheduler.add_job(refresh_ignition, id="ignition_boot_scan",
+                           name="Ignition Watch boot scan", replace_existing=True)
     _scheduler.start()
     logger.info("[scheduler] Started. Daily refresh 18:00 ET weekdays; "
+                "ignition scan 17:00 ET weekdays; "
                 "referral refresh monthly (1st, 19:00 ET).")
     return _scheduler
 

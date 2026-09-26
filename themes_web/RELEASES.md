@@ -7,7 +7,37 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.4.0 — 2026-07-21 **(current)**
+## v1.5.0 — 2026-09-26 **(current)**
+
+**What** New `/ignition` page: Ignition Watch. A daily scan of the S&P 500
++ 400 (903 stocks) for the momentum-ignition signal: a +12% week on 1.5×
+volume with the 50-DMA above the 200-DMA. The page shows a 90-session fire
+log with NEW and +40% badges, near misses, and RS leaders.
+- New standalone `ignition/` module (`scan.py`, pinned `universe.txt`,
+  README with the full backtest). Runs by subprocess only, which keeps the
+  no-cross-import rule.
+- Scheduler: new weekday 17:00 ET job, plus a one-off boot scan when
+  `ignition/data/latest.json` is missing (the disk is wiped on redeploy).
+  Manual trigger: `POST /api/refresh_ignition`. JSON: `GET /api/ignition`.
+- "Ignition" nav link next to "3X Screen".
+
+**Why** Operator research: find Dell/Micron-style explosive moves early.
+Across 628 episodes of +80% in 63 days (2015–2026), the one catchable tell
+was this ignition week. After a fire, 26.9% traded ≥ +40% within 63
+sessions vs 4.6% baseline, and the signal beat baseline in 10 of 11 years.
+The 3X Screen is a 2–3y thesis view; this is its weeks-scale counterpart.
+
+**Verified** `pytest` green. Full scan run end to end against live Yahoo
+data (903 tickers, ~1 min). TestClient checks: `/ignition` renders 200 with
+and without data, `/api/ignition` returns 404 then 200. Nav renders on
+existing pages. Scheduler registers the new jobs.
+
+**Rollback** Revert the commit. The new module and page are additive;
+existing pages and jobs are untouched.
+
+---
+
+## v1.4.0 — 2026-07-21
 
 **What** `/referrals` app v2 — "Early indicators" lens for newer/pivoting
 companies the 3y flywheel gate structurally excludes:

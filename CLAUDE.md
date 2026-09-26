@@ -25,6 +25,7 @@ Human-owned, Claude-assisted long-term thesis investing. Run: `uvicorn themes_we
 - Per theme: `thesis.md` → `supply_chain.md` → `candidates.md/json` → `scoring` → `tracker.json/md` (top ~5–7 holdings).
 - Active themes: AI Data Center, Space Economy, Modern Defense, Robotics, GLP-1.
 - `themes/refresh_data.py` refreshes prices/fundamentals nightly (FMP→yfinance) into `candidates.json` + shared `themes/_benchmarks.json`.
+- `/ignition` (v1.5.0): standalone `ignition/` module scans the S&P 500+400 weekdays 17:00 ET for the momentum-ignition signal (+12% week, 1.5× volume, 50>200 DMA); run by subprocess from `themes_web/scheduler.py`. Method + backtest: `ignition/README.md`.
 
 ## Release hygiene — every push is a deploy
 

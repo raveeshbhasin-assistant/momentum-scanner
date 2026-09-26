@@ -18,3 +18,6 @@ ThemeHunter_*.html
 notifier_preview.html
 
 themes_web/_snapshots/
+
+# Ignition Watch runtime output (rebuilt by the scan; Railway disk is ephemeral)
+ignition/data/

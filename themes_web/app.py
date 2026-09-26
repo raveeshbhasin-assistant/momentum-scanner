@@ -14,6 +14,7 @@ the deployed scanner doesn't see it.
 """
 from __future__ import annotations
 
+import json
 import logging
 import sys
 from datetime import datetime
@@ -39,6 +40,7 @@ from themes_web.render import (
     theme_dir,
 )
 from themes_web.scheduler import (
+    refresh_ignition,
     refresh_referrals,
     start_scheduler,
     stop_scheduler,
@@ -463,6 +465,53 @@ def api_refresh_referrals():
     except Exception as e:
         logger.exception("Referral refresh failed")
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+_IGNITION_LATEST = _HERE.parent / "ignition" / "data" / "latest.json"
+
+
+def _load_ignition() -> Optional[dict]:
+    if not _IGNITION_LATEST.exists():
+        return None
+    try:
+        return json.loads(_IGNITION_LATEST.read_text(encoding="utf-8"))
+    except Exception:
+        logger.exception("Could not read ignition/data/latest.json")
+        return None
+
+
+@app.get("/ignition", response_class=HTMLResponse)
+def ignition_page(request: Request):
+    """Ignition Watch — daily scan of the S&P 500+400 for the backtested
+    momentum-ignition signal. Data comes from the standalone ignition/
+    module (weekdays 17:00 ET, or POST /api/refresh_ignition)."""
+    return templates.TemplateResponse(
+        request=request,
+        name="ignition.html",
+        context={
+            "active_slug": None,
+            "active_page": "ignition",
+            "tracker": None,
+            "all_themes": discover_themes_full(),
+            "ig": _load_ignition(),
+        },
+    )
+
+
+@app.get("/api/ignition", response_class=JSONResponse)
+def api_ignition():
+    ig = _load_ignition()
+    if ig is None:
+        return JSONResponse({"error": "No scan yet — POST /api/refresh_ignition"}, status_code=404)
+    ig.pop("first_seen", None)
+    return ig
+
+
+@app.post("/api/refresh_ignition", response_class=JSONResponse)
+def api_refresh_ignition():
+    """Manually rerun the Ignition Watch scan. Blocks ~1-2 min."""
+    result = refresh_ignition()
+    return {"ok": result.get("returncode") == 0, "result": result}
 
 
 @app.post("/api/rescore/{slug}", response_class=JSONResponse)

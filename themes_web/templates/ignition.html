@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}Ignition Watch · Themes{% endblock %}
+
+{% block extra_css %}
+  .pf-header { margin-bottom: 18px; }
+  .pf-title { font-family: var(--font-serif); font-size: 32px; line-height: 1.15; font-weight: 500; letter-spacing: -0.015em; margin: 0 0 4px; }
+  .pf-sub { font-size: 13px; color: var(--text-tertiary); max-width: 760px; line-height: 1.5; }
+
+  .method-strip { background: var(--bg-elev); border-radius: var(--radius-md); padding: 12px 18px; margin-bottom: 22px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+  .method-strip b { color: var(--text-primary); }
+
+  .status-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+  .chip { font-size: 11.5px; padding: 4px 10px; border-radius: 999px; background: var(--bg-elev); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .chip b { color: var(--text-primary); font-weight: 500; }
+  .chip.new { background: var(--text-warning-bg); color: var(--text-warning); }
+  .chip.new b { color: var(--text-warning); }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 26px; }
+  .kpi { background: var(--bg-elev); border-radius: var(--radius-md); padding: 14px 18px; }
+  .kpi-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .kpi-value { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .kpi-value .unit { font-size: 13px; color: var(--text-secondary); margin-left: 4px; font-weight: 400; }
+  .kpi-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+
+  .section-head { font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin: 28px 0 12px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .section-head .hint { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-tertiary); }
+
+  .tbl-wrap { overflow-x: auto; background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); }
+  table.ig { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  table.ig th { font-size: 10.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-tertiary); text-align: right; padding: 10px 12px; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
+  table.ig th:first-child, table.ig td:first-child, table.ig th.l, table.ig td.l { text-align: left; }
+  table.ig td { text-align: right; padding: 9px 12px; border-top: 0.5px solid var(--border); white-space: nowrap; }
+  table.ig tr:first-child td { border-top: none; }
+  table.ig tr.faded td { color: var(--text-tertiary); }
+  .tk { font-family: var(--font-mono); font-weight: 600; }
+  .pos { color: var(--text-success); } .neg { color: var(--text-danger); }
+  .badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-left: 6px; vertical-align: 1px; }
+  .badge.new { background: var(--text-warning-bg); color: var(--text-warning); }
+  .badge.hit { background: var(--text-success-bg); color: var(--text-success); }
+
+  .empty { padding: 28px; text-align: center; color: var(--text-secondary); font-size: 13px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .footnote { font-size: 11.5px; color: var(--text-tertiary); line-height: 1.6; }
+
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+<div class="pf-header">
+  <h1 class="pf-title">Ignition Watch</h1>
+  <div class="pf-sub">
+    Explosive moves (Dell 2023, Micron 2025) rarely announce themselves quietly — the discoverable start is a
+    <b>violent week on heavy volume inside an intact uptrend</b>. This page rescans the S&amp;P 500 + 400 every
+    weekday after the close and logs every stock that fires.
+  </div>
+</div>
+
+{% if ig %}
+{% set b = ig.backtest %}
+{% set s = ig.summary %}
+<div class="method-strip">
+  <b>Rule:</b> 5-day return &gt; +{{ (ig.rule.r5_min * 100)|round|int }}% · 21-day volume &gt; {{ ig.rule.volr_min }}× its 126-day
+  average · 50-DMA &gt; 200-DMA · price &gt; $3, $5M+ daily dollar volume.
+  <b>Backtest</b> ({{ b.window }}): {{ b.p_plus40_63d }}% of fires traded ≥ +40% above entry within 63 sessions
+  vs {{ b.p_plus40_baseline }}% baseline; mean 63-session return +{{ b.mean_63d }}% vs +{{ b.mean_63d_baseline }}%;
+  edge positive in {{ b.years_positive }} years. <b>Cost:</b> {{ b.p_dd20_63d }}% saw a −20% drawdown within the
+  window (vs {{ b.p_dd20_baseline }}%). A fire is a prompt to find the catalyst, not a buy signal on its own.
+</div>
+
+<div class="status-row">
+  <span class="chip">data through <b>{{ ig.asof }}</b></span>
+  <span class="chip">scanned <b>{{ ig.scanned_at }}</b></span>
+  <span class="chip">next scan <b>weekdays 17:00 ET</b></span>
+  <span class="chip"><b>{{ ig.universe }}</b> stocks</span>
+  {% if s.new %}<span class="chip new">new this scan: <b>{{ s.new|join(', ') }}</b></span>{% endif %}
+</div>
+
+<div class="kpis">
+  <div class="kpi">
+    <div class="kpi-label">Active fires</div>
+    <div class="kpi-value">{{ s.active }}</div>
+    <div class="kpi-sub">fired within the 63-session edge window</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">New this scan</div>
+    <div class="kpi-value">{{ s.new|length }}</div>
+    <div class="kpi-sub">{{ s.new|join(', ') if s.new else 'none since last scan' }}</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Active fires hit +40%</div>
+    <div class="kpi-value">{{ s.active_hit_40 }}<span class="unit">of {{ s.active }}</span></div>
+    <div class="kpi-sub">backtest expects ~{{ b.p_plus40_63d|round|int }}% by session 63</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Logged</div>
+    <div class="kpi-value">{{ s.fires_logged }}</div>
+    <div class="kpi-sub">fires in the last {{ ig.rule.lookback_sessions }} sessions</div>
+  </div>
+</div>
+
+<div class="section-head">Fire log <span class="hint">most recent fire per stock · faded rows are past the 63-session window</span></div>
+{% if ig.fires %}
+<div class="tbl-wrap"><table class="ig">
+  <thead><tr>
+    <th>Stock</th><th class="l">Fired</th><th>Sessions ago</th><th>Week at fire</th><th>Vol at fire</th>
+    <th>Since fire</th><th>3-mo</th><th>vs universe</th><th>Off 52w high</th><th>Price</th>
+  </tr></thead>
+  <tbody>
+  {% for f in ig.fires %}
+    <tr class="{{ '' if f.active else 'faded' }}">
+      <td><span class="tk">{{ f.ticker }}</span>{% if f.new %}<span class="badge new">New</span>{% endif %}{% if f.hit_40 %}<span class="badge hit" title="Traded ≥ +40% above the fire-day close">+40%</span>{% endif %}</td>
+      <td class="l">{{ f.fired }}</td>
+      <td>{{ f.days_ago }}</td>
+      <td class="pos">+{{ f.r5_at_fire }}%</td>
+      <td>{{ f.volr_at_fire }}×</td>
+      <td class="{{ 'pos' if f.ret_since >= 0 else 'neg' }}">{{ '%+.1f'|format(f.ret_since) }}%</td>
+      <td class="{{ 'pos' if f.r63 >= 0 else 'neg' }}">{{ '%+.1f'|format(f.r63) }}%</td>
+      <td>{{ '%+.1f'|format(f.rs63) }}%</td>
+      <td>{{ '%.1f'|format(f.pct_from_hi) }}%</td>
+      <td>${{ '%.2f'|format(f.price) }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+{% else %}
+<div class="tbl-wrap"><div class="empty">No fires in the last {{ ig.rule.lookback_sessions }} sessions — rare, but it happens in quiet tapes.</div></div>
+{% endif %}
+
+<div class="two-col">
+  <div>
+    <div class="section-head">Near misses <span class="hint">+8–12% week on 1.3×+ volume, uptrend intact</span></div>
+    {% if ig.near_misses %}
+    <div class="tbl-wrap"><table class="ig">
+      <thead><tr><th>Stock</th><th>5-day</th><th>Vol ratio</th><th>Price</th></tr></thead>
+      <tbody>{% for n in ig.near_misses %}
+        <tr><td><span class="tk">{{ n.ticker }}</span></td><td class="pos">+{{ n.r5 }}%</td><td>{{ n.volr }}×</td><td>${{ '%.2f'|format(n.price) }}</td></tr>
+      {% endfor %}</tbody>
+    </table></div>
+    {% else %}<div class="tbl-wrap"><div class="empty">None today.</div></div>{% endif %}
+  </div>
+  <div>
+    <div class="section-head">RS leaders <span class="hint">context, not fires: strongest 3-mo vs universe, within 15% of highs</span></div>
+    {% if ig.leaders %}
+    <div class="tbl-wrap"><table class="ig">
+      <thead><tr><th>Stock</th><th>3-mo</th><th>vs universe</th><th>Off high</th></tr></thead>
+      <tbody>{% for l in ig.leaders %}
+        <tr><td><span class="tk">{{ l.ticker }}</span></td><td class="pos">+{{ l.r63 }}%</td><td>+{{ l.rs63 }}%</td><td>{{ '%.1f'|format(l.pct_from_hi) }}%</td></tr>
+      {% endfor %}</tbody>
+    </table></div>
+    {% else %}<div class="tbl-wrap"><div class="empty">None today.</div></div>{% endif %}
+  </div>
+</div>
+
+{% else %}
+<div class="tbl-wrap"><div class="empty">
+  First scan is running (about 2 minutes after a deploy). Refresh shortly — or trigger one with
+  <code>POST /api/refresh_ignition</code>.
+</div></div>
+{% endif %}
+
+<div class="footnote" style="margin-top:22px;">
+  Source: <code>ignition/scan.py</code> → <code>ignition/data/latest.json</code> (Yahoo daily bars, dividend-adjusted;
+  universe pinned in <code>ignition/universe.txt</code>). Method + full backtest: <code>ignition/README.md</code>.
+  JSON: <a href="/api/ignition">/api/ignition</a>. Backtest excludes costs and uses current index membership
+  (survivorship) — treat the edge as an upper bound.
+</div>
+{% endblock %}
