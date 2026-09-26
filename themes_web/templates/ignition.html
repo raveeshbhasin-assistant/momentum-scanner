@@ -36,9 +36,9 @@
 
   .tbl-wrap { overflow-x: auto; background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); }
   table.ig { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-  table.ig th { font-size: 10.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-tertiary); text-align: right; padding: 10px 12px; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
+  table.ig th { font-size: 10.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-tertiary); text-align: right; padding: 10px 10px; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
   table.ig th.l, table.ig td.l { text-align: left; }
-  table.ig td { text-align: right; padding: 9px 12px; border-top: 0.5px solid var(--border); white-space: nowrap; }
+  table.ig td { text-align: right; padding: 9px 10px; border-top: 0.5px solid var(--border); white-space: nowrap; }
   table.ig tr:first-child td { border-top: none; }
   .tk { font-family: var(--font-mono); font-weight: 600; }
   .pos { color: var(--text-success); } .neg { color: var(--text-danger); } .muted { color: var(--text-tertiary); }
@@ -50,7 +50,8 @@
   .pill.EDGE_EXPIRED, .pill.CHECKPOINT, .pill.CAP { background: var(--text-warning-bg); color: var(--text-warning); }
   .pill.TIME, .pill.IGNITION_FAILED { background: var(--bg-elev-2); color: var(--text-secondary); }
 
-  .stopbar { display: inline-block; width: 64px; height: 5px; border-radius: 3px; background: var(--bg-elev-2); vertical-align: middle; margin-left: 8px; overflow: hidden; }
+  .flags { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+  .stopbar { display: inline-block; width: 48px; height: 5px; border-radius: 3px; background: var(--bg-elev-2); vertical-align: middle; margin-left: 8px; overflow: hidden; }
   .stopbar i { display: block; height: 100%; background: var(--text-danger); opacity: .75; }
 
   .empty { padding: 26px; text-align: center; color: var(--text-secondary); font-size: 13px; }
@@ -62,6 +63,7 @@
     .two-col { grid-template-columns: 1fr; }
     .alert { grid-template-columns: 84px 60px 1fr; }
   }
+  @media (max-width: 1000px) { table.ig .opt { display: none; } }   /* keep the open-positions table unscrolled */
 {% endblock %}
 
 {% macro pct(v) -%}
@@ -160,24 +162,25 @@
 {% if open_pos %}
 <div class="tbl-wrap"><table class="ig">
   <thead><tr>
-    <th class="l">Stock</th><th class="l">Status</th><th class="l">Fired</th><th>Entry</th><th>Now</th><th>Return</th>
-    <th>Peak</th><th>Sell line</th><th class="l">Room to sell line</th><th>Sessions since last fire</th><th>Re-fires</th>
+    <th class="l">Stock</th><th class="l">Status</th><th class="l">Fired</th><th class="opt">Entry</th><th>Now</th><th>Return</th>
+    <th class="opt">Peak</th><th>Sell line</th><th class="l" title="How far the price is above the sell line">To sell line</th>
+    <th title="Sessions since the last fire (a re-fire resets it)">Since fire</th><th class="opt">Re-fires</th>
   </tr></thead>
   <tbody>
   {% for p in open_pos %}
     {% set room = -(p.to_stop or 0) %}
     <tr>
       <td class="l"><span class="tk">{{ p.ticker }}</span></td>
-      <td class="l"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %} <span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}{% if p.cap_trim is defined and p.cap_trim is not none %} <span class="pill CAP" title="About {{ '%.1f'|format(p.weight_x) }}x an equal share (assumes equal dollars at each entry). Selling {{ '%.0f'|format(p.cap_trim) }}% brings it back to 2x.">2× cap · trim {{ '%.0f'|format(p.cap_trim) }}%</span>{% endif %}</td>
+      <td class="l"><div class="flags"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %}<span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}{% if p.cap_trim is defined and p.cap_trim is not none %}<span class="pill CAP" title="About {{ '%.1f'|format(p.weight_x) }}x an equal share (assumes equal dollars at each entry). Selling {{ '%.0f'|format(p.cap_trim) }}% brings it back to 2x.">2× cap · trim {{ '%.0f'|format(p.cap_trim) }}%</span>{% endif %}</div></td>
       <td class="l">{{ p.fired }}</td>
-      <td>{{ money(p.entry) }}</td>
+      <td class="opt">{{ money(p.entry) }}</td>
       <td>{{ money(p.price) }}</td>
       <td>{{ pct(p.ret) }}</td>
-      <td>{{ pct(p.peak_ret) }}</td>
+      <td class="opt">{{ pct(p.peak_ret) }}</td>
       <td>{{ money(p.base) }}</td>
-      <td class="l">{% if p.to_stop is not none %}{{ '%.1f'|format(room) }}% above<span class="stopbar"><i style="width: {{ [100, [0, 100 - room * 4]|max]|min }}%"></i></span>{% else %}<span class="muted">—</span>{% endif %}</td>
+      <td class="l">{% if p.to_stop is not none %}{{ '%.1f'|format(room) }}%<span class="stopbar"><i style="width: {{ [100, [0, 100 - room * 4]|max]|min }}%"></i></span>{% else %}<span class="muted">—</span>{% endif %}</td>
       <td>{{ p.sessions_since_fire }}</td>
-      <td>{{ p.refires or '' }}</td>
+      <td class="opt">{{ p.refires or '' }}</td>
     </tr>
   {% endfor %}
   </tbody>

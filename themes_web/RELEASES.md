@@ -7,7 +7,29 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.8.1 — 2026-09-26 **(current)**
+## v1.8.2 — 2026-09-26 **(current)**
+
+**What** The Ignition Watch open-positions table fits without a horizontal
+scrollbar. At 1440px it was 1205px wide in a 1022px box.
+- Status tags stack vertically.
+- Headers shortened: "Room to sell line" is now "To sell line" and "Sessions
+  since last fire" is now "Since fire". The full wording is in tooltips.
+- "68.0% above" is now "68.0%".
+- The stop bar is narrower (64 to 48px) and cell padding went from 12 to 10px.
+- Below 1000px the Entry, Peak and Re-fires columns hide.
+
+**Why** Operator: the table was cut off with a scroller at the bottom.
+
+**Verified** Measured in-browser on live data. Natural table width against
+available width: 1440px viewport 1022 of 1022 (was 1205); 1024px 916 of 951;
+960px 696 of 887. Phones still scroll inside the table, as expected for a
+dense table. `pytest` green (51).
+
+**Rollback** Revert the commit.
+
+---
+
+## v1.8.1 — 2026-09-26
 
 **What** Fix: `/ignition` returned HTTP 500 after the v1.8.0 deploy. The
 container still held `latest.json` from the previous scan, which has no
