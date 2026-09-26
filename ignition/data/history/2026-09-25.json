@@ -1,6 +1,6 @@
 {
  "asof": "2026-09-25",
- "scanned_at": "2026-09-26 16:17 ET",
+ "scanned_at": "2026-09-26 16:39 ET",
  "summary": {
   "open": 34,
   "by_status": {
@@ -66,6 +66,8 @@
    "median": -10.1,
    "pct_up": 42.1
   },
+  "carried": [],
+  "kept_closed": 0,
   "cap_review": [
    "BE",
    "LITE"

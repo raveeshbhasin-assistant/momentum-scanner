@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-09-25",
- "scanned_at": "2026-09-26 16:17 ET",
+ "scanned_at": "2026-09-26 16:39 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -119,6 +119,8 @@
    "median": -10.1,
    "pct_up": 42.1
   },
+  "carried": [],
+  "kept_closed": 0,
   "cap_review": [
    "BE",
    "LITE"
