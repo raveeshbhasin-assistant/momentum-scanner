@@ -7,7 +7,31 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.7.1 — 2026-09-26 **(current)**
+## v1.8.0 — 2026-09-26 **(current)**
+
+**What** Ignition Watch adds a **2× cap review**. A held position whose
+weight has reached 2× or more of an equal share gets a "2× cap · trim N%"
+pill, where N% is the part to sell to get back to 2×. The Open positions tile
+lists the flagged names.
+- **How weight is estimated:** the ledger has no real sizes, so it assumes
+  equal dollars at each entry: `(1 + ret) / mean(1 + ret)` over held positions.
+- **On 2026-09-25 data:** BE is at 4.5× (trim ~56%) and LITE at 3.5× (trim ~43%).
+- Flag only: no status, sell or stat changes.
+
+**Why** Operator asked to surface the 2× cap for review. In the trimming study
+(`research/ignition_exits/profit_protection/`), a hard 2× cap cut the worst
+drawdown at nearly every portfolio size for ~0.5 pp CAGR. It is risk control,
+not a return edge.
+
+**Verified** `pytest` green (50; new tests cover the weight maths, only held
+positions counting, and well-formed pill markup). A real scan leaves the
+ledger unchanged at 34 open / 73 closed.
+
+**Rollback** Revert the commit.
+
+---
+
+## v1.7.1 — 2026-09-26
 
 **What** Fix: the "6-mo review" pill printed a stray `">` before its label.
 Its hover title used the `pct()` macro, which emits a `<span class="...">`,

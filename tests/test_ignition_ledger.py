@@ -190,3 +190,37 @@ def test_page_renders_six_month_review(monkeypatch, tmp_path):
     assert page.status_code == 200
     assert "6-mo review" in page.text and "with the 6-month review" in page.text
     assert re.search(r'<span class="pill CHECKPOINT" title="6-month review since [0-9-]+ at [+-][0-9.]+%">6-mo review</span>', page.text)
+
+
+def test_cap_review_flags_only_held_positions_over_2x():
+    held = lambda tk, ret, status="HOLD": {"ticker": tk, "status": status, "ret": ret}
+    positions = [held("A", 0.0), held("B", 0.0), held("C", 0.0), held("BIG", 500.0),   # mean gross = 2.25
+                 held("GONE", 900.0, "CLOSED"), held("NEW", None, "NEW")]
+    ig.cap_review(positions)
+    by = {p["ticker"]: p for p in positions}
+    assert by["BIG"]["weight_x"] == pytest.approx(6 / 2.25, abs=0.01)                  # 2.67x
+    assert by["BIG"]["cap_trim"] == pytest.approx(100 * (1 - 2 / (6 / 2.25)), abs=0.1)  # sell 25%
+    assert by["A"]["cap_trim"] is None and by["A"]["weight_x"] == pytest.approx(1 / 2.25, abs=0.01)
+    assert by["GONE"]["weight_x"] is None and by["NEW"]["weight_x"] is None             # not in the held book
+
+
+def test_page_renders_cap_review(monkeypatch, tmp_path):
+    import json
+
+    import themes_web.app as web
+    from fastapi.testclient import TestClient
+
+    close, open_, vol = _long_series(0.0003)
+    monkeypatch.setattr(ig, "LEDGER_START", str(close.index[300].date()))
+    out = ig.compute(open_, close, vol, None)
+    p = next(p for p in out["positions"] if p["status"] != "CLOSED")
+    assert p["weight_x"] == 1.0 and p["cap_trim"] is None          # a one-stock book is exactly 1x
+    p["weight_x"], p["cap_trim"] = 3.1, 35.5                      # force a flag to check the markup
+    out["summary"]["cap_review"] = ["T"]
+    (tmp_path / "latest.json").write_text(json.dumps(out))
+    (tmp_path / "runs.jsonl").write_text("")
+    monkeypatch.setattr(web, "_IGNITION_DIR", tmp_path)
+    monkeypatch.setattr(web, "start_scheduler", lambda: None)
+    page = TestClient(web.app).get("/ignition").text
+    assert re.search(r'<span class="pill CAP" title="About 3\.1x an equal share[^"<>]*">2× cap · trim 36%</span>', page)
+    assert "over the 2× cap: T" in page

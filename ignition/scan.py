@@ -33,6 +33,12 @@ EXIT (research/ignition_exits/README.md — 748 trades, train 2016-21, holdout
             pre-registered bar (it costs ~6 pp of mean per trade), so it never
             closes a position; the ledger reports what following it would have
             returned (summary.checkpoint_whatif) next to the live rule.
+    2x CAP REVIEW (flag only; profit_protection/README.md "Trimming winners"):
+            assuming equal dollars at each entry, a held position's weight vs
+            an equal share = (1 + ret) / mean(1 + ret) over held positions.
+            At >= 2x it is flagged with the fraction to sell to get back to 2x.
+            In a 2016-26 portfolio test, a hard 2x cap cut the drawdown at
+            nearly every portfolio size for ~0.5 pp CAGR (risk control only).
 
 The ledger is rebuilt from prices every run, so a missed run never loses an
 event: anything that happened since the previous run is reported as new.
@@ -69,6 +75,7 @@ REFIRE_HOT = 20       # re-fired within this many sessions = strongest state
 MAX_QUIET = 252       # close a position after this many sessions without a re-fire
 CHECKPOINT_AFTER = 126            # 6-month review: sessions since entry ...
 CHECKPOINT_BAND = (0.0, 0.30)     # ... while the gain is inside this band (exclusive)
+WEIGHT_CAP = 2.0                  # 2x cap review: weight vs an equal share of the held book
 
 BACKTEST = {
     "window": "2016-2026, S&P 500+400 (903 tickers), 2.18M ticker-days, 2,271 fires",
@@ -267,6 +274,25 @@ def _status(pos: dict, closed: bool, since_last_fire: int, since_refire: int | N
     return "HOLD"
 
 
+def cap_review(positions: list) -> None:
+    """Estimate each held position's weight vs an equal share, assuming equal
+    dollars went into every entry: (1 + ret) / mean(1 + ret) over held positions
+    (bought, not closed or pending sale). Sets weight_x, and cap_trim = the
+    fraction of the position to sell to get back to WEIGHT_CAP when above it."""
+    held = [p for p in positions
+            if p["status"] in ("HOLD", "REFIRED", "EDGE_EXPIRED") and p.get("ret") is not None]
+    for p in positions:
+        p["weight_x"] = p["cap_trim"] = None
+    if not held:
+        return
+    mean_gross = float(np.mean([1 + p["ret"] / 100 for p in held]))
+    for p in held:
+        w = (1 + p["ret"] / 100) / mean_gross
+        p["weight_x"] = round(w, 2)
+        if w >= WEIGHT_CAP:
+            p["cap_trim"] = round(100 * (1 - WEIGHT_CAP / w), 1)
+
+
 def extras(close: pd.DataFrame, vol: pd.DataFrame, f: dict) -> dict:
     last = pd.DataFrame({
         "price": close.iloc[-1], "r63": f["r63"].iloc[-1],
@@ -323,6 +349,8 @@ def summarize(positions: list, events: list, since: str | None, asof: str, recen
         # if every flag had been sold at the next open (same positions, same marks).
         "checkpoint_open": sorted(p["ticker"] for p in open_ if p.get("checkpoint")),
         "checkpoint_whatif": _stats([p.get("whatif_ret") for p in positions]),
+        "cap_review": [p["ticker"] for p in sorted(positions, key=lambda p: -(p.get("weight_x") or 0))
+                       if p.get("cap_trim") is not None],
     }
 
 
@@ -341,6 +369,7 @@ def read_runs() -> list[dict]:
 def compute(open_: pd.DataFrame, close: pd.DataFrame, vol: pd.DataFrame, prev_asof: str | None) -> dict:
     f = signals(close, vol)
     positions, events = build_ledger(open_, close, f)
+    cap_review(positions)
     asof = str(close.index[-1].date())
     since = prev_asof or None   # a re-run on the same data date reports nothing new
     recent_from = str(close.index[max(0, len(close.index) - 20)].date())
@@ -352,7 +381,8 @@ def compute(open_: pd.DataFrame, close: pd.DataFrame, vol: pd.DataFrame, prev_as
         "ledger_start": LEDGER_START,
         "rule": {"r5_min": R5_MIN, "volr_min": VOLR_MIN, "min_price": MIN_PRICE,
                  "min_dollar_vol": MIN_DOLLAR_VOL, "base_lag": BASE_LAG,
-                 "edge_window": EDGE_WINDOW, "refire_hot": REFIRE_HOT, "max_quiet": MAX_QUIET},
+                 "edge_window": EDGE_WINDOW, "refire_hot": REFIRE_HOT, "max_quiet": MAX_QUIET,
+                 "checkpoint_after": CHECKPOINT_AFTER, "weight_cap": WEIGHT_CAP},
         "backtest": BACKTEST,
         "exit_research": EXIT_RESEARCH,
         "summary": summarize(positions, events, since, asof, recent_from),

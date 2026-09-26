@@ -76,6 +76,18 @@ held up across train, holdout and live data. It never closes a position.
   `checkpoint_exit` and `whatif_ret`. A `CHECKPOINT` event is logged once
   per position.
 
+### 2× cap review (v1.8.0, flag only)
+Winners are never trimmed, so they can grow to dominate a book. A held
+position is flagged when its weight reaches **2× or more of an equal share**,
+together with the fraction to sell to get back to 2×.
+- **How weight is estimated:** there are no real position sizes, so the flag
+  assumes equal dollars went into each entry. Weight = `(1 + ret) / mean(1 + ret)`
+  over held positions (`weight_x`, `cap_trim`, `summary.cap_review`).
+- **Why:** in the trimming study (`research/ignition_exits/profit_protection/`),
+  a hard 2× cap cut the worst drawdown at nearly every portfolio size, at a
+  cost of about 0.5 pp CAGR. It is risk control, not a return edge. It never
+  closes or resizes anything in the ledger.
+
 ## Operation
 
 - **Scan of record:** `.github/workflows/ignition-daily.yml` runs

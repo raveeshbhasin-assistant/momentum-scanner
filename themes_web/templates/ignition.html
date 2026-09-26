@@ -47,7 +47,7 @@
   .pill.SELL_PENDING, .pill.SELL { background: var(--text-danger-bg); color: var(--text-danger); }
   .pill.REFIRED, .pill.REFIRE, .pill.FIRE, .pill.NEW { background: var(--text-info-bg); color: var(--text-info); }
   .pill.HOLD { background: var(--text-success-bg); color: var(--text-success); }
-  .pill.EDGE_EXPIRED, .pill.CHECKPOINT { background: var(--text-warning-bg); color: var(--text-warning); }
+  .pill.EDGE_EXPIRED, .pill.CHECKPOINT, .pill.CAP { background: var(--text-warning-bg); color: var(--text-warning); }
   .pill.TIME, .pill.IGNITION_FAILED { background: var(--bg-elev-2); color: var(--text-secondary); }
 
   .stopbar { display: inline-block; width: 64px; height: 5px; border-radius: 3px; background: var(--bg-elev-2); vertical-align: middle; margin-left: 8px; overflow: hidden; }
@@ -102,6 +102,9 @@
     take-profit rule that held up across training, holdout and live data (about half as many "was up 20%, sold at a loss" trades, better median),
     but it costs ~6 points of average return per trade, so it doesn't close positions here.
     <a href="https://github.com/raveeshbhasin-assistant/momentum-scanner/blob/main/research/ignition_exits/profit_protection/README.md">Study</a>.</div>
+  <div class="row"><b>2× cap</b> (optional, flag only): a winner that has grown to 2× or more of an equal share of the held positions
+    (assuming equal dollars at each entry) is flagged with how much to sell to get back to 2×. In a 2016-26 portfolio test a hard 2× cap
+    cut the worst drawdown at nearly every portfolio size for about 0.5 points of annual return. It is risk control, not a return edge.</div>
 </div>
 
 <div class="status-row">
@@ -133,6 +136,7 @@
     <div class="kpi-label">Open positions</div>
     <div class="kpi-value">{{ s.open }}</div>
     <div class="kpi-sub">{{ s.by_status.HOLD + s.by_status.REFIRED + s.by_status.NEW }} in the edge window · {{ s.by_status.EDGE_EXPIRED }} past it</div>
+    {% if s.cap_review %}<div class="kpi-sub">over the 2× cap: {{ s.cap_review|join(', ') }}</div>{% endif %}
   </div>
   <div class="kpi">
     <div class="kpi-label">Exits, last 20 sessions</div>
@@ -164,7 +168,7 @@
     {% set room = -(p.to_stop or 0) %}
     <tr>
       <td class="l"><span class="tk">{{ p.ticker }}</span></td>
-      <td class="l"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %} <span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}</td>
+      <td class="l"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.checkpoint %} <span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}{% if p.cap_trim is not none %} <span class="pill CAP" title="About {{ '%.1f'|format(p.weight_x) }}x an equal share (assumes equal dollars at each entry). Selling {{ '%.0f'|format(p.cap_trim) }}% brings it back to 2x.">2× cap · trim {{ '%.0f'|format(p.cap_trim) }}%</span>{% endif %}</td>
       <td class="l">{{ p.fired }}</td>
       <td>{{ money(p.entry) }}</td>
       <td>{{ money(p.price) }}</td>
