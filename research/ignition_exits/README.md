@@ -87,3 +87,12 @@ IGNITION_FAILED, and ages out after 252 sessions without a re-fire. The
 ledger is rebuilt from prices each run, so a missed run cannot lose an
 event. Each run is committed to the `ignition-data` branch by
 `.github/workflows/ignition-daily.yml`.
+
+## Follow-up: profit protection (2026-09-26)
+Can the system sell with some gain left, instead of only below the base
+(which sits ~14% under entry)? 60 pre-registered variants in 5 families were
+tested: time-gated, ratchet locks, armed trails, structure, scale-outs.
+**None passed.** Every rule that halved the "was up 20%, sold at a loss" trades
+cost 7+ points of mean return, because sold winners kept rising. Closest,
+exploratory only: sell at session 126 if up 0-30%. Full study:
+`profit_protection/README.md`.
