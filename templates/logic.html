@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include "_head.html" %}
-    <title>Algorithm Logic — Momentum Scanner v3.7.4</title>
+    <title>Algorithm Logic — Momentum Scanner v{{ APP_VERSION }}</title>
     <style>
         /* line-height: 1.6 is inherited from base.css — Phase 5 readability target */
         .content { max-width: 920px; margin: 0 auto; padding: 40px 32px 48px; }
@@ -351,7 +351,7 @@
     {% with active_page="logic", page_title="Algorithm Logic" %}{% include "_nav.html" %}{% endwith %}
 
     <main class="content">
-        <h1>Algorithm Logic <span class="version-tag">v3.7.4</span></h1>
+        <h1>Algorithm Logic <span class="version-tag">v{{ APP_VERSION }}</span></h1>
         <p>This page documents exactly how every signal is generated — the data sources, the indicators, the scoring weights, the filters, and the risk management rules. Nothing is a black box. The <a href="#release-notes" style="color: var(--cyan);">Release Notes</a> below track every change to the algorithm, release by release.</p>
 
         <!-- ═══════════════════════════════════════════════════════ -->
@@ -388,12 +388,29 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.9.0 ───── -->
+        <div class="release current" id="v3-9-0">
+            <div class="release-header">
+                <span class="release-version">v3.9.0</span>
+                <span class="release-date">Released 2026-09-26</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>Scanner paused until further notice.</strong> New <code>config.SCANNER_PAUSED</code>, on by default. While paused:
+            <ul>
+                <li>No scheduled job starts: the 09:00 and intraday scans, pre-market and sector jobs, and the 4:15 pm analysis and backup. So no new picks and no emails.</li>
+                <li><code>POST /api/scan</code> and <code>POST /api/notify/test</code> return <code>{"status": "paused"}</code>. The dashboard's scan buttons are disabled, and its empty state says the scanner is paused.</li>
+                <li>Startup skips the history-file cleanup, so past pick files stay on the volume and can be opened with the <code>/history</code> date picker. <code>/today</code> is empty while paused.</li>
+                <li>A banner on every page of this app says why (shared <code>_paused_banner.html</code>). All pages still serve.</li>
+                <li>Operator tools stay available: manual analyze/backup triggers, ThemeHunter and the backtests.</li>
+            </ul>
+            <em>Why:</em> the 100-day live review (<code>research_findings_100day_review.md</code>) found no edge, and the pre-registered replacements (v4 stocks-in-play, v5 overnight catalyst) failed their held-out tests. The operator asked to pause the scanner. An adversarial review traced every scan, email and data-deletion path before release. <em>Verification:</em> <code>python -m pytest tests/ -q</code> is green. New tests cover four cases while paused: the startup starts no scheduler and does no cleanup; <code>scheduled_scan</code> never calls <code>run_scan</code>; the manual endpoint refuses; the banner renders. The env parsing is tested too: unset means paused, <code>0</code> resumes. <em>Rollback / resume:</em> set <code>SCANNER_PAUSED=0</code> in the Railway environment and restart, or revert this commit. Tagged: <span class="pill pill-changed">changed</span>.</div>
+        </div>
+
         <!-- ───── v3.8.4 ───── -->
-        <div class="release current" id="v3-8-4">
+        <div class="release" id="v3-8-4">
             <div class="release-header">
                 <span class="release-version">v3.8.4</span>
                 <span class="release-date">Released 2026-09-13</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>Scanner emails off by default.</strong> <code>NOTIFY_ENABLED</code> now defaults to <code>false</code> in <code>notifier.py</code>; set <code>NOTIFY_ENABLED=true</code> in the Railway environment to re-enable (no redeploy needed to turn it back on). <em>Why:</em> the 100-day live review (<code>research_findings_100day_review.md</code>, 12,203 picks 2026-04-20 → 09-11, adversarially verified) found the recommendations have no edge — −0.03R gross and about −0.23R per trade after next-bar-open entry and 5 bp/side, statistically indistinguishable from random bars of the same universe, with every shipped tier (STRONG / TRADEABLE / ELITE) at or below zero out of sample — and the pre-registered replacements (<code>research_plan_v4_inplay.md</code>, <code>research_plan_v5_overnight_catalyst.md</code>) failed their held-out tests. The operator asked for the emails to stop; the scanner keeps running as a logger only and nothing else in the pipeline changes. <em>Verification:</em> <code>python -m pytest tests/ -q</code> green; the notifier gate returns false with the variable unset and true with <code>NOTIFY_ENABLED=true</code>. <em>Rollback:</em> set the env var, or revert this commit. Tagged: <span class="pill pill-changed">changed</span>.</div>
         </div>

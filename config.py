@@ -11,7 +11,24 @@ from zoneinfo import ZoneInfo
 # (_head.html). Before v3.8.3 each surface was hand-bumped and drifted
 # (footer was stuck at 3.7.4, cache-bust at 3.8.0 while the app was 3.8.2).
 # Bump THIS on every release; the pre-push hygiene hook checks the rest.
-APP_VERSION = "3.8.4"
+APP_VERSION = "3.9.0"
+
+# ── Scanner pause (v3.9.0) ───────────────────────────────────
+# PAUSED by default since 2026-09-26 (operator decision, "till further
+# notice"). Why: the 100-day live review (research_findings_100day_review.md,
+# 12,203 picks 2026-04-20 → 09-11, adversarially verified) found no edge —
+# about −0.23R per trade after next-bar-open entry and 5 bp/side, no better
+# than random bars of the same universe — and the pre-registered replacements
+# (research_plan_v4_inplay.md, research_plan_v5_overnight_catalyst.md) failed
+# their held-out tests. While paused: no scheduled jobs start (intraday and
+# pre-market scans, sector rotation, 4:15 pm analysis + backup), so no picks
+# and no emails; POST /api/scan and POST /api/notify/test refuse; startup skips
+# the history-file cleanup, so past pick files stay on the volume and can be
+# opened with the /history date picker (/today is empty while paused). Every
+# page still serves, with a pause banner. To resume: set SCANNER_PAUSED=0 in the Railway environment and
+# restart the service.
+SCANNER_PAUSED = os.getenv("SCANNER_PAUSED", "1").strip().lower() not in ("0", "false", "no", "off")
+SCANNER_PAUSED_SINCE = "2026-09-26"
 
 # ── Timezone ─────────────────────────────────────────────────
 ET = ZoneInfo("America/New_York")

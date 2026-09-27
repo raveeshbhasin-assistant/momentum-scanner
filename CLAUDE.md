@@ -12,6 +12,7 @@ Personal quant equity system: **two strictly independent services** in one repo 
 ## Service 1 — Momentum Scanner (`app.py`, FastAPI)
 
 Intraday day-trading signals. Run: `python app.py`. Scans ~200 tickers every 15 min (9:35a–4:05p ET) via APScheduler.
+- **PAUSED since 2026-09-26 (v3.9.0)** — `config.SCANNER_PAUSED` defaults on (no edge per the 100-day review): no scheduled jobs, no emails, `/api/scan` refuses, pages still serve. Resume: `SCANNER_PAUSED=0` on Railway + restart.
 - Composite score = `technical×0.65 + sentiment×0.25 + volume×0.10` + additive boosts (sector/premarket/leadership/earnings). Weak floor 40, strong gate 60.
 - **STRONG** = 4-way AND on the last *closed* RTH bar: `bar_green ∧ above_vwap ∧ new_hod ∧ pm_high_hold`.
 - **ELITE** = `config.is_elite()` — the single source of truth. STRONG + cat D + RVOL∈[2,5) + RSI≥68 + entry 09:30–10:00 ET + stop≥0.9%.

@@ -158,6 +158,9 @@ templates.env.globals["is_rth"] = _ts_is_rth
 # and _head.html uses it as the static-asset cache-bust, so neither can
 # drift from config.APP_VERSION again.
 templates.env.globals["APP_VERSION"] = config.APP_VERSION
+# v3.9.0: scanner pause banner on every page (see config.SCANNER_PAUSED).
+templates.env.globals["SCANNER_PAUSED"] = config.SCANNER_PAUSED
+templates.env.globals["SCANNER_PAUSED_SINCE"] = config.SCANNER_PAUSED_SINCE
 
 
 def premarket_scan_job():
@@ -341,6 +344,10 @@ def post_market_analysis_job():
 def scheduled_scan():
     """Run by APScheduler every 30 min during market hours (Mon-Fri 9 AM – 4:30 PM ET)."""
     global scan_results, last_scan_time, is_scanning
+
+    if config.SCANNER_PAUSED:            # v3.9.0: belt and braces; no jobs are started while paused
+        logger.info("scheduled_scan skipped: scanner paused (SCANNER_PAUSED)")
+        return
 
     now = datetime.now(config.ET)
     _reset_daily_state()
@@ -582,6 +589,17 @@ async def startup():
     # Must run before anything else touches data/ (cleanup, reads, writes).
     _seed_data_volume()
 
+    # v3.9.0: paused (the default) means nothing runs — no scheduler, no
+    # warm-up, no backfill, and no history cleanup, so the last pick files
+    # stay visible. Pages keep serving. SCANNER_PAUSED=0 + restart resumes.
+    if config.SCANNER_PAUSED:
+        logger.warning(
+            f"Scanner PAUSED since {config.SCANNER_PAUSED_SINCE} (SCANNER_PAUSED): no scheduled "
+            f"scans, emails or post-market jobs; history files are not cleaned up. "
+            f"Set SCANNER_PAUSED=0 and restart to resume."
+        )
+        return
+
     scheduler.start()
     cleanup_old_files()
 
@@ -627,7 +645,8 @@ async def startup():
 
 @app.on_event("shutdown")
 async def shutdown():
-    scheduler.shutdown()
+    if scheduler.running:                 # never started while paused
+        scheduler.shutdown()
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -674,6 +693,8 @@ async def api_history():
 async def trigger_scan():
     """Manually trigger a scan."""
     global is_scanning
+    if config.SCANNER_PAUSED:
+        return {"status": "paused", "since": config.SCANNER_PAUSED_SINCE}
     if is_scanning:
         return {"status": "already_running"}
 
@@ -688,6 +709,7 @@ async def trigger_scan():
 async def get_config():
     """Return current scanner configuration."""
     return {
+        "scanner_paused": config.SCANNER_PAUSED,
         "scan_interval_minutes": config.SCAN_INTERVAL_MINUTES,
         "min_rvol": config.MIN_RVOL,
         "min_composite_score": config.MIN_COMPOSITE_SCORE,
@@ -1580,6 +1602,8 @@ async def api_notify_test():
     On failure:
         {"ok": false, "error": "...", "from": "...", "to": [...]}
     """
+    if config.SCANNER_PAUSED:            # v3.9.0: "no emails are sent" while paused
+        return {"ok": False, "status": "paused", "since": config.SCANNER_PAUSED_SINCE}
     try:
         return send_test_email()
     except Exception as exc:

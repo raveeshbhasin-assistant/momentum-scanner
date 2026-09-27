@@ -1,0 +1,8 @@
+{# v3.9.0: shown on every page of the momentum-scanner app while config.SCANNER_PAUSED is on. #}
+{% if SCANNER_PAUSED %}
+<div class="paused-banner" role="status" style="max-width:1200px;margin:12px auto 0;padding:10px 14px;border-radius:8px;font-size:13px;line-height:1.5;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4);color:#f59e0b;">
+    <strong>Momentum scanner paused since {{ SCANNER_PAUSED_SINCE }}.</strong> The 100-day live review found the picks have no edge, so no scans run and no emails are sent.
+    Past picks stay available on <a href="/history" style="color:inherit;text-decoration:underline;">History</a> (use its date picker for earlier days) and <a href="/performance" style="color:inherit;text-decoration:underline;">Performance</a>.
+    To resume, set <code>SCANNER_PAUSED=0</code> on Railway and restart.
+</div>
+{% endif %}

@@ -859,11 +859,18 @@
             <a href="/backtest" class="nav-link">Backtest</a>
             <a href="/theme-scanner" class="nav-link" style="color: var(--purple); border: 1px solid var(--purple); background: #a78bfa15;">ThemeHunter</a>
             <a href="/logic" class="nav-link">Algorithm Logic</a>
+            {% if SCANNER_PAUSED %}
+            <button class="btn primary" id="scanBtn" disabled title="Scanner paused since {{ SCANNER_PAUSED_SINCE }}">
+                Scanner paused
+            </button>
+            {% else %}
             <button class="btn primary" onclick="triggerScan()" id="scanBtn">
                 Run Scan Now
             </button>
+            {% endif %}
         </div>
     </header>
+{% include "_paused_banner.html" %}
 
     <!-- MAIN -->
     <main class="main">
@@ -1157,6 +1164,11 @@
             {% endfor %}
         </div>
 
+        {% elif SCANNER_PAUSED %}
+        <div class="empty-state">
+            <h2>Scanner paused</h2>
+            <p>No scans have run since {{ SCANNER_PAUSED_SINCE }}. Past picks are on the <a href="/history">History</a> and <a href="/performance">Performance</a> pages.</p>
+        </div>
         {% else %}
         <div class="empty-state">
             <h2>No Signals Yet</h2>
@@ -1384,6 +1396,7 @@
         // Trigger manual scan
         async function triggerScan() {
             const btn = document.getElementById('scanBtn');
+            if (btn && btn.disabled) return;   // v3.9.0: scanner paused
             const dot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
 
