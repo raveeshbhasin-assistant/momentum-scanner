@@ -50,6 +50,14 @@
   .pill.EDGE_EXPIRED, .pill.CHECKPOINT, .pill.CAP { background: var(--text-warning-bg); color: var(--text-warning); }
   .pill.TIME, .pill.IGNITION_FAILED, .pill.KEPT { background: var(--bg-elev-2); color: var(--text-secondary); }
 
+  .legend { margin: 18px 0 6px; background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); }
+  .legend > summary { cursor: pointer; padding: 11px 14px; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .legend-body { padding: 2px 14px 14px; font-size: 13px; line-height: 1.55; color: var(--text-secondary); }
+  .legend-body h4 { margin: 14px 0 6px; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-tertiary); font-weight: 500; }
+  .legend-body table { width: 100%; border-collapse: collapse; }
+  .legend-body td { padding: 6px 8px; border-top: 0.5px solid var(--border); vertical-align: top; }
+  .legend-body td:first-child { width: 150px; white-space: nowrap; }
+  .legend-body ul { margin: 4px 0 0 18px; padding: 0; }
   .flags { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
   .stopbar { display: inline-block; width: 48px; height: 5px; border-radius: 3px; background: var(--bg-elev-2); vertical-align: middle; margin-left: 8px; overflow: hidden; }
   .stopbar i { display: block; height: 100%; background: var(--text-danger); opacity: .75; }
@@ -158,6 +166,43 @@
     <div class="kpi-sub">{{ s.failed_positions.n }} cut early{% if s.aged_out_positions.n %} · {{ s.aged_out_positions.n }} aged out at 12 mo ({{ '%+.1f'|format(s.aged_out_positions.avg) }}% avg){% endif %}</div>
   </div>
 </div>
+
+{% set R = ig.rule or {} %}
+<details class="legend">
+  <summary>What the statuses and tags mean</summary>
+  <div class="legend-body">
+    <h4>How a stock gets on the list (a "fire")</h4>
+    Every weekday after the close, ~900 stocks (S&amp;P 500 + 400) are checked. A stock <b>fires</b> when, on the same day, it is
+    up more than {{ '%.0f'|format((R.r5_min|default(0.12)) * 100) }}% over 5 trading days, its last-month volume is more than
+    {{ R.volr_min|default(1.5) }}× its 6-month average, its 50-day average is above its 200-day average (already in an uptrend),
+    and it is not tiny (price over ${{ '%.0f'|format(R.min_price|default(3)) }}, over ${{ '%.0f'|format((R.min_dollar_vol|default(5e6)) / 1e6) }}M traded a day).
+    Each fire is tracked as bought at the <b>next morning's open</b>.
+    <h4>The sell line</h4>
+    The close {{ R.base_lag|default(5) }} trading days before the fire, the level it broke out from. Closing below it means the
+    whole breakout was given back. It sits ~14% under the buy price, so this rule only ever sells at a loss.
+    <h4>Statuses</h4>
+    <table>
+      <tr><td><span class="pill NEW">New fire</span></td><td>Fired on the latest close; not bought yet (entry is the next open).</td></tr>
+      <tr><td><span class="pill HOLD">Hold</span></td><td>Bought, above its sell line, and fired within the last {{ R.edge_window|default(63) }} trading days (~3 months). Breakout intact, edge still fresh. Keep holding.</td></tr>
+      <tr><td><span class="pill REFIRED">Re-fired</span></td><td>A fresh ignition (another big week on heavy volume after at least a week off the list) within the last {{ R.refire_hot|default(20) }} trading days. The strongest hold state in the backtest.</td></tr>
+      <tr><td><span class="pill EDGE_EXPIRED">Edge expired</span></td><td>Still above its sell line, but no fire for {{ R.edge_window|default(63) }}+ trading days. The extra return mostly came in the first ~3 months. A prompt to review, <b>not a sell</b>; many of the biggest winners sit here.</td></tr>
+      <tr><td><span class="pill SELL_PENDING">Sell next open</span></td><td>Closed below its sell line (or hit the 12-month limit) on the latest close. Sell at the next open.</td></tr>
+      <tr><td><span class="pill IGNITION_FAILED">Ignition failed</span></td><td>Closed: fell below the sell line.</td></tr>
+      <tr><td><span class="pill TIME">Aged out (12 mo)</span></td><td>Closed: {{ R.max_quiet|default(252) }} trading days (~1 year) without a fresh fire. The only way a position closes at a profit.</td></tr>
+    </table>
+    <h4>Review tags (flags only; they never sell anything)</h4>
+    <table>
+      <tr><td><span class="pill CHECKPOINT">6-mo review</span></td><td>{{ R.checkpoint_after|default(126) }} trading days (~6 months) in, up but by less than 30%. Consider taking the profit: in testing, a smoother ride for a little less average return.</td></tr>
+      <tr><td><span class="pill CAP">2× cap · trim N%</span></td><td>Grown to {{ '%.0f'|format(R.weight_cap|default(2)) }}× or more of an average position (assuming equal dollars at each entry). Selling N% brings it back to {{ '%.0f'|format(R.weight_cap|default(2)) }}×. In testing, fewer big drawdowns for a small cost.</td></tr>
+      <tr><td><span class="pill KEPT">kept · date</span></td><td>The latest run could not recompute this position (e.g. no price data), so its last known values are kept rather than it disappearing. Hover for the reason.</td></tr>
+    </table>
+    <h4>Two things that surprise people</h4>
+    <ul>
+      <li><b>Dropping off the daily list is not a sell.</b> ~40% of fires are off the list the next day because the big week rolls out of the 5-day window; they still averaged +11.6% over the next 3 months.</li>
+      <li><b>"Since fire" resets on any day the signal is on</b>, so a stock can go from Edge expired back to Hold.</li>
+    </ul>
+  </div>
+</details>
 
 <div class="section-head">Open positions <span class="hint">sell line = pre-ignition base · the bar fills as price nears it</span></div>
 {% if open_pos %}

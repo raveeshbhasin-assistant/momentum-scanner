@@ -251,7 +251,8 @@ def test_page_renders_data_from_before_the_review_flags(monkeypatch, tmp_path):
     monkeypatch.setattr(web, "start_scheduler", lambda: None)
     page = TestClient(web.app).get("/ignition")
     assert page.status_code == 200
-    assert "pill CAP" not in page.text and "pill CHECKPOINT" not in page.text
+    # no per-position tags (the status legend shows example pills without titles)
+    assert 'class="pill CAP" title=' not in page.text and 'class="pill CHECKPOINT" title=' not in page.text
 
 
 # ---- history is append-only (carry_forward / check_coverage) ----------------

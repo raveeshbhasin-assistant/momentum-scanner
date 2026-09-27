@@ -7,7 +7,30 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.9.0 — 2026-09-26 **(current)**
+## v1.9.1 — 2026-09-26 **(current)**
+
+**What** Ignition Watch adds a collapsible "What the statuses and tags mean"
+legend above the open-positions table. It explains in plain terms:
+- how a stock gets on the list and what the sell line is;
+- every status (New fire, Hold, Re-fired, Edge expired, Sell next open,
+  Ignition failed, Aged out);
+- the review tags (6-mo review, 2× cap, kept);
+- the two common surprises: dropping off the list isn't a sell, and the
+  "since fire" clock resets.
+
+Thresholds render from the scan's own `rule` block (with defaults for older
+data), so the legend can't drift from the code.
+
+**Why** Operator asked for a simple explanation of each status on the page.
+
+**Verified** `pytest` green (58). Rendered with the live `ignition-data` scan
+and with pre-v1.7 data.
+
+**Rollback** Revert the commit.
+
+---
+
+## v1.9.0 — 2026-09-26
 
 **What** Ignition Watch history is now append-only.
 - **Carry-forward:** each run carries forward every position the previous run
