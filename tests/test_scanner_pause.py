@@ -88,3 +88,27 @@ def test_logic_header_shows_the_current_version(paused):
     page = TestClient(paused.app).get("/logic").text
     assert f'<span class="version-tag">v{config.APP_VERSION}</span>' in page
     assert f"Momentum Scanner v{config.APP_VERSION}</title>" in page
+
+
+def test_banner_sits_above_the_header_on_every_page_type(paused, monkeypatch):
+    """v3.9.1: on phones the menu opens by default below the sticky header, so the
+    banner must come BEFORE the header or the menu covers it."""
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setitem(paused.templates.env.globals, "SCANNER_PAUSED", True)
+    monkeypatch.setattr(config, "MARKET_REGIME_ENABLED", False)
+    client = TestClient(paused.app)
+    for path in ("/", "/today", "/history", "/performance", "/logic", "/backtest",
+                 "/theme-scanner", "/theme-backtest"):
+        page = client.get(path).text
+        assert page.count('class="paused-banner"') == 1, path
+        assert page.index('class="paused-banner"') < page.index('<header class="header'), path
+
+
+def test_today_empty_state_says_paused(paused, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setitem(paused.templates.env.globals, "SCANNER_PAUSED", True)
+    monkeypatch.setattr(paused, "load_daily_finds", lambda *a, **k: [])
+    page = TestClient(paused.app).get("/today").text
+    assert "Scanner paused</h2>" in page and "trigger a scan" not in page

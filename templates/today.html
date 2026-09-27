@@ -442,6 +442,11 @@
                 </table>
             </div>
         </div>
+        {% elif SCANNER_PAUSED %}
+        <div class="empty-state">
+            <h2>Scanner paused</h2>
+            <p>No scans have run since {{ SCANNER_PAUSED_SINCE }}. Past picks are on <a href="/history" style="color: var(--cyan);">History</a> (use its date picker for earlier days) and <a href="/performance" style="color: var(--cyan);">Performance</a>.</p>
+        </div>
         {% else %}
         <div class="empty-state">
             <h2>No Finds Yet Today</h2>

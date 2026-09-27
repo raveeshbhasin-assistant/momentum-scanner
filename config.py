@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 # (_head.html). Before v3.8.3 each surface was hand-bumped and drifted
 # (footer was stuck at 3.7.4, cache-bust at 3.8.0 while the app was 3.8.2).
 # Bump THIS on every release; the pre-push hygiene hook checks the rest.
-APP_VERSION = "3.9.0"
+APP_VERSION = "3.9.1"
 
 # ── Scanner pause (v3.9.0) ───────────────────────────────────
 # PAUSED by default since 2026-09-26 (operator decision, "till further

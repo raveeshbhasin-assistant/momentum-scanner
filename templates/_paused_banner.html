@@ -1,8 +1,16 @@
-{# v3.9.0: shown on every page of the momentum-scanner app while config.SCANNER_PAUSED is on. #}
+{# v3.9.0: shown on every page of the momentum-scanner app while config.SCANNER_PAUSED is on.
+   v3.9.1: included ABOVE the page header, so the mobile menu (open by default, drops
+   down below the sticky header) can't cover it; side gutters on narrow screens. #}
 {% if SCANNER_PAUSED %}
-<div class="paused-banner" role="status" style="max-width:1200px;margin:12px auto 0;padding:10px 14px;border-radius:8px;font-size:13px;line-height:1.5;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4);color:#f59e0b;">
+<style>
+    .paused-banner { max-width: 1200px; margin: 12px auto; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5;
+                     background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.4); color: #f59e0b; }
+    .paused-banner a { color: inherit; text-decoration: underline; }
+    @media (max-width: 1232px) { .paused-banner { margin: 12px 16px; } }
+</style>
+<div class="paused-banner" role="status">
     <strong>Momentum scanner paused since {{ SCANNER_PAUSED_SINCE }}.</strong> The 100-day live review found the picks have no edge, so no scans run and no emails are sent.
-    Past picks stay available on <a href="/history" style="color:inherit;text-decoration:underline;">History</a> (use its date picker for earlier days) and <a href="/performance" style="color:inherit;text-decoration:underline;">Performance</a>.
+    Past picks stay available on <a href="/history">History</a> (use its date picker for earlier days) and <a href="/performance">Performance</a>.
     To resume, set <code>SCANNER_PAUSED=0</code> on Railway and restart.
 </div>
 {% endif %}

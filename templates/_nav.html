@@ -12,6 +12,7 @@
             {% include "_nav.html" %}
         {% endwith %}
 #}
+{% include "_paused_banner.html" %}
 <header class="header nav-open" id="siteHeader">
     <div class="header-left">
         <a href="/" class="logo">Momentum Scanner</a>
@@ -38,4 +39,3 @@
         <a href="/logic"       class="nav-link{% if active_page == 'logic'       %} active{% endif %}">Algorithm Logic</a>
     </nav>
 </header>
-{% include "_paused_banner.html" %}

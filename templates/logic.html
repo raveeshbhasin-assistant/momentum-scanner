@@ -388,12 +388,28 @@
         <!-- TOC is rendered by JS in three groups: Current / Recent / Older -->
         <div class="release-toc-groups" id="tocGroups" aria-label="Release table of contents"></div>
 
+        <!-- ───── v3.9.1 ───── -->
+        <div class="release current" id="v3-9-1">
+            <div class="release-header">
+                <span class="release-version">v3.9.1</span>
+                <span class="release-date">Released 2026-09-26</span>
+                <span class="release-pill pill-current">Current</span>
+            </div>
+            <div class="release-title"><strong>Pause banner polish (review nits).</strong>
+            <ul>
+                <li>The pause banner now sits <em>above</em> the page header on every page. On phones the menu opens by default and drops down below the sticky header, so it used to cover the banner at first paint.</li>
+                <li>The banner gets 16px side margins on narrow screens.</li>
+                <li><code>/today</code>'s empty state says the scanner is paused and points to History and Performance, instead of "go trigger a scan".</li>
+                <li>The v3.9.0 note now lists the seven paused-state tests correctly (it said four).</li>
+            </ul>
+            <em>Why:</em> nits from the independent re-review of v3.9.0, which found no blockers. <em>Verification:</em> <code>python -m pytest tests/ -q</code> green. New tests cover the banner rendering before the header on every page type and the paused <code>/today</code> text. <em>Rollback:</em> revert this commit. Tagged: <span class="pill pill-fixed">fixed</span>.</div>
+        </div>
+
         <!-- ───── v3.9.0 ───── -->
-        <div class="release current" id="v3-9-0">
+        <div class="release" id="v3-9-0">
             <div class="release-header">
                 <span class="release-version">v3.9.0</span>
                 <span class="release-date">Released 2026-09-26</span>
-                <span class="release-pill pill-current">Current</span>
             </div>
             <div class="release-title"><strong>Scanner paused until further notice.</strong> New <code>config.SCANNER_PAUSED</code>, on by default. While paused:
             <ul>
@@ -403,7 +419,7 @@
                 <li>A banner on every page of this app says why (shared <code>_paused_banner.html</code>). All pages still serve.</li>
                 <li>Operator tools stay available: manual analyze/backup triggers, ThemeHunter and the backtests.</li>
             </ul>
-            <em>Why:</em> the 100-day live review (<code>research_findings_100day_review.md</code>) found no edge, and the pre-registered replacements (v4 stocks-in-play, v5 overnight catalyst) failed their held-out tests. The operator asked to pause the scanner. An adversarial review traced every scan, email and data-deletion path before release. <em>Verification:</em> <code>python -m pytest tests/ -q</code> is green. New tests cover four cases while paused: the startup starts no scheduler and does no cleanup; <code>scheduled_scan</code> never calls <code>run_scan</code>; the manual endpoint refuses; the banner renders. The env parsing is tested too: unset means paused, <code>0</code> resumes. <em>Rollback / resume:</em> set <code>SCANNER_PAUSED=0</code> in the Railway environment and restart, or revert this commit. Tagged: <span class="pill pill-changed">changed</span>.</div>
+            <em>Why:</em> the 100-day live review (<code>research_findings_100day_review.md</code>) found no edge, and the pre-registered replacements (v4 stocks-in-play, v5 overnight catalyst) failed their held-out tests. The operator asked to pause the scanner. An adversarial review traced every scan, email and data-deletion path before release. <em>Verification:</em> <code>python -m pytest tests/ -q</code> is green. New tests (<code>tests/test_scanner_pause.py</code>) cover seven paused cases: the startup starts no scheduler and does no cleanup; <code>scheduled_scan</code> never calls <code>run_scan</code>; the manual scan endpoint refuses; the test-email endpoint refuses; the dashboard shows no scan button; the banner renders on every page; the <code>/logic</code> header shows the current version. The env parsing is tested too: unset means paused, <code>0</code> resumes. <em>Rollback / resume:</em> set <code>SCANNER_PAUSED=0</code> in the Railway environment and restart, or revert this commit. Tagged: <span class="pill pill-changed">changed</span>.</div>
         </div>
 
         <!-- ───── v3.8.4 ───── -->
