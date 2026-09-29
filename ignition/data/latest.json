@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-09-25",
- "scanned_at": "2026-09-26 16:39 ET",
+ "scanned_at": "2026-09-28 21:12 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -778,7 +778,7 @@
   {
    "ticker": "COF",
    "fired": "2025-04-24",
-   "fire_close": 181.14,
+   "fire_close": 181.15,
    "fire_r5": 15.6,
    "fire_volr": 1.53,
    "base": 156.68,
