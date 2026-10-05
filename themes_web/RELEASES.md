@@ -7,7 +7,45 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.9.1 — 2026-09-26 **(current)**
+## v1.10.0 — 2026-10-05 **(current)**
+
+**What** New page: **Pullback Watch** (`/pullback`, "Pullback" in the top bar).
+It tracks one rule on eight broad index funds (SPY, QQQ, IWM, DIA, MDY, IJR,
+VTI, RSP): after a fall of 3% or more over five sessions in a fund that is
+still above its 200-day average, buy at the next open and sell at the close
+five sessions after the signal.
+- **Today:** each fund's close, five-day return, distance from its 200-day
+  average, status (Signal / Holding / Watching / Below 200-day) and the close
+  that would trigger a signal tomorrow.
+- **Forward record:** every signal since 2026-07-01 (the day after the
+  back-test window ended), split into trades replayed from history and trades
+  recorded live from 2026-10-05, next to the same funds bought on any day.
+- **The evidence:** training and holdout results, the reasons the rule is
+  *not confirmed*, and its known weak points.
+- **Plumbing:** new standalone module `pullback/` (imports nothing, nothing
+  imports it). The scan of record runs in GitHub Actions
+  (`.github/workflows/pullback-daily.yml`, weekdays 21:40 UTC) and commits to
+  the `pullback-data` branch; themes_web syncs from it every 30 minutes and at
+  boot (`refresh_pullback`), with `/api/pullback` and `POST
+  /api/refresh_pullback`. History is append-only and the scan refuses to
+  publish on missing or stale bars.
+
+**Why** Operator asked for the one rule that came out of the blank-slate
+strategy search to be shared with its results and tracked forward daily.
+Study: `research_findings_blank_slate.md`, `research/blank_slate/`.
+
+**Verified** `pytest` green (75, 7 new in `tests/test_pullback.py`: entry and
+exit timing, the 200-day condition, new → open → closed, a recorded trade
+surviving revised prices, the coverage and half-session guards, page render
+with data / without data / with an older file, sync scheduled at boot). Page
+viewed locally against a real scan.
+
+**Rollback** Revert the commit. The `pullback-data` branch can stay; nothing
+reads it once the page is gone.
+
+---
+
+## v1.9.1 — 2026-09-26
 
 **What** Ignition Watch adds a collapsible "What the statuses and tags mean"
 legend above the open-positions table. It explains in plain terms:

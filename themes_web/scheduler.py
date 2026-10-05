@@ -154,6 +154,59 @@ def refresh_ignition() -> dict:
         return {"source": "github", "ok": False, "error": str(e)}
 
 
+_PULLBACK_DATA = _PROJECT_ROOT / "pullback" / "data"
+_PULLBACK_LATEST = _PULLBACK_DATA / "latest.json"
+# Same arrangement as Ignition: the scan of record runs in GitHub Actions
+# (.github/workflows/pullback-daily.yml) and commits to the `pullback-data` branch.
+PULLBACK_DATA_URL = os.getenv(
+    "PULLBACK_DATA_URL",
+    "https://raw.githubusercontent.com/raveeshbhasin-assistant/momentum-scanner/pullback-data/pullback/data",
+)
+
+
+def run_local_pullback_scan() -> dict:
+    """Run pullback/scan.py here (subprocess keeps the no-cross-import rule).
+    Fallback only — its output lives on this container's disk."""
+    logger.info("[scheduler] local pullback scan starting")
+    try:
+        r = subprocess.run([_PYTHON, "pullback/scan.py"], cwd=_PROJECT_ROOT,
+                           capture_output=True, text=True, timeout=600)
+        if r.returncode != 0:
+            logger.warning(f"[scheduler] pullback scan non-zero: {r.returncode}")
+        if _PULLBACK_DATA.exists():
+            (_PULLBACK_DATA / "source.txt").write_text("local", encoding="utf-8")
+        return {"source": "local", "returncode": r.returncode, "tail": (r.stdout + r.stderr)[-400:]}
+    except Exception as e:
+        logger.exception(f"[scheduler] pullback scan failed: {e}")
+        return {"source": "local", "error": str(e)}
+
+
+def refresh_pullback() -> dict:
+    """
+    Sync Pullback Watch data from the `pullback-data` branch. Falls back to a
+    local scan only when GitHub is unreachable (or the branch does not exist
+    yet) and there is no data on disk. Also callable via POST /api/refresh_pullback.
+    """
+    _PULLBACK_DATA.mkdir(parents=True, exist_ok=True)
+    try:
+        got = {}
+        for name in ("latest.json", "runs.jsonl"):
+            with urllib.request.urlopen(f"{PULLBACK_DATA_URL}/{name}", timeout=30) as resp:
+                got[name] = resp.read()
+        json.loads(got["latest.json"])  # refuse to install a truncated/invalid file
+        for name, body in got.items():
+            tmp = _PULLBACK_DATA / f"{name}.tmp"
+            tmp.write_bytes(body)
+            tmp.replace(_PULLBACK_DATA / name)
+        (_PULLBACK_DATA / "source.txt").write_text("github", encoding="utf-8")
+        return {"source": "github", "ok": True}
+    except Exception as e:
+        logger.warning(f"[scheduler] pullback sync from GitHub failed: {e}")
+        if not _PULLBACK_LATEST.exists():
+            return run_local_pullback_scan()
+        return {"source": "github", "ok": False, "error": str(e)}
+
+
 def _scheduled_job():
     """Cron entry point — refresh every active theme that has a tracker."""
     # Discover active themes by scanning themes/ for tracker.json
@@ -213,9 +266,20 @@ def start_scheduler() -> BackgroundScheduler:
         max_instances=1,
         misfire_grace_time=900,
     )
+    # Pullback Watch: same pattern, from the pullback-data branch.
+    _scheduler.add_job(
+        refresh_pullback,
+        trigger=IntervalTrigger(minutes=30),
+        next_run_time=datetime.now(timezone.utc),
+        id="pullback_sync",
+        name="Pullback Watch sync from pullback-data branch",
+        replace_existing=True,
+        max_instances=1,
+        misfire_grace_time=900,
+    )
     _scheduler.start()
     logger.info("[scheduler] Started. Daily refresh 18:00 ET weekdays; "
-                "ignition sync every 30 min; "
+                "ignition and pullback sync every 30 min; "
                 "referral refresh monthly (1st, 19:00 ET).")
     return _scheduler
 

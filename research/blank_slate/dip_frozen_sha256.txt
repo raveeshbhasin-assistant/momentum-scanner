@@ -1,0 +1,7 @@
+{
+ "BS_DESIGN.md": "519d50b2ae5bb1d0c3fe2682132a9db6af4e584b267f59e2ca0c4070fa35643e",
+ "bs_dip.py": "5cd1fb7c893654edfca7363d80a05edaf0ea6e0b3093cb72b02e709cdb330e66",
+ "bs_common.py": "a2a87ee1cfcdd4c10a4b58af344359c51d2eb8fb93abc579ec88ff79facc1740",
+ "bs_map.py": "ad749616a077fe017fb67287282e52baf8c98d72b36799c40776ca793d3336ee",
+ "dip_frozen.json": "ea81baa96ea9965006c051ed5a198c6419bfc36ffad10f6b4bf50229bcf2d764"
+}

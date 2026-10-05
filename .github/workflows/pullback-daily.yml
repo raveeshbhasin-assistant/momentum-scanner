@@ -1,0 +1,72 @@
+# Pullback Watch — the scan of record.
+#
+# Runs pullback/scan.py every weekday after the US close and commits the
+# output (latest.json, runs.jsonl, history/<date>.json) to the `pullback-data`
+# branch. Git keeps every run forever; Railway's disk is wiped on redeploy.
+# Pushing to `pullback-data` (not main) means no Railway redeploy. themes_web
+# reads the branch through themes_web/scheduler.refresh_pullback().
+name: pullback daily scan
+
+on:
+  schedule:
+    - cron: "40 21 * * 1-5"   # 17:40 EDT / 16:40 EST — after the close either way
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:                    # code only; doc edits don't need a scan
+      - "pullback/scan.py"
+      - ".github/workflows/pullback-daily.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pullback-daily
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install "yfinance>=0.2.43" "pandas>=2.2.0" "numpy>=1.26.0"
+
+      - name: Check out the data branch (create it on first run)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin pullback-data >/dev/null; then
+            git fetch --depth 1 origin pullback-data
+            git worktree add ../data FETCH_HEAD
+            git -C ../data checkout -B pullback-data
+          else
+            git worktree add --detach ../data
+            git -C ../data checkout --orphan pullback-data
+            git -C ../data rm -rfq .
+          fi
+          mkdir -p pullback/data
+          if [ -d ../data/pullback/data ]; then cp -r ../data/pullback/data/. pullback/data/; fi
+
+      - name: Scan
+        run: python pullback/scan.py
+
+      - name: Commit the run to pullback-data
+        run: |
+          mkdir -p ../data/pullback/data
+          cp -r pullback/data/. ../data/pullback/data/
+          cd ../data
+          git add -A
+          ASOF=$(python -c "import json;print(json.load(open('pullback/data/latest.json'))['asof'])")
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -qm "pullback: scan asof ${ASOF} ($(date -u +%FT%H:%MZ))"
+            git push origin pullback-data
+          fi

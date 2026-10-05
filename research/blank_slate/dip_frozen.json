@@ -1,0 +1,9 @@
+[
+ {"name": "D1", "primary": true, "universe": "index", "trigger": "r5<=-3%", "uptrend": true, "hold": 5, "entry": "oc", "slots": 5},
+ {"name": "D2", "primary": true, "universe": "index", "trigger": "z20<=-2", "uptrend": true, "hold": 5, "entry": "oc", "slots": 5},
+ {"name": "D3", "primary": true, "universe": "both", "trigger": "r5<=-3%", "uptrend": true, "hold": 5, "entry": "oc", "slots": 5},
+ {"name": "D1c", "primary": false, "universe": "index", "trigger": "r5<=-3%", "uptrend": true, "hold": 5, "entry": "cc", "slots": 5},
+ {"name": "D1x", "primary": false, "universe": "index", "trigger": "r5<=-3%", "uptrend": false, "hold": 5, "entry": "oc", "slots": 5},
+ {"name": "D1L", "primary": false, "universe": "index", "trigger": "r5<=-3%", "uptrend": true, "hold": 21, "entry": "oc", "slots": 5},
+ {"name": "D1s", "primary": false, "universe": "core3", "trigger": "r5<=-3%", "uptrend": true, "hold": 5, "entry": "oc", "slots": 5}
+]

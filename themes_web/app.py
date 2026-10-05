@@ -42,8 +42,10 @@ from themes_web.render import (
 )
 from themes_web.scheduler import (
     refresh_ignition,
+    refresh_pullback,
     refresh_referrals,
     run_local_ignition_scan,
+    run_local_pullback_scan,
     start_scheduler,
     stop_scheduler,
     trigger_manual_refresh,
@@ -539,6 +541,82 @@ def api_refresh_ignition(local: int = 0):
     """Pull the latest run from the ignition-data branch (fast). With
     ?local=1, run the scan on this container instead (~1-2 min)."""
     result = run_local_ignition_scan() if local else refresh_ignition()
+    return {"ok": result.get("ok", result.get("returncode") == 0), "result": result}
+
+
+_PULLBACK_DIR = _HERE.parent / "pullback" / "data"
+_FUND_ORDER = {"SIGNAL": 0, "HOLDING": 1, "WATCH": 2, "OFF": 3}
+
+
+def _load_pullback() -> Optional[dict]:
+    latest = _PULLBACK_DIR / "latest.json"
+    if not latest.exists():
+        return None
+    try:
+        pb = json.loads(latest.read_text(encoding="utf-8"))
+    except Exception:
+        logger.exception("Could not read pullback/data/latest.json")
+        return None
+    if pb.get("version") != 1:
+        return None
+    runs = []
+    runs_path = _PULLBACK_DIR / "runs.jsonl"
+    if runs_path.exists():
+        for line in runs_path.read_text(encoding="utf-8").splitlines():
+            try:
+                runs.append(json.loads(line))
+            except Exception:
+                continue
+    source = _PULLBACK_DIR / "source.txt"
+    pb["runs"] = runs[::-1]
+    pb["source"] = source.read_text(encoding="utf-8").strip() if source.exists() else "unknown"
+    return pb
+
+
+@app.get("/pullback", response_class=HTMLResponse)
+def pullback_page(request: Request):
+    """Pullback Watch — the index-fund pullback rule: today's state of each
+    fund, the forward trade record and the back-test it came from. Data: the
+    `pullback-data` branch, written by the daily GitHub Actions scan (see
+    pullback/README.md)."""
+    pb = _load_pullback()
+    funds, open_tr, closed_tr = [], [], []
+    if pb:
+        funds = sorted(pb.get("funds", []), key=lambda f: (_FUND_ORDER.get(f.get("status"), 9),
+                                                           f.get("r5") if f.get("r5") is not None else 0))
+        trades = pb.get("trades", [])
+        open_tr = [t for t in trades if t.get("status") != "CLOSED"]
+        closed_tr = sorted((t for t in trades if t.get("status") == "CLOSED"),
+                           key=lambda t: (t.get("exit") or "", t.get("ticker") or ""), reverse=True)
+    return templates.TemplateResponse(
+        request=request,
+        name="pullback.html",
+        context={
+            "active_slug": None,
+            "active_page": "pullback",
+            "tracker": None,
+            "all_themes": discover_themes_full(),
+            "pb": pb,
+            "funds": funds,
+            "open_tr": open_tr,
+            "closed_tr": closed_tr,
+        },
+    )
+
+
+@app.get("/api/pullback", response_class=JSONResponse)
+def api_pullback():
+    pb = _load_pullback()
+    if pb is None:
+        return JSONResponse({"error": "No scan yet — POST /api/refresh_pullback"}, status_code=404)
+    return pb
+
+
+@app.post("/api/refresh_pullback", response_class=JSONResponse)
+def api_refresh_pullback(local: int = 0):
+    """Pull the latest run from the pullback-data branch (fast). With
+    ?local=1, run the scan on this container instead."""
+    result = run_local_pullback_scan() if local else refresh_pullback()
     return {"ok": result.get("ok", result.get("returncode") == 0), "result": result}
 
 
