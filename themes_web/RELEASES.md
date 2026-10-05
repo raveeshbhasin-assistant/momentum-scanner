@@ -7,7 +7,51 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.10.0 — 2026-10-05 **(current)**
+## v1.11.0 — 2026-10-05 **(current)**
+
+**What** The Pullback page becomes **Signals** (`/signals`, "Signals" in the
+top bar; `/pullback` still works) and carries two rules.
+- **Simpler page.** One box at the top says what each rule would do at the
+  next session. Each rule then gets one table and one line of record. Trades,
+  run log, back-test and weak points are folded away under "Trades and run
+  log" and "Evidence and weak points".
+- **New: Nasdaq-100, two lists of ten.** Once a month, rank the Nasdaq-100 at
+  the month's last close and buy ten stocks in equal parts at the next close:
+  *ten largest* by market value and *ten strongest* by 12-month return
+  (skipping the latest month). The page shows both lists as held, each name's
+  return since it was bought, what would change if the month ended today, and
+  on the last session of the month the exact buys and sells for the next
+  close. A month-by-month ledger sets each list against QQQ.
+- **Plumbing:** new standalone module `nasdaq10/` (imports nothing, nothing
+  imports it). Scan of record in GitHub Actions
+  (`.github/workflows/nasdaq10-daily.yml`, weekdays 21:50 UTC) commits to the
+  `nasdaq10-data` branch; themes_web syncs every 30 minutes and at boot
+  (`refresh_nasdaq10`), with `/api/nasdaq10` and `POST /api/refresh_nasdaq10`.
+  Members are read from Wikipedia on every run with a pinned fallback. Picks
+  are append-only and the scan refuses to publish on missing or stale data.
+
+**Why** Operator asked for the Nasdaq rules from the top-N studies to be
+specified, added to a simplified pullback page and run daily. Study:
+`research_findings_top_n.md`, `research/top_n/`. Both rules are **not
+confirmed** and the page says so: they led QQQ in both halves of 2007–2026
+without reaching significance, and the same rules showed nothing on the
+S&P 500.
+
+**Verified** `pytest` green (84, 9 new in `tests/test_nasdaq10.py`: ranking
+day and trade day, momentum window, the month-end announcement of buys and
+sells, frozen picks and finished months surviving revised prices, month
+return net of costs against QQQ, market-holiday calendar, share-class and
+member-list parsing, coverage guards, page render with data / without data /
+with an older file / on re-pick day, sync scheduled at boot). Scan run locally
+against live data (100 members, October lists replayed) and the page viewed
+locally with both scans.
+
+**Rollback** Revert the commit. The `nasdaq10-data` branch can stay; nothing
+reads it once the section is gone.
+
+---
+
+## v1.10.0 — 2026-10-05
 
 **What** New page: **Pullback Watch** (`/pullback`, "Pullback" in the top bar).
 It tracks one rule on eight broad index funds (SPY, QQQ, IWM, DIA, MDY, IJR,

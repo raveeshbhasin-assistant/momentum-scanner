@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Pullback Watch · Themes{% endblock %}
+{% block title %}Signals · Themes{% endblock %}
 
 {% block extra_css %}
-  .pf-header { margin-bottom: 18px; }
+  .pf-header { margin-bottom: 14px; }
   .pf-title { font-family: var(--font-serif); font-size: 32px; line-height: 1.15; font-weight: 500; letter-spacing: -0.015em; margin: 0 0 4px; }
   .pf-sub { font-size: 13px; color: var(--text-tertiary); max-width: 780px; line-height: 1.5; }
 
@@ -11,51 +11,48 @@
   .method-strip .row + .row { margin-top: 6px; }
   .method-strip.caution { background: var(--text-warning-bg); color: var(--text-primary); }
 
-  .status-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
-  .chip { font-size: 11.5px; padding: 4px 10px; border-radius: 999px; background: var(--bg-elev); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
-  .chip b { color: var(--text-primary); font-weight: 500; }
-
-  .alerts { border: 0.5px solid var(--border-strong); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 22px; background: var(--bg-surface); }
+  .alerts { border: 0.5px solid var(--border-strong); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 8px; background: var(--bg-surface); }
   .alerts-head { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; }
-  .alert { display: grid; grid-template-columns: 70px 90px 1fr; gap: 10px; padding: 6px 0; border-top: 0.5px solid var(--border); font-size: 13px; align-items: baseline; }
+  .alert { display: grid; grid-template-columns: 150px 1fr; gap: 12px; padding: 7px 0; border-top: 0.5px solid var(--border); font-size: 13px; align-items: baseline; }
   .alert:first-of-type { border-top: none; }
-  .alert .detail { color: var(--text-secondary); }
-  .alerts .none { font-size: 13px; color: var(--text-tertiary); }
+  .alert .who { color: var(--text-secondary); }
+  .alert .detail { color: var(--text-primary); line-height: 1.55; }
+  .alert .detail.quiet { color: var(--text-tertiary); }
+  .asof { font-size: 11.5px; color: var(--text-tertiary); margin: 0 0 22px; }
 
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 8px; }
-  .kpi { background: var(--bg-elev); border-radius: var(--radius-md); padding: 14px 18px; }
-  .kpi-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
-  .kpi-value { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
-  .kpi-value .unit { font-size: 13px; color: var(--text-secondary); margin-left: 4px; font-weight: 400; }
-  .kpi-value.positive { color: var(--text-success); } .kpi-value.negative { color: var(--text-danger); }
-  .kpi-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
-
-  .section-head { font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin: 28px 0 12px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  .section-head .hint { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-tertiary); }
+  .section-head { font-size: 15px; color: var(--text-primary); font-weight: 500; margin: 30px 0 4px; }
+  .section-sub { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; max-width: 860px; margin: 0 0 12px; }
 
   .tbl-wrap { overflow-x: auto; background: var(--bg-surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); }
   table.ig { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
   table.ig th { font-size: 10.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-tertiary); text-align: right; padding: 10px 10px; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
   table.ig th.l, table.ig td.l { text-align: left; }
-  table.ig td { text-align: right; padding: 9px 10px; border-top: 0.5px solid var(--border); white-space: nowrap; }
+  table.ig td { text-align: right; padding: 8px 10px; border-top: 0.5px solid var(--border); white-space: nowrap; }
   table.ig tr:first-child td { border-top: none; }
-  table.ig td.wrap { white-space: normal; }
+  table.ig caption { caption-side: top; text-align: left; padding: 10px 10px 2px; font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  table.ig caption span { font-weight: 400; color: var(--text-tertiary); }
   .tk { font-family: var(--font-mono); font-weight: 600; }
   .pos { color: var(--text-success); } .neg { color: var(--text-danger); } .muted { color: var(--text-tertiary); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .co { max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
 
   .pill { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
   .pill.SIGNAL, .pill.NEW { background: var(--text-info-bg); color: var(--text-info); }
-  .pill.HOLDING, .pill.OPEN { background: var(--text-success-bg); color: var(--text-success); }
-  .pill.WATCH { background: var(--bg-elev-2); color: var(--text-secondary); }
+  .pill.HOLDING, .pill.OPEN, .pill.LIVE { background: var(--text-success-bg); color: var(--text-success); }
+  .pill.WATCH, .pill.REPLAYED, .pill.KEPT, .pill.CLOSED { background: var(--bg-elev-2); color: var(--text-secondary); }
   .pill.OFF { background: var(--text-warning-bg); color: var(--text-warning); }
-  .pill.LIVE { background: var(--text-success-bg); color: var(--text-success); }
-  .pill.REPLAYED, .pill.KEPT { background: var(--bg-elev-2); color: var(--text-secondary); }
 
+  .record { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 10px 0 0; max-width: 860px; }
+  .record b { color: var(--text-primary); font-weight: 500; }
+  details.more { margin-top: 10px; border-top: 0.5px solid var(--border); padding-top: 8px; }
+  details.more > summary { cursor: pointer; font-size: 12.5px; color: var(--text-secondary); padding: 2px 0; }
+  details.more > summary:hover { color: var(--text-primary); }
+  details.more[open] > summary { margin-bottom: 10px; }
+  .mini-head { font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin: 16px 0 8px; }
   .empty { padding: 18px; font-size: 13px; color: var(--text-tertiary); }
-  .footnote { font-size: 12px; color: var(--text-tertiary); margin-top: 10px; line-height: 1.55; max-width: 860px; }
-  .prose { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; max-width: 860px; }
+  .prose { font-size: 13px; color: var(--text-secondary); line-height: 1.6; max-width: 860px; }
   .prose li { margin-bottom: 4px; }
-  @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 760px) { .two { grid-template-columns: 1fr; } .alert { grid-template-columns: 1fr; gap: 2px; } }
 {% endblock %}
 
 {% macro pct(v, digits=2) -%}
@@ -65,58 +62,67 @@
 
 {% block content %}
 <div class="pf-header">
-  <h1 class="pf-title">Pullback Watch</h1>
-  <div class="pf-sub">Tracks one rule on eight broad US index funds: after a sharp five-day fall in a fund that is still in an uptrend, buy at the next open and sell five sessions later.</div>
+  <h1 class="pf-title">Signals</h1>
+  <div class="pf-sub">Two rules, checked every weekday after the US close. This page says what each rule would do at the next session.</div>
 </div>
 
+<div class="method-strip caution">
+  <div class="row"><b>Neither rule is proven.</b> Both looked good on past data and missed the statistical bar set in advance. The page tracks them forward to find out. It is a research tracker, not a recommendation.</div>
+</div>
+
+{# ───────────────────────── what to do next ───────────────────────── #}
+{% set rule = pb.rule if pb and pb.rule is defined else {} %}
+{% set sig = funds | selectattr('status', 'equalto', 'SIGNAL') | list %}
+{% set held = funds | selectattr('status', 'equalto', 'HOLDING') | list %}
+{% set nx = nq.next if nq and nq.next is defined else {} %}
+{% set strategies = nq.strategies if nq and nq.strategies is defined else [] %}
+<div class="alerts">
+  <div class="alerts-head">At the next session</div>
+  <div class="alert"><span class="who">Pullback rule</span>
+    {% if not pb %}<span class="detail quiet">No scan yet.</span>
+    {% elif not sig and not held %}<span class="detail quiet">Nothing to do. No fund has a signal and none is being held.</span>
+    {% else %}<span class="detail">
+      {% for f in sig %}<div><span class="pill SIGNAL">Buy</span> <span class="tk">{{ f.ticker }}</span> at the open. It fell {{ '%.1f' | format(f.r5) }}% in five sessions and is above its 200-day average. Sell at the close five sessions after the signal.</div>{% endfor %}
+      {% for f in held %}<div><span class="pill HOLDING">Hold</span> <span class="tk">{{ f.ticker }}</span>, session {{ f.sessions_held }} of {{ rule.hold if rule.hold is defined else 5 }}{% if f.sessions_left == 0 %}: <b>sell at today's close</b>{% elif f.sessions_left == 1 %}: sell at the close of the next session{% else %}; {{ f.sessions_left }} sessions to the sell{% endif %}. So far {{ pct(f.open_ret) }}.</div>{% endfor %}
+    </span>{% endif %}
+  </div>
+  <div class="alert"><span class="who">Nasdaq lists</span>
+    {% if not nq %}<span class="detail quiet">No scan yet.</span>
+    {% elif nx.pending is defined and nx.pending %}<span class="detail">
+      <div><b>Re-pick day.</b> Trade at the close of {{ nx.trade_on }}, then hold each list in ten equal parts.</div>
+      {% for s in strategies %}{% if s.action is defined and s.action %}
+        <div><b>{{ s.label }}:</b>
+          {% if s.action.buy %}<span class="pill NEW">Buy</span> <span class="tk">{{ s.action.buy | join(', ') }}</span>{% endif %}
+          {% if s.action.sell %} <span class="pill OFF">Sell</span> <span class="tk">{{ s.action.sell | join(', ') }}</span>{% endif %}
+          {% if not s.action.buy and not s.action.sell %}no change{% endif %}
+          {% if s.action.keep %}<span class="muted"> · keep {{ s.action.keep | join(', ') }}</span>{% endif %}
+        </div>
+      {% endif %}{% endfor %}
+    </span>
+    {% else %}<span class="detail quiet">Nothing to do. The lists are re-picked once a month: ranked at the close of {{ nx.rank_on if nx.rank_on is defined else '—' }}, traded at the close of {{ nx.trade_on if nx.trade_on is defined else '—' }}{% if nx.sessions_to_rank is defined %} ({{ nx.sessions_to_rank }} session{{ '' if nx.sessions_to_rank == 1 else 's' }} to the ranking){% endif %}.</span>
+    {% endif %}
+  </div>
+</div>
+<div class="asof">Prices as of {{ pb.asof if pb else '—' }} (pullback) and {{ nq.asof if nq else '—' }} (Nasdaq). Scans run on weekdays at about 17:45 New York time.</div>
+
+{# ───────────────────────── 1. pullback ───────────────────────── #}
+<div class="section-head">1. Pullback rule — eight index funds</div>
+<div class="section-sub">When a fund has fallen 3% or more in five sessions and is still above its 200-day average: buy at the next open, sell at the close five sessions after the signal.</div>
 {% if not pb %}
   <div class="tbl-wrap"><div class="empty">No scan yet. The first run is written by the daily job after the US close; this page picks it up within 30 minutes.</div></div>
 {% else %}
-{% set rule = pb.rule if pb.rule is defined else {} %}
 {% set s = pb.summary if pb.summary is defined else {} %}
 {% set bt = pb.backtest if pb.backtest is defined else none %}
-
-<div class="method-strip caution">
-  <div class="row"><b>Read this first.</b> The rule is <b>not confirmed</b>. On data it had never seen (2020–2026) it won 66.8% of the time against 55.9% for the same funds on any day, in line with its training years, but it missed the pre-set statistical bar and had two poor years. This page exists to collect new evidence. It is a research tracker, not a recommendation.</div>
-</div>
-
-<div class="status-row">
-  <span class="chip">Prices as of <b>{{ pb.asof }}</b></span>
-  <span class="chip">Scan run <b>{{ pb.run_at }}</b></span>
-  <span class="chip">Source <b>{{ pb.source }}</b></span>
-  <span class="chip">Tracking since <b>{{ rule.ledger_start if rule.ledger_start is defined else '—' }}</b></span>
-  <span class="chip">Live since <b>{{ rule.live_from if rule.live_from is defined else '—' }}</b></span>
-</div>
-
-{# ── What the rule says to do next ── #}
-{% set sig = funds | selectattr('status', 'equalto', 'SIGNAL') | list %}
-{% set held = funds | selectattr('status', 'equalto', 'HOLDING') | list %}
-<div class="alerts">
-  <div class="alerts-head">At the next session</div>
-  {% if not sig and not held %}
-    <div class="none">Nothing to do. No fund has a signal and none is being held.</div>
-  {% endif %}
-  {% for f in sig %}
-    <div class="alert"><span class="tk">{{ f.ticker }}</span><span><span class="pill SIGNAL">Signal</span></span>
-      <span class="detail">Fell {{ '%.2f' | format(f.r5) }}% in five sessions and is above its 200-day average. The rule buys at the next open and sells at the close five sessions after the signal.</span></div>
-  {% endfor %}
-  {% for f in held %}
-    <div class="alert"><span class="tk">{{ f.ticker }}</span><span><span class="pill HOLDING">Holding</span></span>
-      <span class="detail">Session {{ f.sessions_held }} of {{ rule.hold if rule.hold is defined else 5 }}; {% if f.sessions_left == 0 %}sells at today's close{% elif f.sessions_left == 1 %}sells at the close of the next session{% else %}{{ f.sessions_left }} sessions to the sell{% endif %}. So far {{ pct(f.open_ret) }}.</span></div>
-  {% endfor %}
-</div>
-
-{# ── Each fund today ── #}
-<div class="section-head">The eight funds today <span class="hint">a signal needs both: down {{ '%.0f' | format(-(rule.drop_pct if rule.drop_pct is defined else -3)) }}% or more over five sessions, and above the 200-day average</span></div>
+{% set all = s.all if s.all is defined else {} %}
+{% set base = s.base if s.base is defined else {} %}
 <div class="tbl-wrap">
   <table class="ig">
-    <thead><tr><th class="l">Fund</th><th class="l">Tracks</th><th>Close</th><th>5-day return</th><th>vs 200-day avg</th><th class="l">Status</th><th>Signals tomorrow at or below</th></tr></thead>
+    <thead><tr><th class="l">Fund</th><th class="l">Tracks</th><th>5-day return</th><th>vs 200-day avg</th><th class="l">Status</th><th>Signals at or below</th></tr></thead>
     <tbody>
     {% for f in funds %}
       <tr>
         <td class="l tk">{{ f.ticker }}</td>
         <td class="l muted">{{ f.name }}</td>
-        <td>{{ '%.2f' | format(f.close) if f.close is not none else '—' }}</td>
         <td>{{ pct(f.r5) }}</td>
         <td>{{ pct(f.vs_sma) }}</td>
         <td class="l">
@@ -131,130 +137,183 @@
     </tbody>
   </table>
 </div>
-<div class="footnote">"Below 200-day" means the rule is switched off for that fund: in the back-test, pullbacks below the 200-day average showed no lift. "Signals tomorrow at or below" is the closing price that would make the five-day return −3% at the next close.</div>
-
-{# ── Forward record ── #}
-{% set all = s.all if s.all is defined else {} %}
-{% set live = s.live if s.live is defined else {} %}
-{% set back = s.backfilled if s.backfilled is defined else {} %}
-{% set base = s.base if s.base is defined else {} %}
-<div class="section-head">Forward record <span class="hint">every signal since {{ rule.ledger_start if rule.ledger_start is defined else 'the start' }}, after the back-test window ended; nothing here was used to choose the rule</span></div>
-<div class="kpis">
-  <div class="kpi"><div class="kpi-label">Closed trades</div><div class="kpi-value">{{ all.n if all.n is defined else 0 }}</div>
-    <div class="kpi-sub">{{ live.n if live.n is defined else 0 }} live, {{ back.n if back.n is defined else 0 }} replayed; {{ s.open if s.open is defined else 0 }} open</div></div>
-  <div class="kpi"><div class="kpi-label">Hit rate</div><div class="kpi-value">{% if all.hit is defined and all.hit is not none %}{{ '%.0f' | format(all.hit) }}<span class="unit">%</span>{% else %}—{% endif %}</div>
-    <div class="kpi-sub">{{ all.wins if all.wins is defined else 0 }} of {{ all.n if all.n is defined else 0 }} made money after costs</div></div>
-  <div class="kpi"><div class="kpi-label">Average trade</div><div class="kpi-value {{ 'positive' if all.avg is defined and all.avg is not none and all.avg > 0 else ('negative' if all.avg is defined and all.avg is not none and all.avg < 0 else '') }}">{% if all.avg is defined and all.avg is not none %}{{ '%+.2f' | format(all.avg) }}<span class="unit">%</span>{% else %}—{% endif %}</div>
-    <div class="kpi-sub">{% if all.best is defined and all.best is not none %}best {{ '%+.2f' | format(all.best) }}%, worst {{ '%+.2f' | format(all.worst) }}%{% else %}no closed trades yet{% endif %}</div></div>
-  <div class="kpi"><div class="kpi-label">Any-day comparison</div><div class="kpi-value">{% if base.hit is defined and base.hit is not none %}{{ '%.0f' | format(base.hit) }}<span class="unit">%</span>{% else %}—{% endif %}</div>
-    <div class="kpi-sub">same funds bought on every day since the start, same five-session hold{% if base.avg is defined and base.avg is not none %}; average {{ '%+.2f' | format(base.avg) }}%{% endif %}</div></div>
+<div class="record">
+  <b>Record since {{ rule.ledger_start if rule.ledger_start is defined else 'the start' }}:</b>
+  {% if all.n is defined and all.n %}{{ all.n }} closed trade{{ '' if all.n == 1 else 's' }}, {{ all.wins }} made money ({{ '%.0f' | format(all.hit) }}%), average {{ pct(all.avg) }}{% else %}no closed trades yet{% endif %};
+  {{ s.open if s.open is defined else 0 }} open.
+  {% if base.hit is defined and base.hit is not none %}The same funds bought on any day and held five sessions: {{ '%.0f' | format(base.hit) }}% made money, average {{ pct(base.avg) }}.{% endif %}
 </div>
-<div class="footnote">"Replayed" trades fall between the end of the back-test window ({{ rule.ledger_start if rule.ledger_start is defined else '' }}) and the day this page went live ({{ rule.live_from if rule.live_from is defined else '' }}): they are out of sample but were reconstructed from history. "Live" trades were recorded as they happened. A handful of trades says very little; the back-test needed 75 separate weeks of signals and still fell short.</div>
 
-{% if open_tr %}
-<div class="section-head">Open trades</div>
-<div class="tbl-wrap">
-  <table class="ig">
-    <thead><tr><th class="l">Fund</th><th class="l">Signal</th><th>5-day fall</th><th class="l">Bought</th><th>At</th><th>Last close</th><th>So far</th><th>Session</th><th class="l"></th></tr></thead>
-    <tbody>
-    {% for t in open_tr %}
-      <tr>
-        <td class="l tk">{{ t.ticker }}</td><td class="l">{{ t.signal }}</td><td>{{ pct(t.r5_at_signal) }}</td>
-        <td class="l">{{ t.entry if t.entry else 'next open' }}</td>
-        <td>{{ '%.2f' | format(t.entry_px) if t.entry_px is not none else '—' }}</td>
-        <td>{{ '%.2f' | format(t.last_close) if t.last_close is not none else '—' }}</td>
-        <td>{{ pct(t.open_ret) }}</td>
-        <td>{{ t.sessions_held }} of {{ rule.hold if rule.hold is defined else 5 }}</td>
-        <td class="l">{% if t.status == 'NEW' %}<span class="pill NEW">Buy next open</span>{% else %}<span class="pill OPEN">Holding</span>{% endif %}{% if t.kept is defined and t.kept %} <span class="pill KEPT">kept</span>{% endif %}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
-{% endif %}
-
-<div class="section-head">Closed trades <span class="hint">returns include dividends and a {{ '%.2f' | format(rule.cost_pct_round_trip if rule.cost_pct_round_trip is defined else 0.04) }}% round-trip cost</span></div>
-<div class="tbl-wrap">
-  {% if closed_tr %}
-  <table class="ig">
-    <thead><tr><th class="l">Fund</th><th class="l">Signal</th><th>5-day fall</th><th class="l">Bought</th><th>At</th><th class="l">Sold</th><th>At</th><th>Return</th><th class="l">Recorded</th></tr></thead>
-    <tbody>
-    {% for t in closed_tr %}
-      <tr>
-        <td class="l tk">{{ t.ticker }}</td><td class="l">{{ t.signal }}</td><td>{{ pct(t.r5_at_signal) }}</td>
-        <td class="l">{{ t.entry }}</td><td>{{ '%.2f' | format(t.entry_px) if t.entry_px is not none else '—' }}</td>
-        <td class="l">{{ t.exit }}</td><td>{{ '%.2f' | format(t.exit_px) if t.exit_px is not none else '—' }}</td>
-        <td>{{ pct(t.ret) }}</td>
-        <td class="l">{% if t.live %}<span class="pill LIVE">Live</span>{% else %}<span class="pill REPLAYED">Replayed</span>{% endif %}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <div class="empty">No closed trades yet.</div>
+<details class="more">
+  <summary>Trades and run log</summary>
+  {% if open_tr %}
+  <div class="mini-head">Open trades</div>
+  <div class="tbl-wrap">
+    <table class="ig">
+      <thead><tr><th class="l">Fund</th><th class="l">Signal</th><th>5-day fall</th><th class="l">Bought</th><th>At</th><th>Last close</th><th>So far</th><th>Session</th></tr></thead>
+      <tbody>
+      {% for t in open_tr %}
+        <tr><td class="l tk">{{ t.ticker }}</td><td class="l">{{ t.signal }}</td><td>{{ pct(t.r5_at_signal) }}</td>
+          <td class="l">{{ t.entry if t.entry else 'next open' }}</td>
+          <td>{{ '%.2f' | format(t.entry_px) if t.entry_px is not none else '—' }}</td>
+          <td>{{ '%.2f' | format(t.last_close) if t.last_close is not none else '—' }}</td>
+          <td>{{ pct(t.open_ret) }}</td>
+          <td>{{ t.sessions_held }} of {{ rule.hold if rule.hold is defined else 5 }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% endif %}
-</div>
-
-{# ── The rule ── #}
-<div class="section-head">The rule</div>
-<div class="method-strip">
-  <div class="row"><b>Signal</b>, at the close: the fund is down {{ '%.0f' | format(-(rule.drop_pct if rule.drop_pct is defined else -3)) }}% or more over the last {{ rule.lookback if rule.lookback is defined else 5 }} sessions <b>and</b> its close is above its {{ rule.sma if rule.sma is defined else 200 }}-session average.</div>
-  <div class="row"><b>Buy</b> at the next session's open. <b>Sell</b> at the close {{ rule.hold if rule.hold is defined else 5 }} sessions after the signal. No stop, no target.</div>
-  <div class="row"><b>One position per fund:</b> a fund being held cannot signal again until it is sold. Each of the eight funds is tracked on its own here; the back-tested portfolio held at most five at a time, 20% each.</div>
-  <div class="row"><b>Funds:</b> SPY, QQQ, IWM, DIA, MDY, IJR, VTI, RSP. They move together, so several signals on one day are one market pullback, not several independent bets.</div>
-</div>
-
-{# ── Back-test ── #}
-{% if bt %}
-<div class="section-head">Where the rule came from <span class="hint">found on 2006–2019, frozen, then run once on 2020–2026</span></div>
-<div class="tbl-wrap">
-  <table class="ig">
-    <thead><tr><th class="l"></th><th>Trades</th><th>Hit rate</th><th>Any-day base</th><th>Lift (95% range)</th><th>Average trade (95% range)</th><th class="l">As a portfolio of five 20% slots</th></tr></thead>
-    <tbody>
-    {% for k in ['train', 'holdout'] %}{% set r = bt[k] %}
-      <tr>
-        <td class="l"><b>{{ r.label }}</b><br><span class="muted">{{ r.years }}</span></td>
-        <td>{{ r.trades }}<br><span class="muted">{{ r.weeks }} weeks</span></td>
-        <td>{{ '%.1f' | format(r.hit) }}%</td><td>{{ '%.1f' | format(r.base) }}%</td>
-        <td>{{ '%+.1f' | format(r.lift) }} pts<br><span class="muted">{{ '%+.1f' | format(r.lift_lo) }} to {{ '%+.1f' | format(r.lift_hi) }}</span></td>
-        <td>{{ '%+.2f' | format(r.avg_trade) }}%<br><span class="muted">{{ '%+.2f' | format(r.avg_lo) }} to {{ '%+.2f' | format(r.avg_hi) }}</span></td>
-        <td class="l">{{ '%+.1f' | format(r.cagr) }}% a year, {{ r.exposure }}% of capital in use<br><span class="muted">worst drawdown {{ r.max_dd }}%</span></td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
-<div class="prose">
-  <ul>
-    <li><b>Why "not confirmed":</b> on the holdout the lift's p-value is {{ bt.p_raw }} on its own and {{ bt.p_adjusted }} after correcting for the three rules tested; the average trade's lower bound is just below zero; and the hit rate beat the any-day base in only four of seven years.</li>
-    <li><b>Holdout by year</b> (trades, hit rate): {% for y in bt.holdout_by_year %}{{ y[0] }}: {{ y[1] }}, {{ '%.0f' | format(y[2]) }}%{% if not loop.last %}; {% endif %}{% endfor %}.</li>
-    <li><b>It is a small earner.</b> About 11 separate market pullbacks a year; cash more than 90% of the time. Over the holdout years SPY held throughout made {{ bt.holdout.spy_cagr }}% a year with a {{ bt.holdout.spy_dd }}% drawdown.</li>
-    <li><b>Its worst trades are the start of a crash.</b> The entries of 24 February and 2 March 2020 lost 7–12% before prices fell through the 200-day average and switched the rule off.</li>
-    <li><b>It is sensitive to the definition.</b> The same idea triggered by a 20-day band instead of a five-day fall looked second best on the training years and failed on the holdout (54% against 56%). Without the 200-day condition the lift shrinks to under 4 points.</li>
-    <li><b>Individual stocks showed nothing.</b> The same search across about 8,400 listed and delisted stocks found no condition that picks winners after costs.</li>
-  </ul>
-</div>
-{% endif %}
-
-{# ── Run log ── #}
-<div class="section-head">Run log <span class="hint">one line per scan, newest first; history is append-only</span></div>
-<div class="tbl-wrap">
+  <div class="mini-head">Closed trades</div>
+  <div class="tbl-wrap">
+    {% if closed_tr %}
+    <table class="ig">
+      <thead><tr><th class="l">Fund</th><th class="l">Signal</th><th>5-day fall</th><th class="l">Bought</th><th>At</th><th class="l">Sold</th><th>At</th><th>Return</th><th class="l">Recorded</th></tr></thead>
+      <tbody>
+      {% for t in closed_tr %}
+        <tr><td class="l tk">{{ t.ticker }}</td><td class="l">{{ t.signal }}</td><td>{{ pct(t.r5_at_signal) }}</td>
+          <td class="l">{{ t.entry }}</td><td>{{ '%.2f' | format(t.entry_px) if t.entry_px is not none else '—' }}</td>
+          <td class="l">{{ t.exit }}</td><td>{{ '%.2f' | format(t.exit_px) if t.exit_px is not none else '—' }}</td>
+          <td>{{ pct(t.ret) }}</td>
+          <td class="l">{% if t.live %}<span class="pill LIVE">Live</span>{% else %}<span class="pill REPLAYED">Replayed</span>{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<div class="empty">No closed trades yet.</div>{% endif %}
+  </div>
+  <div class="prose" style="margin-top:8px;">Returns include dividends and a {{ '%.2f' | format(rule.cost_pct_round_trip if rule.cost_pct_round_trip is defined else 0.04) }}% round-trip cost. "Replayed" trades fall between the end of the back-test ({{ rule.ledger_start if rule.ledger_start is defined else '' }}) and the day the tracker went live ({{ rule.live_from if rule.live_from is defined else '' }}).</div>
   {% if pb.runs %}
-  <table class="ig">
-    <thead><tr><th class="l">Run (UTC)</th><th class="l">Prices as of</th><th class="l">New signals</th><th class="l">Sold</th><th>Open</th><th>Closed</th></tr></thead>
-    <tbody>
-    {% for r in pb.runs[:40] %}
-      <tr><td class="l">{{ r.run_at }}</td><td class="l">{{ r.asof }}</td>
-        <td class="l">{{ r.signals | join(', ') if r.signals else '—' }}</td>
-        <td class="l">{{ r.exits | join(', ') if r.exits else '—' }}</td>
-        <td>{{ r.open }}</td><td>{{ r.closed }}</td></tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <div class="empty">No runs logged yet.</div>
+  <div class="mini-head">Run log</div>
+  <div class="tbl-wrap">
+    <table class="ig">
+      <thead><tr><th class="l">Run (UTC)</th><th class="l">Prices as of</th><th class="l">New signals</th><th class="l">Sold</th><th>Open</th><th>Closed</th></tr></thead>
+      <tbody>
+      {% for r in pb.runs[:20] %}
+        <tr><td class="l">{{ r.run_at }}</td><td class="l">{{ r.asof }}</td>
+          <td class="l">{{ r.signals | join(', ') if r.signals else '—' }}</td>
+          <td class="l">{{ r.exits | join(', ') if r.exits else '—' }}</td>
+          <td>{{ r.open }}</td><td>{{ r.closed }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% endif %}
+</details>
+
+{% if bt %}
+<details class="more">
+  <summary>Evidence and weak points</summary>
+  <div class="tbl-wrap">
+    <table class="ig">
+      <thead><tr><th class="l"></th><th>Trades</th><th>Made money</th><th>Any-day base</th><th>Average trade</th><th class="l">As a portfolio of five 20% slots</th></tr></thead>
+      <tbody>
+      {% for k in ['train', 'holdout'] %}{% set r = bt[k] %}
+        <tr><td class="l"><b>{{ r.label }}</b> <span class="muted">{{ r.years }}</span></td>
+          <td>{{ r.trades }}</td><td>{{ '%.1f' | format(r.hit) }}%</td><td>{{ '%.1f' | format(r.base) }}%</td>
+          <td>{{ '%+.2f' | format(r.avg_trade) }}% <span class="muted">({{ '%+.2f' | format(r.avg_lo) }} to {{ '%+.2f' | format(r.avg_hi) }})</span></td>
+          <td class="l">{{ '%+.1f' | format(r.cagr) }}% a year, {{ r.exposure }}% of capital in use, worst drawdown {{ r.max_dd }}%</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+    <ul>
+      <li><b>Why it is not confirmed:</b> on the years it had never seen, the p-value is {{ bt.p_raw }} alone and {{ bt.p_adjusted }} after correcting for the three rules tested, and the win rate beat the any-day base in only four of seven years.</li>
+      <li><b>It is a small earner:</b> about 11 separate pullbacks a year, in cash more than 90% of the time. SPY held throughout made {{ bt.holdout.spy_cagr }}% a year over the same holdout years.</li>
+      <li><b>Its worst trades are the start of a crash:</b> the entries of 24 February and 2 March 2020 lost 7–12%.</li>
+      <li>Several funds signalling on one day is one market pullback, not several independent bets.</li>
+    </ul>
+    Full study: <code>research_findings_blank_slate.md</code> and <code>pullback/README.md</code>.
+  </div>
+</details>
+{% endif %}
+{% endif %}
+
+{# ───────────────────────── 2. nasdaq lists ───────────────────────── #}
+<div class="section-head">2. Nasdaq-100 — two lists of ten</div>
+<div class="section-sub">Once a month, rank the Nasdaq-100 at the month's last close and buy ten stocks in equal parts at the next close. <b>Ten largest</b> ranks by market value. <b>Ten strongest</b> ranks by 12-month return, skipping the latest month. Hold until the next re-pick.</div>
+{% if not nq %}
+  <div class="tbl-wrap"><div class="empty">No scan yet. The first run is written by the daily job after the US close; this page picks it up within 30 minutes.</div></div>
+{% else %}
+{% set nrule = nq.rule if nq.rule is defined else {} %}
+{% set nbt = nq.backtest if nq.backtest is defined else none %}
+{% set bench = nrule.bench if nrule.bench is defined else 'QQQ' %}
+<div class="two">
+  {% for s in strategies %}
+  <div class="tbl-wrap">
+    <table class="ig">
+      <caption>{{ s.label }} <span>· held since {{ nq.held_since if nq.held_since is defined and nq.held_since else '—' }}</span></caption>
+      <thead><tr><th class="l">Stock</th><th class="l">Company</th><th>{{ 'Value, $bn' if s.code == 'SIZE' else '12-mo return' }}</th><th>Since bought</th></tr></thead>
+      <tbody>
+      {% for h in s.holdings %}
+        <tr><td class="l tk">{{ h.ticker }}</td><td class="l muted co">{{ h.name }}</td>
+          <td>{% if h.metric_at_pick is none %}—{% elif s.code == 'SIZE' %}{{ '{:,.0f}'.format(h.metric_at_pick) }}{% else %}{{ '%+.0f' | format(h.metric_at_pick) }}%{% endif %}</td>
+          <td>{{ pct(h.ret, 1) }}</td></tr>
+      {% else %}
+        <tr><td class="l muted" colspan="4">Not picked yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
 </div>
-<div class="footnote">The scan runs on weekdays after the US close and takes daily bars from Yahoo Finance. A closed trade keeps the numbers it was recorded with even if Yahoo later revises its prices. Method and the full study: <code>pullback/README.md</code> and <code>research_findings_blank_slate.md</code> in the repository.</div>
+{% for s in strategies %}
+<div class="record">
+  <b>{{ s.label }}:</b> this month {{ pct(s.this_month, 1) }} ({{ bench }} {{ pct(nq.bench_this_month if nq.bench_this_month is defined else none, 1) }});
+  since {{ nrule.ledger_start if nrule.ledger_start is defined else 'the start' }} {{ pct(s.since_start, 1) }} ({{ bench }} {{ pct(s.bench_since_start, 1) }}){% if s.months_closed %}, ahead in {{ s.months_ahead }} of {{ s.months_closed }} finished month{{ '' if s.months_closed == 1 else 's' }}{% endif %}.
+  If the month ended today: {% if s.would_enter or s.would_leave %}in <span class="tk">{{ s.would_enter | join(', ') if s.would_enter else '—' }}</span>, out <span class="tk">{{ s.would_leave | join(', ') if s.would_leave else '—' }}</span>{% else %}no change{% endif %}.
+</div>
+{% endfor %}
+
+<details class="more">
+  <summary>Month by month</summary>
+  <div class="tbl-wrap">
+    <table class="ig">
+      <thead><tr><th class="l">Month</th><th class="l">Ranked</th><th class="l">Bought</th><th>Ten largest</th><th>Ten strongest</th><th>{{ bench }}</th><th class="l">Status</th><th class="l">Changes</th></tr></thead>
+      <tbody>
+      {% for m in (nq.months if nq.months is defined else []) | reverse %}
+        <tr><td class="l">{{ m.month }}</td><td class="l">{{ m.signal }}</td><td class="l">{{ m.trade }}</td>
+          <td>{{ pct(m.ret.SIZE if m.ret is defined else none, 1) }}</td>
+          <td>{{ pct(m.ret.MOM if m.ret is defined else none, 1) }}</td>
+          <td>{{ pct(m.ret[bench] if m.ret is defined else none, 1) }}</td>
+          <td class="l">{% if m.status == 'NEW' %}<span class="pill NEW">Buy next close</span>{% elif m.status == 'OPEN' %}<span class="pill OPEN">Holding</span>{% else %}<span class="pill CLOSED">Finished</span>{% endif %}
+            {% if m.live is defined and not m.live %} <span class="pill REPLAYED">Replayed</span>{% endif %}</td>
+          <td class="l muted" style="white-space: normal;">{% for c in ['SIZE', 'MOM'] %}{% if m.picks is defined and m.picks[c] is defined %}{{ 'Largest' if c == 'SIZE' else 'Strongest' }}: {{ m.picks[c] | map(attribute='ticker') | join(' ') }}{% if not loop.last %}<br>{% endif %}{% endif %}{% endfor %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="prose" style="margin-top:8px;">Returns include dividends and {{ '%.1f' | format(nrule.cost_pct_side if nrule.cost_pct_side is defined else 0.1) }}% a side on every name that changes. The back-tests end 2026-09-30, so every month here is new data. A "replayed" month was ranked before the tracker went live ({{ nrule.live_from if nrule.live_from is defined else '' }}) and rebuilt from history. Membership: {{ nq.universe.n if nq.universe is defined else '—' }} companies{% if nq.universe is defined and nq.universe.source == 'pinned' %} (saved list; today's list could not be read){% endif %}.</div>
+</details>
+
+{% if nbt %}
+<details class="more">
+  <summary>Evidence and weak points</summary>
+  <div class="tbl-wrap">
+    <table class="ig">
+      <thead><tr><th class="l">{{ nbt.window }}</th><th>Return a year</th><th>vs {{ bench }}</th><th>2007–2015</th><th>2016–2026</th><th>Years ahead</th><th>Worst drawdown</th><th>Worst year</th></tr></thead>
+      <tbody>
+      {% for c, label in [('SIZE', 'Ten largest'), ('MOM', 'Ten strongest')] %}{% set r = nbt[c] %}
+        <tr><td class="l"><b>{{ label }}</b></td><td>{{ '%.1f' | format(r.cagr) }}%</td><td>{{ '%+.1f' | format(r.excess) }} pts</td>
+          <td>{{ '%+.1f' | format(r.first) }}</td><td>{{ '%+.1f' | format(r.second) }}</td>
+          <td>{{ r.years_ahead }} of {{ r.years }}</td><td>{{ r.max_dd }}%</td>
+          <td>{{ r.worst_year[0] }}: {{ '%.0f' | format(r.worst_year[1]) }}% <span class="muted">({{ bench }} {{ '%.0f' | format(r.worst_year[2]) }}%)</span></td></tr>
+      {% endfor %}
+        <tr><td class="l"><b>{{ bench }}</b></td><td>{{ '%.1f' | format(nbt.bench.cagr) }}%</td><td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td class="muted">—</td><td>{{ nbt.bench.max_dd }}%</td><td class="muted">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="prose">
+    <ul>
+      <li><b>Why they are not confirmed:</b> the lead over {{ bench }} is within what chance produces. Ten largest: {{ '%+.1f' | format(nbt.SIZE.lo) }} to {{ '%+.1f' | format(nbt.SIZE.hi) }} points a year (95% range). Ten strongest on 2016–2026: {{ '%+.1f' | format(nbt.MOM.lo) }} to {{ '%+.1f' | format(nbt.MOM.hi) }}.</li>
+      <li><b>They were the survivors of a wide search.</b> About a hundred variations were tried on the same history, and the same two rules showed nothing on the S&amp;P 500.</li>
+      <li><b>Ten largest is a concentrated bet on big technology.</b> Most of its lead came after 2015, and it falls from +3.0 to +1.3 points a year without Nvidia alone.</li>
+      <li><b>Ten strongest is rougher:</b> volatility {{ '%.0f' | format(nbt.MOM.vol) }}% against {{ '%.0f' | format(nbt.bench.vol) }}% for {{ bench }}, ahead in fewer than half of the years, and it replaces about a third of the list every month, which matters for tax.</li>
+      <li>Ten stocks fall harder than a hundred: see the worst-year column.</li>
+    </ul>
+    Full study: <code>research_findings_top_n.md</code> and <code>nasdaq10/README.md</code>.
+  </div>
+</details>
+{% endif %}
 {% endif %}
 {% endblock %}

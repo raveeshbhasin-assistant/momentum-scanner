@@ -207,6 +207,58 @@ def refresh_pullback() -> dict:
         return {"source": "github", "ok": False, "error": str(e)}
 
 
+_NASDAQ10_DATA = _PROJECT_ROOT / "nasdaq10" / "data"
+_NASDAQ10_LATEST = _NASDAQ10_DATA / "latest.json"
+# Same arrangement again: .github/workflows/nasdaq10-daily.yml commits to `nasdaq10-data`.
+NASDAQ10_DATA_URL = os.getenv(
+    "NASDAQ10_DATA_URL",
+    "https://raw.githubusercontent.com/raveeshbhasin-assistant/momentum-scanner/nasdaq10-data/nasdaq10/data",
+)
+
+
+def run_local_nasdaq10_scan() -> dict:
+    """Run nasdaq10/scan.py here (subprocess keeps the no-cross-import rule).
+    Fallback only — its output lives on this container's disk."""
+    logger.info("[scheduler] local nasdaq10 scan starting")
+    try:
+        r = subprocess.run([_PYTHON, "nasdaq10/scan.py"], cwd=_PROJECT_ROOT,
+                           capture_output=True, text=True, timeout=900)
+        if r.returncode != 0:
+            logger.warning(f"[scheduler] nasdaq10 scan non-zero: {r.returncode}")
+        if _NASDAQ10_DATA.exists():
+            (_NASDAQ10_DATA / "source.txt").write_text("local", encoding="utf-8")
+        return {"source": "local", "returncode": r.returncode, "tail": (r.stdout + r.stderr)[-400:]}
+    except Exception as e:
+        logger.exception(f"[scheduler] nasdaq10 scan failed: {e}")
+        return {"source": "local", "error": str(e)}
+
+
+def refresh_nasdaq10() -> dict:
+    """
+    Sync Nasdaq Leaders data from the `nasdaq10-data` branch. Falls back to a
+    local scan only when GitHub is unreachable (or the branch does not exist
+    yet) and there is no data on disk. Also callable via POST /api/refresh_nasdaq10.
+    """
+    _NASDAQ10_DATA.mkdir(parents=True, exist_ok=True)
+    try:
+        got = {}
+        for name in ("latest.json", "runs.jsonl"):
+            with urllib.request.urlopen(f"{NASDAQ10_DATA_URL}/{name}", timeout=30) as resp:
+                got[name] = resp.read()
+        json.loads(got["latest.json"])  # refuse to install a truncated/invalid file
+        for name, body in got.items():
+            tmp = _NASDAQ10_DATA / f"{name}.tmp"
+            tmp.write_bytes(body)
+            tmp.replace(_NASDAQ10_DATA / name)
+        (_NASDAQ10_DATA / "source.txt").write_text("github", encoding="utf-8")
+        return {"source": "github", "ok": True}
+    except Exception as e:
+        logger.warning(f"[scheduler] nasdaq10 sync from GitHub failed: {e}")
+        if not _NASDAQ10_LATEST.exists():
+            return run_local_nasdaq10_scan()
+        return {"source": "github", "ok": False, "error": str(e)}
+
+
 def _scheduled_job():
     """Cron entry point — refresh every active theme that has a tracker."""
     # Discover active themes by scanning themes/ for tracker.json
@@ -277,9 +329,20 @@ def start_scheduler() -> BackgroundScheduler:
         max_instances=1,
         misfire_grace_time=900,
     )
+    # Nasdaq Leaders: same pattern, from the nasdaq10-data branch.
+    _scheduler.add_job(
+        refresh_nasdaq10,
+        trigger=IntervalTrigger(minutes=30),
+        next_run_time=datetime.now(timezone.utc),
+        id="nasdaq10_sync",
+        name="Nasdaq Leaders sync from nasdaq10-data branch",
+        replace_existing=True,
+        max_instances=1,
+        misfire_grace_time=900,
+    )
     _scheduler.start()
     logger.info("[scheduler] Started. Daily refresh 18:00 ET weekdays; "
-                "ignition and pullback sync every 30 min; "
+                "ignition, pullback and nasdaq10 sync every 30 min; "
                 "referral refresh monthly (1st, 19:00 ET).")
     return _scheduler
 

@@ -1,0 +1,73 @@
+# Nasdaq Leaders — the scan of record.
+#
+# Runs nasdaq10/scan.py every weekday after the US close and commits the
+# output (latest.json, runs.jsonl, shares.json, history/<date>.json) to the `nasdaq10-data`
+# branch. Git keeps every run forever; Railway's disk is wiped on redeploy.
+# Pushing to `nasdaq10-data` (not main) means no Railway redeploy. themes_web
+# reads the branch through themes_web/scheduler.refresh_nasdaq10().
+name: nasdaq10 daily scan
+
+on:
+  schedule:
+    - cron: "50 21 * * 1-5"   # 17:50 EDT / 16:50 EST — after the close either way
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:                    # code only; doc edits don't need a scan
+      - "nasdaq10/scan.py"
+      - "nasdaq10/universe.txt"
+      - ".github/workflows/nasdaq10-daily.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nasdaq10-daily
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install "yfinance>=0.2.43" "pandas>=2.2.0" "numpy>=1.26.0"
+
+      - name: Check out the data branch (create it on first run)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin nasdaq10-data >/dev/null; then
+            git fetch --depth 1 origin nasdaq10-data
+            git worktree add ../data FETCH_HEAD
+            git -C ../data checkout -B nasdaq10-data
+          else
+            git worktree add --detach ../data
+            git -C ../data checkout --orphan nasdaq10-data
+            git -C ../data rm -rfq .
+          fi
+          mkdir -p nasdaq10/data
+          if [ -d ../data/nasdaq10/data ]; then cp -r ../data/nasdaq10/data/. nasdaq10/data/; fi
+
+      - name: Scan
+        run: python nasdaq10/scan.py
+
+      - name: Commit the run to nasdaq10-data
+        run: |
+          mkdir -p ../data/nasdaq10/data
+          cp -r nasdaq10/data/. ../data/nasdaq10/data/
+          cd ../data
+          git add -A
+          ASOF=$(python -c "import json;print(json.load(open('nasdaq10/data/latest.json'))['asof'])")
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -qm "nasdaq10: scan asof ${ASOF} ($(date -u +%FT%H:%MZ))"
+            git push origin nasdaq10-data
+          fi

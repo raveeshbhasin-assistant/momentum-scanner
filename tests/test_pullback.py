@@ -97,6 +97,7 @@ def test_page_renders_from_scan_output_and_without_data(monkeypatch, tmp_path):
 
     monkeypatch.setattr(web, "start_scheduler", lambda: None)
     monkeypatch.setattr(web, "_PULLBACK_DIR", tmp_path)
+    monkeypatch.setattr(web, "_NASDAQ10_DIR", tmp_path / "none")
     client = TestClient(web.app)
     empty = client.get("/pullback")
     assert empty.status_code == 200 and "No scan yet" in empty.text
@@ -111,7 +112,8 @@ def test_page_renders_from_scan_output_and_without_data(monkeypatch, tmp_path):
          "open": 8, "closed": 0}) + "\n")
     page = client.get("/pullback")
     assert page.status_code == 200
-    for needle in ("Pullback Watch", "not confirmed", "Open trades", "Run log", "Where the rule came from"):
+    for needle in ("Pullback rule", "Why it is not confirmed", "Open trades", "Run log", "Evidence and weak points",
+                   "sessions to the sell"):
         assert needle in page.text
     assert client.get("/api/pullback").json()["runs"][0]["signals"] == ["SPY"]
 

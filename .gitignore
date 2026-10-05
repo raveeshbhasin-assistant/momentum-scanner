@@ -24,3 +24,6 @@ ignition/data/
 
 # Pullback Watch runtime output (lives on the pullback-data branch, never on main)
 pullback/data/
+
+# Nasdaq Leaders runtime output (lives on the nasdaq10-data branch, never on main)
+nasdaq10/data/

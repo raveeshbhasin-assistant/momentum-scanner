@@ -42,9 +42,11 @@ from themes_web.render import (
 )
 from themes_web.scheduler import (
     refresh_ignition,
+    refresh_nasdaq10,
     refresh_pullback,
     refresh_referrals,
     run_local_ignition_scan,
+    run_local_nasdaq10_scan,
     run_local_pullback_scan,
     start_scheduler,
     stop_scheduler,
@@ -573,13 +575,35 @@ def _load_pullback() -> Optional[dict]:
     return pb
 
 
+_NASDAQ10_DIR = _HERE.parent / "nasdaq10" / "data"
+
+
+def _load_nasdaq10() -> Optional[dict]:
+    latest = _NASDAQ10_DIR / "latest.json"
+    if not latest.exists():
+        return None
+    try:
+        nq = json.loads(latest.read_text(encoding="utf-8"))
+    except Exception:
+        logger.exception("Could not read nasdaq10/data/latest.json")
+        return None
+    if nq.get("version") != 1:
+        return None
+    source = _NASDAQ10_DIR / "source.txt"
+    nq["source"] = source.read_text(encoding="utf-8").strip() if source.exists() else "unknown"
+    return nq
+
+
+@app.get("/signals", response_class=HTMLResponse)
 @app.get("/pullback", response_class=HTMLResponse)
 def pullback_page(request: Request):
-    """Pullback Watch — the index-fund pullback rule: today's state of each
-    fund, the forward trade record and the back-test it came from. Data: the
-    `pullback-data` branch, written by the daily GitHub Actions scan (see
-    pullback/README.md)."""
+    """Signals — two research trackers on one page. Pullback Watch (the
+    index-fund pullback rule; `pullback-data` branch, pullback/README.md) and
+    Nasdaq Leaders (two monthly top-ten lists; `nasdaq10-data` branch,
+    nasdaq10/README.md). Both are written by daily GitHub Actions scans.
+    /pullback is the page's original address and still works."""
     pb = _load_pullback()
+    nq = _load_nasdaq10()
     funds, open_tr, closed_tr = [], [], []
     if pb:
         funds = sorted(pb.get("funds", []), key=lambda f: (_FUND_ORDER.get(f.get("status"), 9),
@@ -597,6 +621,7 @@ def pullback_page(request: Request):
             "tracker": None,
             "all_themes": discover_themes_full(),
             "pb": pb,
+            "nq": nq,
             "funds": funds,
             "open_tr": open_tr,
             "closed_tr": closed_tr,
@@ -617,6 +642,22 @@ def api_refresh_pullback(local: int = 0):
     """Pull the latest run from the pullback-data branch (fast). With
     ?local=1, run the scan on this container instead."""
     result = run_local_pullback_scan() if local else refresh_pullback()
+    return {"ok": result.get("ok", result.get("returncode") == 0), "result": result}
+
+
+@app.get("/api/nasdaq10", response_class=JSONResponse)
+def api_nasdaq10():
+    nq = _load_nasdaq10()
+    if nq is None:
+        return JSONResponse({"error": "No scan yet — POST /api/refresh_nasdaq10"}, status_code=404)
+    return nq
+
+
+@app.post("/api/refresh_nasdaq10", response_class=JSONResponse)
+def api_refresh_nasdaq10(local: int = 0):
+    """Pull the latest run from the nasdaq10-data branch (fast). With
+    ?local=1, run the scan on this container instead (about a minute)."""
+    result = run_local_nasdaq10_scan() if local else refresh_nasdaq10()
     return {"ok": result.get("ok", result.get("returncode") == 0), "result": result}
 
 

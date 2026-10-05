@@ -1,7 +1,7 @@
 # Pullback Watch
 
 Daily tracker for one rule on eight broad US index funds. Served by themes_web
-at `/pullback`. Standalone module: it imports nothing from the scanner, themes
+at `/signals` (section 1; `/pullback` still works). Standalone module: it imports nothing from the scanner, themes
 or ignition, and nothing imports it (themes_web runs it by subprocess and reads
 its JSON).
 
