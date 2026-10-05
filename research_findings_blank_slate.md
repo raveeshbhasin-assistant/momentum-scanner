@@ -48,6 +48,27 @@ It failed three of six gates, each narrowly: the lift is not significant after c
 
 Two things to read from this table. The uptrend filter matters out of sample as it did on train (D1 vs D1x). And the effect depends on how "oversold" is measured: the 5-day-return trigger held up, the 20-day-band trigger (D2, second best on train) did not. That fragility is the main reason not to treat D1 as established.
 
+## Follow-up: does the rule work on the 20 largest S&P 500 companies? (2026-10-05)
+
+Operator question after the index page was built: replace the index fund with a top-20 S&P company; thresholds may differ. Script: `research/blank_slate/bs_mega.py`. Membership is point in time (the 20 largest S&P 500 companies by market value at the previous month-end; 49 companies were in the list at some point; FMP market-cap history starts 2012-06, so training is 2012-07 → 2019-09). Two versions were the test, neither fitted to stock outcomes: the literal rule, and a "same severity" rule that scales the fall to each stock's own volatility (a 3% five-day fall is 1.6 standard deviations for the index funds; the same 1.6 for a stock is a fall of about 5–6%).
+
+**No. The hit-rate lift that the index funds show is absent in the largest stocks, in both periods and at every threshold.**
+
+| Rule (five-session hold, next-open entry) | Period | Trades | Hit rate | Same stocks, any day | Lift | Average trade | Any-day average |
+|---|---|---|---|---|---|---|---|
+| Literal: 5-day fall ≥ 3%, above 200-day | Training | 782 | 56.1% | 54.4% | +1.7 | +0.48% | +0.16% |
+| | Holdout | 1,140 | 54.3% | 53.7% | +0.7 | +0.36% | +0.29% |
+| Same severity: fall ≥ 1.6 of the stock's own standard deviations, above 200-day | Training | 396 | 55.3% | 54.4% | +0.9 | +0.57% | +0.16% |
+| | Holdout | 344 | 51.7% | 53.7% | −1.9 | +0.57% | +0.29% |
+| For comparison, index funds (D1) | Holdout | 190 | 66.8% | 55.9% | +11.0 | +0.74% | — |
+
+- Deeper falls (5%, 7%, 2.4 standard deviations) do not change the hit rate: 53–55% on the holdout against a 53.7% base.
+- Dropping the 200-day condition makes no difference for stocks (55.0% on the holdout); for index funds it mattered.
+- After a fall the average five-day return is a little higher than on an ordinary day (+0.1% to +0.6%), but none of the differences is distinguishable from zero on the holdout, and against SPY over the same days the stocks win 49–51% of the time.
+- Both versions: NOT CONFIRMED (no gate on hit rate, lift, or lower bounds passed).
+
+A plausible reading, not tested here: a single company's sharp fall usually has a company-specific cause (earnings, guidance, a lawsuit) that does not reverse in a week, while an index fund's fall averages those out and is more often a market-wide wobble that does.
+
 ## What this adds up to
 
 - Across every study in this repo (intraday momentum, gaps, overnight, earnings, news, 13F, insiders, off-exchange flow, and now a blank-slate map of daily bars), **stock selection has shown no usable edge at retail costs**. The only repeatable structure is at the index level: short pullbacks inside an uptrend tend to recover.

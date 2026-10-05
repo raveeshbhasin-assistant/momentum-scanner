@@ -1,0 +1,15 @@
+{
+ "WF2_DESIGN.md": "bf4c8d7d2596ff397918c7cc35dd5289a6942c88b565b1fb4243b5cc9da779e5",
+ "wf2_common.py": "a1a6fd45c845061ea3d48e9a475afa9c8b72ca1a7cac6365b3d896c8c372b056",
+ "wf2_features.py": "4b1c9919df794e3cfb610d12f438b27a8ca4e12ec0c50b2fd3abc8d81fd806d3",
+ "wf2_mine.py": "91c8f2e64a31ce1f6d685408f56953123391e82c90e0124920814c62b79b74d0",
+ "wf2_holdout.py": "77326c4a64db7d4c0bd1952ca6110234c0d7d4f2ea898130452ea0f842ef080e",
+ "frozen/s1_rule.json": "b50f0a6e07b36d9ac40c787f91fbb78e842d1ddab6c69ace623a4ae5291d5613",
+ "frozen/s2_spec.json": "27c4494da53cac86e13c2b6241335050a54232d6f831fbc77bb530ffdc876cbb",
+ "frozen/s2_model.pkl": "0b0e06cfacb99a4876717c6aa731d99564e971a0b890c682702fa0ec1cf71cb2",
+ "frozen/s3_spec.json": "8920e901abd4d76ff425f7f5d1f60002a88cd4c9da2ceaf6ca0660bd5a34aa82",
+ "frozen/s4_spec.json": "352b9ba8e3cbefd07ada43dee8370367a3030303e7d01a9f07e07a146072ce46",
+ "frozen/s4_model.pkl": "eeca0ea885f04a4788ced6244ca3513af9242ef1cb27fb53f26ea492fe15c820",
+ "wf2/cand_holdout.pkl": "5db29b00e69bd3b90ab6f601fa660cdf94c9818c7a7dd55aa8ebf721800efed5",
+ "wf2/week_holdout.pkl": "656f6b8f852d57d9211febe44d721d0f99f77dd1b16b6a2c162f456830a33a19"
+}

@@ -1,0 +1,302 @@
+RED TEAM - PREREG_WF1.md (DRAFT v1) + wf1_run.py / wf_common.py / build_events.py / build_tables.py
+Date 2026-10-03. Reviewer did not run wf1_run.py in any mode and computed no forward return of any
+event, signal or stock. Data was loaded only for structure, dtypes, dates and counts. make_events()
+was called on insider_purchases.pkl (event construction only, no prices) to get registered-event counts.
+Line numbers refer to the files as read today.
+
+Counts: 2 BLOCKER, 5 MAJOR, 19 MINOR. Section D lists what was verified CLEAN; section E what could
+not be verified.
+
+====================================================================================================
+A. BLOCKERS
+====================================================================================================
+
+1. BLOCKER - build_events.py L42-44 (`if bars is None: ... continue`), wf1_run.py (no code at all for the
+   bound), PREREG "Survivorship bound" + "counts of events lost".
+   What: a purchase filing whose issuer has no price series never enters insider_purchases.pkl, so the
+   engine cannot see it, count it, or bound it. The registered "lost-event count by year" and the
+   "-100% bound" are not implemented anywhere, and cannot be implemented from the table the engine
+   reads. The engine's only count ("registered events N, tradeable M") mixes price/ADV-ineligible events
+   with missing-bar events and is taken AFTER the match_rate filter, so series lost to validation are
+   invisible too.
+   Scale (officer/director original Form 4 purchase filings, value >= $25k, lag 0-10d; from
+   insider_trans.pkl, no price filter possible):
+                 2026 survivor   FMP has bars   FMP returned nothing   not fetched yet   bad symbol
+     CONF_B          31.1%          11.2%            10.9%                 44.9%            1.9%
+     DISC            45.7%          18.1%             4.4%                 31.0%            0.8%
+     CONF_A          65.9%          12.2%             0.5%                 20.7%            0.7%
+   FMP hit rate so far: 903 of 1,679 fetched pairs (54%). insider_purchases.pkl is also stale: it was
+   built when 211 delisted keys had bars; bars_delisted now holds 905. In the current event table only
+   82 of 2,940 CONF_A U events and 147 of 1,643 CONF_B U events are delisted names.
+   How it bites: a 2008 cluster buy in an issuer that died in 2011 and that FMP does not serve is
+   simply absent. WF-1/WF-2 are then means over "issuer still listed in 2026, or FMP happens to carry
+   it and its prices validate". Nothing in the output tells the reader how many events that removed,
+   so the registered bound cannot be produced after the fact without new, unhashed code.
+   Also: a -100% bound over all series-less filings is uncomputable as worded, because eligibility
+   (>= $5, >= $10M ADV) is unknown without bars; most series-less issuers would be ineligible.
+   Smallest fix: (a) in build_events keep series-less filings as rows with key, `has_series=False`
+   (match_rate NaN) instead of `continue`; (b) in run() write a per-year table for each event set:
+   registered / no series / series fails match / ineligible at s / no bar at s+1 / tradeable; (c)
+   implement the bound in code and say in prose which events it covers (e.g. series-less events
+   whose Form 4 price >= $5, assigned -100% and, separately, the control mean); (d) rebuild
+   insider_purchases.pkl after the fetch ends and before hashing.
+
+2. BLOCKER (lock-blocking) - wf1_run.py L74 `self.elig[:, spy] = False`; L377 news8k_all.pkl.
+   What: the installed pandas is 3.0.1 (copy-on-write always on). `elig.values` is a read-only array,
+   so L74 raises "ValueError: assignment destination is read-only" inside Panel.__init__ (reproduced
+   on a synthetic frame). There is no panel_cache.npz and no out/ directory: the engine has never
+   executed end to end in this environment. run() also hard-requires news8k_all.pkl, which does not
+   exist, so --selftest cannot run today either.
+   How it bites: the registration requires the selftest before the lock. Hash-locking code that has
+   never run guarantees a post-lock code change (this crash, plus whatever lies behind it), which
+   voids the hash.
+   Smallest fix: `self.elig = elig.to_numpy(copy=True)` (and the same for any array later written);
+   finish fetch_8k_extra.py; run --selftest end to end; only then hash. Also L388
+   `int(np.sign(c5["mean"]))` raises on NaN (WF-5 with < 20 dates): guard it.
+
+====================================================================================================
+B. MAJOR
+====================================================================================================
+
+3. MAJOR - wf1_run.py level_stats L240-251, verdict L425-427.
+   What: the WF-1/WF-2 p-value that enters Holm, and the whole AMBER path for level cells
+   (`soft = mean > 0 and same_b and holm_p < 0.10`), rest on raw excess over SPY. The control-adjusted
+   p (`cp`, L244) is computed and discarded. Only GREEN looks at controls (ctl_lo > 0).
+   How it bites: the event sample is mostly 2026 survivors of an equal-weighted small/mid-cap
+   universe (finding 1). Random eligible survivor names have a non-zero mean excess over SPY for
+   reasons unrelated to insiders (survival conditioning, size tilt, period). If that baseline is
+   positive in both CONF_A and CONF_B, WF-1 reaches AMBER with no insider effect at all; if it is
+   negative in CONF_A (mega-cap-led SPY), a real effect is masked. The "same sign in B" gate for level
+   cells inherits the same baseline and is close to vacuous.
+   Smallest fix: make control-adjusted excess the tested statistic for WF-1/WF-2 (p = max of quarter
+   and day cluster on ctl63), keep SPY excess as a reported gate; require ctl mean > 0 (and same sign
+   of ctl mean in B) for AMBER. Report the selftest level mean as the artefact baseline.
+
+4. MAJOR - boot_mean / boot_diff, level_stats L241-243, diff_stats L263-264.
+   What: clusters are entry quarters (and entry days) resampled as independent. A 63-session hold is
+   one quarter long, so every event's return window lies partly (on average half) in the NEXT
+   quarter: adjacent quarter clusters share return days and the common small-cap-vs-SPY factor. Day
+   clusters overlap even more, so the quarter interval is the binding one and it is too narrow.
+   Second, there are only 26 quarter clusters in CONF_A (24 in DISC) and they are very unequal: WF-1
+   CONF_A registered events per quarter run 1 / 88 / 253 (min / median / max); one quarter holds 11%
+   of all events. A percentile bootstrap on ~25 unequal clusters under-covers.
+   How it bites: entries late in 2020Q1 and early in 2020Q2 ride the same rebound; the bootstrap
+   counts that as two independent confirmations. Intervals and p-values are optimistic by an amount
+   that grows with the common-factor share of the excess.
+   Smallest fix: add a third scheme and take the widest of three: moving-block bootstrap over
+   consecutive quarters with block length 2 (or half-year clusters). State it in the prose. Using
+   control-adjusted excess as the statistic (finding 3) also removes most of the common factor.
+
+5. MAJOR - evaluate L198-209 with PREREG "Known limits" (controls are 2026 survivors only).
+   What: "conservative for a long rule" holds for a level, not for a difference between arms. The
+   survivor-only control pool is biased upward by an amount that depends on the state: in DOWN /
+   after-drop states many names later die, so the surviving controls are the ones that recovered and
+   their mean is inflated far more than in the UP state. Events include (some) delisted names.
+   How it bites: WF-3 (UP minus DOWN, two-sided, control-adjusted): the DOWN arm's control-adjusted
+   excess is pushed down more than the UP arm's, so the difference is pushed toward "UP is better"
+   with no insider effect. WF-4 is pushed against its hypothesis (drop arm penalised), WF-6 is
+   roughly neutral (both arms survivor events). The favoured-arm gate limits but does not remove a
+   false WF-3 pass.
+   Smallest fix: pre-register that each difference cell must also hold with the same sign on
+   survivor-only events (events and controls then carry the same conditioning), and report both; or
+   test WF-3/WF-4 on SPY excess and control-adjusted excess and require agreement.
+
+6. MAJOR - build_events.py L46-52, L71 (`match_rate`, `match_n` from the issuer's full trade history),
+   wf1_run.py qualifying L124.
+   What: a series is accepted on trades dated after the event as well as before, and on split
+   factors dated after the event (raw prices are rebuilt from every later split). It is the only
+   filter in the engine that reads post-event information.
+   Scale: among officer/director filings >= $25k, rate < 0.70 removes 15% of delisted-issuer filings
+   (689 of 4,575) but 3.5% of survivor filings (2,140 of 61,567). match_n < 5 is small today (176
+   filings) but the 46k not-yet-fetched filings are the low-activity issuers where it will bind.
+   How it bites: (a) an issuer with a wrong or missing later reverse-split record fails the match for
+   its pre-split trades and all its events vanish; reverse splits follow bad outcomes. (b) a
+   short-lived issuer whose insiders made 3 trades and then the company failed never reaches 5
+   trades; the same event in a company that lived on and accumulated sales passes. Both drop bad
+   outcomes preferentially on the side of the sample that carries the survivorship correction.
+   Smallest fix: compute match_rate / match_n per event from trades with trans_date <= that event's
+   filing date (expanding), keep the 0.70 / 5 thresholds; report events removed by each cause per
+   year (see finding 1b). If n < 5 point-in-time, fall back to requiring the event's own trades to
+   price inside the range (px_ok_share already does this).
+
+7. MAJOR (false-negative direction) - level_stats L247-254, gate `top5_share <= 0.30`.
+   What: the share is top-five names' summed excess divided by the NET sum of all excess. Net sum =
+   n x mean, while the top five of several hundred 63-session small-cap excess returns sum to
+   several hundred percent regardless of the mean.
+   How it bites (arithmetic, assumed not measured: top-5 sum ~ 4 to 6, i.e. 400-600%): n = 300 with a
+   true mean of +3% gives a net sum of 9, share ~ 45-65%: FAIL. Passing needs n x mean >= ~15-20,
+   i.e. about 700 events at 3% or 1,000 at 2%. The gate therefore overrides the registered n >= 300
+   and makes GREEN on WF-1/WF-2 depend mostly on n. CONF_A WF-2 has 1,366 registered events BEFORE
+   the $5 / $10M eligibility cut.
+   Smallest fix: gate on `mean_ex_top5` (already computed) having a bootstrap lower bound > 0, or
+   define the share against the gross sum of positive excess. Decide before the lock, not after DISC.
+
+====================================================================================================
+C. MINOR
+====================================================================================================
+
+8. MINOR - run() L360-365 `blocked[max(s-63,0):s+64, j]`. The control draw excludes names that will have
+   an insider event in the NEXT 63 sessions: future information in the control set. Insider buys
+   follow falls, so names about to fall are removed from the pool; control mean biased up (against
+   the event). Small (2,015 names, 6,102 events over 22 years). Fix: block only [s_event, s_event+63]
+   or state the direction in the prose.
+
+9. MINOR - build_events.py L33-34, L84 (`routine`). The lookup is backward in TRANSACTION date, not in
+   filing date. 15,158 of 833,099 purchase rows (1.8%) were filed > 300 days after the trade, and
+   `hist` includes 4/A rows; a purchase reported late can make an earlier-filed event "routine"
+   retroactively. Fix: key hist to the earliest filing_date per (owner, year, month) and require it
+   < the event's filing date.
+
+10. MINOR - build_events.py L81-82 (`pct_increase`), wf1_run.py L152-153. 1,251 of 3,008 WF-2 events
+    (42%) qualify only through the pct path. `shares_after` is the LAST row's balance for one
+    ownership line while `shares` sums all lines (direct and indirect): a filing with 15k direct
+    (balance 1.0M) and 5k in a trust (balance 30k, last row) reads prior = 10k, +200%: false
+    conviction. prior <= 0 gives NaN and excludes 538 CEO/CFO/chair filings of $100-500k, including
+    first-time buyers, which the prose ("raises their reported holding by >= 10%") would include. 53
+    pct-only filings show >= 500%. Fix: compute per ownership line (same direct/indirect flag) or
+    only on single-line filings; say in prose how a zero prior is treated.
+
+11. MINOR - qualifying L126 dedupe on (cik, last_trans, shares, value). 1,308 filings are dropped in
+    1,023 groups; in 809 groups every filing is single-owner with a different owner_cik. These are
+    either one trade reported by two related persons or two insiders buying identical lots; the code
+    cannot tell and collapses both, which removes same-day multi-insider buys from the cluster test.
+    Prose says only "joint-filer duplicates". Also `sort_values("filing_date")` has no tie-break, so
+    which owner survives is order-dependent. Fix: add accession to the sort; dedupe only when at
+    least one filing is indirect (direct_shares < shares); state the rule.
+
+12. MINOR - build_tables.py L81-83 `owner_cik = first`. For joint filings the "insider" is whichever
+    owner is listed first; 6.4% of WF-1 completing filings are joint, 11% of WF-1 and 17% of WF-2
+    events carry the 10%-owner flag (fund with a board seat; relationship flags are OR-ed across
+    joint filers). Two forms from one filing group with a different first owner count as "2 distinct
+    insiders". Fix: distinctness on the sorted tuple of all owner CIKs, or drop n_owners > 1 from the
+    cluster count.
+
+13. MINOR - build_events.py L86-88 title regexes. `chair` matches vice chair (226 of 1,873 chair-only
+    filings), committee chair, former chair; `\bceo\b|chief executive` matches "former CEO", "CEO of
+    subsidiary". Title is empty on 93% of director-only filings, so non-executive chairs are mostly
+    missed. Fix: exclude vice|committee|former|emeritus; state it.
+
+14. MINOR - build_events.py L19, L48 vs PREREG "priced inside the day's range". Code allows 5% outside
+    the range, which admits follow-on offerings priced 2-5% under the day's low. Fix the prose or the
+    tolerance. 45 qualifying filings exceed $100M (max $999.96M); no value cap is registered.
+
+15. MINOR - refractory L129-136, REFRACTORY_DAYS = 91. 92 calendar days span 59-65 sessions (22% of
+    start dates give < 63). 26 U events (22 WF-1, 6 WF-2) sit < 63 sessions after the issuer's
+    previous kept event, so holds overlap, contrary to "no stacking of overlapping holds". Fix:
+    refractory in sessions (s_new - s_last >= 63).
+
+16. MINOR - WINDOWS L22-23. No embargo between windows. DISC entries in Oct-Dec 2019 are held into
+    Mar 2020, and CONF_B entries in late 2013 into 2014: discovery, which may be examined, contains
+    return days that also sit in CONF_A's first quarter cluster. Fix: end DISC entries 63 sessions
+    before 2020-01-01 (and CONF_B before 2014-01-01), or say so.
+
+17. MINOR - wf5 L308-313, verdict L436-438. "Favoured decile, held long net of costs, beats the
+    eligible universe": both sides are charged the same per-name cost, so cost cancels and the gate
+    is a gross comparison. A decile re-formed every 5 sessions with 21-session holds has turnover the
+    universe does not. Fix: compare top_net with the universe's gross excess.
+
+18. MINOR - run() L386-389 sign file. If WF1_wf5_sign.json is missing, CONF runs silently use +1. A
+    later DISC re-run overwrites it. It is not in the hash list. Fix: raise if missing on CONF_*;
+    hash it at the confirmatory lock.
+
+19. MINOR - run()/Panel. "Run once" is not enforced: a second CONF_A run overwrites the first.
+    panel_cache.npz is read if present with no check against bars/ and is not in the hash list.
+    Fix: refuse to run CONF_* when its cells file exists; hash or rebuild the cache.
+
+20. MINOR - fetch_delisted.py get() L48-63, one() L96-104. Any failure after four tries (network,
+    429) returns None and is written to delisted_meta.jsonl as n = 0, which marks the pair done
+    forever: transient errors become permanent "no data" (776 of 1,679 pairs are n = 0; the split is
+    unknown). If the dividend-adjusted call fails, adj silently falls back to close while SPY is total
+    return. Fix: store the HTTP status; re-try n = 0 pairs once at the end; flag series without
+    adjClose.
+
+21. MINOR - delisted_event L113-117, fwd L86. A hold cut short by the series ending is closed at the
+    last bar with no delisting return, and its control comparison uses controls held the full 63
+    sessions. 35 of 211 delisted keys end within 95 days of the issuer's last purchase filing; some
+    end BEFORE it (min -12 days), and those events are dropped at L110 with no count. Fix: report
+    truncated events separately with a -30% / -100% sensitivity on non-merger endings; count the L110
+    drops.
+
+22. MINOR - nonews_flag L346 uses the 8-K filing_date. 7.6% of 8-Ks in news8k_events.csv have
+    filing_date after the acceptance date (after-hours acceptance). An 8-K accepted on the evening of
+    the Form 4 filing day is public before the entry open but is not counted, so the event is
+    labelled "no news". No look-ahead; misclassification toward the tested arm. Fix: use et_date
+    where available, or state the convention.
+
+23. MINOR - selftest (L171-175, L381-382, PREREG "every cell must be ~ 0"). Level cells of random
+    survivor names versus SPY net of costs are not expected to be zero (finding 3); only ctl and
+    difference cells are. No numeric tolerance is registered, and the delisted path is never
+    exercised. Fix: register the criterion (e.g. |ctl mean| inside its 95% interval, difference cells
+    Holm p > 0.10) and treat the level mean as the reported baseline.
+
+24. MINOR - verdict L434. AMBER for difference cells also requires the favoured arm's mean > 0; the
+    prose does not. L431: the favoured arm must exist as a secondary cell (>= 30 events). Align prose.
+
+25. MINOR - build_tables.cik_map L36-48. An issuer whose CIK changed (reorganisation) has no 2026
+    ticker under its old CIK and is fetched from FMP by symbol; it is then flagged `delisted` (so
+    n_delisted and U_delisted_only overstate non-survivors) and its 2026 survivor column can be drawn
+    as its own control (L200 excludes by key only). Second share classes of an event issuer can be
+    controls too. Fix: block the survivor column whose symbol equals the delisted key's symbol.
+
+26. MINOR - feasibility of the n gates. Registered events BEFORE the price/ADV cut: CONF_A WF-1 2,293,
+    WF-2 1,366, U 2,940. After the cut, WF-2 >= 300 and >= 150 per arm for DOWN-trend, no-news-drop
+    and finite-z arms are in doubt. A cell that cannot meet its n gate still takes a Holm slot.
+    Fix: count eligible events per arm per window (no returns needed) before the lock and drop or
+    re-scope cells that cannot pass. ROUTINE placebo: 201 registered events in CONF_A, too few to
+    show "~ 0".
+
+====================================================================================================
+D. VERIFIED CLEAN (item 1 checks and others) - and how
+====================================================================================================
+
+- Signal day s vs filing date vs entry: sidx() = last session <= filing date; evaluate enters at s+1.
+  Checked on all 154,919 rows: entry_date == cal[s+1], entry_date > filing_date in every row, 0 NaT.
+  99.8% of filing dates are sessions. Form 4 filing dates include submissions up to 22:00 ET the same
+  day, all public before the next open. Calendar runs to 2026-10-02, so a 2026-04-01 entry has its
+  full 63 sessions.
+- Rolling windows: adv (20), sma (200), 252-high, r20 (shift 20), dark-flow s5 / z / sane are all
+  trailing and indexed at s (code reading). r20 cannot be NaN for an eligible name (sma needs 200
+  consecutive closes), and both NaN comparisons with DROP resolve to False. float32(-0.15) <= -0.15
+  is True.
+- Raw (as-traded) price for the $5 floor: AAPL 2020-08-28 raw_close 499.23, close 124.81, f = 4:
+  the split un-adjustment is right; later splits are used only to restore the price as traded.
+- Returns: ao = Open x Adj/Close and acf = ffilled Adj; holding period is open of s+1 to close of
+  s+63 = 63 sessions; `trunc` agrees between survivor (last < s+h) and delisted (x < e+h-1) paths;
+  SPY is measured over the identical span in both paths.
+- last_bar: written by build_events, never read by the engine (grep).
+- Refractory: strictly backward on filing_date, applied on the full history before the window
+  filter, so the event set does not depend on window edges.
+- Cluster definition: window is [d_i - 30d, d_i] on filing dates, backward only; same-day filings
+  are included and are public before the next open. Dedupe keeps the earliest filing.
+- WF-5 sign file: written only when window == DISC and not selftest; CONF runs only read it.
+- entry_date window filter: datetime64[us] against the string bounds works under pandas 3 (run via
+  make_events output); event frames built from lists of rows keep datetime/int/bool dtypes.
+- routine: lookup is (owner, year-1..3, month): backward by transaction date (caveat: finding 9).
+- 8-K window: only filings with filing_date <= Form 4 filing date are counted: no look-ahead
+  (caveat: finding 22). news8k_events.csv cik is int64, matching d.cik.
+- FMP delisted bars: close is split-adjusted (median |log jump| at 60 split bars 0.03) and volume
+  looks split-adjusted (no volume step with the split ratio), so raw_volume = volume / f is right.
+  Fetch window is first filing - 400d to last filing + 400d: enough history for the 200-session
+  filters and no artificial truncation inside a 63-session hold.
+- ADV decile for delisted events: at most one rank off the panel's definition; immaterial.
+- darkflow.pkl: unique (date, symbol), all dates on the calendar, short <= total everywhere.
+- Holm implementation (step-down with running max, NaN -> 1) is correct. NW(4) Bartlett weights
+  cover the 21-session / 5-session overlap (4 lags). boot_diff resamples quarters jointly for both
+  arms. Boolean masks in run() (nn, cov, sup, zj) are built from d row by row: lengths match.
+- verdict() gates match the prose for level, difference and WF-5 cells except findings 3, 17, 24.
+
+====================================================================================================
+E. COULD NOT VERIFY
+====================================================================================================
+
+- Anything that needs the engine to run: Panel build, dark_z, evaluate, control availability
+  (n_ctrl), eligible-event counts and arm sizes. The engine crashes at L74 under pandas 3.0.1.
+- WF-4 path: news8k_all.pkl does not exist yet (dtype of cik after the concat, coverage, date span
+  for delisted issuers).
+- Final delisted coverage: the FMP fetch is still running and insider_purchases.pkl predates most of
+  it; every count in this file that involves delisted names will move.
+- Whether match-rate failures are wrong series or wrong split records (finding 6): needs a per-issuer
+  look at splits versus failed trades, not done.
+- The sign and size of the random-survivor baseline versus SPY (finding 3): that is an outcome; the
+  selftest will show it.
+- Whether n = 0 FMP pairs are true "no data" or transient failures (finding 20).
