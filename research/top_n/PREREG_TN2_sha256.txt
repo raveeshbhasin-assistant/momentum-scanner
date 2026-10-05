@@ -1,0 +1,5 @@
+ec6dc1114e4ff686b0b9006f0a4f232c3a42fece8a2cf9509cf38b87c20bd2ef *PREREG_TN2.md
+9ccda88db4f4e4ec21fa9adf72ec300ccaf065079475ad74fc9631b19733a208 *research/top_n/PREREG_TN2.md
+b44aa12179f777d2b8b56ab93143bbb40632e7bf6efd1695b782d9232ced582b */c/dev/Trader-v3-data/top_n/tn2_promoted.json
+74b8dec770110c6a905e2c29b9c6fc64eae05cdbdd3ff86ca622aeb7c280e359 *research/top_n/tn2.py
+357c8b01dd4d456aec86eb2d99a4a8a47009dc03ddfcf4b0170dcbcae7dfbcf5 *research/top_n/PREREG_TN3.md
