@@ -7,7 +7,31 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.11.1 — 2026-10-08 **(current)**
+## v1.11.2 — 2026-10-08 **(current)**
+
+**What** Ignition tags a fire whose breakout week was really one session:
+a **one-day gap** pill on the position, in the "since the previous run"
+alerts and in the fire's run-log line, with the day and its size on hover.
+The rule: the largest single session of the ignition week is at least two
+thirds of the 5-session return (`GAP_SHARE` in `ignition/scan.py`). The
+status strip now says the scan runs twice a day (after the close and 3am ET).
+
+**Why** PTC fired on 2026-10-07 with +38% over five sessions, of which
++33.5% was the Oct 5 gap and the closes since have barely moved. That is the
+shape of deal news or a guidance reset, not the compounding move the signal
+was built on. Flag only: gap fires sit inside the backtest and have not been
+tested separately, so nothing changes in the ledger or the sell rule.
+
+**Verified** `pytest` green (new test: a five-session week is not tagged, a
+one-session week is, the run-log line carries the gap, `summary.gap_open`
+lists it; page render shows the pill). Template Jinja-parsed.
+
+**Rollback** Revert the commit. Older `latest.json` files without the gap
+fields render unchanged (the pill is conditional).
+
+---
+
+## v1.11.1 — 2026-10-08
 
 **What** The Ignition scan of record runs twice a day: after the close
 (21:30 UTC, as before) and again before the next open (07:00 UTC, 3am ET). The scan

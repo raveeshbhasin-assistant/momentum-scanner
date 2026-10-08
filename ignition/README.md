@@ -88,6 +88,18 @@ together with the fraction to sell to get back to 2×.
   cost of about 0.5 pp CAGR. It is risk control, not a return edge. It never
   closes or resizes anything in the ledger.
 
+## One-day gap tag (v1.11.2, flag only)
+
+- A fire whose ignition week was really one session is tagged **one-day
+  gap**: the largest single session is at least two thirds of the 5-session
+  return (`GAP_SHARE = 0.67`). PTC 2026-10-07: +33.5% on Oct 5 out of +38%.
+- **Why:** a single gap with flat closes around it is the shape of deal news
+  or a guidance reset, not the compounding move the signal was built on
+  (`research/ignition_discovery/`: catalysts do the work, but over weeks).
+  It is a prompt to check the news before acting. Gap fires are inside the
+  backtest and were not tested separately, so the tag changes nothing in
+  the ledger or the sell rule.
+
 ## Operation
 
 - **Scan of record:** `.github/workflows/ignition-daily.yml` runs

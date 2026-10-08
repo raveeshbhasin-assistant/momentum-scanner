@@ -91,6 +91,9 @@ WEIGHT_CAP = 2.0                  # 2x cap review: weight vs an equal share of t
 MIN_COVERAGE = 0.97               # refuse to publish if fewer tickers than this have a last close
 MATCH_DAYS = 7                    # carry_forward: same ticker, fire dates this close = same position
 CLOSE_HOUR_ET = 16                # a bar dated today is a live bar until this hour (US close 16:00 ET)
+GAP_SHARE = 0.67                  # "one-day gap" tag: the ignition week's largest session is >= this share of
+                                  # the 5-session return (PTC 2026-10-07: +33.5% of +38.0%). Flag only: gap fires
+                                  # are inside the backtest and were not tested separately.
 
 BACKTEST = {
     "window": "2016-2026, S&P 500+400 (903 tickers), 2.18M ticker-days, 2,271 fires",
@@ -203,6 +206,20 @@ def signals(close: pd.DataFrame, vol: pd.DataFrame) -> dict:
             "hi252": close.rolling(252).max()}
 
 
+def biggest_day(closes: np.ndarray, fire: int) -> tuple[int, float, float]:
+    """The ignition week's largest single-session move: (session index, its
+    return, its share of the 5-session return). A fire that is one gap plus
+    nothing (deal news, a guidance reset) is not the compounding move the
+    signal was built on; the ledger tags it so the page can say so."""
+    seg = closes[fire - BASE_LAG:fire + 1]
+    daily = seg[1:] / seg[:-1] - 1
+    if len(daily) != BASE_LAG or not np.isfinite(daily).all():
+        return -1, np.nan, np.nan
+    k = int(np.argmax(daily))
+    r5 = seg[-1] / seg[0] - 1
+    return fire - BASE_LAG + 1 + k, float(daily[k]), float(daily[k] / r5) if r5 > 0 else np.nan
+
+
 def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[list, list]:
     """Replay every fire since LEDGER_START as a position. Returns (positions, events)."""
     dates = close.index
@@ -221,16 +238,21 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
                 continue
             fire = i
             base = C[fire - BASE_LAG, j]
+            gap_i, gap_ret, gap_share = biggest_day(C[:, j], fire)
+            gap = bool(np.isfinite(gap_share) and gap_share >= GAP_SHARE)
             pos = {
                 "ticker": tk, "fired": ds[fire], "fire_close": _px(C[fire, j]),
                 "fire_r5": _pct(R5[fire, j]), "fire_volr": _px(VR[fire, j]),
+                "gap": gap, "gap_day": ds[gap_i] if gap_i >= 0 else None,
+                "gap_ret": _pct(gap_ret), "gap_share": _pct(gap_share),
                 "base": _px(base), "entry_date": None, "entry": None,
                 "refires": 0, "last_fire": ds[fire], "last_refire": None, "exit_date": None, "exit": None,
                 "exit_reason": None, "sell_signal": None,
                 "checkpoint": None, "checkpoint_ret": None, "checkpoint_exit": None,
             }
             events.append({"date": ds[fire], "ticker": tk, "type": "FIRE",
-                           "detail": f"+{_pct(R5[fire, j])}% week on {_px(VR[fire, j])}x volume"})
+                           "detail": f"+{_pct(R5[fire, j])}% week on {_px(VR[fire, j])}x volume"
+                                     + (f"; one-day gap: {_pct(gap_ret):+.1f}% on {ds[gap_i]}" if gap else "")})
             for e in range(fire + 1, min(fire + 6, n)):   # first tradable open (skips a halt)
                 if np.isfinite(O[e, j]):
                     pos["entry_date"], pos["entry"] = ds[e], _px(O[e, j])
@@ -442,6 +464,7 @@ def summarize(positions: list, events: list, since: str | None, asof: str, recen
         # 6-month review: open positions flagged, and the whole ledger re-scored as
         # if every flag had been sold at the next open (same positions, same marks).
         "checkpoint_open": sorted(p["ticker"] for p in open_ if p.get("checkpoint")),
+        "gap_open": sorted(p["ticker"] for p in open_ if p.get("gap")),
         "checkpoint_whatif": _stats([p.get("whatif_ret") for p in positions]),
         "carried": sorted(p["ticker"] for p in open_ if p.get("carried")),
         "kept_closed": sum(1 for p in closed if p.get("kept")),

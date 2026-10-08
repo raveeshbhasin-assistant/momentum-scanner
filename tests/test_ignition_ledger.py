@@ -78,6 +78,46 @@ def test_refire_extends_position_and_flags_refired(monkeypatch):
     assert "REFIRE" in [e["type"] for e in events]
 
 
+def test_one_day_gap_fire_is_tagged_and_a_spread_week_is_not(monkeypatch):
+    close, open_, vol = _series(np.full(N, 0.0005))               # five sessions of ~2.8% each
+    positions, events = _run(close, open_, vol, monkeypatch)
+    p = positions[0]
+    assert p["gap"] is False and 15 < p["gap_share"] < 30            # the biggest day is ~1/5 of the week
+    assert "one-day gap" not in events[0]["detail"]
+
+    lr = np.full(N, 0.001)
+    lr[FIRE] += 0.28                                                # one +32% session, flat around it
+    v = np.ones(N); v[FIRE - 14:FIRE + 1] = 3.0
+    idx = pd.bdate_range("2025-01-01", periods=N)
+    close = pd.DataFrame({"T": 100 * np.exp(np.cumsum(lr))}, index=idx)
+    vol = pd.DataFrame({"T": v * 1e6}, index=idx)
+    positions, events = _run(close, close * 1.0, vol, monkeypatch)
+    p = positions[0]
+    assert p["gap"] is True and p["gap_share"] > 90 and p["gap_ret"] > 30
+    assert p["gap_day"] == str(idx[FIRE].date())
+    assert "one-day gap: +3" in events[0]["detail"]
+    out = ig.compute(close * 1.0, close, vol, None)
+    assert out["summary"]["gap_open"] == ["T"]
+    return out
+
+
+def test_page_renders_one_day_gap_tag(monkeypatch, tmp_path):
+    import json
+
+    import themes_web.app as web
+    from fastapi.testclient import TestClient
+
+    out = test_one_day_gap_fire_is_tagged_and_a_spread_week_is_not(monkeypatch)
+    (tmp_path / "latest.json").write_text(json.dumps(out))
+    (tmp_path / "runs.jsonl").write_text("")
+    monkeypatch.setattr(web, "_IGNITION_DIR", tmp_path)
+    monkeypatch.setattr(web, "start_scheduler", lambda: None)
+    page = TestClient(web.app).get("/ignition").text
+    assert re.search(r'<span class="pill GAP" title="\+3[0-9.]+% on 20[0-9-]+ was 9[0-9]% of the breakout week[^"<>]*">one-day gap</span>', page)
+    assert "one-day gap fires (check the news): T" in page
+    assert "weekdays after the close and 3am ET" in page
+
+
 def test_page_renders_from_scan_output(monkeypatch, tmp_path):
     import json
 
