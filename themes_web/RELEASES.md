@@ -10,7 +10,7 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 ## v1.11.1 — 2026-10-08 **(current)**
 
 **What** The Ignition scan of record runs twice a day: after the close
-(21:30 UTC, as before) and again before the next open (08:00 UTC). The scan
+(21:30 UTC, as before) and again before the next open (07:00 UTC, 3am ET). The scan
 now drops a bar dated today until 16:00 ET, so a run that drifts past the
 open can never score live intraday prices as a close.
 
