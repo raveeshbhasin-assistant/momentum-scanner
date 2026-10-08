@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python C:/dev/Trader-v3/.claude/hooks/pre_push_hygiene.py",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre_push_hygiene.py\"",
             "timeout": 15,
             "statusMessage": "Release-hygiene gate (git push detected)"
           }

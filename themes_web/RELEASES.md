@@ -7,7 +7,34 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.11.0 — 2026-10-05 **(current)**
+## v1.11.1 — 2026-10-08 **(current)**
+
+**What** The Ignition scan of record runs twice a day: after the close
+(21:30 UTC, as before) and again before the next open (08:00 UTC). The scan
+now drops a bar dated today until 16:00 ET, so a run that drifts past the
+open can never score live intraday prices as a close.
+
+**Why** PTC met all four rules at the 2026-10-07 close but the newest
+published scan was "as of 2026-10-06". GitHub starts the cron 3–4 hours
+late (runs landed 20:40–21:50 ET), and at that hour Yahoo had the day's bar
+for under half the universe, so the scan dropped the partial row and scored
+the previous session: five of the last seven runs were a day stale and one
+failed the 97% coverage check outright (719/903). The morning run sees the
+settled bars; the guard makes it safe if GitHub ever starts it late.
+
+**Verified** `pytest` green (new test: the live bar is dropped during the
+session, kept after the close and the next morning). PTC scored by hand on
+Yahoo's bars: 50-DMA crossed above the 200-DMA only on 2026-10-07
+(146.4 vs 145.4; 145.1 vs 145.3 the day before), 5-day return +38%, volume
+ratio 1.85× — a fire as of that close, entry at the 2026-10-08 open.
+
+**Rollback** Revert the commit; the second cron and the guard go together.
+The `ignition-data` branch gains one extra commit per weekday and nothing
+else changes shape (a re-run on the same data date reports nothing new).
+
+---
+
+## v1.11.0 — 2026-10-05
 
 **What** The Pullback page becomes **Signals** (`/signals`, "Signals" in the
 top bar; `/pullback` still works) and carries two rules.

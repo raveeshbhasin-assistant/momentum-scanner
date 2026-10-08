@@ -10,6 +10,11 @@ name: ignition daily scan
 on:
   schedule:
     - cron: "30 21 * * 1-5"   # 17:30 EDT / 16:30 EST — after the close either way
+    # GitHub starts cron jobs 3-4 hours late, and at ~21:00 ET Yahoo often has the
+    # day's bar for under half the universe, so the evening run frequently scores
+    # the previous session. A second run before the open picks up what it missed.
+    # scan.py drops today's live bar if this one ever drifts past 09:30 ET.
+    - cron: "0 8 * * 1-5"     # 04:00 EDT / 03:00 EST — before the open, after Yahoo settles
   workflow_dispatch: {}
   push:
     branches: [main]

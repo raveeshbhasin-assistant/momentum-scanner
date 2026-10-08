@@ -312,6 +312,21 @@ def test_carried_positions_are_left_out_of_the_cap_review_book():
     assert ps[0]["weight_x"] == 1.0 and ps[1]["weight_x"] is None
 
 
+def test_live_bar_for_a_session_still_open_is_dropped():
+    from datetime import datetime
+
+    idx = pd.bdate_range("2026-10-05", periods=3)                 # Mon..Wed, last row 2026-10-07
+    df = pd.DataFrame(1.0, index=idx, columns=["A"])
+    during = datetime(2026, 10, 7, 10, 30, tzinfo=ig.ET)           # a run that drifted past the open
+    o, c, v = ig.drop_unfinished_bar(df, df, df, now=during)
+    assert len(c) == 2 and str(c.index[-1].date()) == "2026-10-06" and len(o) == len(v) == 2
+    after_close = datetime(2026, 10, 7, 21, 15, tzinfo=ig.ET)      # the evening run keeps it
+    assert len(ig.drop_unfinished_bar(df, df, df, now=after_close)[1]) == 3
+    next_morning = datetime(2026, 10, 8, 7, 0, tzinfo=ig.ET)       # the morning run keeps yesterday
+    assert len(ig.drop_unfinished_bar(df, df, df, now=next_morning)[1]) == 3
+    assert len(ig.drop_unfinished_bar(df, df, df)[1]) in (2, 3)    # default clock: no crash
+
+
 def test_partial_download_is_refused():
     ig.check_coverage(_close_with([f"T{i}" for i in range(100)]), 100)          # 100% ok
     with pytest.raises(RuntimeError, match="refusing to publish"):

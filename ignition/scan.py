@@ -8,8 +8,10 @@ and writes ignition/data/{latest.json, runs.jsonl, history/<asof>.json}.
     python ignition/scan.py            # full scan (needs Yahoo access)
 
 Run of record: .github/workflows/ignition-daily.yml (weekdays after the
-close), which commits the data to the `ignition-data` branch so every run is
-kept in git. themes_web only reads that branch (scheduler.refresh_ignition).
+close and again before the next open: GitHub's cron fires hours late and
+Yahoo's end-of-day bars are often still partial in the evening), which commits
+the data to the `ignition-data` branch so every run is kept in git.
+themes_web only reads that branch (scheduler.refresh_ignition).
 
 SIGNAL (backtest 2016-2026, 903 tickers, 2.18M ticker-days — README.md):
     IGNITION = 5-day return > +12% AND 21-day avg volume > 1.5x its 126-day
@@ -88,6 +90,7 @@ CHECKPOINT_BAND = (0.0, 0.30)     # ... while the gain is inside this band (excl
 WEIGHT_CAP = 2.0                  # 2x cap review: weight vs an equal share of the held book
 MIN_COVERAGE = 0.97               # refuse to publish if fewer tickers than this have a last close
 MATCH_DAYS = 7                    # carry_forward: same ticker, fire dates this close = same position
+CLOSE_HOUR_ET = 16                # a bar dated today is a live bar until this hour (US close 16:00 ET)
 
 BACKTEST = {
     "window": "2016-2026, S&P 500+400 (903 tickers), 2.18M ticker-days, 2,271 fires",
@@ -146,11 +149,26 @@ def download(tickers: list[str]) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFra
         df = pd.concat(parts, axis=1)
         return df.loc[:, ~df.columns.duplicated()].sort_index()
 
-    o, c, v = join(opens), join(closes), join(vols)
+    o, c, v = drop_unfinished_bar(*(join(opens), join(closes), join(vols)))
     # Drop a trailing row only a handful of tickers have (a partial intraday bar).
     if len(c) > 1 and c.iloc[-1].notna().mean() < 0.5:
         o, c, v = o.iloc[:-1], c.iloc[:-1], v.iloc[:-1]
     check_coverage(c, len(tickers))
+    return o, c, v
+
+
+def drop_unfinished_bar(o: pd.DataFrame, c: pd.DataFrame, v: pd.DataFrame,
+                        now: datetime | None = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Drop a trailing bar for a session that hasn't closed yet.
+
+    During the session Yahoo serves today's live bar for every ticker, so the
+    "<50% have it" check below can't catch it, and a run that drifts past the
+    open (GitHub's cron fires hours late; the morning run exists because the
+    evening one often sees only a partial day) would score intraday prices as
+    a close. A bar dated today in ET is kept only once the close has happened."""
+    now = (now or datetime.now(ET)).astimezone(ET)
+    if len(c) and c.index[-1].date() == now.date() and now.hour < CLOSE_HOUR_ET:
+        return o.iloc[:-1], c.iloc[:-1], v.iloc[:-1]
     return o, c, v
 
 

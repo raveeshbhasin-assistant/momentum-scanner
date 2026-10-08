@@ -91,7 +91,13 @@ together with the fraction to sell to get back to 2×.
 ## Operation
 
 - **Scan of record:** `.github/workflows/ignition-daily.yml` runs
-  `python ignition/scan.py` weekdays at 21:30 UTC, after the close. It
+  `python ignition/scan.py` weekdays at 21:30 UTC, after the close, and
+  again at 08:00 UTC, before the next open. GitHub starts cron jobs hours
+  late, and in the evening Yahoo often has the day's bar for under half the
+  universe, so the evening run frequently scores the previous session; the
+  morning run picks up what it missed (v1.11.1). The scan drops a bar dated
+  today until 16:00 ET, so a run that drifts past the open never scores live
+  prices as a close. It
   commits `latest.json`, `runs.jsonl` (one line per run) and
   `history/<asof>.json` to the **`ignition-data` branch**. Git keeps every
   run, and pushes to that branch don't redeploy Railway. You can also run
