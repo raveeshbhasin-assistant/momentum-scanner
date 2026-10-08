@@ -1,6 +1,6 @@
 {
  "asof": "2026-10-07",
- "scanned_at": "2026-10-08 10:33 ET",
+ "scanned_at": "2026-10-08 10:35 ET",
  "summary": {
   "open": 35,
   "by_status": {
@@ -44,18 +44,9 @@
   "recent_sells": [
    "RMBS"
   ],
-  "since": "2026-10-06",
-  "new_events": [
-   {
-    "date": "2026-10-07",
-    "ticker": "PTC",
-    "type": "FIRE",
-    "detail": "+38.0% week on 1.85x volume"
-   }
-  ],
-  "new_fires": [
-   "PTC"
-  ],
+  "since": "2026-10-07",
+  "new_events": [],
+  "new_fires": [],
   "new_sells": [],
   "new_expired": [],
   "new_checkpoints": [],
