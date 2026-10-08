@@ -7,7 +7,40 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.11.2 — 2026-10-08 **(current)**
+## v1.11.3 — 2026-10-09 **(current)**
+
+**What** The Pullback scan of record no longer fails on Yahoo's late or
+partial end-of-day data. A trailing bar that not every fund has a close for
+is dropped rather than scored (`pullback/scan.settle`); a ticker whose
+download fails is retried instead of published as empty (yfinance prints a
+notice and returns NaN rather than raising); downloads run single-threaded
+(eight tickers) so yfinance's first-run timezone cache can't lock. Like
+Ignition, the job now runs a second time at 07:00 UTC (3am ET), before the
+next open, once Yahoo's bars have settled.
+
+**Why** Two of the last three scheduled runs failed and the page sat at
+"as of 2026-10-06". 2026-10-06: `['QQQ']: OperationalError('database is
+locked')` from yfinance's sqlite cache under threaded first use; the scan
+saw NaN for QQQ and `check_coverage` refused. 2026-10-08 01:19 UTC (21:19
+ET, GitHub started the 21:40 UTC cron 3.6 hours late): Yahoo served the
+2026-10-07 row with empty prices for all eight funds, so `check_coverage`
+refused again. Nasdaq Leaders at 01:21 UTC saw the same empty row and
+quietly published "as of 2026-10-06" because it already drops empty rows.
+
+**Verified** `pytest` green (two new tests: `settle` drops an empty or
+partial trailing row and keeps a complete one; `download` retries when a
+ticker comes back empty and calls yfinance with `threads=False`). Yahoo is
+not reachable from the cloud session, so the live download was not re-run
+here. A manual `workflow_dispatch` run at 23:07 UTC on 2026-10-08 (19:07 ET,
+bars settled) published "as of 2026-10-08" on the old code, which also
+confirms the empty row was Yahoo's timing, not a code or schema change.
+
+**Rollback** Revert the commit. The `pullback-data` branch gains one extra
+commit per weekday (the morning run) and nothing else changes shape.
+
+---
+
+## v1.11.2 — 2026-10-08
 
 **What** Ignition tags a fire whose breakout week was really one session:
 a **one-day gap** pill on the position, in the "since the previous run"

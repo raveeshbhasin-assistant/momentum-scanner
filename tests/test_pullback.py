@@ -91,6 +91,44 @@ def test_coverage_and_unfinished_session_guards():
     assert len(pb.drop_unfinished_session(o, c, a, evening)[1]) == len(c)
 
 
+def test_settle_drops_a_trailing_bar_not_every_fund_has():
+    o, c, a = _frames(np.array([]))
+    # Yahoo's post-close placeholder: the day's row with empty prices for every fund
+    blank = c.copy(); blank.iloc[-1] = np.nan
+    o2, c2, a2 = pb.settle(o, blank, a)
+    assert len(c2) == len(c) - 1 and c2.index[-1] == c.index[-2] and len(o2) == len(a2) == len(c2)
+    # only part of the list has settled: the row is not scored either
+    part = c.copy(); part.loc[part.index[-1], ["QQQ", "RSP"]] = np.nan
+    assert len(pb.settle(o, part, a)[1]) == len(c) - 1
+    # a complete last row is kept; an empty row in the middle is dropped too
+    assert len(pb.settle(o, c, a)[1]) == len(c)
+    hole = c.copy(); hole.iloc[10] = np.nan
+    assert len(pb.settle(o, hole, a)[1]) == len(c) - 1
+
+
+def test_download_retries_when_a_ticker_comes_back_empty(monkeypatch):
+    """yf.download does not raise for a ticker that failed; the scan must retry, not publish."""
+    import sys, types
+    o, c, a = _frames(np.array([]))
+    calls = []
+
+    def fake_download(tickers, **kw):
+        calls.append(kw)
+        cols = pd.MultiIndex.from_product([tickers, ["Open", "Close", "Adj Close"]])
+        d = pd.DataFrame(index=c.index, columns=cols, dtype=float)
+        for tk in tickers:
+            d[(tk, "Open")], d[(tk, "Close")], d[(tk, "Adj Close")] = o[tk], c[tk], a[tk]
+        if len(calls) == 1:
+            d[("QQQ", "Close")] = np.nan                       # "database is locked" on 2026-10-06
+        return d
+
+    monkeypatch.setitem(sys.modules, "yfinance", types.SimpleNamespace(download=fake_download))
+    monkeypatch.setattr(pb.time, "sleep", lambda s: None)
+    _, got, _ = pb.download()
+    assert len(calls) == 2 and calls[0]["threads"] is False
+    assert got["QQQ"].notna().all() and len(got) == len(c)
+
+
 def test_page_renders_from_scan_output_and_without_data(monkeypatch, tmp_path):
     import themes_web.app as web
     from fastapi.testclient import TestClient

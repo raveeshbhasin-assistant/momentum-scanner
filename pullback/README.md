@@ -55,11 +55,17 @@ and flagged `live: false`; later ones are recorded as they happen.
 
 - **Append-only.** A signal or closed trade recorded by an earlier run is never
   dropped or re-priced (`carry_forward`), even if Yahoo revises its bars.
-- **No thin publishes.** The scan refuses to write if any fund's latest bar is
-  missing or the data is more than five days old (`check_coverage`), and it
-  drops a half-finished session when run during market hours.
+- **No thin publishes.** A trailing bar that not every fund has a close for
+  yet is dropped, not scored (`settle`): for an hour or more after the close
+  Yahoo serves the day's row with empty prices, and GitHub starts the evening
+  cron 3–4 hours late, so that run often scores the previous session. The scan
+  refuses to write if any fund's bars are missing or the data is more than five
+  days old (`check_coverage`), and it drops a half-finished session when run
+  during market hours. A ticker whose download fails is retried (yfinance does
+  not raise for it), never published as empty.
 - **Data never goes to main.** The GitHub Actions job
-  (`.github/workflows/pullback-daily.yml`, weekdays 21:40 UTC) commits to
+  (`.github/workflows/pullback-daily.yml`, weekdays 21:40 UTC and again at
+  07:00 UTC, before the next open, once Yahoo's bars have settled) commits to
   `pullback-data`; a push to main would redeploy Railway.
 
 ## Run it

@@ -10,6 +10,11 @@ name: pullback daily scan
 on:
   schedule:
     - cron: "40 21 * * 1-5"   # 17:40 EDT / 16:40 EST — after the close either way
+    # GitHub starts cron jobs 3-4 hours late, and at ~21:00 ET Yahoo often still serves the
+    # day's row with empty prices (all eight funds on 2026-10-07), so the evening run can only
+    # score the previous session. A second run before the open sees the settled bars.
+    # scan.py drops today's live bar if this one ever drifts past 09:30 ET.
+    - cron: "0 7 * * 1-5"     # 03:00 EDT / 02:00 EST — before the open, after Yahoo settles
   workflow_dispatch: {}
   push:
     branches: [main]

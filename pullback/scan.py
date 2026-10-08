@@ -18,7 +18,9 @@ Output (pullback/data/):
 
 History is append-only: a signal or a closed trade that an earlier run recorded is never
 dropped or re-priced by a later run, even if Yahoo revises its bars (carry_forward).
-The scan refuses to publish if any fund's bars are missing or stale (check_coverage).
+A trailing bar that not every fund has yet (Yahoo serves the day's row with empty prices
+for an hour or more after the close) is dropped, not scored (settle); the scan refuses to
+publish if any fund's bars are missing or stale (check_coverage).
 
     python pullback/scan.py
 """
@@ -78,18 +80,43 @@ def download() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     last_err = None
     for attempt in range(4):
         try:
+            # threads=False: eight tickers take a second, and yfinance's first-run timezone cache
+            # (sqlite) threw "database is locked" under concurrent writes on a fresh runner
+            # (2026-10-06, QQQ came back empty).
             d = yf.download(tickers, start=start, auto_adjust=False, actions=False, group_by="ticker",
-                            threads=True, progress=False)
+                            threads=False, progress=False)
+            got = set(d.columns.get_level_values(0)) if isinstance(d.columns, pd.MultiIndex) else set()
+            # yf.download does not raise for a ticker that failed: it prints a notice and leaves the
+            # column out or empty. Treat that as a failed download so the retry loop sees it.
+            empty = [t for t in tickers if t not in got or d[t]["Close"].dropna().empty]
+            if empty:
+                raise RuntimeError(f"no bars for {empty}")
             o = pd.DataFrame({t: d[t]["Open"] for t in tickers})
             c = pd.DataFrame({t: d[t]["Close"] for t in tickers})
             a = pd.DataFrame({t: d[t]["Adj Close"] for t in tickers})
             for x in (o, c, a):
                 x.index = pd.to_datetime(x.index).tz_localize(None)
-            return o, c, a
-        except Exception as e:  # network or schema hiccup: wait and retry
+            return settle(o, c, a)
+        except Exception as e:  # network, schema or a missing ticker: wait and retry
             last_err = e
+            print(f"download attempt {attempt + 1} failed: {e}", file=sys.stderr)
             time.sleep(20 * (attempt + 1))
     raise RuntimeError(f"download failed: {last_err}")
+
+
+def settle(o, c, a):
+    """Keep only sessions every fund has a close for.
+
+    For an hour or more after the close Yahoo serves the day's row with empty prices (all
+    eight funds on 2026-10-07 at 21:19 ET; GitHub starts the 21:40 UTC cron 3-4 hours late),
+    and sometimes only part of the list has settled. Scoring such a row would either fail
+    check_coverage or, worse, read a half-filled day as a close. Dropping it means the run
+    scores the previous session and the pre-open run (07:00 UTC) picks up the settled bar."""
+    keep = c.notna().all(axis=1)
+    if len(c) > 1 and not keep.iloc[-1]:
+        print(f"dropping unsettled bar {c.index[-1].date()}: "
+              f"missing {[t for t in c.columns if pd.isna(c[t].iloc[-1])]}", file=sys.stderr)
+    return o[keep], c[keep], a[keep]
 
 
 def drop_unfinished_session(o, c, a, now: datetime | None = None):
