@@ -1,2 +1,3 @@
 {"run_at": "2026-10-05T19:02Z", "asof": "2026-10-02", "since": null, "pending": false, "buys": {}, "sells": {}, "members": 100, "source": "wikipedia"}
 {"run_at": "2026-10-06T01:56Z", "asof": "2026-10-05", "since": "2026-10-02", "pending": false, "buys": {}, "sells": {}, "members": 100, "source": "wikipedia"}
+{"run_at": "2026-10-08T01:21Z", "asof": "2026-10-06", "since": "2026-10-05", "pending": false, "buys": {}, "sells": {}, "members": 99, "source": "wikipedia"}
