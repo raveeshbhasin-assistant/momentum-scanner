@@ -7,7 +7,30 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.11.4 — 2026-10-09 **(current)**
+## v1.11.5 — 2026-10-09 **(current)**
+
+**What** The Ignition scan refuses to publish a run whose data date is older
+than the previous run's (`ignition/scan.check_not_older`), the same way it
+refuses a partial download. A re-run on the same data date is still allowed.
+
+**Why** On 2026-10-08 a 19:11 ET run published "as of Oct 8"; the scheduled
+run at 21:22 ET found Yahoo had fewer than half of the day's bars, scored
+Oct 7 instead and republished it, so the page went backwards for nine hours
+until the 3am run. The ledger itself was unharmed (it is rebuilt from prices
+and history is append-only), but the page showed PTC as "new fire, not
+bought" again. Now that evening run fails without committing and the page
+keeps the newer data. Cost: if a run ever publishes a date that is wrong by
+being too new, the next correct run is refused until the dates catch up,
+at most one session; the live-bar guard (v1.11.1) makes that case unlikely.
+
+**Verified** `pytest` green (new test: first run, newer, same date pass;
+older raises). No template change.
+
+**Rollback** Revert the commit; nothing on disk changes shape.
+
+---
+
+## v1.11.4 — 2026-10-09
 
 **What** The one-day gap tag becomes **gap · pinned**: a gap fire is tagged
 only while every close since the gap has stayed within 2% of the gap-day

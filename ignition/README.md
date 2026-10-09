@@ -124,6 +124,11 @@ together with the fraction to sell to get back to 2×.
   (`scheduler.refresh_ignition`). If GitHub is unreachable and there is no
   data on disk, it falls back to a local scan, and the page says so.
   `POST /api/refresh_ignition` syncs now; `?local=1` scans on the container.
+- **Never backwards (v1.11.5):** a run whose data date is older than the
+  previous run's is refused (`check_not_older`), the same way a partial
+  download is. An evening run that finds Yahoo's bars unsettled scores the
+  previous session and would otherwise overwrite a same-day scan published
+  earlier; now it fails without committing and the morning run fills in.
 - **No lost days:** the ledger is rebuilt from prices on every run. If runs
   are skipped, the next run reports everything since the previous run's
   data date as new.

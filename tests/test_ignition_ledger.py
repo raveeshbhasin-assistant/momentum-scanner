@@ -398,6 +398,14 @@ def test_live_bar_for_a_session_still_open_is_dropped():
     assert len(ig.drop_unfinished_bar(df, df, df)[1]) in (2, 3)    # default clock: no crash
 
 
+def test_scan_older_than_the_previous_run_is_refused():
+    ig.check_not_older("2026-10-08", None)                 # first run ever
+    ig.check_not_older("2026-10-08", "2026-10-07")         # normal
+    ig.check_not_older("2026-10-08", "2026-10-08")         # same data date: a re-run reports nothing new
+    with pytest.raises(RuntimeError, match="older than the previous run"):
+        ig.check_not_older("2026-10-07", "2026-10-08")     # Yahoo's bars not settled: don't go backwards
+
+
 def test_partial_download_is_refused():
     ig.check_coverage(_close_with([f"T{i}" for i in range(100)]), 100)          # 100% ok
     with pytest.raises(RuntimeError, match="refusing to publish"):

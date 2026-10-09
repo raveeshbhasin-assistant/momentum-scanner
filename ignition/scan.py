@@ -189,6 +189,18 @@ def check_coverage(close: pd.DataFrame, n_tickers: int) -> None:
                            f"refusing to publish a partial scan (min {MIN_COVERAGE:.0%})")
 
 
+def check_not_older(asof: str, prev_asof: str | None) -> None:
+    """Refuse to publish a scan whose data date is older than the previous run's.
+    An evening run that finds Yahoo's bars still unsettled scores the previous
+    session; without this it would overwrite a same-day scan published earlier
+    (2026-10-08: 19:11 ET published Oct 8, 21:22 ET republished Oct 7). The
+    Actions run then fails without committing and the page keeps the newer
+    data. A re-run on the same data date is still allowed."""
+    if prev_asof and asof < prev_asof:
+        raise RuntimeError(f"data date {asof} is older than the previous run's {prev_asof}; "
+                           f"refusing to publish (Yahoo's end-of-day bars are not settled yet)")
+
+
 def _pct(x) -> float | None:
     return None if x is None or not np.isfinite(x) else round(float(x) * 100, 1)
 
@@ -554,6 +566,7 @@ def main() -> int:
 
     o, c, v = download(load_universe())
     result = compute(o, c, v, prev_asof, prev_positions)
+    check_not_older(result["asof"], prev_asof)
     s = result["summary"]
 
     tmp = LATEST.with_suffix(".tmp")
