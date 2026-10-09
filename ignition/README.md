@@ -88,17 +88,23 @@ together with the fraction to sell to get back to 2×.
   cost of about 0.5 pp CAGR. It is risk control, not a return edge. It never
   closes or resizes anything in the ledger.
 
-## One-day gap tag (v1.11.2, flag only)
+## "Gap · pinned" tag (v1.11.4, flag only)
 
-- A fire whose ignition week was really one session is tagged **one-day
-  gap**: the largest single session is at least two thirds of the 5-session
-  return (`GAP_SHARE = 0.67`). PTC 2026-10-07: +33.5% on Oct 5 out of +38%.
-- **Why:** a single gap with flat closes around it is the shape of deal news
-  or a guidance reset, not the compounding move the signal was built on
-  (`research/ignition_discovery/`: catalysts do the work, but over weeks).
-  It is a prompt to check the news before acting. Gap fires are inside the
-  backtest and were not tested separately, so the tag changes nothing in
-  the ledger or the sell rule.
+- A fire is a **gap fire** when its ignition week was really one session:
+  the largest single session is at least two thirds of the 5-session return
+  (`GAP_SHARE = 0.67`). PTC 2026-10-07: +33.5% on Oct 5 out of +38%.
+- It is tagged **pinned** when, over at least `PIN_MIN_SESSIONS = 2`
+  sessions since the gap, every close has stayed within `PIN_BAND = 2%` of
+  the gap-day close. Re-checked on every run against all sessions since the
+  gap, so the tag lifts as soon as the price moves.
+- **Why the second test:** a third of the 2025-26 ledger (34 of 108 fires)
+  is a gap fire, and most of those are earnings or momentum gaps that kept
+  moving (MRNA's +177% day was followed by a 23.5% swing inside a week).
+  A takeover gaps once and then sits at the offer price. Of the 34, only
+  PTC (0.8%) and SLAB (1.9%) stayed inside 2%; every other one left within
+  a month, most within a week. The tag is a prompt to check the news
+  before acting. Gap fires are inside the backtest and were not tested
+  separately, so nothing changes in the ledger or the sell rule.
 
 ## Operation
 

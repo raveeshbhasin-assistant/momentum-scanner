@@ -147,7 +147,7 @@
     <div class="kpi-value">{{ s.open }}</div>
     <div class="kpi-sub">{{ s.by_status.HOLD + s.by_status.REFIRED + s.by_status.NEW }} in the edge window · {{ s.by_status.EDGE_EXPIRED }} past it</div>
     {% if s.cap_review %}<div class="kpi-sub">over the 2× cap: {{ s.cap_review|join(', ') }}</div>{% endif %}
-    {% if s.gap_open %}<div class="kpi-sub">one-day gap fires (check the news): {{ s.gap_open|join(', ') }}</div>{% endif %}
+    {% if s.pinned_open %}<div class="kpi-sub">pinned at a gap (deal-price shape, check the news): {{ s.pinned_open|join(', ') }}</div>{% endif %}
     {% if s.carried %}<div class="kpi-sub">kept from earlier runs (no fresh data): {{ s.carried|join(', ') }}</div>{% endif %}
   </div>
   <div class="kpi">
@@ -195,7 +195,7 @@
     <table>
       <tr><td><span class="pill CHECKPOINT">6-mo review</span></td><td>{{ R.checkpoint_after|default(126) }} trading days (~6 months) in, up but by less than 30%. Consider taking the profit: in testing, a smoother ride for a little less average return.</td></tr>
       <tr><td><span class="pill CAP">2× cap · trim N%</span></td><td>Grown to {{ '%.0f'|format(R.weight_cap|default(2)) }}× or more of an average position (assuming equal dollars at each entry). Selling N% brings it back to {{ '%.0f'|format(R.weight_cap|default(2)) }}×. In testing, fewer big drawdowns for a small cost.</td></tr>
-      <tr><td><span class="pill GAP">one-day gap</span></td><td>The breakout week was really one session: the largest single day is at least two thirds of the 5-day move, and the closes around it barely moved. That is the shape of deal news or a guidance reset, not the compounding move the signal was built on. Check the news before acting; the ledger treats it like any other fire.</td></tr>
+      <tr><td><span class="pill GAP">gap · pinned</span></td><td>The breakout week was one session (the largest day is at least two thirds of the 5-day move) <b>and</b> every close since has stayed within 2% of that day's close, for at least two sessions. A stock that gaps on earnings or momentum drifts off within days; one that gaps on a takeover sits at the offer price. Re-checked every run, so the tag lifts as soon as the price moves. Check the news before acting; the ledger treats it like any other fire.</td></tr>
       <tr><td><span class="pill KEPT">kept · date</span></td><td>The latest run could not recompute this position (e.g. no price data), so its last known values are kept rather than it disappearing. Hover for the reason.</td></tr>
     </table>
     <h4>Two things that surprise people</h4>
@@ -219,7 +219,7 @@
     {% set room = -(p.to_stop or 0) %}
     <tr>
       <td class="l"><span class="tk">{{ p.ticker }}</span></td>
-      <td class="l"><div class="flags"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.gap %}<span class="pill GAP" title="{{ '%+.1f'|format(p.gap_ret or 0) }}% on {{ p.gap_day }} was {{ '%.0f'|format(p.gap_share or 0) }}% of the breakout week. One gap, flat around it: check the news.">one-day gap</span>{% endif %}{% if p.checkpoint %}<span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}{% if p.cap_trim is defined and p.cap_trim is not none %}<span class="pill CAP" title="About {{ '%.1f'|format(p.weight_x) }}x an equal share (assumes equal dollars at each entry). Selling {{ '%.0f'|format(p.cap_trim) }}% brings it back to 2x.">2× cap · trim {{ '%.0f'|format(p.cap_trim) }}%</span>{% endif %}{% if p.carried %}<span class="pill KEPT" title="Kept from earlier runs: {{ p.carried }}. Values as of {{ p.carried_since }}.">kept · {{ p.carried_since }}</span>{% endif %}</div></td>
+      <td class="l"><div class="flags"><span class="pill {{ p.status }}">{{ LABEL.get(p.status, p.status) }}</span>{% if p.pinned %}<span class="pill GAP" title="{{ '%+.1f'|format(p.gap_ret or 0) }}% gap on {{ p.gap_day }}; every close since ({{ p.pin_sessions }} sessions) within {{ '%.1f'|format(p.pin_dev or 0) }}% of it. Deal-price shape: check the news.">gap · pinned</span>{% endif %}{% if p.checkpoint %}<span class="pill CHECKPOINT" title="6-month review since {{ p.checkpoint }} at {{ '%+.1f'|format(p.checkpoint_ret or 0) }}%">6-mo review</span>{% endif %}{% if p.cap_trim is defined and p.cap_trim is not none %}<span class="pill CAP" title="About {{ '%.1f'|format(p.weight_x) }}x an equal share (assumes equal dollars at each entry). Selling {{ '%.0f'|format(p.cap_trim) }}% brings it back to 2x.">2× cap · trim {{ '%.0f'|format(p.cap_trim) }}%</span>{% endif %}{% if p.carried %}<span class="pill KEPT" title="Kept from earlier runs: {{ p.carried }}. Values as of {{ p.carried_since }}.">kept · {{ p.carried_since }}</span>{% endif %}</div></td>
       <td class="l">{{ p.fired }}</td>
       <td class="opt">{{ money(p.entry) }}</td>
       <td>{{ money(p.price) }}</td>

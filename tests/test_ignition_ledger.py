@@ -78,43 +78,74 @@ def test_refire_extends_position_and_flags_refired(monkeypatch):
     assert "REFIRE" in [e["type"] for e in events]
 
 
-def test_one_day_gap_fire_is_tagged_and_a_spread_week_is_not(monkeypatch):
+def _gap_series(gap_at: int, after: float, vol_spike=(FIRE - 14, FIRE + 1, 3.0)):
+    """Uptrend, one +32% session at `gap_at`, then `after` daily log-return.
+    `vol_spike` = (from, to, multiple): with the default the signal fires on the
+    gap day; a spike on FIRE alone delays the fire to FIRE (as PTC's late
+    moving-average cross did), so sessions after the gap are known at the fire."""
+    lr = np.full(N, 0.001)
+    lr[gap_at] += 0.28
+    lr[gap_at + 1:] = after
+    v = np.ones(N); v[vol_spike[0]:vol_spike[1]] = vol_spike[2]
+    idx = pd.bdate_range("2025-01-01", periods=N)
+    close = pd.DataFrame({"T": 100 * np.exp(np.cumsum(lr))}, index=idx)
+    return close, close * 1.0, pd.DataFrame({"T": v * 1e6}, index=idx)
+
+
+def test_spread_ignition_week_is_not_a_gap(monkeypatch):
     close, open_, vol = _series(np.full(N, 0.0005))               # five sessions of ~2.8% each
     positions, events = _run(close, open_, vol, monkeypatch)
     p = positions[0]
     assert p["gap"] is False and 15 < p["gap_share"] < 30            # the biggest day is ~1/5 of the week
-    assert "one-day gap" not in events[0]["detail"]
+    assert p["pinned"] is False and "pinned" not in events[0]["detail"]
 
-    lr = np.full(N, 0.001)
-    lr[FIRE] += 0.28                                                # one +32% session, flat around it
-    v = np.ones(N); v[FIRE - 14:FIRE + 1] = 3.0
-    idx = pd.bdate_range("2025-01-01", periods=N)
-    close = pd.DataFrame({"T": 100 * np.exp(np.cumsum(lr))}, index=idx)
-    vol = pd.DataFrame({"T": v * 1e6}, index=idx)
-    positions, events = _run(close, close * 1.0, vol, monkeypatch)
+
+def test_gap_that_keeps_moving_is_a_gap_but_not_pinned(monkeypatch):
+    close, open_, vol = _gap_series(FIRE, 0.004)                    # MRNA-like: fires on the gap day, then +0.4%/day
+    positions, events = _run(close, open_, vol, monkeypatch)
     p = positions[0]
     assert p["gap"] is True and p["gap_share"] > 90 and p["gap_ret"] > 30
-    assert p["gap_day"] == str(idx[FIRE].date())
-    assert "one-day gap: +3" in events[0]["detail"]
-    out = ig.compute(close * 1.0, close, vol, None)
-    assert out["summary"]["gap_open"] == ["T"]
+    assert p["gap_day"] == str(close.index[FIRE].date())
+    assert "pinned" not in events[0]["detail"]                      # 0 sessions after the gap on the fire date
+    assert p["pinned"] is False and p["pin_dev"] > 2                # and it has drifted far since
+    assert ig.compute(open_, close, vol, None)["summary"]["pinned_open"] == []
+
+
+def test_gap_pinned_at_the_offer_price_is_tagged(monkeypatch):
+    close, open_, vol = _gap_series(FIRE - 2, 0.0, vol_spike=(FIRE, FIRE + 1, 20.0))   # PTC-like: gap, flat, late fire
+    positions, events = _run(close, open_, vol, monkeypatch)
+    p = positions[0]
+    assert p["fired"] == str(close.index[FIRE].date())              # fired 2 sessions after the gap
+    assert p["gap"] is True and p["pinned"] is True
+    assert p["pin_sessions"] == N - 1 - (FIRE - 2) and p["pin_dev"] == 0.0
+    assert "pinned at the +3" in events[0]["detail"]                 # 2 flat sessions were already known on the fire date
+    out = ig.compute(open_, close, vol, None)
+    assert out["summary"]["pinned_open"] == ["T"]
     return out
 
 
-def test_page_renders_one_day_gap_tag(monkeypatch, tmp_path):
+def test_pinned_tag_lifts_once_the_price_leaves_the_band(monkeypatch):
+    close, open_, vol = _gap_series(FIRE - 2, 0.0)
+    close.iloc[-1] *= 1.03                                          # latest close 3% off the gap close
+    positions, _ = _run(close, close * 1.0, vol, monkeypatch)
+    assert positions[0]["gap"] is True and positions[0]["pinned"] is False
+    assert positions[0]["pin_dev"] == pytest.approx(3.0, abs=0.1)
+
+
+def test_page_renders_pinned_gap_tag(monkeypatch, tmp_path):
     import json
 
     import themes_web.app as web
     from fastapi.testclient import TestClient
 
-    out = test_one_day_gap_fire_is_tagged_and_a_spread_week_is_not(monkeypatch)
+    out = test_gap_pinned_at_the_offer_price_is_tagged(monkeypatch)
     (tmp_path / "latest.json").write_text(json.dumps(out))
     (tmp_path / "runs.jsonl").write_text("")
     monkeypatch.setattr(web, "_IGNITION_DIR", tmp_path)
     monkeypatch.setattr(web, "start_scheduler", lambda: None)
     page = TestClient(web.app).get("/ignition").text
-    assert re.search(r'<span class="pill GAP" title="\+3[0-9.]+% on 20[0-9-]+ was 9[0-9]% of the breakout week[^"<>]*">one-day gap</span>', page)
-    assert "one-day gap fires (check the news): T" in page
+    assert re.search(r'<span class="pill GAP" title="\+3[0-9.]+% gap on 20[0-9-]+; every close since \([0-9]+ sessions\) within 0\.0% of it[^"<>]*">gap · pinned</span>', page)
+    assert "pinned at a gap (deal-price shape, check the news): T" in page
     assert "weekdays after the close and 3am ET" in page
 
 

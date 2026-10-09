@@ -91,9 +91,13 @@ WEIGHT_CAP = 2.0                  # 2x cap review: weight vs an equal share of t
 MIN_COVERAGE = 0.97               # refuse to publish if fewer tickers than this have a last close
 MATCH_DAYS = 7                    # carry_forward: same ticker, fire dates this close = same position
 CLOSE_HOUR_ET = 16                # a bar dated today is a live bar until this hour (US close 16:00 ET)
-GAP_SHARE = 0.67                  # "one-day gap" tag: the ignition week's largest session is >= this share of
-                                  # the 5-session return (PTC 2026-10-07: +33.5% of +38.0%). Flag only: gap fires
-                                  # are inside the backtest and were not tested separately.
+GAP_SHARE = 0.67                  # a "gap" fire: the ignition week's largest session is >= this share of the
+                                  # 5-session return (PTC 2026-10-07: +33.5% of +38.0%).
+PIN_BAND = 0.02                   # "pinned" = every close since the gap within this of the gap-day close ...
+PIN_MIN_SESSIONS = 2              # ... over at least this many sessions. Re-checked every run; flag only.
+                                  # Of 34 gap fires in the 2025-26 ledger, only PTC (0.8%) and SLAB (1.9%) stayed
+                                  # inside 2%; every other one, MRNA included (23.5% in a week), left within a month.
+                                  # Gap fires are inside the backtest and were not tested separately.
 
 BACKTEST = {
     "window": "2016-2026, S&P 500+400 (903 tickers), 2.18M ticker-days, 2,271 fires",
@@ -220,6 +224,24 @@ def biggest_day(closes: np.ndarray, fire: int) -> tuple[int, float, float]:
     return fire - BASE_LAG + 1 + k, float(daily[k]), float(daily[k] / r5) if r5 > 0 else np.nan
 
 
+def pinned_after_gap(closes: np.ndarray, gap_i: int, end_i: int) -> tuple[int, float]:
+    """(sessions since the gap, largest |close / gap-day close - 1| over them).
+    A stock that gaps on deal news then sits at the offer price shows a tiny
+    deviation for as long as the deal holds; an earnings or momentum gap
+    drifts away within days (see PIN_BAND)."""
+    if gap_i < 0:
+        return 0, np.nan
+    w = closes[gap_i + 1:end_i + 1]
+    w = w[np.isfinite(w)]
+    if len(w) == 0 or not np.isfinite(closes[gap_i]):
+        return 0, np.nan
+    return int(len(w)), float(np.max(np.abs(w / closes[gap_i] - 1)))
+
+
+def _pinned(gap: bool, n_sessions: int, dev: float) -> bool:
+    return bool(gap and n_sessions >= PIN_MIN_SESSIONS and np.isfinite(dev) and dev <= PIN_BAND)
+
+
 def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[list, list]:
     """Replay every fire since LEDGER_START as a position. Returns (positions, events)."""
     dates = close.index
@@ -240,11 +262,14 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
             base = C[fire - BASE_LAG, j]
             gap_i, gap_ret, gap_share = biggest_day(C[:, j], fire)
             gap = bool(np.isfinite(gap_share) and gap_share >= GAP_SHARE)
+            pin_n0, pin_dev0 = pinned_after_gap(C[:, j], gap_i, fire)      # as known on the fire date
+            pinned_at_fire = _pinned(gap, pin_n0, pin_dev0)
             pos = {
                 "ticker": tk, "fired": ds[fire], "fire_close": _px(C[fire, j]),
                 "fire_r5": _pct(R5[fire, j]), "fire_volr": _px(VR[fire, j]),
                 "gap": gap, "gap_day": ds[gap_i] if gap_i >= 0 else None,
                 "gap_ret": _pct(gap_ret), "gap_share": _pct(gap_share),
+                "pinned": False, "pin_sessions": None, "pin_dev": None,
                 "base": _px(base), "entry_date": None, "entry": None,
                 "refires": 0, "last_fire": ds[fire], "last_refire": None, "exit_date": None, "exit": None,
                 "exit_reason": None, "sell_signal": None,
@@ -252,7 +277,8 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
             }
             events.append({"date": ds[fire], "ticker": tk, "type": "FIRE",
                            "detail": f"+{_pct(R5[fire, j])}% week on {_px(VR[fire, j])}x volume"
-                                     + (f"; one-day gap: {_pct(gap_ret):+.1f}% on {ds[gap_i]}" if gap else "")})
+                                     + (f"; pinned at the {_pct(gap_ret):+.1f}% gap of {ds[gap_i]} so far"
+                                        if pinned_at_fire else "")})
             for e in range(fire + 1, min(fire + 6, n)):   # first tradable open (skips a halt)
                 if np.isfinite(O[e, j]):
                     pos["entry_date"], pos["entry"] = ds[e], _px(O[e, j])
@@ -328,6 +354,10 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
             if not closed:
                 pos["price"] = _px(last_c)
                 pos["to_stop"] = _pct(base / last_c - 1) if np.isfinite(base) and np.isfinite(last_c) else None
+                if gap:                                   # re-checked every run on all sessions since the gap
+                    pin_n, pin_dev = pinned_after_gap(C[:, j], gap_i, n - 1)
+                    pos["pin_sessions"], pos["pin_dev"] = pin_n, _pct(pin_dev)
+                    pos["pinned"] = _pinned(gap, pin_n, pin_dev)
             positions.append(pos)
             i = d + 1 if closed else n
     events.sort(key=lambda e: (e["date"], e["ticker"]))
@@ -464,7 +494,7 @@ def summarize(positions: list, events: list, since: str | None, asof: str, recen
         # 6-month review: open positions flagged, and the whole ledger re-scored as
         # if every flag had been sold at the next open (same positions, same marks).
         "checkpoint_open": sorted(p["ticker"] for p in open_ if p.get("checkpoint")),
-        "gap_open": sorted(p["ticker"] for p in open_ if p.get("gap")),
+        "pinned_open": sorted(p["ticker"] for p in open_ if p.get("pinned")),
         "checkpoint_whatif": _stats([p.get("whatif_ret") for p in positions]),
         "carried": sorted(p["ticker"] for p in open_ if p.get("carried")),
         "kept_closed": sum(1 for p in closed if p.get("kept")),

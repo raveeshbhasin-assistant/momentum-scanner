@@ -7,7 +7,36 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.11.3 — 2026-10-09 **(current)**
+## v1.11.4 — 2026-10-09 **(current)**
+
+**What** The one-day gap tag becomes **gap · pinned**: a gap fire is tagged
+only while every close since the gap has stayed within 2% of the gap-day
+close, over at least two sessions. Re-checked every run, so the tag lifts as
+soon as the price moves. The fire's run-log line says "pinned at the gap so
+far" only when that was already true on the fire date.
+
+**Why** v1.11.2 tagged 11 open positions, a third of the book, MRNA among
+them. Its +177% day was an earnings-style gap that swung 23.5% within a
+week: a normal, if violent, ignition. PTC's closes have stayed within 0.8%
+of its gap for every session since, which is what a takeover looks like.
+Checked against all 34 gap fires in the 2025-26 ledger: only PTC and SLAB
+(1.9%) stay inside 2%; every other one left the band within a month, most
+within a week. A fresh fire that is still flat two sessions in (GWRE, JLL
+were) gets the tag for a few days and loses it when the price moves, which
+is the intended "check the news" prompt. Flag only; the ledger and the
+sell rule are unchanged.
+
+**Verified** `pytest` green (tests: a spread week is not a gap; a gap that
+keeps moving is a gap but not pinned; a flat gap is pinned, listed in
+`summary.pinned_open` and noted in the fire line; the tag lifts at a 3%
+move; page render). Template Jinja-parsed.
+
+**Rollback** Revert the commit. Files written by v1.11.2 (`gap_open`, no
+`pinned`) render without the pill.
+
+---
+
+## v1.11.3 — 2026-10-09
 
 **What** The Pullback scan of record no longer fails on Yahoo's late or
 partial end-of-day data. A trailing bar that not every fund has a close for
