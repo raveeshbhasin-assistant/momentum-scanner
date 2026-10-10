@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-08",
- "scanned_at": "2026-10-09 10:06 ET",
+ "scanned_at": "2026-10-09 21:10 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -5893,7 +5893,7 @@
    "ticker": "PSX",
    "price": 281.6,
    "r63": 50.3,
-   "rs63": 51.9,
+   "rs63": 52.0,
    "volr": 1.17,
    "pct_from_hi": 0.0
   },
