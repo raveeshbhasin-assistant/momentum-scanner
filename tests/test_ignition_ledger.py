@@ -438,3 +438,43 @@ def test_compute_keeps_history_across_runs_and_page_shows_it(monkeypatch, tmp_pa
     assert "kept from earlier runs (no fresh data): OLD" in page.text
     assert re.search(r'<span class="pill KEPT" title="Kept from earlier runs: [^"<>]*">kept · 2026-09-24</span>', page.text)
     assert "(recorded)" in page.text
+
+
+def test_sell_pending_row_carries_price_and_to_stop(monkeypatch):
+    """A sell signal on the last bar leaves the position SELL_PENDING (no next
+    open yet). It is listed with the open positions, so it must carry the
+    fields that table reads (2026-10-12: CNH's pending sell 500'd /ignition)."""
+    after = np.full(N, 0.0005)
+    after[N - FIRE - 2] = -0.3                                     # crash on the very last bar
+    close, open_, vol = _series(after)
+    positions, events = _run(close, open_, vol, monkeypatch)
+    p = positions[0]
+    assert p["status"] == "SELL_PENDING" and p["exit"] is None
+    assert p["price"] == pytest.approx(float(close["T"].iloc[-1]), abs=0.01)
+    assert p["to_stop"] is not None and p["to_stop"] > 0          # base is above the last close
+    assert "price" in positions[0] and "to_stop" in positions[0]
+
+
+def test_page_renders_a_pending_sell_from_an_older_run(monkeypatch, tmp_path):
+    """Data written before v1.12.1 has no price/to_stop on a SELL_PENDING row."""
+    import json
+
+    import themes_web.app as web
+    from fastapi.testclient import TestClient
+
+    row = {"ticker": "CNH", "fired": "2026-09-08", "status": "SELL_PENDING", "base": 11.83,
+           "entry": 13.64, "entry_date": "2026-09-09", "exit": None, "exit_date": None,
+           "exit_reason": "IGNITION_FAILED", "sell_signal": "2026-10-09", "ret": -16.5,
+           "peak_ret": 2.6, "sessions_since_fire": 23, "refires": 0, "pinned": False,
+           "checkpoint": None, "carried": None, "weight_x": None, "cap_trim": None}
+    latest = {"version": 2, "asof": "2026-10-09", "scanned_at": "x", "universe": 1,
+              "ledger_start": "2025-01-02", "rule": {}, "backtest": ig.BACKTEST,
+              "exit_research": ig.EXIT_RESEARCH, "positions": [row], "events": [],
+              "leaders": [], "near_misses": [],
+              "summary": ig.summarize([row], [], "2026-10-08", "2026-10-09", "2026-09-10")}
+    (tmp_path / "latest.json").write_text(json.dumps(latest))
+    monkeypatch.setattr(web, "_IGNITION_DIR", tmp_path)
+    monkeypatch.setattr(web, "start_scheduler", lambda: None)
+    page = TestClient(web.app).get("/ignition")
+    assert page.status_code == 200
+    assert "CNH" in page.text

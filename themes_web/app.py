@@ -496,6 +496,11 @@ def _load_ignition() -> Optional[dict]:
                 runs.append(json.loads(line))
             except Exception:
                 continue
+    for p in ig.get("positions", []):
+        # Rows written before v1.12.1 (and rows carried forward from them) have no
+        # price/to_stop while a sell is pending; the open table reads both.
+        p.setdefault("price", None)
+        p.setdefault("to_stop", None)
     source = _IGNITION_DIR / "source.txt"
     ig["runs"] = runs[::-1]
     ig["source"] = source.read_text(encoding="utf-8").strip() if source.exists() else "unknown"

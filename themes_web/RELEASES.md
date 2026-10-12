@@ -7,7 +7,33 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.12.0 — 2026-10-12 **(current)**
+## v1.12.1 — 2026-10-12 **(current)**
+
+**What** `/ignition` no longer 500s while a sell is pending. A position whose
+sell signal fell on the last scanned bar is `SELL_PENDING` (no next open to
+exit at yet) and is listed with the open positions, but `scan.py` only wrote
+`price` / `to_stop` for positions that were not closed, so the open table hit
+an undefined `price`. Now the scan writes both on every row that is not
+CLOSED (a pending sell shows the last close and the distance to the base),
+and the page loader defaults both to None for rows written by earlier runs,
+including rows carried forward from them.
+
+**Why** 2026-10-12: the 16:27 UTC run published CNH's pending sell (close
+11.39 below the 11.83 base on Oct 9) and the page returned 500 until the
+22:00 UTC run, which recorded the exit and made CNH CLOSED. Every future
+pending sell would have done the same for one run. The ledger and the rule
+are unchanged; this is a data-shape fix.
+
+**Verified** Two new tests: a synthetic crash on the last bar leaves a
+SELL_PENDING row with price/to_stop; the page renders a pre-1.12.1
+SELL_PENDING row with neither. Re-rendered the exact data commit that
+failed on Railway (cbf1986): 200. Ignition suite green.
+
+**Rollback** Revert the commit; older data on the branch still renders.
+
+---
+
+## v1.12.0 — 2026-10-12
 
 **What** Ignition Watch emails every new fire and re-fire. A new standalone
 `ignition/notify.py` runs as the last step of the daily workflow

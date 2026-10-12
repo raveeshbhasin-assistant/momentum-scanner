@@ -286,6 +286,7 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
                 "refires": 0, "last_fire": ds[fire], "last_refire": None, "exit_date": None, "exit": None,
                 "exit_reason": None, "sell_signal": None,
                 "checkpoint": None, "checkpoint_ret": None, "checkpoint_exit": None,
+                "price": None, "to_stop": None,   # set below for every row that is not CLOSED
             }
             events.append({"date": ds[fire], "ticker": tk, "type": "FIRE",
                            "detail": f"+{_pct(R5[fire, j])}% week on {_px(VR[fire, j])}x volume"
@@ -345,13 +346,13 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
                     closed = True
                     break
                 d += 1
-            last_c = pd.Series(C[fire:n, j]).ffill().iloc[-1] if not closed else None
+            last_c = pd.Series(C[fire:n, j]).ffill().iloc[-1]
             pos["peak"] = _px(peak)
             pos["sessions_since_fire"] = int(min(d, n - 1) - last_fire)
             since_refire = (n - 1 - ds.index(pos["last_refire"])) if pos["last_refire"] else None
             pos["status"] = _status(pos, closed, n - 1 - last_fire, since_refire)
             if pos["entry"]:
-                mark = pos["exit"] if pos["exit"] else (last_c if not closed else C[d, j])
+                mark = pos["exit"] if pos["exit"] else last_c
                 pos["ret"] = _pct(mark / pos["entry"] - 1)
                 pos["peak_ret"] = _pct(peak / pos["entry"] - 1)
             else:
@@ -363,9 +364,12 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
             if pos["entry_date"]:
                 end_i = ds.index(pos["exit_date"]) if pos["exit_date"] else (d if closed else n - 1)
                 pos["held"] = int(end_i - ds.index(pos["entry_date"]))
-            if not closed:
+            if not closed or pos["exit"] is None:
+                # Open, or SELL_PENDING (sell signal on the last bar, no next open yet):
+                # the page lists both as open and shows the last close (v1.12.1).
                 pos["price"] = _px(last_c)
                 pos["to_stop"] = _pct(base / last_c - 1) if np.isfinite(base) and np.isfinite(last_c) else None
+            if not closed:
                 if gap:                                   # re-checked every run on all sessions since the gap
                     pin_n, pin_dev = pinned_after_gap(C[:, j], gap_i, n - 1)
                     pos["pin_sessions"], pos["pin_dev"] = pin_n, _pct(pin_dev)
