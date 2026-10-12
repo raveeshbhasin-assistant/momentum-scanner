@@ -136,3 +136,21 @@ def test_send_posts_resend_payload(monkeypatch):
     assert captured["url"] == nt.RESEND_API_URL and captured["auth"] == "Bearer re_k"
     assert captured["body"] == {"from": "A <a@b.c>", "to": ["to@x.com"], "subject": "subj",
                                 "html": "<p>h</p>", "text": "txt"}
+
+
+def test_test_mode_mails_recent_fires_with_a_test_subject(tmp_path, monkeypatch):
+    latest = _latest([SELL], POS, since="2026-10-09")               # nothing new ...
+    latest["events"] = [FIRE, SELL, REFIRE]                          # ... but a history of fires
+    assert nt.collect(latest) == []
+    items = nt.collect(latest, test=True)
+    assert [i["event"]["ticker"] for i in items] == ["PTC", "BURL"]
+    path = tmp_path / "latest.json"
+    path.write_text(json.dumps(latest))
+    monkeypatch.setenv("RESEND_API_KEY", "re_test")
+    monkeypatch.setenv("IGNITION_NOTIFY_TEST", "1")
+    monkeypatch.delenv("IGNITION_NOTIFY_EMAIL", raising=False)
+    sent = []
+    monkeypatch.setattr(nt, "send", lambda k, f, to, subj, t, h: sent.append((to, subj)) or {"id": "x"})
+    assert nt.main(path) == 0
+    assert [s[0] for s in sent] == nt.RECIPIENTS
+    assert all(s[1].startswith("[TEST] Ignition Watch 2026-10-09: new fire PTC") for s in sent)

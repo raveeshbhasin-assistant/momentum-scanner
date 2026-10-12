@@ -7,7 +7,28 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.12.1 — 2026-10-12 **(current)**
+## v1.12.2 — 2026-10-12 **(current)**
+
+**What** The ignition workflow's "Run workflow" button gains a `test_email`
+box. Ticked, the email step sends a mail with subject prefixed `[TEST]`,
+built from the ledger's three most recent fires as if they were new, to
+every recipient (`IGNITION_NOTIFY_TEST=1` → `ignition/notify.py`). Unticked
+and on the schedule nothing changes.
+
+**Why** A new fire is rare, so without this the only way to find out the
+Resend key, the sender domain and the three addresses work is to wait. The
+first run after the key was added found nothing new and sent nothing, as
+designed, which proves nothing about delivery.
+
+**Verified** New test: nothing new but a history of fires → test mode mails
+the recent fires to every recipient with the `[TEST]` subject; normal mode
+still sends nothing. Workflow YAML parses. Ignition suite green.
+
+**Rollback** Revert the commit; the box disappears, the step is unchanged.
+
+---
+
+## v1.12.1 — 2026-10-12
 
 **What** `/ignition` no longer 500s while a sell is pending. A position whose
 sell signal fell on the last scanned bar is `SELL_PENDING` (no next open to

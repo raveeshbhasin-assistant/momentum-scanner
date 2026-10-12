@@ -16,7 +16,12 @@ on:
     # the previous session. A second run before the open picks up what it missed.
     # scan.py drops today's live bar if this one ever drifts past 09:30 ET.
     - cron: "0 7 * * 1-5"     # 03:00 EDT / 02:00 EST — before the open, after Yahoo settles
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      test_email:
+        description: "Send a [TEST] mail built from the most recent fires (checks the key, sender and recipients)"
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:                    # code and universe only; doc edits don't need a scan
@@ -90,4 +95,5 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           IGNITION_NOTIFY_FROM: ${{ vars.IGNITION_NOTIFY_FROM }}
           IGNITION_NOTIFY_EMAIL: ${{ vars.IGNITION_NOTIFY_EMAIL }}
+          IGNITION_NOTIFY_TEST: ${{ inputs.test_email && '1' || '' }}
         run: python ignition/notify.py

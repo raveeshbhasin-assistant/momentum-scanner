@@ -135,7 +135,10 @@ together with the fraction to sell to get back to 2×.
   name an address on a domain verified in Resend for the other two to get
   it; `IGNITION_NOTIFY_EMAIL` overrides the recipient list. A rejected send
   fails the step (red run) so it is noticed; the data is already committed.
-  Stdlib only, no shared code with the scanner's `notifier.py`.
+  To check delivery without waiting for a fire, "Run workflow" in the
+  Actions tab with the `test_email` box ticked sends a `[TEST]` mail built
+  from the three most recent fires (v1.12.2). Stdlib only, no shared code
+  with the scanner's `notifier.py`.
 - **themes_web** syncs from that branch every 30 minutes and at boot
   (`scheduler.refresh_ignition`). If GitHub is unreachable and there is no
   data on disk, it falls back to a local scan, and the page says so.

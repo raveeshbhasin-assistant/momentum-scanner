@@ -24,6 +24,10 @@ Env (GitHub Actions secrets / variables):
                             own address; mailing the other recipients needs a
                             sender on a domain verified in Resend.
     IGNITION_PAGE_URL       link in the mail. Defaults to the live /ignition page.
+    IGNITION_NOTIFY_TEST    "1": send a [TEST] mail built from the ledger's most
+                            recent fires as if they were new (the workflow's
+                            "Run workflow" button offers this), to check the key,
+                            the sender domain and delivery to every recipient.
 
 A send that Resend rejects exits 1 so the Actions run shows red (the data is
 already committed by then; only the mail is missing).
@@ -71,10 +75,17 @@ def _position(latest: dict, ev: dict) -> dict | None:
     return max(open_, key=lambda p: p.get("fired") or "") if open_ else None
 
 
-def collect(latest: dict) -> list[dict]:
-    """New FIRE/REFIRE events from the run, each joined to its ledger row."""
+TEST_SAMPLE = 3                     # test mail: this many of the most recent fires
+
+
+def collect(latest: dict, test: bool = False) -> list[dict]:
+    """New FIRE/REFIRE events from the run, each joined to its ledger row.
+    In test mode: the ledger's most recent fires instead, as if they were new."""
     out = []
-    for ev in latest.get("summary", {}).get("new_events", []):
+    events = latest.get("summary", {}).get("new_events", [])
+    if test:
+        events = [e for e in latest.get("events", []) if e.get("type") in TYPES][-TEST_SAMPLE:]
+    for ev in events:
         if ev.get("type") in TYPES:
             out.append({"event": ev, "position": _position(latest, ev)})
     out.sort(key=lambda x: (TYPES.index(x["event"]["type"]), x["event"]["ticker"]))
@@ -202,12 +213,13 @@ def main(path: Path = LATEST) -> int:
         print(f"notify: {path} missing; nothing to send", file=sys.stderr)
         return 0
     latest = json.loads(path.read_text(encoding="utf-8"))
-    items = collect(latest)
+    test = _env("IGNITION_NOTIFY_TEST") in ("1", "true", "yes", "on")
+    items = collect(latest, test=test)
     if not items:
         print(f"notify: asof={latest.get('asof')} since={latest.get('summary', {}).get('since')}: no new fire/refire")
         return 0
     page_url = _env("IGNITION_PAGE_URL", DEFAULT_PAGE_URL)
-    subj = subject(latest, items)
+    subj = ("[TEST] " if test else "") + subject(latest, items)
     text, body_html = render_text(latest, items, page_url), render_html(latest, items, page_url)
     api_key = _env("RESEND_API_KEY")
     if not api_key:
