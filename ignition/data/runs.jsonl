@@ -20,3 +20,4 @@
 {"run_at": "2026-10-09 21:10 ET", "asof": "2026-10-08", "since": "2026-10-08", "fires": [], "sells": [], "expired": [], "checkpoints": [], "carried": [], "open": 35, "closed": 73}
 {"run_at": "2026-10-12 12:27 ET", "asof": "2026-10-09", "since": "2026-10-08", "fires": [], "sells": ["CNH"], "expired": ["CBOE"], "checkpoints": [], "carried": [], "open": 35, "closed": 73}
 {"run_at": "2026-10-12 18:00 ET", "asof": "2026-10-12", "since": "2026-10-09", "fires": [], "sells": [], "expired": [], "checkpoints": [], "carried": [], "open": 34, "closed": 74}
+{"run_at": "2026-10-12 18:16 ET", "asof": "2026-10-12", "since": "2026-10-12", "fires": [], "sells": [], "expired": [], "checkpoints": [], "carried": [], "open": 34, "closed": 74}
