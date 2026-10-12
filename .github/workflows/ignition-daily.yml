@@ -4,7 +4,8 @@
 # output (latest.json, runs.jsonl, history/<date>.json) to the `ignition-data`
 # branch. Git keeps every run forever; Railway's disk is wiped on redeploy.
 # Pushing to `ignition-data` (not main) means no Railway redeploy. themes_web
-# reads the branch through themes_web/scheduler.refresh_ignition().
+# reads the branch through themes_web/scheduler.refresh_ignition(). The last
+# step (ignition/notify.py) emails any new FIRE/REFIRE to the recipients.
 name: ignition daily scan
 
 on:
@@ -20,6 +21,7 @@ on:
     branches: [main]
     paths:                    # code and universe only; doc edits don't need a scan
       - "ignition/scan.py"
+      - "ignition/notify.py"
       - "ignition/universe.txt"
       - ".github/workflows/ignition-daily.yml"
 
@@ -76,3 +78,16 @@ jobs:
             git commit -qm "ignition: scan asof ${ASOF} ($(date -u +%FT%H:%MZ))"
             git push origin ignition-data
           fi
+
+      # After the commit, so a run that fails to publish never mails. scan.py marks
+      # as new only the events after the previous run's data date, so a same-day
+      # re-run mails nothing and nothing is mailed twice. Without the secret the
+      # step only prints what it would have sent. Resend's sandbox sender can only
+      # reach the account owner; set IGNITION_NOTIFY_FROM (repo variable) to an
+      # address on a domain verified in Resend to reach every recipient.
+      - name: Email new fires and re-fires
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          IGNITION_NOTIFY_FROM: ${{ vars.IGNITION_NOTIFY_FROM }}
+          IGNITION_NOTIFY_EMAIL: ${{ vars.IGNITION_NOTIFY_EMAIL }}
+        run: python ignition/notify.py

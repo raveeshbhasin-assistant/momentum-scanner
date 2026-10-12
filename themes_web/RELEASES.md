@@ -7,7 +7,55 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.11.5 — 2026-10-09 **(current)**
+## v1.12.0 — 2026-10-12 **(current)**
+
+**What** Ignition Watch emails every new fire and re-fire. A new standalone
+`ignition/notify.py` runs as the last step of the daily workflow
+(`.github/workflows/ignition-daily.yml`), after the run is committed to the
+`ignition-data` branch. It reads `latest.json` and, when `summary.new_events`
+holds a FIRE or REFIRE, sends one mail per recipient through Resend's HTTPS
+API (stdlib `urllib`, no shared code with the scanner's `notifier.py`):
+subject "Ignition Watch <asof>: new fire X · re-fire Y", body with each
+ticker's week move and volume ratio, close, pre-ignition base and distance
+to it, whether it has been bought yet (or the entry and return so far for a
+re-fire), the gap/pinned tag, the sell rule, and the run's sells / expiries
+as a footnote, plus a link to /ignition. Recipients default to
+Raveesh.bhasin@gmail.com, Meetarao@gmail.com and shalomthomas@gmail.com
+(`IGNITION_NOTIFY_EMAIL` overrides). The page itself is unchanged.
+
+**Why** Operator request: be told the moment the signal finds a new pick or
+a held name re-fires, and tell two others, instead of checking the page.
+
+**Exactly once** `scan.py` marks as new only the events dated after the
+previous run's data date, so the morning re-run of an already-published
+session mails nothing and a missed run reports everything since. A run the
+scan refuses (partial download, older data date) never reaches the step. A
+mail failure cannot lose data: the commit comes first. A send Resend
+rejects exits 1 so the Actions run shows red.
+
+**Setup (operator, GitHub repo settings)** Secret `RESEND_API_KEY` (same
+key the scanner uses). Without it the step logs what it would have sent and
+passes. Resend's sandbox sender (`onboarding@resend.dev`, the default) only
+delivers to the Resend account owner's address, so for all three recipients
+set repository variable `IGNITION_NOTIFY_FROM` to `Ignition Watch
+<you@your-verified-domain>` (a domain verified in Resend).
+
+**Verified** `tests/test_ignition_notify.py` (8 tests): only FIRE/REFIRE
+trigger; same-day re-run is silent; subject/body name the tickers, tags,
+base and rule; default and overridden recipients; one send per recipient;
+no key / nothing new / missing file exit 0 without sending; a rejected send
+still tries everyone and exits 1; the Resend request shape. Preview rendered
+from the live ledger (PTC fire, synthetic BURL re-fire). Full suite green
+apart from the scanner tests needing the `ta` wheel, which does not build
+in the CI container used for the review. Workflow YAML parses.
+
+**Rollback** Delete the "Email new fires and re-fires" step from the
+workflow (or remove the `RESEND_API_KEY` secret: the step then only logs).
+`ignition/notify.py` is imported by nothing.
+
+---
+
+## v1.11.5 — 2026-10-09
 
 **What** The Ignition scan refuses to publish a run whose data date is older
 than the previous run's (`ignition/scan.check_not_older`), the same way it

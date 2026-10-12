@@ -120,6 +120,22 @@ together with the fraction to sell to get back to 2×.
   `history/<asof>.json` to the **`ignition-data` branch**. Git keeps every
   run, and pushes to that branch don't redeploy Railway. You can also run
   it on demand from the Actions tab (workflow_dispatch).
+- **Email on every new fire and re-fire (v1.12.0):** the workflow's last
+  step runs `ignition/notify.py` after the run is committed. It reads
+  `latest.json` and mails each new FIRE / REFIRE in `summary.new_events`
+  (ticker, the week's move and volume, close, pre-ignition base and distance
+  to it, whether it is bought yet, gap/pinned tag; sells and expiries of the
+  same run as a footnote) to Raveesh.bhasin@gmail.com, Meetarao@gmail.com and
+  shalomthomas@gmail.com, one mail each, through Resend. Nothing is mailed
+  twice: `new_events` only holds events after the previous run's data date,
+  so a same-day re-run is silent, and a refused run never reaches the step.
+  Needs the `RESEND_API_KEY` repository secret (without it the step prints
+  what it would have sent and passes). Resend's sandbox sender only reaches
+  the account owner, so the repository variable `IGNITION_NOTIFY_FROM` must
+  name an address on a domain verified in Resend for the other two to get
+  it; `IGNITION_NOTIFY_EMAIL` overrides the recipient list. A rejected send
+  fails the step (red run) so it is noticed; the data is already committed.
+  Stdlib only, no shared code with the scanner's `notifier.py`.
 - **themes_web** syncs from that branch every 30 minutes and at boot
   (`scheduler.refresh_ignition`). If GitHub is unreachable and there is no
   data on disk, it falls back to a local scan, and the page says so.
