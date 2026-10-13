@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-12",
- "scanned_at": "2026-10-12 22:42 ET",
+ "scanned_at": "2026-10-13 10:46 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -125,7 +125,7 @@
    "pct_up": 43.5
   },
   "carried": [],
-  "kept_closed": 0,
+  "kept_closed": 1,
   "cap_review": [
    "BE",
    "LITE"
@@ -2644,7 +2644,7 @@
    "ticker": "MKSI",
    "fired": "2026-02-11",
    "fire_close": 258.36,
-   "fire_r5": 17.7,
+   "fire_r5": 17.8,
    "fire_volr": 1.6,
    "gap": false,
    "gap_day": "2026-02-06",
@@ -3132,44 +3132,6 @@
    "whatif_ret": -10.3,
    "held": 181,
    "weight_x": 0.5,
-   "cap_trim": null
-  },
-  {
-   "ticker": "PSKY",
-   "fired": "2025-08-13",
-   "fire_close": 14.69,
-   "fire_r5": 35.9,
-   "fire_volr": 2.33,
-   "gap": true,
-   "gap_day": "2025-08-13",
-   "gap_ret": 36.7,
-   "gap_share": 102.4,
-   "pinned": false,
-   "pin_sessions": null,
-   "pin_dev": null,
-   "base": 10.81,
-   "entry_date": "2025-08-14",
-   "entry": 14.59,
-   "refires": 1,
-   "last_fire": "2025-09-11",
-   "last_refire": "2025-09-11",
-   "exit_date": "2026-02-04",
-   "exit": 10.64,
-   "exit_reason": "IGNITION_FAILED",
-   "sell_signal": "2026-02-03",
-   "checkpoint": null,
-   "checkpoint_ret": null,
-   "checkpoint_exit": null,
-   "price": null,
-   "to_stop": null,
-   "peak": 19.37,
-   "sessions_since_fire": 99,
-   "status": "CLOSED",
-   "ret": -27.1,
-   "peak_ret": 32.8,
-   "whatif_ret": -27.1,
-   "held": 119,
-   "weight_x": null,
    "cap_trim": null
   },
   {
@@ -4235,6 +4197,45 @@
    "held": 10,
    "weight_x": null,
    "cap_trim": null
+  },
+  {
+   "ticker": "PSKY",
+   "fired": "2025-08-13",
+   "fire_close": 14.69,
+   "fire_r5": 35.9,
+   "fire_volr": 2.33,
+   "gap": true,
+   "gap_day": "2025-08-13",
+   "gap_ret": 36.7,
+   "gap_share": 102.4,
+   "pinned": false,
+   "pin_sessions": null,
+   "pin_dev": null,
+   "base": 10.81,
+   "entry_date": "2025-08-14",
+   "entry": 14.59,
+   "refires": 1,
+   "last_fire": "2025-09-11",
+   "last_refire": "2025-09-11",
+   "exit_date": "2026-02-04",
+   "exit": 10.64,
+   "exit_reason": "IGNITION_FAILED",
+   "sell_signal": "2026-02-03",
+   "checkpoint": null,
+   "checkpoint_ret": null,
+   "checkpoint_exit": null,
+   "price": null,
+   "to_stop": null,
+   "peak": 19.37,
+   "sessions_since_fire": 99,
+   "status": "CLOSED",
+   "ret": -27.1,
+   "peak_ret": 32.8,
+   "whatif_ret": -27.1,
+   "held": 119,
+   "weight_x": null,
+   "cap_trim": null,
+   "kept": "no longer reproduced by the price rebuild; recorded exit kept"
   }
  ],
  "events": [
@@ -4677,12 +4678,6 @@
    "detail": "+13.4% week on 1.61x volume"
   },
   {
-   "date": "2025-08-13",
-   "ticker": "PSKY",
-   "type": "FIRE",
-   "detail": "+35.9% week on 2.33x volume"
-  },
-  {
    "date": "2025-08-18",
    "ticker": "TWLO",
    "type": "FIRE",
@@ -4735,12 +4730,6 @@
    "ticker": "ORCL",
    "type": "FIRE",
    "detail": "+38.1% week on 1.57x volume"
-  },
-  {
-   "date": "2025-09-11",
-   "ticker": "PSKY",
-   "type": "REFIRE",
-   "detail": "+18.5% week on 1.61x volume"
   },
   {
    "date": "2025-09-17",
@@ -4959,12 +4948,6 @@
    "detail": "63 sessions since last fire"
   },
   {
-   "date": "2025-12-10",
-   "ticker": "PSKY",
-   "type": "EDGE_EXPIRED",
-   "detail": "63 sessions since last fire"
-  },
-  {
    "date": "2025-12-17",
    "ticker": "LEN",
    "type": "SELL",
@@ -5062,12 +5045,6 @@
   },
   {
    "date": "2026-02-03",
-   "ticker": "PSKY",
-   "type": "SELL",
-   "detail": "closed 10.65 below pre-ignition base 10.81"
-  },
-  {
-   "date": "2026-02-03",
    "ticker": "TTMI",
    "type": "REFIRE",
    "detail": "+13.7% week on 1.5x volume"
@@ -5130,7 +5107,7 @@
    "date": "2026-02-11",
    "ticker": "MKSI",
    "type": "FIRE",
-   "detail": "+17.7% week on 1.6x volume"
+   "detail": "+17.8% week on 1.6x volume"
   },
   {
    "date": "2026-02-12",

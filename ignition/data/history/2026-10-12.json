@@ -1,6 +1,6 @@
 {
  "asof": "2026-10-12",
- "scanned_at": "2026-10-12 22:42 ET",
+ "scanned_at": "2026-10-13 10:46 ET",
  "summary": {
   "open": 34,
   "by_status": {
@@ -72,7 +72,7 @@
    "pct_up": 43.5
   },
   "carried": [],
-  "kept_closed": 0,
+  "kept_closed": 1,
   "cap_review": [
    "BE",
    "LITE"
