@@ -1,7 +1,7 @@
 {
  "version": 1,
  "asof": "2026-10-12",
- "run_at": "2026-10-13T14:39Z",
+ "run_at": "2026-10-14T00:37Z",
  "rule": {
   "lookback": 5,
   "drop_pct": -3.0,
