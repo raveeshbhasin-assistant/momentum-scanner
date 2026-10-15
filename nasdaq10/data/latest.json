@@ -1,7 +1,7 @@
 {
  "version": 1,
- "asof": "2026-10-12",
- "run_at": "2026-10-14T00:38Z",
+ "asof": "2026-10-13",
+ "run_at": "2026-10-15T00:08Z",
  "rule": {
   "n": 10,
   "mom_far": 252,
@@ -61,12 +61,12 @@
  "next": {
   "rank_on": "2026-10-30",
   "trade_on": "2026-11-02",
-  "sessions_to_rank": 14,
+  "sessions_to_rank": 13,
   "pending": false
  },
  "held_month": "2026-10",
  "held_since": "2026-10-01",
- "bench_this_month": 0.54,
+ "bench_this_month": 0.21,
  "strategies": [
   {
    "code": "SIZE",
@@ -78,10 +78,10 @@
      "rank_at_pick": 1,
      "metric_at_pick": 5514.7,
      "entry_px": 230.86,
-     "last": 226.32,
-     "ret": -1.97,
+     "last": 228.52,
+     "ret": -1.01,
      "rank_now": 1,
-     "metric_now": 5464.9
+     "metric_now": 5518.1
     },
     {
      "ticker": "AAPL",
@@ -89,10 +89,10 @@
      "rank_at_pick": 2,
      "metric_at_pick": 4860.2,
      "entry_px": 330.32,
-     "last": 340.97,
-     "ret": 3.22,
+     "last": 341.27,
+     "ret": 3.31,
      "rank_now": 2,
-     "metric_now": 4976.2
+     "metric_now": 4980.6
     },
     {
      "ticker": "GOOGL",
@@ -100,10 +100,10 @@
      "rank_at_pick": 3,
      "metric_at_pick": 4208.1,
      "entry_px": 338.24,
-     "last": 352.72,
-     "ret": 4.28,
+     "last": 353.78,
+     "ret": 4.59,
      "rank_now": 3,
-     "metric_now": 4313.7
+     "metric_now": 4326.7
     },
     {
      "ticker": "MSFT",
@@ -111,10 +111,10 @@
      "rank_at_pick": 4,
      "metric_at_pick": 3808.6,
      "entry_px": 512.8,
-     "last": 541.15,
-     "ret": 5.53,
+     "last": 543.45,
+     "ret": 5.98,
      "rank_now": 4,
-     "metric_now": 4018.3
+     "metric_now": 4035.4
     },
     {
      "ticker": "AMZN",
@@ -122,10 +122,10 @@
      "rank_at_pick": 5,
      "metric_at_pick": 2687.4,
      "entry_px": 248.23,
-     "last": 259.53,
-     "ret": 4.55,
+     "last": 258.58,
+     "ret": 4.17,
      "rank_now": 5,
-     "metric_now": 2799.4
+     "metric_now": 2789.1
     },
     {
      "ticker": "SPCX",
@@ -133,10 +133,10 @@
      "rank_at_pick": 6,
      "metric_at_pick": 1988.6,
      "entry_px": 148.07,
-     "last": 163.42,
-     "ret": 10.37,
+     "last": 156.54,
+     "ret": 5.72,
      "rank_now": 6,
-     "metric_now": 2154.2
+     "metric_now": 2063.5
     },
     {
      "ticker": "META",
@@ -144,10 +144,10 @@
      "rank_at_pick": 7,
      "metric_at_pick": 1847.4,
      "entry_px": 725.93,
-     "last": 742.96,
-     "ret": 2.35,
+     "last": 762.5,
+     "ret": 5.04,
      "rank_now": 7,
-     "metric_now": 1892.7
+     "metric_now": 1942.5
     },
     {
      "ticker": "AVGO",
@@ -155,10 +155,10 @@
      "rank_at_pick": 8,
      "metric_at_pick": 1676.5,
      "entry_px": 343.64,
-     "last": 354.73,
-     "ret": 3.23,
+     "last": 357.31,
+     "ret": 3.98,
      "rank_now": 8,
-     "metric_now": 1693.3
+     "metric_now": 1705.7
     },
     {
      "ticker": "TSLA",
@@ -166,10 +166,10 @@
      "rank_at_pick": 9,
      "metric_at_pick": 1401.3,
      "entry_px": 354.11,
-     "last": 378.03,
-     "ret": 6.75,
+     "last": 375.23,
+     "ret": 5.96,
      "rank_now": 9,
-     "metric_now": 1493.0
+     "metric_now": 1482.0
     },
     {
      "ticker": "MU",
@@ -177,98 +177,98 @@
      "rank_at_pick": 10,
      "metric_at_pick": 1202.9,
      "entry_px": 1097.39,
-     "last": 989.04,
-     "ret": -9.87,
+     "last": 953.19,
+     "ret": -13.14,
      "rank_now": 10,
-     "metric_now": 1119.0
+     "metric_now": 1078.5
     }
    ],
    "top_now": [
     {
      "ticker": "NVDA",
      "rank": 1,
-     "metric": 5464.9,
+     "metric": 5518.1,
      "name": "Nvidia"
     },
     {
      "ticker": "AAPL",
      "rank": 2,
-     "metric": 4976.2,
+     "metric": 4980.6,
      "name": "Apple Inc."
     },
     {
      "ticker": "GOOGL",
      "rank": 3,
-     "metric": 4313.7,
+     "metric": 4326.7,
      "name": "Alphabet Inc. (Class A)"
     },
     {
      "ticker": "MSFT",
      "rank": 4,
-     "metric": 4018.3,
+     "metric": 4035.4,
      "name": "Microsoft"
     },
     {
      "ticker": "AMZN",
      "rank": 5,
-     "metric": 2799.4,
+     "metric": 2789.1,
      "name": "Amazon"
     },
     {
      "ticker": "SPCX",
      "rank": 6,
-     "metric": 2154.2,
+     "metric": 2063.5,
      "name": "SpaceX"
     },
     {
      "ticker": "META",
      "rank": 7,
-     "metric": 1892.7,
+     "metric": 1942.5,
      "name": "Meta Platforms"
     },
     {
      "ticker": "AVGO",
      "rank": 8,
-     "metric": 1693.3,
+     "metric": 1705.7,
      "name": "Broadcom"
     },
     {
      "ticker": "TSLA",
      "rank": 9,
-     "metric": 1493.0,
+     "metric": 1482.0,
      "name": "Tesla, Inc."
     },
     {
      "ticker": "MU",
      "rank": 10,
-     "metric": 1119.0,
+     "metric": 1078.5,
      "name": "Micron Technology"
     },
     {
      "ticker": "AMD",
      "rank": 11,
-     "metric": 970.1,
+     "metric": 988.5,
      "name": "Advanced Micro Devices"
     },
     {
      "ticker": "WMT",
      "rank": 12,
-     "metric": 897.1,
+     "metric": 890.8,
      "name": "Walmart"
     },
     {
      "ticker": "ASML",
      "rank": 13,
-     "metric": 672.3,
+     "metric": 659.8,
      "name": "ASML Holding"
     }
    ],
    "would_enter": [],
    "would_leave": [],
    "action": null,
-   "this_month": 2.74,
-   "since_start": 2.74,
-   "bench_since_start": 0.54,
+   "this_month": 2.36,
+   "since_start": 2.36,
+   "bench_since_start": 0.21,
    "months_closed": 0,
    "months_ahead": 0
   },
@@ -282,10 +282,10 @@
      "rank_at_pick": 1,
      "metric_at_pick": 1280.4,
      "entry_px": 1787.69,
-     "last": 1487.33,
-     "ret": -16.8,
+     "last": 1482.33,
+     "ret": -17.08,
      "rank_now": 1,
-     "metric_now": 1159.5
+     "metric_now": 1227.5
     },
     {
      "ticker": "MU",
@@ -293,10 +293,10 @@
      "rank_at_pick": 2,
      "metric_at_pick": 485.9,
      "entry_px": 1097.39,
-     "last": 989.04,
-     "ret": -9.87,
+     "last": 953.19,
+     "ret": -13.14,
      "rank_now": 4,
-     "metric_now": 407.6
+     "metric_now": 409.3
     },
     {
      "ticker": "LITE",
@@ -304,10 +304,10 @@
      "rank_at_pick": 3,
      "metric_at_pick": 462.7,
      "entry_px": 1045.78,
-     "last": 995.41,
-     "ret": -4.82,
+     "last": 987.99,
+     "ret": -5.53,
      "rank_now": 2,
-     "metric_now": 480.3
+     "metric_now": 458.1
     },
     {
      "ticker": "WDC",
@@ -315,10 +315,10 @@
      "rank_at_pick": 4,
      "metric_at_pick": 286.5,
      "entry_px": 462.56,
-     "last": 386.94,
-     "ret": -16.35,
+     "last": 380.71,
+     "ret": -17.7,
      "rank_now": 6,
-     "metric_now": 274.3
+     "metric_now": 270.6
     },
     {
      "ticker": "STX",
@@ -326,10 +326,10 @@
      "rank_at_pick": 5,
      "metric_at_pick": 264.5,
      "entry_px": 945.57,
-     "last": 753.25,
-     "ret": -20.34,
+     "last": 747.2,
+     "ret": -20.98,
      "rank_now": 5,
-     "metric_now": 276.4
+     "metric_now": 277.7
     },
     {
      "ticker": "AMD",
@@ -337,10 +337,10 @@
      "rank_at_pick": 6,
      "metric_at_pick": 191.7,
      "entry_px": 615.73,
-     "last": 594.24,
-     "ret": -3.49,
+     "last": 605.53,
+     "ret": -1.66,
      "rank_now": 10,
-     "metric_now": 121.6
+     "metric_now": 129.6
     },
     {
      "ticker": "TER",
@@ -348,10 +348,10 @@
      "rank_at_pick": 7,
      "metric_at_pick": 160.8,
      "entry_px": 415.79,
-     "last": 383.85,
-     "ret": -7.68,
-     "rank_now": 8,
-     "metric_now": 162.0
+     "last": 380.29,
+     "ret": -8.54,
+     "rank_now": 9,
+     "metric_now": 149.7
     },
     {
      "ticker": "INTC",
@@ -359,10 +359,10 @@
      "rank_at_pick": 8,
      "metric_at_pick": 159.6,
      "entry_px": 120.0,
-     "last": 101.35,
-     "ret": -15.54,
+     "last": 102.81,
+     "ret": -14.33,
      "rank_now": 7,
-     "metric_now": 172.3
+     "metric_now": 167.2
     },
     {
      "ticker": "MRVL",
@@ -370,10 +370,10 @@
      "rank_at_pick": 9,
      "metric_at_pick": 157.4,
      "entry_px": 268.08,
-     "last": 265.86,
-     "ret": -0.81,
-     "rank_now": 9,
-     "metric_now": 160.9
+     "last": 268.73,
+     "ret": 0.26,
+     "rank_now": 8,
+     "metric_now": 156.0
     },
     {
      "ticker": "LRCX",
@@ -381,90 +381,90 @@
      "rank_at_pick": 10,
      "metric_at_pick": 130.8,
      "entry_px": 340.1,
-     "last": 309.56,
-     "ret": -8.98,
+     "last": 301.11,
+     "ret": -11.46,
      "rank_now": 11,
-     "metric_now": 112.3
+     "metric_now": 108.9
     }
    ],
    "top_now": [
     {
      "ticker": "SNDK",
      "rank": 1,
-     "metric": 1159.5,
+     "metric": 1227.5,
      "name": "Sandisk"
     },
     {
      "ticker": "LITE",
      "rank": 2,
-     "metric": 480.3,
+     "metric": 458.1,
      "name": "Lumentum"
     },
     {
      "ticker": "MRNA",
      "rank": 3,
-     "metric": 423.0,
+     "metric": 446.7,
      "name": "Moderna"
     },
     {
      "ticker": "MU",
      "rank": 4,
-     "metric": 407.6,
+     "metric": 409.3,
      "name": "Micron Technology"
     },
     {
      "ticker": "STX",
      "rank": 5,
-     "metric": 276.4,
+     "metric": 277.7,
      "name": "Seagate Technology"
     },
     {
      "ticker": "WDC",
      "rank": 6,
-     "metric": 274.3,
+     "metric": 270.6,
      "name": "Western Digital"
     },
     {
      "ticker": "INTC",
      "rank": 7,
-     "metric": 172.3,
+     "metric": 167.2,
      "name": "Intel"
     },
     {
-     "ticker": "TER",
+     "ticker": "MRVL",
      "rank": 8,
-     "metric": 162.0,
-     "name": "Teradyne"
+     "metric": 156.0,
+     "name": "Marvell Technology"
     },
     {
-     "ticker": "MRVL",
+     "ticker": "TER",
      "rank": 9,
-     "metric": 160.9,
-     "name": "Marvell Technology"
+     "metric": 149.7,
+     "name": "Teradyne"
     },
     {
      "ticker": "AMD",
      "rank": 10,
-     "metric": 121.6,
+     "metric": 129.6,
      "name": "Advanced Micro Devices"
     },
     {
      "ticker": "LRCX",
      "rank": 11,
-     "metric": 112.3,
+     "metric": 108.9,
      "name": "Lam Research"
     },
     {
-     "ticker": "AMAT",
+     "ticker": "FTNT",
      "rank": 12,
-     "metric": 108.4,
-     "name": "Applied Materials"
+     "metric": 104.9,
+     "name": "Fortinet"
     },
     {
-     "ticker": "FTNT",
+     "ticker": "AMAT",
      "rank": 13,
-     "metric": 81.1,
-     "name": "Fortinet"
+     "metric": 103.2,
+     "name": "Applied Materials"
     }
    ],
    "would_enter": [
@@ -474,9 +474,9 @@
     "LRCX"
    ],
    "action": null,
-   "this_month": -10.57,
-   "since_start": -10.57,
-   "bench_since_start": 0.54,
+   "this_month": -11.11,
+   "since_start": -11.11,
+   "bench_since_start": 0.21,
    "months_closed": 0,
    "months_ahead": 0
   }
@@ -594,11 +594,11 @@
      }
     ]
    },
-   "through": "2026-10-12",
+   "through": "2026-10-13",
    "ret": {
-    "SIZE": 2.74,
-    "MOM": -10.57,
-    "QQQ": 0.54
+    "SIZE": 2.36,
+    "MOM": -11.11,
+    "QQQ": 0.21
    }
   }
  ],
