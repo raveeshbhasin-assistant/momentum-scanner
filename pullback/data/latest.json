@@ -1,7 +1,7 @@
 {
  "version": 1,
  "asof": "2026-10-13",
- "run_at": "2026-10-14T12:31Z",
+ "run_at": "2026-10-15T00:06Z",
  "rule": {
   "lookback": 5,
   "drop_pct": -3.0,
@@ -335,7 +335,7 @@
   }
  ],
  "summary": {
-  "since": "2026-10-12",
+  "since": "2026-10-13",
   "new_signals": [],
   "new_exits": [],
   "open": 0,
