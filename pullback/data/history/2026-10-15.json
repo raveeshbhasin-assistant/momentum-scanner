@@ -1,7 +1,7 @@
 {
  "version": 1,
  "asof": "2026-10-15",
- "run_at": "2026-10-15T23:52Z",
+ "run_at": "2026-10-16T11:58Z",
  "rule": {
   "lookback": 5,
   "drop_pct": -3.0,
@@ -341,7 +341,7 @@
    "close_at_signal": 728.95,
    "sma_at_signal": 673.92,
    "entry": "2026-10-15",
-   "entry_px": 718.54,
+   "entry_px": 718.55,
    "exit": null,
    "exit_px": null,
    "ret": null,
@@ -352,7 +352,7 @@
   }
  ],
  "summary": {
-  "since": "2026-10-14",
+  "since": "2026-10-15",
   "new_signals": [],
   "new_exits": [],
   "open": 1,
