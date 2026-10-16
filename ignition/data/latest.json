@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-15",
- "scanned_at": "2026-10-15 19:47 ET",
+ "scanned_at": "2026-10-16 08:05 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -73,7 +73,7 @@
   "open_positions": {
    "n": 33,
    "avg": 69.7,
-   "median": 21.2,
+   "median": 21.5,
    "pct_up": 84.8
   },
   "closed_positions": {
@@ -99,7 +99,7 @@
    "DLR",
    "RMBS"
   ],
-  "since": "2026-10-14",
+  "since": "2026-10-15",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
@@ -1238,7 +1238,7 @@
   {
    "ticker": "DAL",
    "fired": "2026-03-19",
-   "fire_close": 64.68,
+   "fire_close": 64.5,
    "fire_r5": 12.2,
    "fire_volr": 1.51,
    "gap": false,
@@ -1248,9 +1248,9 @@
    "pinned": false,
    "pin_sessions": null,
    "pin_dev": null,
-   "base": 57.64,
+   "base": 57.48,
    "entry_date": "2026-03-20",
-   "entry": 64.42,
+   "entry": 64.24,
    "refires": 0,
    "last_fire": "2026-03-19",
    "last_refire": null,
@@ -1260,17 +1260,17 @@
    "sell_signal": null,
    "checkpoint": "2026-09-21",
    "checkpoint_ret": 28.1,
-   "checkpoint_exit": 84.88,
+   "checkpoint_exit": 84.64,
    "price": 78.08,
-   "to_stop": -26.2,
-   "peak": 93.43,
+   "to_stop": -26.4,
+   "peak": 93.17,
    "sessions_since_fire": 145,
    "status": "EDGE_EXPIRED",
-   "ret": 21.2,
+   "ret": 21.5,
    "peak_ret": 45.0,
    "whatif_ret": 31.8,
    "held": 144,
-   "weight_x": 0.71,
+   "weight_x": 0.72,
    "cap_trim": null
   },
   {
@@ -2645,7 +2645,7 @@
    "ticker": "MKSI",
    "fired": "2026-02-11",
    "fire_close": 258.36,
-   "fire_r5": 17.8,
+   "fire_r5": 17.7,
    "fire_volr": 1.6,
    "gap": false,
    "gap_day": "2026-02-06",
@@ -5108,7 +5108,7 @@
    "date": "2026-02-11",
    "ticker": "MKSI",
    "type": "FIRE",
-   "detail": "+17.8% week on 1.6x volume"
+   "detail": "+17.7% week on 1.6x volume"
   },
   {
    "date": "2026-02-12",
