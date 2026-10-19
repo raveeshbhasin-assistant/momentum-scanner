@@ -1,6 +1,6 @@
 {
  "asof": "2026-10-16",
- "scanned_at": "2026-10-16 19:49 ET",
+ "scanned_at": "2026-10-19 10:18 ET",
  "summary": {
   "open": 33,
   "by_status": {
@@ -46,7 +46,7 @@
    "DLR",
    "RMBS"
   ],
-  "since": "2026-10-15",
+  "since": "2026-10-16",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
