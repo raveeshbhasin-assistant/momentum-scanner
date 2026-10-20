@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-16",
- "scanned_at": "2026-10-19 10:18 ET",
+ "scanned_at": "2026-10-19 20:34 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -5974,7 +5974,7 @@
    "ticker": "MRNA",
    "price": 218.01,
    "r63": 266.5,
-   "rs63": 267.0,
+   "rs63": 266.9,
    "volr": 1.36,
    "pct_from_hi": -7.8
   },
@@ -6070,7 +6070,7 @@
    "ticker": "APA",
    "price": 49.15,
    "r63": 42.1,
-   "rs63": 42.6,
+   "rs63": 42.5,
    "volr": 0.99,
    "pct_from_hi": 0.0
   },
