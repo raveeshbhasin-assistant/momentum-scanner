@@ -16,6 +16,9 @@ on:
     # the previous session. A second run before the open picks up what it missed.
     # scan.py drops today's live bar if this one ever drifts past 09:30 ET.
     - cron: "0 7 * * 1-5"     # 03:00 EDT / 02:00 EST — before the open, after Yahoo settles
+    # Third chance before the open: on 2026-10-20 the 07:00 run never fired and Monday
+    # stayed unscored until a manual run. A run that finds the data current is cheap.
+    - cron: "0 11 * * 1-5"    # 07:00 EDT / 06:00 EST
   workflow_dispatch:
     inputs:
       test_email:
@@ -40,7 +43,7 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 170      # the scan may wait up to IGNITION_WAIT_MINUTES for Yahoo (below)
     steps:
       - uses: actions/checkout@v4
 
@@ -67,7 +70,13 @@ jobs:
           mkdir -p ignition/data
           if [ -d ../data/ignition/data ]; then cp -r ../data/ignition/data/. ignition/data/; fi
 
+      # The run that does fire keeps trying: while the session that has closed is
+      # not on Yahoo yet, scan.py re-downloads every 20 minutes for up to this
+      # long, then publishes what it has. This is the "manual run when it has not
+      # run", automated (v1.13.0). The repo is public, so Actions minutes are free.
       - name: Scan
+        env:
+          IGNITION_WAIT_MINUTES: "120"
         run: python ignition/scan.py
 
       - name: Commit the run to ignition-data

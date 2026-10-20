@@ -478,3 +478,82 @@ def test_page_renders_a_pending_sell_from_an_older_run(monkeypatch, tmp_path):
     page = TestClient(web.app).get("/ignition")
     assert page.status_code == 200
     assert "CNH" in page.text
+
+
+# ── v1.13.0: wait for the closed session ───────────────────────────────────────
+from datetime import datetime as _dt
+
+
+def _et(y, m, d, h, mi=0):
+    return _dt(y, m, d, h, mi, tzinfo=ig.ET)
+
+
+def test_expected_session_is_the_last_weekday_whose_close_has_passed():
+    assert ig.expected_session(_et(2026, 10, 19, 20, 34)) == "2026-10-19"   # Monday evening
+    assert ig.expected_session(_et(2026, 10, 19, 10, 18)) == "2026-10-16"   # Monday morning: Friday
+    assert ig.expected_session(_et(2026, 10, 20, 3, 0)) == "2026-10-19"     # Tuesday 3am
+    assert ig.expected_session(_et(2026, 10, 17, 12, 0)) == "2026-10-16"    # Saturday
+    assert ig.expected_session(_et(2026, 10, 18, 12, 0)) == "2026-10-16"    # Sunday
+    assert ig.expected_session(_et(2026, 10, 16, 16, 0)) == "2026-10-16"    # Friday at the close
+
+
+def _frames(last_date):
+    idx = pd.bdate_range(end=last_date, periods=3)
+    df = pd.DataFrame({"A": [1.0, 1.0, 1.0], "B": [1.0, 1.0, 1.0]}, index=idx)
+    return df, df, df
+
+
+def test_wait_for_session_retries_until_the_closed_session_arrives():
+    served = [_frames("2026-10-16"), _frames("2026-10-16"), _frames("2026-10-19")]
+    calls, naps = [], []
+    fetch = lambda t: (calls.append(1), served[len(calls) - 1])[1]
+    o, c, v = ig.wait_for_session(["A", "B"], attempts=6, every_s=1200, fetch=fetch,
+                                  now_fn=lambda: _et(2026, 10, 19, 20, 34), sleep_fn=naps.append)
+    assert str(c.index[-1].date()) == "2026-10-19"
+    assert len(calls) == 3 and naps == [1200, 1200]
+
+
+def test_wait_for_session_publishes_what_it_has_after_the_last_attempt():
+    naps = []
+    o, c, v = ig.wait_for_session(["A"], attempts=3, every_s=1, fetch=lambda t: _frames("2026-10-16"),
+                                  now_fn=lambda: _et(2026, 10, 19, 20, 34), sleep_fn=naps.append)
+    assert str(c.index[-1].date()) == "2026-10-16" and naps == [1, 1]      # a holiday looks like this
+
+
+def test_wait_for_session_single_attempt_is_the_old_behaviour():
+    naps = []
+    o, c, v = ig.wait_for_session(["A"], attempts=1, fetch=lambda t: _frames("2026-10-16"),
+                                  now_fn=lambda: _et(2026, 10, 19, 20, 34), sleep_fn=naps.append)
+    assert str(c.index[-1].date()) == "2026-10-16" and naps == []
+    o, c, v = ig.wait_for_session(["A"], attempts=0, fetch=lambda t: _frames("2026-10-16"),
+                                  now_fn=lambda: _et(2026, 10, 19, 20, 34), sleep_fn=naps.append)
+    assert naps == []
+
+
+def test_wait_for_session_retries_a_failed_download_and_raises_on_the_last():
+    n = {"calls": 0}
+
+    def flaky(t):
+        n["calls"] += 1
+        if n["calls"] < 2:
+            raise RuntimeError("only 800/903 tickers have a close")
+        return _frames("2026-10-19")
+
+    o, c, v = ig.wait_for_session(["A"], attempts=3, every_s=1, fetch=flaky,
+                                  now_fn=lambda: _et(2026, 10, 19, 20, 34), sleep_fn=lambda s: None)
+    assert n["calls"] == 2
+    with pytest.raises(RuntimeError):
+        ig.wait_for_session(["A"], attempts=2, every_s=1, sleep_fn=lambda s: None,
+                            fetch=lambda t: (_ for _ in ()).throw(RuntimeError("down")))
+
+
+def test_partial_trailing_bar_is_dropped_and_logged(capsys):
+    idx = pd.bdate_range("2026-10-14", periods=4)
+    c = pd.DataFrame({t: [1.0, 1.0, 1.0, np.nan] for t in "ABCDEFGH"}, index=idx)
+    c.loc[idx[-1], ["A", "B"]] = 1.0                                   # 2 of 8 have Monday
+    o, c2, v = ig.drop_partial_bar(c, c, c)
+    assert str(c2.index[-1].date()) == "2026-10-16"
+    assert "dropped trailing bar 2026-10-19: only 2/8 tickers have it" in capsys.readouterr().err
+    c.loc[idx[-1], :] = 1.0                                            # everyone has it: kept, no log
+    o, c3, v = ig.drop_partial_bar(c, c, c)
+    assert str(c3.index[-1].date()) == "2026-10-19" and capsys.readouterr().err == ""

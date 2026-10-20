@@ -57,6 +57,7 @@ the reason. And a scan missing more than 3% of the universe is refused
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 from datetime import datetime, timedelta, timezone
@@ -91,6 +92,8 @@ WEIGHT_CAP = 2.0                  # 2x cap review: weight vs an equal share of t
 MIN_COVERAGE = 0.97               # refuse to publish if fewer tickers than this have a last close
 MATCH_DAYS = 7                    # carry_forward: same ticker, fire dates this close = same position
 CLOSE_HOUR_ET = 16                # a bar dated today is a live bar until this hour (US close 16:00 ET)
+PARTIAL_SHARE = 0.5               # a trailing bar fewer tickers than this have is Yahoo still settling: dropped
+RETRY_EVERY_S = 20 * 60           # wait_for_session: minutes between attempts while the closed session is missing
 GAP_SHARE = 0.67                  # a "gap" fire: the ignition week's largest session is >= this share of the
                                   # 5-session return (PTC 2026-10-07: +33.5% of +38.0%).
 PIN_BAND = 0.02                   # "pinned" = every close since the gap within this of the gap-day close ...
@@ -157,10 +160,26 @@ def download(tickers: list[str]) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFra
         return df.loc[:, ~df.columns.duplicated()].sort_index()
 
     o, c, v = drop_unfinished_bar(*(join(opens), join(closes), join(vols)))
-    # Drop a trailing row only a handful of tickers have (a partial intraday bar).
-    if len(c) > 1 and c.iloc[-1].notna().mean() < 0.5:
-        o, c, v = o.iloc[:-1], c.iloc[:-1], v.iloc[:-1]
+    o, c, v = drop_partial_bar(o, c, v)
+    if len(c):
+        print(f"last close {c.index[-1].date()}: {int(c.iloc[-1].notna().sum())}/{len(tickers)} tickers have it",
+              file=sys.stderr)
     check_coverage(c, len(tickers))
+    return o, c, v
+
+
+def drop_partial_bar(o: pd.DataFrame, c: pd.DataFrame, v: pd.DataFrame
+                     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Drop a trailing row only some tickers have: Yahoo publishes the day's bar
+    ticker by ticker through the evening, so an early run sees it for a fraction
+    of the universe. Says so in the log (v1.13.0) so a run that scores the
+    previous session explains itself."""
+    if len(c) > 1:
+        have, n = int(c.iloc[-1].notna().sum()), c.shape[1]
+        if have / n < PARTIAL_SHARE:
+            print(f"dropped trailing bar {c.index[-1].date()}: only {have}/{n} tickers have it "
+                  f"(Yahoo has not settled it yet)", file=sys.stderr)
+            return o.iloc[:-1], c.iloc[:-1], v.iloc[:-1]
     return o, c, v
 
 
@@ -175,8 +194,60 @@ def drop_unfinished_bar(o: pd.DataFrame, c: pd.DataFrame, v: pd.DataFrame,
     a close. A bar dated today in ET is kept only once the close has happened."""
     now = (now or datetime.now(ET)).astimezone(ET)
     if len(c) and c.index[-1].date() == now.date() and now.hour < CLOSE_HOUR_ET:
+        print(f"dropped live bar {c.index[-1].date()}: the session has not closed ({now:%H:%M} ET)", file=sys.stderr)
         return o.iloc[:-1], c.iloc[:-1], v.iloc[:-1]
     return o, c, v
+
+
+def expected_session(now: datetime | None = None) -> str:
+    """The most recent weekday whose close has passed, in ET. Market holidays
+    are not known here: on one, wait_for_session spends its attempts and then
+    publishes what it has (the previous session, correctly)."""
+    now = (now or datetime.now(ET)).astimezone(ET)
+    d = now.date()
+    if now.hour < CLOSE_HOUR_ET or d.weekday() >= 5:
+        d -= timedelta(days=1)
+    while d.weekday() >= 5:
+        d -= timedelta(days=1)
+    return d.isoformat()
+
+
+def wait_for_session(tickers: list[str], attempts: int, every_s: float = RETRY_EVERY_S,
+                     fetch=None, now_fn=None, sleep_fn=time.sleep
+                     ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """download(), repeated while the last close is older than the session that
+    has already closed, up to `attempts` times, `every_s` apart (v1.13.0).
+
+    GitHub starts the cron hours late and Yahoo publishes the day's bars
+    through the evening, so a run that fires at the wrong moment used to score
+    the previous session and leave the day to the next run, which might not
+    fire either (2026-10-19: Monday stayed unscored until a manual run on
+    Tuesday morning). Now the run that does fire keeps trying. A download that
+    fails outright (partial coverage, transport) is retried the same way; the
+    last attempt's error propagates. After the last attempt the data is
+    published as is: an older session, correctly, on a holiday."""
+    fetch = fetch or download
+    for attempt in range(1, max(1, attempts) + 1):
+        last = attempt == max(1, attempts)
+        try:
+            o, c, v = fetch(tickers)
+        except RuntimeError as e:
+            if last:
+                raise
+            print(f"attempt {attempt}: {e}; retrying in {every_s / 60:.0f} min", file=sys.stderr)
+            sleep_fn(every_s)
+            continue
+        asof, want = str(c.index[-1].date()), expected_session(now_fn() if now_fn else None)
+        if asof >= want:
+            return o, c, v
+        if last:
+            print(f"giving up after {attempt} attempts: publishing {asof}; session {want} still not on Yahoo "
+                  f"(a holiday, or it settles later)", file=sys.stderr)
+            return o, c, v
+        print(f"attempt {attempt}: last close {asof} is older than the closed session {want}; "
+              f"retrying in {every_s / 60:.0f} min", file=sys.stderr)
+        sleep_fn(every_s)
+    raise AssertionError("unreachable")
 
 
 def check_coverage(close: pd.DataFrame, n_tickers: int) -> None:
@@ -568,7 +639,13 @@ def main() -> int:
     if LATEST.exists():                       # restored from the ignition-data branch
         prev_positions = json.loads(LATEST.read_text(encoding="utf-8")).get("positions")
 
-    o, c, v = download(load_universe())
+    # IGNITION_WAIT_MINUTES (the workflow sets it): keep retrying for this long while
+    # the session that has closed is not on Yahoo yet. Unset or 0 = one attempt.
+    try:
+        wait_min = max(0, int(os.getenv("IGNITION_WAIT_MINUTES") or 0))
+    except ValueError:
+        wait_min = 0
+    o, c, v = wait_for_session(load_universe(), attempts=1 + wait_min * 60 // RETRY_EVERY_S)
     result = compute(o, c, v, prev_asof, prev_positions)
     check_not_older(result["asof"], prev_asof)
     s = result["summary"]

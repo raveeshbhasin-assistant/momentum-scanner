@@ -7,7 +7,46 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.12.2 — 2026-10-12 **(current)**
+## v1.13.0 — 2026-10-20 **(current)**
+
+**What** The Ignition scan no longer leaves a session unscored when the
+schedule or Yahoo is late. Three changes, all in the run of record:
+1. **The run that fires keeps trying.** `scan.wait_for_session` compares the
+   last close it downloaded with the most recent weekday whose close has
+   passed (`expected_session`, ET). While that session is missing it
+   re-downloads every 20 minutes, for up to `IGNITION_WAIT_MINUTES` (the
+   workflow sets 120), then publishes what it has. A download that fails
+   outright (partial coverage, transport) is retried the same way; the last
+   attempt's error still fails the run. This is the "run it manually when it
+   has not run" automated: whichever cron slot fires does the catching up.
+2. **A third pre-open slot** at 11:00 UTC (07:00 EDT), after 21:30 and 07:00.
+3. **The log says why.** A trailing bar dropped because fewer than half the
+   universe has it (`drop_partial_bar`), a live bar dropped before the close,
+   and the final "last close <date>: n/903 tickers" line are printed, so a
+   run that scores the previous session explains itself in the Actions log.
+
+**Why** 2026-10-19 (Monday): the morning run fired seven hours late, during
+the session, so it correctly scored Friday; the evening run at 20:34 ET
+found Yahoo had Monday for under half the universe and scored Friday again;
+the 07:00 UTC run on Tuesday never fired. Monday stayed unscored until a
+manual run at 11:07 UTC. Each guard did its job; what was missing was a
+retry. Market holidays are not known to the scan: on one, the evening run
+spends its two hours and publishes the previous session, which is correct.
+The repo is public, so the waiting costs no Actions minutes.
+
+**Verified** Seven new tests: `expected_session` across weekday/weekend/
+before- and after-close cases; retry until the session arrives; publish
+what it has after the last attempt; attempts=1 and 0 are the old single
+download; a failed download is retried and the last failure raises; the
+partial-bar drop and its log line. Ignition suite green. Workflow YAML
+parses. Ledger rule, exit rule and data shape unchanged.
+
+**Rollback** Set `IGNITION_WAIT_MINUTES` to 0 in the workflow (single
+attempt, as before) or revert the commit.
+
+---
+
+## v1.12.2 — 2026-10-12
 
 **What** The ignition workflow's "Run workflow" button gains a `test_email`
 box. Ticked, the email step sends a mail with subject prefixed `[TEST]`,

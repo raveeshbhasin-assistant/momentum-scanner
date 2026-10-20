@@ -110,12 +110,19 @@ together with the fraction to sell to get back to 2×.
 
 - **Scan of record:** `.github/workflows/ignition-daily.yml` runs
   `python ignition/scan.py` weekdays at 21:30 UTC, after the close, and
-  again at 07:00 UTC (3am ET), before the next open. GitHub starts cron jobs hours
-  late, and in the evening Yahoo often has the day's bar for under half the
-  universe, so the evening run frequently scores the previous session; the
-  morning run picks up what it missed (v1.11.1). The scan drops a bar dated
+  again at 07:00 and 11:00 UTC (3am and 7am ET), before the next open. GitHub
+  starts cron jobs hours late (or skips a slot), and in the evening Yahoo
+  often has the day's bar for under half the universe. So the run that does
+  fire keeps trying (v1.13.0, `scan.wait_for_session`): while the last close
+  it downloaded is older than the most recent weekday whose close has passed
+  (`expected_session`), it re-downloads every 20 minutes for up to
+  `IGNITION_WAIT_MINUTES` (120 in the workflow), then publishes what it has.
+  Holidays are not known to it: on one, the evening run spends its budget
+  and publishes the previous session, correctly. The scan drops a bar dated
   today until 16:00 ET, so a run that drifts past the open never scores live
-  prices as a close. It
+  prices as a close, and a trailing bar fewer than half the tickers have is
+  dropped as unsettled; both drops, and the final coverage, are printed to
+  the run log. It
   commits `latest.json`, `runs.jsonl` (one line per run) and
   `history/<asof>.json` to the **`ignition-data` branch**. Git keeps every
   run, and pushes to that branch don't redeploy Railway. You can also run
