@@ -1,6 +1,6 @@
 {
  "asof": "2026-10-19",
- "scanned_at": "2026-10-20 07:09 ET",
+ "scanned_at": "2026-10-20 07:16 ET",
  "summary": {
   "open": 33,
   "by_status": {
@@ -46,21 +46,12 @@
    "DLR",
    "RMBS"
   ],
-  "since": "2026-10-16",
-  "new_events": [
-   {
-    "date": "2026-10-19",
-    "ticker": "DOCN",
-    "type": "CHECKPOINT",
-    "detail": "126 sessions in, up +17.8% (under +30%): 6-month take-profit review"
-   }
-  ],
+  "since": "2026-10-19",
+  "new_events": [],
   "new_fires": [],
   "new_sells": [],
   "new_expired": [],
-  "new_checkpoints": [
-   "DOCN"
-  ],
+  "new_checkpoints": [],
   "checkpoint_open": [
    "CYTK",
    "DAL",
