@@ -22,6 +22,9 @@ This deployment does NOT touch the existing momentum scanner Railway service.
    - `FMP_API_KEY` — same value as the momentum scanner
    - `FINNHUB_API_KEY` — same value as the momentum scanner
    - `TZ=America/New_York` — required so APScheduler cron evaluates 18:00 ET correctly
+   - `GITHUB_DISPATCH_TOKEN` — optional; powers the "Run scan now" button on `/ignition` (v1.14.0).
+     A fine-grained GitHub personal access token scoped to this repo with **Actions: Read and write**.
+     Without it the button answers 503 and explains; scheduled runs are unaffected.
 
 5. **Set a domain** (Railway settings → Networking → Generate Domain). Note the URL — that's your themes_web URL. The live one is `alert-youthfulness-production-354a.up.railway.app` (service `alert-youthfulness` in project `reasonable-forgiveness`).
 

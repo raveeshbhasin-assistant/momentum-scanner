@@ -12,12 +12,14 @@ import logging
 import os
 import subprocess
 import sys
+import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
 logger = logging.getLogger(__name__)
@@ -152,6 +154,60 @@ def refresh_ignition() -> dict:
         if not _IGNITION_LATEST.exists():
             return run_local_ignition_scan()
         return {"source": "github", "ok": False, "error": str(e)}
+
+
+IGNITION_REPO = os.getenv("IGNITION_REPO", "raveeshbhasin-assistant/momentum-scanner")
+IGNITION_WORKFLOW = "ignition-daily.yml"
+GITHUB_API = "https://api.github.com"
+FOLLOWUP_SYNC_MINUTES = (3, 6, 12, 25)   # after a dispatch: a normal run lands in ~2 min; a waiting one later
+
+
+def dispatch_ignition_scan() -> dict:
+    """Start the run of record now (v1.14.0): a workflow_dispatch of
+    ignition-daily.yml on main, exactly what "Run workflow" in the Actions tab
+    does. The run scans, commits to ignition-data and emails any new fire;
+    this service then syncs the result (schedule_ignition_followup_syncs, and
+    the usual 30-minute sync for a run that waits for Yahoo).
+
+    Needs GITHUB_DISPATCH_TOKEN on this service: a fine-grained GitHub token
+    for the repo with Actions: read and write. Without it the button says so
+    and nothing runs. Never raises; the result carries an http-ish `status`."""
+    token = (os.getenv("GITHUB_DISPATCH_TOKEN") or "").strip()
+    if not token:
+        return {"ok": False, "status": 503,
+                "error": "GITHUB_DISPATCH_TOKEN is not set on this service. Set it on Railway (a fine-grained "
+                         "GitHub token with Actions: read and write on the repo), or use Run workflow in the Actions tab."}
+    url = f"{GITHUB_API}/repos/{IGNITION_REPO}/actions/workflows/{IGNITION_WORKFLOW}/dispatches"
+    req = urllib.request.Request(url, data=json.dumps({"ref": "main"}).encode(), method="POST", headers={
+        "Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28", "Content-Type": "application/json", "User-Agent": "themes-web"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            github_status = resp.status
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode(errors="replace")[:300]
+        logger.warning(f"[scheduler] ignition dispatch refused: HTTP {e.code} {detail}")
+        return {"ok": False, "status": 502, "error": f"GitHub refused the dispatch: HTTP {e.code} {detail}"}
+    except Exception as e:  # noqa: BLE001 - report to the page, never raise
+        logger.warning(f"[scheduler] ignition dispatch failed: {e}")
+        return {"ok": False, "status": 502, "error": f"GitHub unreachable: {e}"}
+    followups = schedule_ignition_followup_syncs()
+    logger.info(f"[scheduler] ignition scan dispatched (HTTP {github_status}); follow-up syncs at {followups} min")
+    return {"ok": True, "status": 200, "github_status": github_status, "followup_syncs_min": followups,
+            "runs_url": f"https://github.com/{IGNITION_REPO}/actions/workflows/{IGNITION_WORKFLOW}"}
+
+
+def schedule_ignition_followup_syncs(minutes: tuple = FOLLOWUP_SYNC_MINUTES) -> list[int]:
+    """One-off refresh_ignition jobs so a dispatched run shows up on the page
+    without waiting for the 30-minute sync. Re-dispatching replaces them."""
+    if _scheduler is None or not _scheduler.running:
+        return []
+    now = datetime.now(timezone.utc)
+    for m in minutes:
+        _scheduler.add_job(refresh_ignition, trigger=DateTrigger(run_date=now + timedelta(minutes=m)),
+                           id=f"ignition_sync_followup_{m}", name=f"Ignition sync {m} min after a dispatch",
+                           replace_existing=True, misfire_grace_time=600)
+    return list(minutes)
 
 
 _PULLBACK_DATA = _PROJECT_ROOT / "pullback" / "data"

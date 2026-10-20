@@ -14,6 +14,13 @@
   .chip { font-size: 11.5px; padding: 4px 10px; border-radius: 999px; background: var(--bg-elev); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
   .chip b { color: var(--text-primary); font-weight: 500; }
   .chip.warn { background: var(--text-warning-bg); color: var(--text-warning); }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; }
+  .act { font: inherit; font-size: 12px; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+         border: 1px solid var(--text-primary); background: var(--text-primary); color: var(--bg-elev); }
+  .act.secondary { background: transparent; color: var(--text-primary); }
+  .act:disabled { opacity: .5; cursor: wait; }
+  .act-msg { font-size: 12px; color: var(--text-secondary); }
+  .act-msg.warn { color: var(--text-warning); }
 
   .alerts { border: 0.5px solid var(--border-strong); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 22px; background: var(--bg-surface); }
   .alerts-head { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; }
@@ -117,12 +124,17 @@
     cut the worst drawdown at nearly every portfolio size for about 0.5 points of annual return. It is risk control, not a return edge.</div>
 </div>
 
+<div class="actions">
+  <button class="act" id="run-now" type="button" title="Start the GitHub Actions run of record now: scan, commit to ignition-data, email any new fire. About 2 minutes; longer if Yahoo has not settled the close.">Run scan now</button>
+  <button class="act secondary" id="sync-now" type="button" title="Pull the latest run from the ignition-data branch and reload.">Sync latest</button>
+  <span class="act-msg" id="act-msg"></span>
+</div>
 <div class="status-row">
   <span class="chip">data through <b>{{ ig.asof }}</b></span>
   <span class="chip">last run <b>{{ ig.scanned_at }}</b></span>
   {% if ig.source == 'github' %}<span class="chip">run log: <b>git (ignition-data branch)</b></span>
   {% else %}<span class="chip warn">source: <b>{{ ig.source }}</b> — not the git run of record</span>{% endif %}
-  <span class="chip">runs <b>weekdays after the close and 3am ET</b></span>
+  <span class="chip">runs <b>weekdays after the close, 3am and 7am ET</b></span>
   <span class="chip">tracking since <b>{{ ig.ledger_start }}</b></span>
 </div>
 
@@ -326,4 +338,26 @@
   <a href="/api/ignition">/api/ignition</a>. Backtests use current index members (survivorship bias flatters holding and
   understates the value of any sell rule) and exclude costs. Research, not advice.
 </div>
+<script>
+(function () {
+  var msg = document.getElementById('act-msg');
+  var run = document.getElementById('run-now'), sync = document.getElementById('sync-now');
+  if (!msg || !run || !sync) return;
+  function call(url, btn, okText, reload) {
+    btn.disabled = true; msg.className = 'act-msg'; msg.textContent = 'working…';
+    fetch(url, { method: 'POST' }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.ok) { msg.textContent = okText; if (reload) setTimeout(function () { location.reload(); }, 800); }
+        else { msg.className = 'act-msg warn'; msg.textContent = j.error || ('HTTP ' + r.status); }
+      });
+    }).catch(function (e) { msg.className = 'act-msg warn'; msg.textContent = 'request failed: ' + e; })
+      .then(function () { btn.disabled = false; });
+  }
+  run.onclick = function () {
+    call('/api/ignition/run', run, 'Scan started on GitHub. About 2 minutes, longer if Yahoo has not settled the close. ' +
+         'This page syncs the result on its own (3, 6, 12 and 25 minutes, then every 30); or press Sync latest.', false);
+  };
+  sync.onclick = function () { call('/api/refresh_ignition', sync, 'Synced from the ignition-data branch; reloading…', true); };
+})();
+</script>
 {% endblock %}

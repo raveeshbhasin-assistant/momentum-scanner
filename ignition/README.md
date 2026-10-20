@@ -146,6 +146,12 @@ together with the fraction to sell to get back to 2×.
   Actions tab with the `test_email` box ticked sends a `[TEST]` mail built
   from the three most recent fires (v1.12.2). Stdlib only, no shared code
   with the scanner's `notifier.py`.
+- **Run scan now (v1.14.0):** the button at the top of `/ignition` starts
+  the run of record on GitHub (`POST /api/ignition/run`, a
+  `workflow_dispatch` of the workflow on main) and schedules page syncs 3,
+  6, 12 and 25 minutes later. Needs `GITHUB_DISPATCH_TOKEN` on the
+  themes_web Railway service (fine-grained token, Actions: read and write
+  on this repo). **Sync latest** pulls the branch and reloads.
 - **themes_web** syncs from that branch every 30 minutes and at boot
   (`scheduler.refresh_ignition`). If GitHub is unreachable and there is no
   data on disk, it falls back to a local scan, and the page says so.

@@ -41,6 +41,7 @@ from themes_web.render import (
     theme_dir,
 )
 from themes_web.scheduler import (
+    dispatch_ignition_scan,
     refresh_ignition,
     refresh_nasdaq10,
     refresh_pullback,
@@ -549,6 +550,17 @@ def api_refresh_ignition(local: int = 0):
     ?local=1, run the scan on this container instead (~1-2 min)."""
     result = run_local_ignition_scan() if local else refresh_ignition()
     return {"ok": result.get("ok", result.get("returncode") == 0), "result": result}
+
+
+@app.post("/api/ignition/run", response_class=JSONResponse)
+def api_ignition_run():
+    """Start the run of record now (v1.14.0): the page's "Run scan now" button.
+    Dispatches ignition-daily.yml on GitHub, like "Run workflow" in the Actions
+    tab; the run commits to ignition-data and emails any new fire, and this
+    service syncs the result (3/6/12/25 min, then the usual 30). 503 when
+    GITHUB_DISPATCH_TOKEN is not set, 502 when GitHub refuses."""
+    result = dispatch_ignition_scan()
+    return JSONResponse(result, status_code=result.get("status", 200))
 
 
 _PULLBACK_DIR = _HERE.parent / "pullback" / "data"

@@ -7,7 +7,46 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.13.0 — 2026-10-20 **(current)**
+## v1.14.0 — 2026-10-20 **(current)**
+
+**What** Two buttons at the top of `/ignition`:
+- **Run scan now** starts the run of record on GitHub (`POST
+  /api/ignition/run` → `scheduler.dispatch_ignition_scan`, a
+  `workflow_dispatch` of `ignition-daily.yml` on main, the same as "Run
+  workflow" in the Actions tab). The run scans, commits to `ignition-data`
+  and emails any new fire, as every run does. The page then syncs the result
+  on its own: one-off syncs 3, 6, 12 and 25 minutes after the dispatch
+  (`schedule_ignition_followup_syncs`), with the 30-minute sync covering a
+  run that waits for Yahoo.
+- **Sync latest** pulls the newest run from the branch and reloads (the
+  existing `POST /api/refresh_ignition`, now reachable without a terminal).
+The "runs" chip now says 3am and 7am ET.
+
+**Setup (operator, Railway)** `Run scan now` needs `GITHUB_DISPATCH_TOKEN`
+on the themes_web service: a fine-grained GitHub personal access token
+scoped to this repository with **Actions: Read and write** (Settings →
+Developer settings → Personal access tokens → Fine-grained). Without it the
+button answers 503 with that sentence and nothing runs. The token never
+reaches the browser; the page only calls this service.
+
+**Why** Operator request after 2026-10-20, when Monday's session sat
+unscored until a manual run from the Actions tab and the page then lagged
+the branch by up to 30 minutes. The retry loop (v1.13.0) covers the first;
+this covers "I want it now" and the sync lag.
+
+**Verified** `tests/test_ignition_run_now.py` (5): no token → 503 and no
+GitHub call; token → one POST to the repo's dispatches endpoint with
+`{"ref": "main"}` and the bearer header; a GitHub refusal → 502 with the
+reason, never an exception; follow-up syncs are added to a running
+scheduler with stable ids; the page renders both buttons and the new chip.
+Jinja-parsed `ignition.html`. Full themes_web / ignition suite green.
+
+**Rollback** Revert the commit; without `GITHUB_DISPATCH_TOKEN` nothing
+can be dispatched anyway.
+
+---
+
+## v1.13.0 — 2026-10-20
 
 **What** The Ignition scan no longer leaves a session unscored when the
 schedule or Yahoo is late. Three changes, all in the run of record:

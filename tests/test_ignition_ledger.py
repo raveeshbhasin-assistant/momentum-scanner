@@ -146,7 +146,7 @@ def test_page_renders_pinned_gap_tag(monkeypatch, tmp_path):
     page = TestClient(web.app).get("/ignition").text
     assert re.search(r'<span class="pill GAP" title="\+3[0-9.]+% gap on 20[0-9-]+; every close since \([0-9]+ sessions\) within 0\.0% of it[^"<>]*">gap · pinned</span>', page)
     assert "pinned at a gap (deal-price shape, check the news): T" in page
-    assert "weekdays after the close and 3am ET" in page
+    assert "weekdays after the close, 3am and 7am ET" in page
 
 
 def test_page_renders_from_scan_output(monkeypatch, tmp_path):
