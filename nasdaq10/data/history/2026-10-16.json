@@ -1,7 +1,7 @@
 {
  "version": 1,
  "asof": "2026-10-16",
- "run_at": "2026-10-16T23:56Z",
+ "run_at": "2026-10-20T00:43Z",
  "rule": {
   "n": 10,
   "mom_far": 252,
@@ -259,7 +259,7 @@
     {
      "ticker": "ASML",
      "rank": 13,
-     "metric": 630.5,
+     "metric": 632.7,
      "name": "ASML Holding"
     }
    ],
@@ -603,7 +603,7 @@
   }
  ],
  "summary": {
-  "since": "2026-10-15",
+  "since": "2026-10-16",
   "rebalance_pending": false,
   "buys": {},
   "sells": {}
