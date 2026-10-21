@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-20",
- "scanned_at": "2026-10-21 08:42 ET",
+ "scanned_at": "2026-10-21 11:47 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -974,7 +974,7 @@
   {
    "ticker": "COF",
    "fired": "2025-04-24",
-   "fire_close": 181.14,
+   "fire_close": 181.15,
    "fire_r5": 15.6,
    "fire_volr": 1.53,
    "gap": false,
@@ -6018,7 +6018,7 @@
    "ticker": "PTC",
    "price": 193.35,
    "r63": 70.9,
-   "rs63": 70.5,
+   "rs63": 70.6,
    "volr": 2.01,
    "pct_from_hi": -6.1
   },
@@ -6034,7 +6034,7 @@
    "ticker": "DOCU",
    "price": 80.28,
    "r63": 67.6,
-   "rs63": 67.2,
+   "rs63": 67.3,
    "volr": 0.8,
    "pct_from_hi": 0.0
   },
@@ -6106,7 +6106,7 @@
    "ticker": "MPC",
    "price": 475.04,
    "r63": 50.8,
-   "rs63": 50.4,
+   "rs63": 50.5,
    "volr": 0.91,
    "pct_from_hi": -2.0
   }
