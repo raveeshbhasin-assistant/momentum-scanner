@@ -1,6 +1,6 @@
 {
  "asof": "2026-10-20",
- "scanned_at": "2026-10-20 21:27 ET",
+ "scanned_at": "2026-10-21 08:42 ET",
  "summary": {
   "open": 33,
   "by_status": {
@@ -47,29 +47,12 @@
    "DLR",
    "RMBS"
   ],
-  "since": "2026-10-19",
-  "new_events": [
-   {
-    "date": "2026-10-20",
-    "ticker": "BE",
-    "type": "SELL",
-    "detail": "252 sessions without a re-fire"
-   },
-   {
-    "date": "2026-10-20",
-    "ticker": "FIX",
-    "type": "CHECKPOINT",
-    "detail": "190 sessions in, up +26.4% (under +30%): 6-month take-profit review"
-   }
-  ],
+  "since": "2026-10-20",
+  "new_events": [],
   "new_fires": [],
-  "new_sells": [
-   "BE"
-  ],
+  "new_sells": [],
   "new_expired": [],
-  "new_checkpoints": [
-   "FIX"
-  ],
+  "new_checkpoints": [],
   "checkpoint_open": [
    "CYTK",
    "DAL",

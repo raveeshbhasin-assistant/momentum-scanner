@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-20",
- "scanned_at": "2026-10-20 21:27 ET",
+ "scanned_at": "2026-10-21 08:42 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -100,29 +100,12 @@
    "DLR",
    "RMBS"
   ],
-  "since": "2026-10-19",
-  "new_events": [
-   {
-    "date": "2026-10-20",
-    "ticker": "BE",
-    "type": "SELL",
-    "detail": "252 sessions without a re-fire"
-   },
-   {
-    "date": "2026-10-20",
-    "ticker": "FIX",
-    "type": "CHECKPOINT",
-    "detail": "190 sessions in, up +26.4% (under +30%): 6-month take-profit review"
-   }
-  ],
+  "since": "2026-10-20",
+  "new_events": [],
   "new_fires": [],
-  "new_sells": [
-   "BE"
-  ],
+  "new_sells": [],
   "new_expired": [],
-  "new_checkpoints": [
-   "FIX"
-  ],
+  "new_checkpoints": [],
   "checkpoint_open": [
    "CYTK",
    "DAL",
@@ -991,7 +974,7 @@
   {
    "ticker": "COF",
    "fired": "2025-04-24",
-   "fire_close": 181.15,
+   "fire_close": 181.14,
    "fire_r5": 15.6,
    "fire_volr": 1.53,
    "gap": false,
@@ -6035,7 +6018,7 @@
    "ticker": "PTC",
    "price": 193.35,
    "r63": 70.9,
-   "rs63": 70.6,
+   "rs63": 70.5,
    "volr": 2.01,
    "pct_from_hi": -6.1
   },
@@ -6051,7 +6034,7 @@
    "ticker": "DOCU",
    "price": 80.28,
    "r63": 67.6,
-   "rs63": 67.3,
+   "rs63": 67.2,
    "volr": 0.8,
    "pct_from_hi": 0.0
   },
