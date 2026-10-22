@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-21",
- "scanned_at": "2026-10-22 08:45 ET",
+ "scanned_at": "2026-10-22 11:45 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -2646,7 +2646,7 @@
    "ticker": "MKSI",
    "fired": "2026-02-11",
    "fire_close": 258.36,
-   "fire_r5": 17.7,
+   "fire_r5": 17.8,
    "fire_volr": 1.6,
    "gap": false,
    "gap_day": "2026-02-06",
@@ -5109,7 +5109,7 @@
    "date": "2026-02-11",
    "ticker": "MKSI",
    "type": "FIRE",
-   "detail": "+17.7% week on 1.6x volume"
+   "detail": "+17.8% week on 1.6x volume"
   },
   {
    "date": "2026-02-12",
