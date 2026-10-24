@@ -1,7 +1,7 @@
 {
  "version": 1,
  "asof": "2026-10-22",
- "run_at": "2026-10-23T12:14Z",
+ "run_at": "2026-10-24T00:01Z",
  "rule": {
   "lookback": 5,
   "drop_pct": -3.0,
@@ -369,7 +369,7 @@
   }
  ],
  "summary": {
-  "since": "2026-10-21",
+  "since": "2026-10-22",
   "new_signals": [
    "QQQ"
   ],
