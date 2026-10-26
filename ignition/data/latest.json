@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-23",
- "scanned_at": "2026-10-23 19:58 ET",
+ "scanned_at": "2026-10-26 09:51 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -99,7 +99,7 @@
    "CNH",
    "DLR"
   ],
-  "since": "2026-10-22",
+  "since": "2026-10-23",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
@@ -2646,7 +2646,7 @@
    "ticker": "MKSI",
    "fired": "2026-02-11",
    "fire_close": 258.36,
-   "fire_r5": 17.7,
+   "fire_r5": 17.8,
    "fire_volr": 1.6,
    "gap": false,
    "gap_day": "2026-02-06",
@@ -3998,14 +3998,14 @@
    "checkpoint": null,
    "checkpoint_ret": null,
    "checkpoint_exit": null,
-   "price": 30.44,
+   "price": 30.45,
    "to_stop": -54.2,
    "peak": 55.33,
    "sessions_since_fire": 226,
    "status": "EDGE_EXPIRED",
-   "ret": 78.2,
+   "ret": 78.3,
    "peak_ret": 223.9,
-   "whatif_ret": 78.2,
+   "whatif_ret": 78.3,
    "held": 243,
    "weight_x": 1.25,
    "cap_trim": null
@@ -5109,7 +5109,7 @@
    "date": "2026-02-11",
    "ticker": "MKSI",
    "type": "FIRE",
-   "detail": "+17.7% week on 1.6x volume"
+   "detail": "+17.8% week on 1.6x volume"
   },
   {
    "date": "2026-02-12",
