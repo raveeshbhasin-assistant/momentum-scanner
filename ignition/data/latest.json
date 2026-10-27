@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-26",
- "scanned_at": "2026-10-26 21:45 ET",
+ "scanned_at": "2026-10-27 08:57 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -99,7 +99,7 @@
    "CNH",
    "DLR"
   ],
-  "since": "2026-10-23",
+  "since": "2026-10-26",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
@@ -973,7 +973,7 @@
   {
    "ticker": "COF",
    "fired": "2025-04-24",
-   "fire_close": 181.15,
+   "fire_close": 181.14,
    "fire_r5": 15.6,
    "fire_volr": 1.53,
    "gap": false,
@@ -2646,7 +2646,7 @@
    "ticker": "MKSI",
    "fired": "2026-02-11",
    "fire_close": 258.36,
-   "fire_r5": 17.7,
+   "fire_r5": 17.8,
    "fire_volr": 1.6,
    "gap": false,
    "gap_day": "2026-02-06",
@@ -5109,7 +5109,7 @@
    "date": "2026-02-11",
    "ticker": "MKSI",
    "type": "FIRE",
-   "detail": "+17.7% week on 1.6x volume"
+   "detail": "+17.8% week on 1.6x volume"
   },
   {
    "date": "2026-02-12",
@@ -6041,7 +6041,7 @@
    "ticker": "HALO",
    "price": 128.01,
    "r63": 53.4,
-   "rs63": 54.5,
+   "rs63": 54.6,
    "volr": 1.13,
    "pct_from_hi": 0.0
   },
@@ -6081,7 +6081,7 @@
    "ticker": "CRL",
    "price": 357.27,
    "r63": 48.6,
-   "rs63": 49.7,
+   "rs63": 49.8,
    "volr": 1.15,
    "pct_from_hi": 0.0
   },
@@ -6097,7 +6097,7 @@
    "ticker": "DT",
    "price": 64.18,
    "r63": 46.2,
-   "rs63": 47.3,
+   "rs63": 47.4,
    "volr": 1.08,
    "pct_from_hi": -1.6
   },

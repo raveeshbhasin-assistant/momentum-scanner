@@ -1,6 +1,6 @@
 {
  "asof": "2026-10-26",
- "scanned_at": "2026-10-26 21:45 ET",
+ "scanned_at": "2026-10-27 08:57 ET",
  "summary": {
   "open": 32,
   "by_status": {
@@ -46,7 +46,7 @@
    "CNH",
    "DLR"
   ],
-  "since": "2026-10-23",
+  "since": "2026-10-26",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
