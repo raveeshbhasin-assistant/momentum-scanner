@@ -25,3 +25,4 @@
 {"run_at": "2026-10-23T12:14Z", "asof": "2026-10-22", "since": "2026-10-21", "signals": ["QQQ"], "exits": [], "open": 1, "closed": 8}
 {"run_at": "2026-10-24T00:01Z", "asof": "2026-10-22", "since": "2026-10-22", "signals": ["QQQ"], "exits": [], "open": 1, "closed": 8}
 {"run_at": "2026-10-26T13:40Z", "asof": "2026-10-23", "since": "2026-10-22", "signals": [], "exits": [], "open": 1, "closed": 8}
+{"run_at": "2026-10-27T00:50Z", "asof": "2026-10-23", "since": "2026-10-23", "signals": [], "exits": [], "open": 1, "closed": 8}
