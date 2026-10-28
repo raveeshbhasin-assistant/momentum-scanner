@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-10-27",
- "scanned_at": "2026-10-27 21:44 ET",
+ "scanned_at": "2026-10-28 09:47 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -100,19 +100,10 @@
    "CNH",
    "DLR"
   ],
-  "since": "2026-10-26",
-  "new_events": [
-   {
-    "date": "2026-10-27",
-    "ticker": "BTSG",
-    "type": "SELL",
-    "detail": "252 sessions without a re-fire"
-   }
-  ],
+  "since": "2026-10-27",
+  "new_events": [],
   "new_fires": [],
-  "new_sells": [
-   "BTSG"
-  ],
+  "new_sells": [],
   "new_expired": [],
   "new_checkpoints": [],
   "checkpoint_open": [
@@ -983,7 +974,7 @@
   {
    "ticker": "COF",
    "fired": "2025-04-24",
-   "fire_close": 181.14,
+   "fire_close": 181.15,
    "fire_r5": 15.6,
    "fire_volr": 1.53,
    "gap": false,
@@ -2656,7 +2647,7 @@
    "ticker": "MKSI",
    "fired": "2026-02-11",
    "fire_close": 258.36,
-   "fire_r5": 17.8,
+   "fire_r5": 17.7,
    "fire_volr": 1.6,
    "gap": false,
    "gap_day": "2026-02-06",
@@ -5119,7 +5110,7 @@
    "date": "2026-02-11",
    "ticker": "MKSI",
    "type": "FIRE",
-   "detail": "+17.8% week on 1.6x volume"
+   "detail": "+17.7% week on 1.6x volume"
   },
   {
    "date": "2026-02-12",
@@ -6073,7 +6064,7 @@
    "ticker": "CRWD",
    "price": 268.02,
    "r63": 49.4,
-   "rs63": 49.3,
+   "rs63": 49.4,
    "volr": 0.78,
    "pct_from_hi": -3.9
   },
