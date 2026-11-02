@@ -1,6 +1,6 @@
 {
  "asof": "2026-10-30",
- "scanned_at": "2026-10-30 21:40 ET",
+ "scanned_at": "2026-11-02 11:48 ET",
  "summary": {
   "open": 32,
   "by_status": {
@@ -47,21 +47,12 @@
    "CNH",
    "DLR"
   ],
-  "since": "2026-10-29",
-  "new_events": [
-   {
-    "date": "2026-10-30",
-    "ticker": "MRVL",
-    "type": "CHECKPOINT",
-    "detail": "132 sessions in, up +24.4% (under +30%): 6-month take-profit review"
-   }
-  ],
+  "since": "2026-10-30",
+  "new_events": [],
   "new_fires": [],
   "new_sells": [],
   "new_expired": [],
-  "new_checkpoints": [
-   "MRVL"
-  ],
+  "new_checkpoints": [],
   "checkpoint_open": [
    "CYTK",
    "DAL",
