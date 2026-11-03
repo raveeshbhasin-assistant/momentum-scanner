@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-11-02",
- "scanned_at": "2026-11-02 22:02 ET",
+ "scanned_at": "2026-11-03 09:50 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -100,7 +100,7 @@
    "CNH",
    "DLR"
   ],
-  "since": "2026-10-30",
+  "since": "2026-11-02",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
