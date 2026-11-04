@@ -1,7 +1,7 @@
 {
  "version": 1,
  "asof": "2026-11-02",
- "run_at": "2026-11-03T03:06Z",
+ "run_at": "2026-11-04T01:42Z",
  "rule": {
   "n": 10,
   "mom_far": 252,
@@ -722,7 +722,7 @@
   }
  ],
  "summary": {
-  "since": "2026-10-29",
+  "since": "2026-11-02",
   "rebalance_pending": false,
   "buys": {},
   "sells": {}
