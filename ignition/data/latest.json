@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-11-05",
- "scanned_at": "2026-11-05 21:27 ET",
+ "scanned_at": "2026-11-06 09:46 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -104,50 +104,12 @@
    "MRVL",
    "P"
   ],
-  "since": "2026-11-04",
-  "new_events": [
-   {
-    "date": "2026-11-05",
-    "ticker": "DOCN",
-    "type": "SELL",
-    "detail": "closed 70.7 below pre-ignition base 75.59"
-   },
-   {
-    "date": "2026-11-05",
-    "ticker": "FIX",
-    "type": "SELL",
-    "detail": "closed 964.94 below pre-ignition base 970.1"
-   },
-   {
-    "date": "2026-11-05",
-    "ticker": "MRVL",
-    "type": "SELL",
-    "detail": "closed 133.55 below pre-ignition base 134.54"
-   },
-   {
-    "date": "2026-11-05",
-    "ticker": "P",
-    "type": "SELL",
-    "detail": "closed 93.44 below pre-ignition base 93.78"
-   },
-   {
-    "date": "2026-11-05",
-    "ticker": "SMTC",
-    "type": "CHECKPOINT",
-    "detail": "148 sessions in, up +10.8% (under +30%): 6-month take-profit review"
-   }
-  ],
+  "since": "2026-11-05",
+  "new_events": [],
   "new_fires": [],
-  "new_sells": [
-   "DOCN",
-   "FIX",
-   "MRVL",
-   "P"
-  ],
+  "new_sells": [],
   "new_expired": [],
-  "new_checkpoints": [
-   "SMTC"
-  ],
+  "new_checkpoints": [],
   "checkpoint_open": [
    "CYTK",
    "DAL",
