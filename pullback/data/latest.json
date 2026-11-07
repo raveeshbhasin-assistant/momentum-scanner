@@ -1,7 +1,7 @@
 {
  "version": 1,
  "asof": "2026-11-05",
- "run_at": "2026-11-06T14:40Z",
+ "run_at": "2026-11-07T01:12Z",
  "rule": {
   "lookback": 5,
   "drop_pct": -3.0,
@@ -437,7 +437,7 @@
   }
  ],
  "summary": {
-  "since": "2026-11-04",
+  "since": "2026-11-05",
   "new_signals": [
    "IJR",
    "SPY",
