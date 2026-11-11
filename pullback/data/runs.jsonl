@@ -48,3 +48,4 @@
 {"run_at": "2026-11-10T03:48Z", "asof": "2026-11-09", "since": "2026-11-06", "signals": [], "exits": ["QQQ"], "open": 3, "closed": 10}
 {"run_at": "2026-11-10T15:17Z", "asof": "2026-11-09", "since": "2026-11-09", "signals": [], "exits": [], "open": 3, "closed": 10}
 {"run_at": "2026-11-11T01:28Z", "asof": "2026-11-09", "since": "2026-11-09", "signals": [], "exits": [], "open": 3, "closed": 10}
+{"run_at": "2026-11-11T14:47Z", "asof": "2026-11-10", "since": "2026-11-09", "signals": [], "exits": [], "open": 3, "closed": 10}
