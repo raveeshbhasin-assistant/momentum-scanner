@@ -1,7 +1,7 @@
 {
  "version": 1,
  "asof": "2026-11-09",
- "run_at": "2026-11-10T03:50Z",
+ "run_at": "2026-11-11T01:29Z",
  "rule": {
   "n": 10,
   "mom_far": 252,
@@ -143,11 +143,11 @@
      "name": "Tesla, Inc.",
      "rank_at_pick": 7,
      "metric_at_pick": 1580.3,
-     "entry_px": null,
-     "last": null,
-     "ret": null,
-     "rank_now": null,
-     "metric_now": null
+     "entry_px": 403.82,
+     "last": 378.05,
+     "ret": -6.38,
+     "rank_now": 9,
+     "metric_now": 1494.3
     },
     {
      "ticker": "META",
@@ -179,7 +179,7 @@
      "entry_px": 833.59,
      "last": 733.15,
      "ret": -12.05,
-     "rank_now": 11,
+     "rank_now": 12,
      "metric_now": 829.5
     }
    ],
@@ -233,47 +233,45 @@
      "name": "Broadcom"
     },
     {
-     "ticker": "WMT",
+     "ticker": "TSLA",
      "rank": 9,
+     "metric": 1494.3,
+     "name": "Tesla, Inc."
+    },
+    {
+     "ticker": "WMT",
+     "rank": 10,
      "metric": 997.0,
      "name": "Walmart"
     },
     {
      "ticker": "AMD",
-     "rank": 10,
+     "rank": 11,
      "metric": 834.1,
      "name": "Advanced Micro Devices"
     },
     {
      "ticker": "MU",
-     "rank": 11,
+     "rank": 12,
      "metric": 829.5,
      "name": "Micron Technology"
     },
     {
      "ticker": "ASML",
-     "rank": 12,
+     "rank": 13,
      "metric": 583.2,
      "name": "ASML Holding"
-    },
-    {
-     "ticker": "COST",
-     "rank": 13,
-     "metric": 472.5,
-     "name": "Costco"
     }
    ],
    "would_enter": [
-    "WMT",
-    "AMD"
+    "WMT"
    ],
    "would_leave": [
-    "MU",
-    "TSLA"
+    "MU"
    ],
    "action": null,
-   "this_month": 0.95,
-   "since_start": -6.25,
+   "this_month": 0.21,
+   "since_start": -6.93,
    "bench_since_start": -8.45,
    "months_closed": 1,
    "months_ahead": 1
@@ -721,14 +719,14 @@
    },
    "through": "2026-11-09",
    "ret": {
-    "SIZE": 0.95,
+    "SIZE": 0.21,
     "MOM": -5.77,
     "QQQ": -0.26
    }
   }
  ],
  "summary": {
-  "since": "2026-11-05",
+  "since": "2026-11-09",
   "rebalance_pending": false,
   "buys": {},
   "sells": {}
