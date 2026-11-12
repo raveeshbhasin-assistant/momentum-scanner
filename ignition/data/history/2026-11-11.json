@@ -1,6 +1,6 @@
 {
  "asof": "2026-11-11",
- "scanned_at": "2026-11-12 07:26 ET",
+ "scanned_at": "2026-11-12 10:45 ET",
  "summary": {
   "open": 29,
   "by_status": {
@@ -50,18 +50,8 @@
    "P"
   ],
   "since": "2026-11-11",
-  "new_events": [
-   {
-    "date": "2026-11-11",
-    "ticker": "SITM",
-    "type": "FIRE",
-    "detail": "+17.2% week on 1.5x volume; at the bar within rounding (tolerance rule) \u00b7 found on a later run",
-    "late": true
-   }
-  ],
-  "new_fires": [
-   "SITM"
-  ],
+  "new_events": [],
+  "new_fires": [],
   "new_sells": [],
   "new_expired": [],
   "new_checkpoints": [],
@@ -87,7 +77,7 @@
   "carried": [
    "ROKU"
   ],
-  "kept_closed": 1,
+  "kept_closed": 2,
   "cap_review": [
    "LITE"
   ]
