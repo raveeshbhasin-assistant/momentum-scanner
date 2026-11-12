@@ -557,3 +557,116 @@ def test_partial_trailing_bar_is_dropped_and_logged(capsys):
     c.loc[idx[-1], :] = 1.0                                            # everyone has it: kept, no log
     o, c3, v = ig.drop_partial_bar(c, c, c)
     assert str(c3.index[-1].date()) == "2026-10-19" and capsys.readouterr().err == ""
+
+
+# ── v1.15.0: tolerance band, late events, volume-side near misses ──────────────
+def _at_the_bar(monkeypatch, tolerance_from):
+    """The synthetic fire, with the volume bar moved 0.002 above its ratio: a miss
+    by less than VOLR_TOL, like SITM on 2026-11-11 (1.49998 vs 1.5)."""
+    close, open_, vol = _series(np.full(N, 0.0005))
+    monkeypatch.setattr(ig, "LEDGER_START", str(close.index[300].date()))
+    ratio = float(ig.signals(close, vol)["volr"]["T"].iloc[FIRE])
+    monkeypatch.setattr(ig, "VOLR_MIN", ratio + 0.002)
+    monkeypatch.setattr(ig, "TOLERANCE_FROM", tolerance_from)
+    return close, open_, vol, ig.signals(close, vol)
+
+
+def test_a_miss_within_rounding_fires_from_the_tolerance_date(monkeypatch):
+    close, open_, vol, f = _at_the_bar(monkeypatch, "2025-01-01")
+    assert not f["strict"]["T"].iloc[FIRE] and f["band"]["T"].iloc[FIRE] and f["sig"]["T"].iloc[FIRE]
+    positions, events = ig.build_ledger(open_, close, f)
+    assert positions[0]["fired"] == str(close.index[FIRE].date()) and positions[0]["tolerance"] is True
+    assert events[0]["type"] == "FIRE" and "tolerance rule" in events[0]["detail"]
+
+
+def test_the_tolerance_does_not_reach_back_before_its_date(monkeypatch):
+    close, open_, vol, f = _at_the_bar(monkeypatch, "2099-01-01")
+    assert f["band"]["T"].iloc[FIRE] and not f["sig"]["T"].iloc[FIRE]     # in the band, strict rule applies
+    positions, events = ig.build_ledger(open_, close, f)
+    assert positions == []                                                # the recorded ledger does not change
+
+
+def test_a_miss_wider_than_the_tolerance_still_does_not_fire(monkeypatch):
+    close, open_, vol = _series(np.full(N, 0.0005))
+    ratio = float(ig.signals(close, vol)["volr"]["T"].iloc[FIRE])
+    monkeypatch.setattr(ig, "VOLR_MIN", ratio + 0.02)
+    monkeypatch.setattr(ig, "TOLERANCE_FROM", "2025-01-01")
+    f = ig.signals(close, vol)
+    assert not f["sig"]["T"].iloc[FIRE] and not f["band"]["T"].iloc[FIRE]
+
+
+def test_a_strict_fire_is_not_tagged_tolerance(monkeypatch):
+    close, open_, vol = _series(np.full(N, 0.0005))
+    positions, events = _run(close, open_, vol, monkeypatch)
+    assert positions[0]["tolerance"] is False and "tolerance" not in events[0]["detail"]
+
+
+FIRE_EV = {"date": "2026-11-11", "ticker": "SITM", "type": "FIRE", "detail": "+17.2% week on 1.5x volume"}
+OLD_EV = {"date": "2026-11-09", "ticker": "AAA", "type": "FIRE", "detail": "x"}
+
+
+def test_a_fire_the_previous_run_had_not_recorded_is_new_on_a_same_day_rerun():
+    # previous run scored 2026-11-11 without SITM; this run scores the same date and finds it
+    s = ig.summarize([], [OLD_EV, FIRE_EV], "2026-11-11", "2026-11-11", "2026-10-14",
+                     prev_events=[OLD_EV], late_from="2026-11-04")
+    assert [(e["ticker"], e.get("late")) for e in s["new_events"]] == [("SITM", True)]
+    assert s["new_fires"] == ["SITM"] and s["new_events"][0]["detail"].endswith("found on a later run")
+    # the run after that has it on record: not announced twice
+    s = ig.summarize([], [OLD_EV, FIRE_EV], "2026-11-11", "2026-11-12", "2026-10-14",
+                     prev_events=[OLD_EV, FIRE_EV], late_from="2026-11-05")
+    assert s["new_events"] == []
+
+
+def test_late_events_ignore_old_revisions_and_first_runs():
+    old_fire = {"date": "2025-03-06", "ticker": "ZZZ", "type": "FIRE", "detail": "x"}
+    assert ig.late_events([old_fire, FIRE_EV], [OLD_EV], "2026-11-11", "2026-11-04") == [
+        dict(FIRE_EV, late=True, detail=FIRE_EV["detail"] + " · found on a later run")]   # 2025 revision: not news
+    assert ig.late_events([FIRE_EV], None, "2026-11-11", "2026-11-04") == []             # no previous run on record
+    assert ig.late_events([FIRE_EV], [OLD_EV], None, "2026-11-04") == []
+    nxt = {"date": "2026-11-12", "ticker": "NEW", "type": "FIRE", "detail": "x"}           # after `since`: the normal path
+    assert ig.late_events([nxt], [OLD_EV], "2026-11-11", "2026-11-04") == []
+
+
+def test_compute_reports_a_late_fire_once(monkeypatch):
+    close, open_, vol = _series(np.full(N, 0.0005))
+    monkeypatch.setattr(ig, "LEDGER_START", str(close.index[300].date()))
+    cut = FIRE + 2                                                        # two sessions after the fire
+    o, c, v = open_.iloc[:cut + 1], close.iloc[:cut + 1], vol.iloc[:cut + 1]
+    asof = str(c.index[-1].date())
+    full = ig.compute(o, c, v, asof, None, prev_events=[])               # previous run: same date, no events on record
+    assert full["summary"]["new_events"] == []                            # empty record = nothing to compare against
+    stale = [{"date": "2025-01-02", "ticker": "Q", "type": "FIRE", "detail": "x"}]
+    out = ig.compute(o, c, v, asof, None, prev_events=stale)
+    assert [(e["type"], e["late"]) for e in out["summary"]["new_events"]] == [("FIRE", True)]
+    again = ig.compute(o, c, v, asof, None, prev_events=out["events"])
+    assert again["summary"]["new_events"] == []
+
+
+def test_near_miss_short_on_volume_is_listed(monkeypatch):
+    close, open_, vol = _series(np.full(N, 0.0005))
+    vol.iloc[FIRE - 14:FIRE + 1] = 1.8e6                                  # ratio ~1.43: return clears, volume short
+    c, v = close.iloc[:FIRE + 1], vol.iloc[:FIRE + 1]
+    f = ig.signals(c, v)
+    assert not f["sig"]["T"].iloc[-1] and float(f["r5"]["T"].iloc[-1]) > ig.R5_MIN
+    near = ig.extras(c, v, f)["near_misses"]
+    assert [(n["ticker"], n["short"]) for n in near] == [("T", "volume")]
+
+
+def test_page_renders_near_misses_with_and_without_the_short_field(monkeypatch, tmp_path):
+    import json
+
+    import themes_web.app as web
+    from fastapi.testclient import TestClient
+
+    latest = {"version": 2, "asof": "2026-11-11", "scanned_at": "x", "universe": 2, "ledger_start": "2025-01-02",
+              "rule": {}, "backtest": ig.BACKTEST, "exit_research": ig.EXIT_RESEARCH, "positions": [], "events": [],
+              "leaders": [], "summary": ig.summarize([], [], "2026-11-10", "2026-11-11", "2026-10-14"),
+              "near_misses": [{"ticker": "SITM", "r5": 17.2, "volr": 1.48, "price": 472.56, "short": "volume"},
+                              {"ticker": "OLDROW", "r5": 9.0, "volr": 1.4, "price": 10.0}]}   # written before v1.15.0
+    (tmp_path / "latest.json").write_text(json.dumps(latest))
+    monkeypatch.setattr(web, "_IGNITION_DIR", tmp_path)
+    monkeypatch.setattr(web, "start_scheduler", lambda: None)
+    page = TestClient(web.app).get("/ignition")
+    assert page.status_code == 200
+    assert "Short on" in page.text and '<td class="l">volume</td>' in page.text and "OLDROW" in page.text
+    assert "11.95% or 1.495×" in page.text

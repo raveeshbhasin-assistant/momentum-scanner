@@ -41,6 +41,19 @@ exception). Caveats: no costs or slippage, and the universe is *current*
 index membership, so there is survivorship bias. Treat the edge as an upper
 bound.
 
+### Tolerance at the bars (v1.15.0, from 2026-11-11)
+
+A value that reaches a bar at the precision the page shows counts as meeting
+it: 5-day return >= 11.95% and volume ratio >= 1.495 (`R5_TOL`, `VOLR_TOL` in
+`scan.py`). On 2026-11-11 SITM was up 17.2% on the week with a ratio of
+1.49998, about 225 shares short over the 21-session sum, which is less than
+Yahoo revises overnight. The backtest above used the strict bars and the band
+was not tested separately, so it applies **forward only**: sessions before
+`TOLERANCE_FROM` keep the strict rule and the recorded ledger does not change.
+A fire that needed the tolerance is tagged in its run-log line. Each run logs
+how many signal-days since the ledger start sit inside the band. A wider band
+would be a different rule and needs its own test.
+
 ## Positions and the sell rule (v1.6.0)
 
 Every fire since 2025-01-02 is replayed as a position: bought at the next
@@ -161,6 +174,13 @@ together with the fraction to sell to get back to 2×.
   download is. An evening run that finds Yahoo's bars unsettled scores the
   previous session and would otherwise overwrite a same-day scan published
   earlier; now it fails without committing and the morning run fills in.
+- **A fire found late is still announced (v1.15.0):** an event from the last
+  5 sessions that the previous run's record did not contain (a same-session
+  re-score after Yahoo revised its volumes, or a rule change) is reported as
+  new, marked "found on a later run", and mailed once (`scan.late_events`).
+  Older differences from price revisions change the ledger but are not news.
+- **Near misses** list every name in an uptrend at +8% or more on 1.3x volume
+  or more that did not fire, with which bar it missed (return, volume, both).
 - **No lost days:** the ledger is rebuilt from prices on every run. If runs
   are skipped, the next run reports everything since the previous run's
   data date as new.

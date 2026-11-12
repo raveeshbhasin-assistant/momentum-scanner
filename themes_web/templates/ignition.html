@@ -105,7 +105,8 @@
 {% set b = ig.backtest %}
 {% set x = ig.exit_research %}
 <div class="method-strip">
-  <div class="row"><b>Buy signal:</b> 5-day return &gt; +12% on 21-day volume &gt; 1.5× its 6-month average, 50-DMA above 200-DMA.
+  <div class="row"><b>Buy signal:</b> 5-day return &gt; +12% on 21-day volume &gt; 1.5× its 6-month average, 50-DMA above 200-DMA
+    (since 2026-11-11 a value that reaches a bar within rounding, 11.95% or 1.495×, counts; that band is not in the backtest).
     After a fire {{ b.p_plus40_63d }}% went on to +40% within 3 months (vs {{ b.p_plus40_baseline }}% of all stocks).</div>
   <div class="row"><b>Sell signal:</b> a close below the <b>pre-ignition base</b> (the close 5 sessions before the fire — the whole
     breakout week given back); sell at the next open. Of {{ x.rules_tested }} exit rules tested on {{ x.trades }} trades it was the
@@ -302,12 +303,12 @@
 
 <div class="two-col">
   <div>
-    <div class="section-head">Near misses <span class="hint">+8–12% week on 1.3×+ volume, uptrend intact</span></div>
+    <div class="section-head">Near misses <span class="hint">+8% week or more on 1.3×+ volume, uptrend intact, short of +12% or 1.5×</span></div>
     {% if ig.near_misses %}
     <div class="tbl-wrap"><table class="ig">
-      <thead><tr><th class="l">Stock</th><th>5-day</th><th>Vol ratio</th><th>Price</th></tr></thead>
+      <thead><tr><th class="l">Stock</th><th>5-day</th><th>Vol ratio</th><th>Price</th><th class="l" title="Which bar it missed: the +12% week, the 1.5× volume ratio, or both">Short on</th></tr></thead>
       <tbody>{% for n in ig.near_misses %}
-        <tr><td class="l"><span class="tk">{{ n.ticker }}</span></td><td>{{ pct(n.r5) }}</td><td>{{ n.volr }}×</td><td>{{ money(n.price) }}</td></tr>
+        <tr><td class="l"><span class="tk">{{ n.ticker }}</span></td><td>{{ pct(n.r5) }}</td><td>{{ n.volr }}×</td><td>{{ money(n.price) }}</td><td class="l">{{ n.get('short') or '—' }}</td></tr>
       {% endfor %}</tbody>
     </table></div>
     {% else %}<div class="tbl-wrap"><div class="empty">None today.</div></div>{% endif %}

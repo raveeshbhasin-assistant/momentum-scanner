@@ -16,6 +16,8 @@ themes_web only reads that branch (scheduler.refresh_ignition).
 SIGNAL (backtest 2016-2026, 903 tickers, 2.18M ticker-days — README.md):
     IGNITION = 5-day return > +12% AND 21-day avg volume > 1.5x its 126-day
     avg AND 50-DMA > 200-DMA (price > $3, 21-day avg dollar volume > $5M).
+    From 2026-11-11 a value that reaches a bar at the precision shown (11.95%,
+    1.495x) counts; not backtested separately, forward only (see R5_TOL).
 
 EXIT (research/ignition_exits/README.md — 748 trades, train 2016-21, holdout
 2022-25, live 2025-26):
@@ -79,6 +81,20 @@ BATCH = 150
 
 R5_MIN = 0.12
 VOLR_MIN = 1.5
+# TOLERANCE (v1.15.0, operator decision 2026-11-12). From TOLERANCE_FROM on, a value
+# that reaches the bar at the precision the page shows it (5-day return to 0.1 pp,
+# volume ratio to 0.01) counts: r5 >= 11.95% and volume ratio >= 1.495. SITM on
+# 2026-11-11: +17.2% week on a ratio of 1.49998, about 225 shares short over the
+# 21-session sum, less than Yahoo revises overnight. The 2016-2026 backtest used the
+# strict bars and the band was not tested separately, so it applies forward only:
+# sessions before TOLERANCE_FROM keep the strict rule and the recorded ledger does
+# not change. Each run logs how many past signal-days sit inside the band.
+R5_TOL = 0.0005
+VOLR_TOL = 0.005
+TOLERANCE_FROM = "2026-11-11"
+NEAR_R5 = 0.08        # near miss: uptrend intact and at least this week's return ...
+NEAR_VOLR = 1.3       # ... on at least this volume ratio, without firing
+LATE_WINDOW = 5       # an event this many sessions back that the previous run had not recorded is still news
 MIN_PRICE = 3.0
 MIN_DOLLAR_VOL = 5e6
 BASE_LAG = 5          # pre-ignition base = close BASE_LAG sessions before the fire
@@ -288,8 +304,13 @@ def signals(close: pd.DataFrame, vol: pd.DataFrame) -> dict:
     golden = close.rolling(50).mean() > close.rolling(200).mean()
     dollar_vol = (close * vol).rolling(21).mean()
     valid = (close > MIN_PRICE) & (dollar_vol > MIN_DOLLAR_VOL) & r252.notna()
-    sig = (r5 > R5_MIN) & (volr > VOLR_MIN) & golden & valid
-    return {"r5": r5, "r63": r63, "volr": volr, "golden": golden, "valid": valid, "sig": sig,
+    strict = (r5 > R5_MIN) & (volr > VOLR_MIN) & golden & valid
+    # Inside the tolerance band only; counts as a signal from TOLERANCE_FROM on.
+    band = (r5 >= R5_MIN - R5_TOL) & (volr >= VOLR_MIN - VOLR_TOL) & golden & valid & ~strict
+    tolerant = band.copy()
+    tolerant.loc[close.index < pd.Timestamp(TOLERANCE_FROM), :] = False
+    return {"r5": r5, "r63": r63, "volr": volr, "golden": golden, "valid": valid,
+            "sig": strict | tolerant, "strict": strict, "band": band,
             "hi252": close.rolling(252).max()}
 
 
@@ -331,6 +352,7 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
     n = len(dates)
     start_i = int(dates.searchsorted(pd.Timestamp(LEDGER_START)))
     S, O, C = f["sig"].values, open_.values, close.values
+    STRICT = f["strict"].values if "strict" in f else S
     R5, VR = f["r5"].values, f["volr"].values
     ds = [str(d.date()) for d in dates]
     positions, events = [], []
@@ -358,9 +380,12 @@ def build_ledger(open_: pd.DataFrame, close: pd.DataFrame, f: dict) -> tuple[lis
                 "exit_reason": None, "sell_signal": None,
                 "checkpoint": None, "checkpoint_ret": None, "checkpoint_exit": None,
                 "price": None, "to_stop": None,   # set below for every row that is not CLOSED
+                "tolerance": not bool(STRICT[fire, j]),   # fired inside the tolerance band (v1.15.0)
             }
             events.append({"date": ds[fire], "ticker": tk, "type": "FIRE",
                            "detail": f"+{_pct(R5[fire, j])}% week on {_px(VR[fire, j])}x volume"
+                                     + ("; at the bar within rounding (tolerance rule)"
+                                        if not STRICT[fire, j] else "")
                                      + (f"; pinned at the {_pct(gap_ret):+.1f}% gap of {ds[gap_i]} so far"
                                         if pinned_at_fire else "")})
             for e in range(fire + 1, min(fire + 6, n)):   # first tradable open (skips a halt)
@@ -537,11 +562,20 @@ def extras(close: pd.DataFrame, vol: pd.DataFrame, f: dict) -> dict:
     leaders = [{"ticker": t, "price": _px(r.price), "r63": _pct(r.r63), "rs63": _pct(r.rs63),
                 "volr": _px(r.volr), "pct_from_hi": _pct(r.pct_hi)}
                for t, r in lead.sort_values("rs63", ascending=False).head(15).iterrows()]
-    r5 = f["r5"].iloc[-1]
-    near = r5.between(0.08, R5_MIN) & (f["volr"].iloc[-1] > 1.3) & f["golden"].iloc[-1] & f["valid"].iloc[-1]
-    near_misses = sorted(({"ticker": t, "r5": _pct(r5[t]), "volr": _px(f["volr"].iloc[-1][t]),
-                           "price": _px(close.iloc[-1][t])} for t in near[near].index),
-                         key=lambda x: -(x["r5"] or 0))[:12]
+    # Near misses (v1.15.0): uptrend intact, at least +8% on the week and 1.3x volume,
+    # and no signal. Before, only names short on the week's return were listed, so a
+    # stock that cleared the return and sat just under the volume bar showed nowhere
+    # (SITM 2026-11-11). `short` says which bar it missed.
+    r5, volr, sig = f["r5"].iloc[-1], f["volr"].iloc[-1], f["sig"].iloc[-1]
+    near = (r5 >= NEAR_R5) & (volr > NEAR_VOLR) & f["golden"].iloc[-1] & f["valid"].iloc[-1] & ~sig
+
+    def short(t) -> str:
+        low_r, low_v = r5[t] < R5_MIN, volr[t] < VOLR_MIN
+        return "both" if low_r and low_v else "volume" if low_v else "return"
+
+    near_misses = sorted(({"ticker": t, "r5": _pct(r5[t]), "volr": _px(volr[t]), "price": _px(close.iloc[-1][t]),
+                           "short": short(t)} for t in near[near].index),
+                         key=lambda x: -(x["r5"] or 0))[:15]
     return {"leaders": leaders, "near_misses": near_misses}
 
 
@@ -554,10 +588,28 @@ def _stats(rets: list) -> dict:
             "pct_up": round(100 * float(np.mean([r > 0 for r in rets])), 1)}
 
 
-def summarize(positions: list, events: list, since: str | None, asof: str, recent_from: str) -> dict:
+def late_events(events: list, prev_events: list | None, since: str | None, late_from: str | None) -> list:
+    """Events dated on or before the previous run's data date that the previous
+    run had not recorded (v1.15.0). A re-score of the same session can turn up
+    a fire the first pass missed: Yahoo revises volumes overnight, or the rule
+    changed. "New" used to mean "dated after the previous run", so such a fire
+    entered the ledger without ever being announced or mailed. Limited to the
+    last LATE_WINDOW sessions (`late_from`): an old price revision that moves a
+    2025 fire changes the ledger but is not news."""
+    if not prev_events or not since or not late_from:
+        return []
+    seen = {(e["date"], e["ticker"], e["type"]) for e in prev_events}
+    return [dict(e, late=True, detail=e["detail"] + " · found on a later run")
+            for e in events
+            if late_from <= e["date"] <= since and (e["date"], e["ticker"], e["type"]) not in seen]
+
+
+def summarize(positions: list, events: list, since: str | None, asof: str, recent_from: str,
+              prev_events: list | None = None, late_from: str | None = None) -> dict:
     open_ = [p for p in positions if p["status"] not in ("CLOSED",)]
     closed = [p for p in positions if p["status"] == "CLOSED"]
-    new_events = [e for e in events if (since is None and e["date"] == asof) or (since and e["date"] > since)]
+    new_events = late_events(events, prev_events, since, late_from) + [
+        e for e in events if (since is None and e["date"] == asof) or (since and e["date"] > since)]
     return {
         "open": len(open_),
         "by_status": {s: sum(p["status"] == s for p in positions)
@@ -603,7 +655,7 @@ def read_runs() -> list[dict]:
 
 
 def compute(open_: pd.DataFrame, close: pd.DataFrame, vol: pd.DataFrame, prev_asof: str | None,
-            prev_positions: list | None = None) -> dict:
+            prev_positions: list | None = None, prev_events: list | None = None) -> dict:
     f = signals(close, vol)
     positions, events = build_ledger(open_, close, f)
     positions = carry_forward(positions, prev_positions, close, prev_asof)
@@ -611,6 +663,11 @@ def compute(open_: pd.DataFrame, close: pd.DataFrame, vol: pd.DataFrame, prev_as
     asof = str(close.index[-1].date())
     since = prev_asof or None   # a re-run on the same data date reports nothing new
     recent_from = str(close.index[max(0, len(close.index) - 20)].date())
+    late_from = str(close.index[max(0, len(close.index) - 1 - LATE_WINDOW)].date())
+    in_ledger = close.index >= pd.Timestamp(LEDGER_START)
+    print(f"tolerance band: {int(f['band'].values[in_ledger].sum())} signal-days since {LEDGER_START} reach the bars "
+          f"only within rounding, next to {int(f['strict'].values[in_ledger].sum())} strict ones; "
+          f"counted as signals from {TOLERANCE_FROM}", file=sys.stderr)
     return {
         "version": 2,
         "asof": asof,
@@ -620,10 +677,11 @@ def compute(open_: pd.DataFrame, close: pd.DataFrame, vol: pd.DataFrame, prev_as
         "rule": {"r5_min": R5_MIN, "volr_min": VOLR_MIN, "min_price": MIN_PRICE,
                  "min_dollar_vol": MIN_DOLLAR_VOL, "base_lag": BASE_LAG,
                  "edge_window": EDGE_WINDOW, "refire_hot": REFIRE_HOT, "max_quiet": MAX_QUIET,
-                 "checkpoint_after": CHECKPOINT_AFTER, "weight_cap": WEIGHT_CAP},
+                 "checkpoint_after": CHECKPOINT_AFTER, "weight_cap": WEIGHT_CAP,
+                 "r5_tol": R5_TOL, "volr_tol": VOLR_TOL, "tolerance_from": TOLERANCE_FROM},
         "backtest": BACKTEST,
         "exit_research": EXIT_RESEARCH,
-        "summary": summarize(positions, events, since, asof, recent_from),
+        "summary": summarize(positions, events, since, asof, recent_from, prev_events, late_from),
         "positions": positions,
         "events": events,
         **extras(close, vol, f),
@@ -635,9 +693,10 @@ def main() -> int:
     HISTORY_DIR.mkdir(parents=True, exist_ok=True)
     runs = read_runs()
     prev_asof = runs[-1]["asof"] if runs else None
-    prev_positions = None
+    prev_positions = prev_events = None
     if LATEST.exists():                       # restored from the ignition-data branch
-        prev_positions = json.loads(LATEST.read_text(encoding="utf-8")).get("positions")
+        prev = json.loads(LATEST.read_text(encoding="utf-8"))
+        prev_positions, prev_events = prev.get("positions"), prev.get("events")
 
     # IGNITION_WAIT_MINUTES (the workflow sets it): keep retrying for this long while
     # the session that has closed is not on Yahoo yet. Unset or 0 = one attempt.
@@ -646,7 +705,7 @@ def main() -> int:
     except ValueError:
         wait_min = 0
     o, c, v = wait_for_session(load_universe(), attempts=1 + wait_min * 60 // RETRY_EVERY_S)
-    result = compute(o, c, v, prev_asof, prev_positions)
+    result = compute(o, c, v, prev_asof, prev_positions, prev_events)
     check_not_older(result["asof"], prev_asof)
     s = result["summary"]
 

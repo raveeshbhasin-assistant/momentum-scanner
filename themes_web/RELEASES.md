@@ -7,7 +7,56 @@ scanner's `config.APP_VERSION` + `logic.html` release-hygiene convention._
 
 ---
 
-## v1.14.0 — 2026-10-20 **(current)**
+## v1.15.0 — 2026-11-12 **(current)**
+
+**What** Three changes to Ignition, after SITM on 2026-11-11.
+1. **Tolerance on the two signal bars (rule change, operator decision).**
+   From 2026-11-11 a value that reaches a bar at the precision the page
+   shows counts: 5-day return >= 11.95% (bar +12%) and volume ratio >= 1.495
+   (bar 1.5x). `scan.R5_TOL`, `VOLR_TOL`, `TOLERANCE_FROM`. A fire that needed
+   it is tagged (`tolerance: true`, "at the bar within rounding (tolerance
+   rule)" in its run-log line). **Forward only:** sessions before 2026-11-11
+   keep the strict rule, so no recorded position or statistic changes.
+2. **A fire found on a later run is still news.** "New" meant "dated after
+   the previous run's data date", so a fire that appeared when the same
+   session was re-scored (Yahoo revises volumes overnight; or a rule change)
+   entered the ledger without being announced or mailed, ever.
+   `scan.late_events` now adds any event from the last 5 sessions that the
+   previous run's `events` did not contain, marked "found on a later run".
+   It is mailed once: the next run has it on record.
+3. **Near misses short on volume are listed.** The list only held names
+   short on the week's return (+8-12%); a stock that cleared +12% and sat
+   under 1.5x showed nowhere. Now: uptrend intact, +8% or more, 1.3x or
+   more, no signal; a "Short on" column says return, volume or both. Up to 15.
+
+**Why** SITM closed 2026-11-11 up 17.2% on the week with a volume ratio of
+1.49998: about 225 shares short over a 21-session sum of 18 million, less
+than Yahoo's overnight revisions. It was neither a fire nor a near miss, and
+had a revision tipped it over on the morning re-score it would have entered
+the ledger silently.
+
+**Not backtested.** The 2016-2026 study (2,271 fires) used the strict bars.
+The band is about 0.3% of each bar; every run logs how many signal-days
+since the ledger start fall inside it next to the strict count ("tolerance
+band: ..." in the Actions log), which is the size of the change. A wider
+band would be a different rule and needs its own test.
+
+**Verified** Ten new tests: a miss inside the band fires from the tolerance
+date and is tagged; the same miss before the date does not, and the ledger
+is unchanged; a wider miss does not fire; strict fires are untagged; a
+same-day re-run reports an unrecorded fire once and never twice; old price
+revisions and first runs are not "late"; `compute` end to end; a
+volume-side near miss is listed with `short: volume`; the page renders the
+new column with and without the field; the mail carries a late fire. Jinja
+parse clean. Ignition / themes_web suite green.
+
+**Rollback** Set `TOLERANCE_FROM` to a far-future date to restore the
+strict rule going forward (positions already opened stay: history is
+append-only); revert the commit for the rest.
+
+---
+
+## v1.14.0 — 2026-10-20
 
 **What** Two buttons at the top of `/ignition`:
 - **Run scan now** starts the run of record on GitHub (`POST

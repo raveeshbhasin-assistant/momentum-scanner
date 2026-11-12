@@ -154,3 +154,13 @@ def test_test_mode_mails_recent_fires_with_a_test_subject(tmp_path, monkeypatch)
     assert nt.main(path) == 0
     assert [s[0] for s in sent] == nt.RECIPIENTS
     assert all(s[1].startswith("[TEST] Ignition Watch 2026-10-09: new fire PTC") for s in sent)
+
+
+def test_a_late_fire_is_mailed_like_any_new_fire():
+    late = dict(FIRE, late=True, detail=FIRE["detail"] + " · found on a later run")
+    latest = _latest([late], POS, since="2026-10-09")                 # same-day re-run that found a fire
+    items = nt.collect(latest)
+    assert [i["event"]["ticker"] for i in items] == ["PTC"] and items[0]["position"]["status"] == "NEW"
+    assert nt.subject(latest, items) == "Ignition Watch 2026-10-09: new fire PTC"
+    text = nt.render_text(latest, items, "https://x/ignition")
+    assert "found on a later run" in text and "buy at the next open" in text
