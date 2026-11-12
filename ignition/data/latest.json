@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-11-11",
- "scanned_at": "2026-11-12 10:45 ET",
+ "scanned_at": "2026-11-12 13:39 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -133,7 +133,7 @@
   "carried": [
    "ROKU"
   ],
-  "kept_closed": 2,
+  "kept_closed": 1,
   "cap_review": [
    "LITE"
   ]
@@ -409,6 +409,45 @@
    "peak_ret": 6.9,
    "whatif_ret": -3.1,
    "held": 2,
+   "weight_x": null,
+   "cap_trim": null
+  },
+  {
+   "ticker": "APP",
+   "fired": "2025-03-17",
+   "fire_close": 306.85,
+   "fire_r5": 28.9,
+   "fire_volr": 1.78,
+   "gap": false,
+   "gap_day": "2025-03-11",
+   "gap_ret": 8.3,
+   "gap_share": 28.6,
+   "pinned": false,
+   "pin_sessions": null,
+   "pin_dev": null,
+   "base": 238.08,
+   "entry_date": "2025-03-18",
+   "entry": 299.5,
+   "refires": 0,
+   "last_fire": "2025-03-25",
+   "last_refire": null,
+   "exit_date": "2025-04-07",
+   "exit": 203.78,
+   "exit_reason": "IGNITION_FAILED",
+   "sell_signal": "2025-04-04",
+   "checkpoint": null,
+   "checkpoint_ret": null,
+   "checkpoint_exit": null,
+   "price": null,
+   "to_stop": null,
+   "tolerance": false,
+   "peak": 346.29,
+   "sessions_since_fire": 8,
+   "status": "CLOSED",
+   "ret": -32.0,
+   "peak_ret": 15.6,
+   "whatif_ret": -32.0,
+   "held": 14,
    "weight_x": null,
    "cap_trim": null
   },
@@ -4312,46 +4351,6 @@
    "cap_trim": null
   },
   {
-   "ticker": "APP",
-   "fired": "2025-03-17",
-   "fire_close": 306.85,
-   "fire_r5": 28.9,
-   "fire_volr": 1.78,
-   "gap": false,
-   "gap_day": "2025-03-11",
-   "gap_ret": 8.3,
-   "gap_share": 28.6,
-   "pinned": false,
-   "pin_sessions": null,
-   "pin_dev": null,
-   "base": 238.08,
-   "entry_date": "2025-03-18",
-   "entry": 299.5,
-   "refires": 0,
-   "last_fire": "2025-03-25",
-   "last_refire": null,
-   "exit_date": "2025-04-07",
-   "exit": 203.78,
-   "exit_reason": "IGNITION_FAILED",
-   "sell_signal": "2025-04-04",
-   "checkpoint": null,
-   "checkpoint_ret": null,
-   "checkpoint_exit": null,
-   "price": null,
-   "to_stop": null,
-   "tolerance": false,
-   "peak": 346.29,
-   "sessions_since_fire": 8,
-   "status": "CLOSED",
-   "ret": -32.0,
-   "peak_ret": 15.6,
-   "whatif_ret": -32.0,
-   "held": 14,
-   "weight_x": null,
-   "cap_trim": null,
-   "kept": "no longer reproduced by the price rebuild; recorded exit kept"
-  },
-  {
    "ticker": "ROKU",
    "fired": "2026-06-18",
    "fire_close": 138.07,
@@ -4524,6 +4523,12 @@
   },
   {
    "date": "2025-03-17",
+   "ticker": "APP",
+   "type": "FIRE",
+   "detail": "+28.9% week on 1.78x volume"
+  },
+  {
+   "date": "2025-03-17",
    "ticker": "BHF",
    "type": "FIRE",
    "detail": "+12.8% week on 1.65x volume"
@@ -4599,6 +4604,12 @@
    "ticker": "XYZ",
    "type": "SELL",
    "detail": "closed 53.97 below pre-ignition base 54.04"
+  },
+  {
+   "date": "2025-04-04",
+   "ticker": "APP",
+   "type": "SELL",
+   "detail": "closed 219.37 below pre-ignition base 238.08"
   },
   {
    "date": "2025-04-04",
@@ -6214,7 +6225,7 @@
    "ticker": "MRNA",
    "price": 248.69,
    "r63": 290.7,
-   "rs63": 291.8,
+   "rs63": 291.7,
    "volr": 1.1,
    "pct_from_hi": -7.6
   },
@@ -6238,7 +6249,7 @@
    "ticker": "ANF",
    "price": 151.92,
    "r63": 39.6,
-   "rs63": 40.7,
+   "rs63": 40.6,
    "volr": 0.78,
    "pct_from_hi": -11.2
   },
@@ -6310,7 +6321,7 @@
    "ticker": "HAS",
    "price": 124.02,
    "r63": 29.2,
-   "rs63": 30.3,
+   "rs63": 30.2,
    "volr": 1.3,
    "pct_from_hi": 0.0
   },

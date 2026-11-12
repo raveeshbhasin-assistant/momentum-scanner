@@ -1,6 +1,6 @@
 {
  "asof": "2026-11-11",
- "scanned_at": "2026-11-12 10:45 ET",
+ "scanned_at": "2026-11-12 13:39 ET",
  "summary": {
   "open": 29,
   "by_status": {
@@ -77,7 +77,7 @@
   "carried": [
    "ROKU"
   ],
-  "kept_closed": 2,
+  "kept_closed": 1,
   "cap_review": [
    "LITE"
   ]
