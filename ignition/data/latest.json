@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-11-12",
- "scanned_at": "2026-11-12 21:45 ET",
+ "scanned_at": "2026-11-13 10:04 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -105,7 +105,7 @@
    "MRVL",
    "P"
   ],
-  "since": "2026-11-11",
+  "since": "2026-11-12",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
@@ -130,7 +130,9 @@
    "median": -10.6,
    "pct_up": 40.9
   },
-  "carried": [],
+  "carried": [
+   "ROKU"
+  ],
   "kept_closed": 1,
   "cap_review": [
    "LITE"
@@ -998,7 +1000,7 @@
   {
    "ticker": "COF",
    "fired": "2025-04-24",
-   "fire_close": 181.14,
+   "fire_close": 181.15,
    "fire_r5": 15.6,
    "fire_volr": 1.53,
    "gap": false,
@@ -1109,7 +1111,7 @@
    "peak_ret": 315.9,
    "whatif_ret": 126.1,
    "held": 296,
-   "weight_x": 1.63,
+   "weight_x": 1.62,
    "cap_trim": null
   },
   {
@@ -1265,7 +1267,7 @@
    "peak_ret": 58.3,
    "whatif_ret": 19.9,
    "held": 281,
-   "weight_x": 0.74,
+   "weight_x": 0.73,
    "cap_trim": null
   },
   {
@@ -1499,7 +1501,7 @@
    "peak_ret": 141.5,
    "whatif_ret": 67.1,
    "held": 304,
-   "weight_x": 1.21,
+   "weight_x": 1.2,
    "cap_trim": null
   },
   {
@@ -2084,7 +2086,7 @@
    "peak_ret": 39.4,
    "whatif_ret": -4.8,
    "held": 112,
-   "weight_x": 0.69,
+   "weight_x": 0.68,
    "cap_trim": null
   },
   {
@@ -2162,7 +2164,7 @@
    "peak_ret": 21.6,
    "whatif_ret": -13.2,
    "held": 38,
-   "weight_x": 0.63,
+   "weight_x": 0.62,
    "cap_trim": null
   },
   {
@@ -2552,8 +2554,8 @@
    "peak_ret": 660.6,
    "whatif_ret": 319.2,
    "held": 297,
-   "weight_x": 3.03,
-   "cap_trim": 33.9
+   "weight_x": 3.01,
+   "cap_trim": 33.6
   },
   {
    "ticker": "LSCC",
@@ -2715,7 +2717,7 @@
    "ticker": "MKSI",
    "fired": "2026-02-11",
    "fire_close": 258.36,
-   "fire_r5": 17.8,
+   "fire_r5": 17.7,
    "fire_volr": 1.6,
    "gap": false,
    "gap_day": "2026-02-06",
@@ -2981,7 +2983,7 @@
    "peak_ret": 192.3,
    "whatif_ret": 92.4,
    "held": 152,
-   "weight_x": 1.39,
+   "weight_x": 1.38,
    "cap_trim": null
   },
   {
@@ -3020,7 +3022,7 @@
    "peak_ret": 31.4,
    "whatif_ret": 2.2,
    "held": 114,
-   "weight_x": 0.74,
+   "weight_x": 0.73,
    "cap_trim": null
   },
   {
@@ -3215,7 +3217,7 @@
    "peak_ret": 0.5,
    "whatif_ret": -10.3,
    "held": 204,
-   "weight_x": 0.65,
+   "weight_x": 0.64,
    "cap_trim": null
   },
   {
@@ -3453,45 +3455,6 @@
    "cap_trim": null
   },
   {
-   "ticker": "ROKU",
-   "fired": "2026-06-18",
-   "fire_close": 138.07,
-   "fire_r5": 15.4,
-   "fire_volr": 1.69,
-   "gap": true,
-   "gap_day": "2026-06-12",
-   "gap_ret": 20.1,
-   "gap_share": 130.3,
-   "pinned": false,
-   "pin_sessions": 102,
-   "pin_dev": 13.3,
-   "base": 119.64,
-   "entry_date": "2026-06-22",
-   "entry": 137.72,
-   "refires": 0,
-   "last_fire": "2026-06-18",
-   "last_refire": null,
-   "exit_date": null,
-   "exit": null,
-   "exit_reason": null,
-   "sell_signal": null,
-   "checkpoint": null,
-   "checkpoint_ret": null,
-   "checkpoint_exit": null,
-   "price": 160.52,
-   "to_stop": -25.5,
-   "tolerance": false,
-   "peak": 162.77,
-   "sessions_since_fire": 102,
-   "status": "EDGE_EXPIRED",
-   "ret": 16.6,
-   "peak_ret": 18.2,
-   "whatif_ret": 16.6,
-   "held": 101,
-   "weight_x": 0.84,
-   "cap_trim": null
-  },
-  {
    "ticker": "RRC",
    "fired": "2026-10-28",
    "fire_close": 55.88,
@@ -3644,7 +3607,7 @@
    "peak_ret": 32.1,
    "whatif_ret": 22.4,
    "held": 153,
-   "weight_x": 0.8,
+   "weight_x": 0.79,
    "cap_trim": null
   },
   {
@@ -3761,7 +3724,7 @@
    "peak_ret": 5.1,
    "whatif_ret": 4.6,
    "held": 0,
-   "weight_x": 0.76,
+   "weight_x": 0.75,
    "cap_trim": null
   },
   {
@@ -3800,7 +3763,7 @@
    "peak_ret": 9.2,
    "whatif_ret": 7.5,
    "held": 194,
-   "weight_x": 0.79,
+   "weight_x": 0.78,
    "cap_trim": null
   },
   {
@@ -3956,7 +3919,7 @@
    "peak_ret": 377.2,
    "whatif_ret": 64.4,
    "held": 303,
-   "weight_x": 1.19,
+   "weight_x": 1.18,
    "cap_trim": null
   },
   {
@@ -4190,7 +4153,7 @@
    "peak_ret": 223.9,
    "whatif_ret": 90.5,
    "held": 257,
-   "weight_x": 1.38,
+   "weight_x": 1.37,
    "cap_trim": null
   },
   {
@@ -4229,7 +4192,7 @@
    "peak_ret": 350.2,
    "whatif_ret": 95.2,
    "held": 265,
-   "weight_x": 1.41,
+   "weight_x": 1.4,
    "cap_trim": null
   },
   {
@@ -4387,6 +4350,47 @@
    "held": 10,
    "weight_x": null,
    "cap_trim": null
+  },
+  {
+   "ticker": "ROKU",
+   "fired": "2026-06-18",
+   "fire_close": 138.07,
+   "fire_r5": 15.4,
+   "fire_volr": 1.69,
+   "gap": true,
+   "gap_day": "2026-06-12",
+   "gap_ret": 20.1,
+   "gap_share": 130.3,
+   "pinned": false,
+   "pin_sessions": 102,
+   "pin_dev": 13.3,
+   "base": 119.64,
+   "entry_date": "2026-06-22",
+   "entry": 137.72,
+   "refires": 0,
+   "last_fire": "2026-06-18",
+   "last_refire": null,
+   "exit_date": null,
+   "exit": null,
+   "exit_reason": null,
+   "sell_signal": null,
+   "checkpoint": null,
+   "checkpoint_ret": null,
+   "checkpoint_exit": null,
+   "price": 160.52,
+   "to_stop": -25.5,
+   "tolerance": false,
+   "peak": 162.77,
+   "sessions_since_fire": 102,
+   "status": "EDGE_EXPIRED",
+   "ret": 16.6,
+   "peak_ret": 18.2,
+   "whatif_ret": 16.6,
+   "held": 101,
+   "weight_x": null,
+   "cap_trim": null,
+   "carried": "no price data (ticker missing from the latest download or universe)",
+   "carried_since": "2026-11-12"
   },
   {
    "ticker": "PSKY",
@@ -5297,7 +5301,7 @@
    "date": "2026-02-11",
    "ticker": "MKSI",
    "type": "FIRE",
-   "detail": "+17.8% week on 1.6x volume"
+   "detail": "+17.7% week on 1.6x volume"
   },
   {
    "date": "2026-02-12",
@@ -5847,12 +5851,6 @@
   },
   {
    "date": "2026-06-18",
-   "ticker": "ROKU",
-   "type": "FIRE",
-   "detail": "+15.4% week on 1.69x volume"
-  },
-  {
-   "date": "2026-06-18",
    "ticker": "VICR",
    "type": "EDGE_EXPIRED",
    "detail": "63 sessions since last fire"
@@ -6090,12 +6088,6 @@
    "ticker": "ILMN",
    "type": "FIRE",
    "detail": "+16.1% week on 1.73x volume"
-  },
-  {
-   "date": "2026-09-18",
-   "ticker": "ROKU",
-   "type": "EDGE_EXPIRED",
-   "detail": "63 sessions since last fire"
   },
   {
    "date": "2026-09-21",
