@@ -97,3 +97,4 @@
 {"run_at": "2026-11-13 21:42 ET", "asof": "2026-11-13", "since": "2026-11-12", "fires": [], "sells": [], "expired": [], "checkpoints": [], "carried": ["ROKU"], "open": 29, "closed": 81}
 {"run_at": "2026-11-16 11:43 ET", "asof": "2026-11-13", "since": "2026-11-13", "fires": [], "sells": [], "expired": [], "checkpoints": [], "carried": ["ROKU"], "open": 29, "closed": 81}
 {"run_at": "2026-11-16 15:45 ET", "asof": "2026-11-13", "since": "2026-11-13", "fires": [], "sells": [], "expired": [], "checkpoints": [], "carried": ["ROKU"], "open": 29, "closed": 81}
+{"run_at": "2026-11-16 23:07 ET", "asof": "2026-11-16", "since": "2026-11-13", "fires": [], "sells": ["ILMN"], "expired": [], "checkpoints": [], "carried": ["ROKU"], "open": 29, "closed": 81}
