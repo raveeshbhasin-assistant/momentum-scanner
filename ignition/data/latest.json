@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-11-17",
- "scanned_at": "2026-11-17 22:06 ET",
+ "scanned_at": "2026-11-18 11:09 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -105,7 +105,7 @@
    "MRVL",
    "P"
   ],
-  "since": "2026-11-16",
+  "since": "2026-11-17",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
@@ -6241,7 +6241,7 @@
    "ticker": "GME",
    "price": 25.36,
    "r63": 40.7,
-   "rs63": 44.4,
+   "rs63": 44.5,
    "volr": 0.92,
    "pct_from_hi": -9.5
   },
@@ -6257,7 +6257,7 @@
    "ticker": "OPCH",
    "price": 31.63,
    "r63": 35.5,
-   "rs63": 39.2,
+   "rs63": 39.3,
    "volr": 1.03,
    "pct_from_hi": -13.6
   },
