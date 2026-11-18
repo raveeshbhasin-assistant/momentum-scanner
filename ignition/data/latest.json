@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-11-17",
- "scanned_at": "2026-11-18 11:09 ET",
+ "scanned_at": "2026-11-18 14:12 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -130,7 +130,9 @@
    "median": -11.4,
    "pct_up": 39.1
   },
-  "carried": [],
+  "carried": [
+   "ROKU"
+  ],
   "kept_closed": 1,
   "cap_review": [
    "LITE"
@@ -797,7 +799,7 @@
    "peak_ret": 37.9,
    "whatif_ret": 35.2,
    "held": 89,
-   "weight_x": 1.03,
+   "weight_x": 1.02,
    "cap_trim": null
   },
   {
@@ -1304,7 +1306,7 @@
    "peak_ret": 45.0,
    "whatif_ret": 31.8,
    "held": 167,
-   "weight_x": 1.0,
+   "weight_x": 0.99,
    "cap_trim": null
   },
   {
@@ -2552,8 +2554,8 @@
    "peak_ret": 660.6,
    "whatif_ret": 275.8,
    "held": 300,
-   "weight_x": 2.86,
-   "cap_trim": 30.0
+   "weight_x": 2.85,
+   "cap_trim": 29.7
   },
   {
    "ticker": "LSCC",
@@ -2903,7 +2905,7 @@
    "peak_ret": 79.2,
    "whatif_ret": 37.7,
    "held": 62,
-   "weight_x": 1.05,
+   "weight_x": 1.04,
    "cap_trim": null
   },
   {
@@ -2981,7 +2983,7 @@
    "peak_ret": 192.3,
    "whatif_ret": 71.7,
    "held": 155,
-   "weight_x": 1.31,
+   "weight_x": 1.3,
    "cap_trim": null
   },
   {
@@ -3254,7 +3256,7 @@
    "peak_ret": 1.4,
    "whatif_ret": 0.9,
    "held": 28,
-   "weight_x": 0.77,
+   "weight_x": 0.76,
    "cap_trim": null
   },
   {
@@ -3450,45 +3452,6 @@
    "whatif_ret": 7.0,
    "held": 255,
    "weight_x": null,
-   "cap_trim": null
-  },
-  {
-   "ticker": "ROKU",
-   "fired": "2026-06-18",
-   "fire_close": 138.07,
-   "fire_r5": 15.4,
-   "fire_volr": 1.69,
-   "gap": true,
-   "gap_day": "2026-06-12",
-   "gap_ret": 20.1,
-   "gap_share": 130.3,
-   "pinned": false,
-   "pin_sessions": 102,
-   "pin_dev": 13.3,
-   "base": 119.64,
-   "entry_date": "2026-06-22",
-   "entry": 137.72,
-   "refires": 0,
-   "last_fire": "2026-06-18",
-   "last_refire": null,
-   "exit_date": null,
-   "exit": null,
-   "exit_reason": null,
-   "sell_signal": null,
-   "checkpoint": null,
-   "checkpoint_ret": null,
-   "checkpoint_exit": null,
-   "price": 160.52,
-   "to_stop": -25.5,
-   "tolerance": false,
-   "peak": 162.77,
-   "sessions_since_fire": 105,
-   "status": "EDGE_EXPIRED",
-   "ret": 16.6,
-   "peak_ret": 18.2,
-   "whatif_ret": 16.6,
-   "held": 104,
-   "weight_x": 0.89,
    "cap_trim": null
   },
   {
@@ -3800,7 +3763,7 @@
    "peak_ret": 9.2,
    "whatif_ret": 7.5,
    "held": 197,
-   "weight_x": 0.83,
+   "weight_x": 0.82,
    "cap_trim": null
   },
   {
@@ -4190,7 +4153,7 @@
    "peak_ret": 223.9,
    "whatif_ret": 74.3,
    "held": 260,
-   "weight_x": 1.33,
+   "weight_x": 1.32,
    "cap_trim": null
   },
   {
@@ -4229,7 +4192,7 @@
    "peak_ret": 350.2,
    "whatif_ret": 71.8,
    "held": 268,
-   "weight_x": 1.31,
+   "weight_x": 1.3,
    "cap_trim": null
   },
   {
@@ -4387,6 +4350,47 @@
    "held": 10,
    "weight_x": null,
    "cap_trim": null
+  },
+  {
+   "ticker": "ROKU",
+   "fired": "2026-06-18",
+   "fire_close": 138.07,
+   "fire_r5": 15.4,
+   "fire_volr": 1.69,
+   "gap": true,
+   "gap_day": "2026-06-12",
+   "gap_ret": 20.1,
+   "gap_share": 130.3,
+   "pinned": false,
+   "pin_sessions": 102,
+   "pin_dev": 13.3,
+   "base": 119.64,
+   "entry_date": "2026-06-22",
+   "entry": 137.72,
+   "refires": 0,
+   "last_fire": "2026-06-18",
+   "last_refire": null,
+   "exit_date": null,
+   "exit": null,
+   "exit_reason": null,
+   "sell_signal": null,
+   "checkpoint": null,
+   "checkpoint_ret": null,
+   "checkpoint_exit": null,
+   "price": 160.52,
+   "to_stop": -25.5,
+   "tolerance": false,
+   "peak": 162.77,
+   "sessions_since_fire": 105,
+   "status": "EDGE_EXPIRED",
+   "ret": 16.6,
+   "peak_ret": 18.2,
+   "whatif_ret": 16.6,
+   "held": 104,
+   "weight_x": null,
+   "cap_trim": null,
+   "carried": "no price data (ticker missing from the latest download or universe)",
+   "carried_since": "2026-11-17"
   },
   {
    "ticker": "PSKY",
@@ -5847,12 +5851,6 @@
   },
   {
    "date": "2026-06-18",
-   "ticker": "ROKU",
-   "type": "FIRE",
-   "detail": "+15.4% week on 1.69x volume"
-  },
-  {
-   "date": "2026-06-18",
    "ticker": "VICR",
    "type": "EDGE_EXPIRED",
    "detail": "63 sessions since last fire"
@@ -6090,12 +6088,6 @@
    "ticker": "ILMN",
    "type": "FIRE",
    "detail": "+16.1% week on 1.73x volume"
-  },
-  {
-   "date": "2026-09-18",
-   "ticker": "ROKU",
-   "type": "EDGE_EXPIRED",
-   "detail": "63 sessions since last fire"
   },
   {
    "date": "2026-09-21",
