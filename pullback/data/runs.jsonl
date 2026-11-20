@@ -62,3 +62,4 @@
 {"run_at": "2026-11-19T02:49Z", "asof": "2026-11-18", "since": "2026-11-17", "signals": ["RSP"], "exits": [], "open": 1, "closed": 13}
 {"run_at": "2026-11-19T16:08Z", "asof": "2026-11-18", "since": "2026-11-18", "signals": ["RSP"], "exits": [], "open": 1, "closed": 13}
 {"run_at": "2026-11-20T02:36Z", "asof": "2026-11-19", "since": "2026-11-18", "signals": [], "exits": [], "open": 1, "closed": 13}
+{"run_at": "2026-11-20T15:49Z", "asof": "2026-11-19", "since": "2026-11-19", "signals": [], "exits": [], "open": 1, "closed": 13}
