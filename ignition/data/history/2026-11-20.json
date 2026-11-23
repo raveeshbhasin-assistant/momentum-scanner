@@ -1,6 +1,6 @@
 {
  "asof": "2026-11-20",
- "scanned_at": "2026-11-20 21:43 ET",
+ "scanned_at": "2026-11-23 13:57 ET",
  "summary": {
   "open": 28,
   "by_status": {
@@ -50,29 +50,12 @@
    "P",
    "SITM"
   ],
-  "since": "2026-11-19",
-  "new_events": [
-   {
-    "date": "2026-11-20",
-    "ticker": "SITM",
-    "type": "SELL",
-    "detail": "closed 361.24 below pre-ignition base 403.27"
-   },
-   {
-    "date": "2026-11-20",
-    "ticker": "TTMI",
-    "type": "CHECKPOINT",
-    "detail": "309 sessions in, up +26.8% (under +30%): 6-month take-profit review"
-   }
-  ],
+  "since": "2026-11-20",
+  "new_events": [],
   "new_fires": [],
-  "new_sells": [
-   "SITM"
-  ],
+  "new_sells": [],
   "new_expired": [],
-  "new_checkpoints": [
-   "TTMI"
-  ],
+  "new_checkpoints": [],
   "checkpoint_open": [
    "CYTK",
    "DAL",

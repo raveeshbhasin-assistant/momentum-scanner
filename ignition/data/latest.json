@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-11-20",
- "scanned_at": "2026-11-20 21:43 ET",
+ "scanned_at": "2026-11-23 13:57 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -106,29 +106,12 @@
    "P",
    "SITM"
   ],
-  "since": "2026-11-19",
-  "new_events": [
-   {
-    "date": "2026-11-20",
-    "ticker": "SITM",
-    "type": "SELL",
-    "detail": "closed 361.24 below pre-ignition base 403.27"
-   },
-   {
-    "date": "2026-11-20",
-    "ticker": "TTMI",
-    "type": "CHECKPOINT",
-    "detail": "309 sessions in, up +26.8% (under +30%): 6-month take-profit review"
-   }
-  ],
+  "since": "2026-11-20",
+  "new_events": [],
   "new_fires": [],
-  "new_sells": [
-   "SITM"
-  ],
+  "new_sells": [],
   "new_expired": [],
-  "new_checkpoints": [
-   "TTMI"
-  ],
+  "new_checkpoints": [],
   "checkpoint_open": [
    "CYTK",
    "DAL",
@@ -6272,7 +6255,7 @@
    "ticker": "OPCH",
    "price": 31.59,
    "r63": 33.5,
-   "rs63": 40.8,
+   "rs63": 40.7,
    "volr": 1.06,
    "pct_from_hi": -13.7
   },
@@ -6352,7 +6335,7 @@
    "ticker": "IDXX",
    "price": 676.21,
    "r63": 20.9,
-   "rs63": 28.2,
+   "rs63": 28.1,
    "volr": 1.11,
    "pct_from_hi": -11.8
   },
@@ -6368,7 +6351,7 @@
    "ticker": "MTD",
    "price": 1666.88,
    "r63": 19.2,
-   "rs63": 26.5,
+   "rs63": 26.4,
    "volr": 0.88,
    "pct_from_hi": -5.4
   },
