@@ -1,7 +1,7 @@
 {
  "version": 1,
- "asof": "2026-11-20",
- "run_at": "2026-11-23T18:49Z",
+ "asof": "2026-11-23",
+ "run_at": "2026-11-24T05:31Z",
  "rule": {
   "lookback": 5,
   "drop_pct": -3.0,
@@ -95,14 +95,14 @@
   {
    "ticker": "SPY",
    "name": "S&P 500",
-   "close": 689.81,
-   "r5": -8.56,
-   "sma": 732.76,
-   "vs_sma": -5.86,
+   "close": 722.29,
+   "r5": -2.39,
+   "sma": 732.91,
+   "vs_sma": -1.45,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 717.75,
+   "next_trigger_close": 710.47,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -110,14 +110,14 @@
   {
    "ticker": "QQQ",
    "name": "Nasdaq-100",
-   "close": 608.45,
-   "r5": -10.51,
-   "sma": 683.06,
-   "vs_sma": -10.92,
+   "close": 651.03,
+   "r5": -1.62,
+   "sma": 683.27,
+   "vs_sma": -4.72,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 641.9,
+   "next_trigger_close": 637.24,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -125,14 +125,14 @@
   {
    "ticker": "IWM",
    "name": "Russell 2000",
-   "close": 256.61,
-   "r5": -7.54,
+   "close": 265.74,
+   "r5": -2.64,
    "sma": 279.57,
-   "vs_sma": -8.21,
+   "vs_sma": -4.95,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 264.75,
+   "next_trigger_close": 260.98,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -140,14 +140,14 @@
   {
    "ticker": "DIA",
    "name": "Dow Jones Industrial Average",
-   "close": 481.08,
-   "r5": -8.04,
-   "sma": 507.63,
-   "vs_sma": -5.23,
+   "close": 495.8,
+   "r5": -3.86,
+   "sma": 507.61,
+   "vs_sma": -2.33,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 500.21,
+   "next_trigger_close": 492.09,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -155,14 +155,14 @@
   {
    "ticker": "MDY",
    "name": "S&P MidCap 400",
-   "close": 626.03,
-   "r5": -6.94,
-   "sma": 668.35,
-   "vs_sma": -6.33,
+   "close": 647.54,
+   "r5": -2.33,
+   "sma": 668.32,
+   "vs_sma": -3.11,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 643.08,
+   "next_trigger_close": 634.7,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -170,14 +170,14 @@
   {
    "ticker": "IJR",
    "name": "S&P SmallCap 600",
-   "close": 131.25,
-   "r5": -6.66,
-   "sma": 137.97,
-   "vs_sma": -4.87,
+   "close": 135.29,
+   "r5": -2.6,
+   "sma": 137.99,
+   "vs_sma": -1.95,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 134.73,
+   "next_trigger_close": 132.89,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -185,14 +185,14 @@
   {
    "ticker": "VTI",
    "name": "Total US stock market",
-   "close": 340.02,
-   "r5": -8.38,
-   "sma": 361.2,
-   "vs_sma": -5.86,
+   "close": 355.27,
+   "r5": -2.48,
+   "sma": 361.27,
+   "vs_sma": -1.66,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 353.37,
+   "next_trigger_close": 349.38,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -200,17 +200,17 @@
   {
    "ticker": "RSP",
    "name": "S&P 500, equal weight",
-   "close": 207.44,
-   "r5": -6.2,
-   "sma": 209.23,
-   "vs_sma": -0.86,
-   "above_sma": false,
+   "close": 212.82,
+   "r5": -2.79,
+   "sma": 209.28,
+   "vs_sma": 1.69,
+   "above_sma": true,
    "status": "HOLDING",
    "to_trigger": null,
-   "next_trigger_close": 212.36,
-   "sessions_held": 2,
-   "sessions_left": 3,
-   "open_ret": -3.96
+   "next_trigger_close": 209.29,
+   "sessions_held": 3,
+   "sessions_left": 2,
+   "open_ret": -1.47
   }
  ],
  "trades": [
@@ -447,9 +447,9 @@
    "exit": null,
    "exit_px": null,
    "ret": null,
-   "sessions_held": 2,
-   "last_close": 207.44,
-   "open_ret": -3.96,
+   "sessions_held": 3,
+   "last_close": 212.82,
+   "open_ret": -1.47,
    "status": "OPEN"
   }
  ],
@@ -483,9 +483,9 @@
    "worst": -2.59
   },
   "base": {
-   "n": 768,
-   "hit": 39.8,
-   "avg": -0.39
+   "n": 776,
+   "hit": 39.4,
+   "avg": -0.41
   }
  }
 }
