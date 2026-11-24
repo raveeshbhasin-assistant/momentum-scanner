@@ -1,6 +1,6 @@
 {
  "asof": "2026-11-23",
- "scanned_at": "2026-11-23 17:20 ET",
+ "scanned_at": "2026-11-24 00:28 ET",
  "summary": {
   "open": 27,
   "by_status": {
@@ -50,7 +50,7 @@
    "P",
    "SITM"
   ],
-  "since": "2026-11-20",
+  "since": "2026-11-23",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
@@ -966,7 +966,7 @@
    "sell_signal": null,
    "checkpoint": "2026-11-20",
    "checkpoint_ret": 26.8,
-   "checkpoint_exit": 69.44,
+   "checkpoint_exit": 69.89,
    "price": 68.57,
    "to_stop": -40.5,
    "tolerance": false,
@@ -975,7 +975,7 @@
    "status": "EDGE_EXPIRED",
    "ret": 47.7,
    "peak_ret": 377.2,
-   "whatif_ret": 49.6,
+   "whatif_ret": 50.6,
    "held": 310,
    "weight_x": 1.12,
    "cap_trim": null

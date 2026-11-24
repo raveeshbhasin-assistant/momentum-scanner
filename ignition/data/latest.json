@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-11-23",
- "scanned_at": "2026-11-23 17:20 ET",
+ "scanned_at": "2026-11-24 00:28 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -106,7 +106,7 @@
    "P",
    "SITM"
   ],
-  "since": "2026-11-20",
+  "since": "2026-11-23",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
@@ -181,7 +181,7 @@
   {
    "ticker": "AEIS",
    "fired": "2026-02-11",
-   "fire_close": 308.47,
+   "fire_close": 308.31,
    "fire_r5": 21.3,
    "fire_volr": 1.88,
    "gap": false,
@@ -191,14 +191,14 @@
    "pinned": false,
    "pin_sessions": null,
    "pin_dev": null,
-   "base": 254.3,
+   "base": 254.16,
    "entry_date": "2026-02-12",
-   "entry": 312.05,
+   "entry": 311.89,
    "refires": 0,
    "last_fire": "2026-02-18",
    "last_refire": null,
    "exit_date": "2026-07-30",
-   "exit": 267.84,
+   "exit": 267.7,
    "exit_reason": "IGNITION_FAILED",
    "sell_signal": "2026-07-29",
    "checkpoint": null,
@@ -207,7 +207,7 @@
    "price": null,
    "to_stop": null,
    "tolerance": false,
-   "peak": 388.79,
+   "peak": 388.59,
    "sessions_since_fire": 111,
    "status": "CLOSED",
    "ret": -14.2,
@@ -3747,7 +3747,7 @@
    "last_fire": "2026-11-11",
    "last_refire": null,
    "exit_date": "2026-11-23",
-   "exit": 430.13,
+   "exit": 430.99,
    "exit_reason": "IGNITION_FAILED",
    "sell_signal": "2026-11-20",
    "checkpoint": null,
@@ -3759,9 +3759,9 @@
    "peak": 472.56,
    "sessions_since_fire": 7,
    "status": "CLOSED",
-   "ret": -4.4,
+   "ret": -4.2,
    "peak_ret": 5.1,
-   "whatif_ret": -4.4,
+   "whatif_ret": -4.2,
    "held": 7,
    "weight_x": null,
    "cap_trim": null
@@ -3947,7 +3947,7 @@
    "sell_signal": null,
    "checkpoint": "2026-11-20",
    "checkpoint_ret": 26.8,
-   "checkpoint_exit": 69.44,
+   "checkpoint_exit": 69.89,
    "price": 68.57,
    "to_stop": -40.5,
    "tolerance": false,
@@ -3956,7 +3956,7 @@
    "status": "EDGE_EXPIRED",
    "ret": 47.7,
    "peak_ret": 377.2,
-   "whatif_ret": 49.6,
+   "whatif_ret": 50.6,
    "held": 310,
    "weight_x": 1.12,
    "cap_trim": null
@@ -5971,7 +5971,7 @@
    "date": "2026-07-29",
    "ticker": "AEIS",
    "type": "SELL",
-   "detail": "closed 252.4 below pre-ignition base 254.3"
+   "detail": "closed 252.27 below pre-ignition base 254.16"
   },
   {
    "date": "2026-07-30",
@@ -6263,7 +6263,7 @@
    "ticker": "GME",
    "price": 27.3,
    "r63": 50.9,
-   "rs63": 55.5,
+   "rs63": 55.4,
    "volr": 0.95,
    "pct_from_hi": -2.6
   },
@@ -6303,7 +6303,7 @@
    "ticker": "PTC",
    "price": 196.0,
    "r63": 29.7,
-   "rs63": 34.3,
+   "rs63": 34.2,
    "volr": 0.8,
    "pct_from_hi": -0.3
   },
@@ -6319,7 +6319,7 @@
    "ticker": "COLM",
    "price": 75.77,
    "r63": 29.1,
-   "rs63": 33.7,
+   "rs63": 33.6,
    "volr": 1.38,
    "pct_from_hi": -0.4
   },
@@ -6327,7 +6327,7 @@
    "ticker": "EXPO",
    "price": 89.77,
    "r63": 28.6,
-   "rs63": 33.2,
+   "rs63": 33.1,
    "volr": 0.89,
    "pct_from_hi": 0.0
   },
@@ -6335,7 +6335,7 @@
    "ticker": "CROX",
    "price": 157.78,
    "r63": 28.4,
-   "rs63": 33.0,
+   "rs63": 32.9,
    "volr": 1.26,
    "pct_from_hi": -3.6
   },
@@ -6359,7 +6359,7 @@
    "ticker": "IDXX",
    "price": 687.02,
    "r63": 24.9,
-   "rs63": 29.5,
+   "rs63": 29.4,
    "volr": 1.12,
    "pct_from_hi": -10.4
   },
@@ -6367,7 +6367,7 @@
    "ticker": "HOG",
    "price": 33.71,
    "r63": 23.5,
-   "rs63": 28.1,
+   "rs63": 28.0,
    "volr": 1.03,
    "pct_from_hi": -2.5
   }
