@@ -1,7 +1,7 @@
 {
  "version": 1,
- "asof": "2026-11-24",
- "run_at": "2026-11-25T17:40Z",
+ "asof": "2026-11-25",
+ "run_at": "2026-11-26T03:46Z",
  "rule": {
   "lookback": 5,
   "drop_pct": -3.0,
@@ -95,14 +95,14 @@
   {
    "ticker": "SPY",
    "name": "S&P 500",
-   "close": 718.78,
-   "r5": -1.86,
-   "sma": 733.04,
-   "vs_sma": -1.95,
+   "close": 716.7,
+   "r5": -1.85,
+   "sma": 733.16,
+   "vs_sma": -2.25,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 708.29,
+   "next_trigger_close": 694.39,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -110,14 +110,14 @@
   {
    "ticker": "QQQ",
    "name": "Nasdaq-100",
-   "close": 638.1,
-   "r5": -2.87,
-   "sma": 683.39,
-   "vs_sma": -6.63,
+   "close": 633.93,
+   "r5": -3.88,
+   "sma": 683.5,
+   "vs_sma": -7.25,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 639.72,
+   "next_trigger_close": 625.69,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -125,14 +125,14 @@
   {
    "ticker": "IWM",
    "name": "Russell 2000",
-   "close": 267.14,
-   "r5": -0.71,
-   "sma": 279.58,
-   "vs_sma": -4.45,
+   "close": 268.87,
+   "r5": -0.46,
+   "sma": 279.59,
+   "vs_sma": -3.83,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 262.02,
+   "next_trigger_close": 256.29,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -140,14 +140,14 @@
   {
    "ticker": "DIA",
    "name": "Dow Jones Industrial Average",
-   "close": 499.74,
-   "r5": -1.49,
+   "close": 501.27,
+   "r5": -0.09,
    "sma": 507.6,
-   "vs_sma": -1.55,
+   "vs_sma": -1.25,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 486.68,
+   "next_trigger_close": 476.07,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -155,14 +155,14 @@
   {
    "ticker": "MDY",
    "name": "S&P MidCap 400",
-   "close": 646.19,
-   "r5": -1.24,
-   "sma": 668.27,
-   "vs_sma": -3.3,
+   "close": 653.71,
+   "r5": -0.38,
+   "sma": 668.26,
+   "vs_sma": -2.18,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 636.49,
+   "next_trigger_close": 623.74,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -170,14 +170,14 @@
   {
    "ticker": "IJR",
    "name": "S&P SmallCap 600",
-   "close": 135.4,
-   "r5": -1.17,
-   "sma": 138.0,
-   "vs_sma": -1.89,
+   "close": 136.39,
+   "r5": -1.09,
+   "sma": 138.02,
+   "vs_sma": -1.18,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 133.76,
+   "next_trigger_close": 130.62,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -185,14 +185,14 @@
   {
    "ticker": "VTI",
    "name": "Total US stock market",
-   "close": 353.84,
-   "r5": -1.76,
-   "sma": 361.33,
-   "vs_sma": -2.07,
+   "close": 353.2,
+   "r5": -1.75,
+   "sma": 361.38,
+   "vs_sma": -2.26,
    "above_sma": false,
    "status": "OFF",
    "to_trigger": null,
-   "next_trigger_close": 348.7,
+   "next_trigger_close": 341.84,
    "sessions_held": null,
    "sessions_left": null,
    "open_ret": null
@@ -200,17 +200,17 @@
   {
    "ticker": "RSP",
    "name": "S&P 500, equal weight",
-   "close": 213.96,
-   "r5": -0.83,
-   "sma": 209.34,
-   "vs_sma": 2.21,
+   "close": 215.74,
+   "r5": 0.14,
+   "sma": 209.4,
+   "vs_sma": 3.03,
    "above_sma": true,
-   "status": "HOLDING",
-   "to_trigger": null,
-   "next_trigger_close": 208.97,
-   "sessions_held": 4,
-   "sessions_left": 1,
-   "open_ret": -0.94
+   "status": "WATCH",
+   "to_trigger": -3.14,
+   "next_trigger_close": 205.28,
+   "sessions_held": null,
+   "sessions_left": null,
+   "open_ret": null
   }
  ],
  "trades": [
@@ -444,33 +444,35 @@
    "sma_at_signal": 209.13,
    "entry": "2026-11-19",
    "entry_px": 215.91,
-   "exit": null,
-   "exit_px": null,
-   "ret": null,
-   "sessions_held": 4,
-   "last_close": 213.96,
-   "open_ret": -0.94,
-   "status": "OPEN"
+   "exit": "2026-11-25",
+   "exit_px": 215.74,
+   "ret": -0.12,
+   "sessions_held": 5,
+   "last_close": 215.74,
+   "open_ret": null,
+   "status": "CLOSED"
   }
  ],
  "summary": {
   "since": "2026-11-24",
   "new_signals": [],
-  "new_exits": [],
-  "open": 1,
+  "new_exits": [
+   "RSP"
+  ],
+  "open": 0,
   "all": {
-   "n": 13,
+   "n": 14,
    "wins": 10,
-   "hit": 76.9,
-   "avg": 1.35,
+   "hit": 71.4,
+   "avg": 1.25,
    "best": 7.12,
    "worst": -2.59
   },
   "live": {
-   "n": 6,
+   "n": 7,
    "wins": 5,
-   "hit": 83.3,
-   "avg": 1.74,
+   "hit": 71.4,
+   "avg": 1.48,
    "best": 3.03,
    "worst": -0.78
   },
@@ -483,9 +485,9 @@
    "worst": -2.59
   },
   "base": {
-   "n": 784,
-   "hit": 39.0,
-   "avg": -0.42
+   "n": 792,
+   "hit": 38.6,
+   "avg": -0.43
   }
  }
 }
