@@ -1,6 +1,6 @@
 {
  "asof": "2026-11-25",
- "scanned_at": "2026-11-25 22:44 ET",
+ "scanned_at": "2026-11-26 12:30 ET",
  "summary": {
   "open": 26,
   "by_status": {
@@ -50,21 +50,12 @@
    "P",
    "SITM"
   ],
-  "since": "2026-11-24",
-  "new_events": [
-   {
-    "date": "2026-11-25",
-    "ticker": "FLS",
-    "type": "CHECKPOINT",
-    "detail": "126 sessions in, up +13.2% (under +30%): 6-month take-profit review"
-   }
-  ],
+  "since": "2026-11-25",
+  "new_events": [],
   "new_fires": [],
   "new_sells": [],
   "new_expired": [],
-  "new_checkpoints": [
-   "FLS"
-  ],
+  "new_checkpoints": [],
   "checkpoint_open": [
    "CYTK",
    "DAL",
