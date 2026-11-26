@@ -1,0 +1,736 @@
+{
+ "version": 1,
+ "asof": "2026-11-25",
+ "run_at": "2026-11-26T03:48Z",
+ "rule": {
+  "n": 10,
+  "mom_far": 252,
+  "mom_near": 21,
+  "cost_pct_side": 0.1,
+  "bench": "QQQ",
+  "ledger_start": "2026-10-01",
+  "live_from": "2026-10-05"
+ },
+ "backtest": {
+  "verdict": "NOT CONFIRMED",
+  "window": "2007-03 to 2026-09",
+  "bench": {
+   "cagr": 16.5,
+   "max_dd": -53,
+   "vol": 22.2
+  },
+  "SIZE": {
+   "cagr": 19.5,
+   "excess": 3.0,
+   "max_dd": -48,
+   "vol": 24.6,
+   "years_ahead": 13,
+   "years": 19,
+   "first": 1.4,
+   "second": 4.3,
+   "lo": -0.3,
+   "hi": 6.3,
+   "worst_year": [
+    2022,
+    -42.7,
+    -32.6
+   ]
+  },
+  "MOM": {
+   "cagr": 18.8,
+   "excess": 2.3,
+   "max_dd": -57,
+   "vol": 31.5,
+   "years_ahead": 9,
+   "years": 19,
+   "first": 1.8,
+   "second": 2.8,
+   "lo": -6.5,
+   "hi": 19.1,
+   "worst_year": [
+    2008,
+    -39.1,
+    -41.7
+   ]
+  }
+ },
+ "universe": {
+  "n": 100,
+  "source": "wikipedia"
+ },
+ "next": {
+  "rank_on": "2026-11-30",
+  "trade_on": "2026-12-01",
+  "sessions_to_rank": 2,
+  "pending": false
+ },
+ "held_month": "2026-11",
+ "held_since": "2026-11-02",
+ "bench_this_month": -6.92,
+ "strategies": [
+  {
+   "code": "SIZE",
+   "label": "Ten largest",
+   "holdings": [
+    {
+     "ticker": "AAPL",
+     "name": "Apple Inc.",
+     "rank_at_pick": 1,
+     "metric_at_pick": 5029.6,
+     "entry_px": 338.32,
+     "last": 355.58,
+     "ret": 5.18,
+     "rank_now": 1,
+     "metric_now": 5167.4
+    },
+    {
+     "ticker": "NVDA",
+     "name": "Nvidia",
+     "rank_at_pick": 2,
+     "metric_at_pick": 4941.4,
+     "entry_px": 202.06,
+     "last": 149.3,
+     "ret": -26.11,
+     "rank_now": 3,
+     "metric_now": 3605.1
+    },
+    {
+     "ticker": "MSFT",
+     "name": "Microsoft",
+     "rank_at_pick": 3,
+     "metric_at_pick": 3875.8,
+     "entry_px": 507.12,
+     "last": 489.93,
+     "ret": -3.2,
+     "rank_now": 2,
+     "metric_now": 3638.3
+    },
+    {
+     "ticker": "GOOGL",
+     "name": "Alphabet Inc. (Class A)",
+     "rank_at_pick": 4,
+     "metric_at_pick": 3440.4,
+     "entry_px": 278.99,
+     "last": 273.1,
+     "ret": -2.11,
+     "rank_now": 4,
+     "metric_now": 3357.5
+    },
+    {
+     "ticker": "AMZN",
+     "name": "Amazon",
+     "rank_at_pick": 5,
+     "metric_at_pick": 2598.9,
+     "entry_px": 245.63,
+     "last": 244.43,
+     "ret": -0.49,
+     "rank_now": 5,
+     "metric_now": 2643.1
+    },
+    {
+     "ticker": "SPCX",
+     "name": "SpaceX",
+     "rank_at_pick": 6,
+     "metric_at_pick": 1829.6,
+     "entry_px": 136.37,
+     "last": 127.44,
+     "ret": -6.55,
+     "rank_now": 6,
+     "metric_now": 1730.8
+    },
+    {
+     "ticker": "TSLA",
+     "name": "Tesla, Inc.",
+     "rank_at_pick": 7,
+     "metric_at_pick": 1580.3,
+     "entry_px": 403.82,
+     "last": 380.14,
+     "ret": -5.86,
+     "rank_now": 8,
+     "metric_now": 1502.6
+    },
+    {
+     "ticker": "META",
+     "name": "Meta Platforms",
+     "rank_at_pick": 8,
+     "metric_at_pick": 1572.4,
+     "entry_px": 606.73,
+     "last": 609.89,
+     "ret": 0.52,
+     "rank_now": 7,
+     "metric_now": 1559.0
+    },
+    {
+     "ticker": "AVGO",
+     "name": "Broadcom",
+     "rank_at_pick": 9,
+     "metric_at_pick": 1556.6,
+     "entry_px": 322.23,
+     "last": 300.86,
+     "ret": -6.63,
+     "rank_now": 9,
+     "metric_now": 1436.2
+    },
+    {
+     "ticker": "MU",
+     "name": "Micron Technology",
+     "rank_at_pick": 10,
+     "metric_at_pick": 1001.0,
+     "entry_px": 833.59,
+     "last": 601.25,
+     "ret": -27.87,
+     "rank_now": 11,
+     "metric_now": 680.3
+    }
+   ],
+   "top_now": [
+    {
+     "ticker": "AAPL",
+     "rank": 1,
+     "metric": 5167.4,
+     "name": "Apple Inc."
+    },
+    {
+     "ticker": "MSFT",
+     "rank": 2,
+     "metric": 3638.3,
+     "name": "Microsoft"
+    },
+    {
+     "ticker": "NVDA",
+     "rank": 3,
+     "metric": 3605.1,
+     "name": "Nvidia"
+    },
+    {
+     "ticker": "GOOGL",
+     "rank": 4,
+     "metric": 3357.5,
+     "name": "Alphabet Inc. (Class A)"
+    },
+    {
+     "ticker": "AMZN",
+     "rank": 5,
+     "metric": 2643.1,
+     "name": "Amazon"
+    },
+    {
+     "ticker": "SPCX",
+     "rank": 6,
+     "metric": 1730.8,
+     "name": "SpaceX"
+    },
+    {
+     "ticker": "META",
+     "rank": 7,
+     "metric": 1559.0,
+     "name": "Meta Platforms"
+    },
+    {
+     "ticker": "TSLA",
+     "rank": 8,
+     "metric": 1502.6,
+     "name": "Tesla, Inc."
+    },
+    {
+     "ticker": "AVGO",
+     "rank": 9,
+     "metric": 1436.2,
+     "name": "Broadcom"
+    },
+    {
+     "ticker": "WMT",
+     "rank": 10,
+     "metric": 1046.8,
+     "name": "Walmart"
+    },
+    {
+     "ticker": "MU",
+     "rank": 11,
+     "metric": 680.3,
+     "name": "Micron Technology"
+    },
+    {
+     "ticker": "AMD",
+     "rank": 12,
+     "metric": 672.0,
+     "name": "Advanced Micro Devices"
+    },
+    {
+     "ticker": "ASML",
+     "rank": 13,
+     "metric": 502.2,
+     "name": "ASML Holding"
+    }
+   ],
+   "would_enter": [
+    "WMT"
+   ],
+   "would_leave": [
+    "MU"
+   ],
+   "action": null,
+   "this_month": -7.31,
+   "since_start": -13.92,
+   "bench_since_start": -14.56,
+   "months_closed": 1,
+   "months_ahead": 1
+  },
+  {
+   "code": "MOM",
+   "label": "Ten strongest",
+   "holdings": [
+    {
+     "ticker": "SNDK",
+     "name": "Sandisk",
+     "rank_at_pick": 1,
+     "metric_at_pick": 774.8,
+     "entry_px": 134.38,
+     "last": 94.39,
+     "ret": -29.76,
+     "rank_now": null,
+     "metric_now": null
+    },
+    {
+     "ticker": "MRNA",
+     "name": "Moderna",
+     "rank_at_pick": 2,
+     "metric_at_pick": 664.9,
+     "entry_px": 220.83,
+     "last": 220.84,
+     "ret": 0.0,
+     "rank_now": 1,
+     "metric_now": 761.2
+    },
+    {
+     "ticker": "LITE",
+     "name": "Lumentum",
+     "rank_at_pick": 3,
+     "metric_at_pick": 388.0,
+     "entry_px": 684.4,
+     "last": 476.58,
+     "ret": -30.37,
+     "rank_now": 4,
+     "metric_now": 189.3
+    },
+    {
+     "ticker": "MU",
+     "name": "Micron Technology",
+     "rank_at_pick": 4,
+     "metric_at_pick": 384.7,
+     "entry_px": 833.59,
+     "last": 601.25,
+     "ret": -27.87,
+     "rank_now": 2,
+     "metric_now": 315.2
+    },
+    {
+     "ticker": "STX",
+     "name": "Seagate Technology",
+     "rank_at_pick": 5,
+     "metric_at_pick": 258.1,
+     "entry_px": 593.76,
+     "last": 472.33,
+     "ret": -20.45,
+     "rank_now": 5,
+     "metric_now": 165.1
+    },
+    {
+     "ticker": "WDC",
+     "name": "Western Digital",
+     "rank_at_pick": 6,
+     "metric_at_pick": 227.8,
+     "entry_px": 338.59,
+     "last": 272.45,
+     "ret": -19.53,
+     "rank_now": 8,
+     "metric_now": 152.8
+    },
+    {
+     "ticker": "MRVL",
+     "name": "Marvell Technology",
+     "rank_at_pick": 7,
+     "metric_at_pick": 197.8,
+     "entry_px": 171.41,
+     "last": 130.93,
+     "ret": -23.62,
+     "rank_now": 3,
+     "metric_now": 191.2
+    },
+    {
+     "ticker": "INTC",
+     "name": "Intel",
+     "rank_at_pick": 8,
+     "metric_at_pick": 190.3,
+     "entry_px": 59.97,
+     "last": 54.47,
+     "ret": -9.17,
+     "rank_now": 6,
+     "metric_now": 161.9
+    },
+    {
+     "ticker": "TER",
+     "name": "Teradyne",
+     "rank_at_pick": 9,
+     "metric_at_pick": 139.5,
+     "entry_px": 261.01,
+     "last": 212.15,
+     "ret": -18.67,
+     "rank_now": 12,
+     "metric_now": 95.3
+    },
+    {
+     "ticker": "AMD",
+     "name": "Advanced Micro Devices",
+     "rank_at_pick": 10,
+     "metric_at_pick": 132.9,
+     "entry_px": 466.84,
+     "last": 406.03,
+     "ret": -13.03,
+     "rank_now": 7,
+     "metric_now": 160.5
+    }
+   ],
+   "top_now": [
+    {
+     "ticker": "MRNA",
+     "rank": 1,
+     "metric": 761.2,
+     "name": "Moderna"
+    },
+    {
+     "ticker": "MU",
+     "rank": 2,
+     "metric": 315.2,
+     "name": "Micron Technology"
+    },
+    {
+     "ticker": "MRVL",
+     "rank": 3,
+     "metric": 191.2,
+     "name": "Marvell Technology"
+    },
+    {
+     "ticker": "LITE",
+     "rank": 4,
+     "metric": 189.3,
+     "name": "Lumentum"
+    },
+    {
+     "ticker": "STX",
+     "rank": 5,
+     "metric": 165.1,
+     "name": "Seagate Technology"
+    },
+    {
+     "ticker": "INTC",
+     "rank": 6,
+     "metric": 161.9,
+     "name": "Intel"
+    },
+    {
+     "ticker": "AMD",
+     "rank": 7,
+     "metric": 160.5,
+     "name": "Advanced Micro Devices"
+    },
+    {
+     "ticker": "WDC",
+     "rank": 8,
+     "metric": 152.8,
+     "name": "Western Digital"
+    },
+    {
+     "ticker": "FTNT",
+     "rank": 9,
+     "metric": 131.9,
+     "name": "Fortinet"
+    },
+    {
+     "ticker": "PANW",
+     "rank": 10,
+     "metric": 118.4,
+     "name": "Palo Alto Networks"
+    },
+    {
+     "ticker": "CRWD",
+     "rank": 11,
+     "metric": 111.5,
+     "name": "CrowdStrike"
+    },
+    {
+     "ticker": "TER",
+     "rank": 12,
+     "metric": 95.3,
+     "name": "Teradyne"
+    },
+    {
+     "ticker": "TXN",
+     "rank": 13,
+     "metric": 94.8,
+     "name": "Texas Instruments"
+    }
+   ],
+   "would_enter": [
+    "FTNT",
+    "PANW"
+   ],
+   "would_leave": [
+    "SNDK",
+    "TER"
+   ],
+   "action": null,
+   "this_month": -19.27,
+   "since_start": -47.04,
+   "bench_since_start": -14.56,
+   "months_closed": 1,
+   "months_ahead": 0
+  }
+ ],
+ "months": [
+  {
+   "month": "2026-10",
+   "signal": "2026-09-30",
+   "trade": "2026-10-01",
+   "live": false,
+   "status": "CLOSED",
+   "picks": {
+    "SIZE": [
+     {
+      "ticker": "NVDA",
+      "rank": 1,
+      "metric": 5514.7
+     },
+     {
+      "ticker": "AAPL",
+      "rank": 2,
+      "metric": 4860.2
+     },
+     {
+      "ticker": "GOOGL",
+      "rank": 3,
+      "metric": 4208.1
+     },
+     {
+      "ticker": "MSFT",
+      "rank": 4,
+      "metric": 3808.6
+     },
+     {
+      "ticker": "AMZN",
+      "rank": 5,
+      "metric": 2687.4
+     },
+     {
+      "ticker": "SPCX",
+      "rank": 6,
+      "metric": 1988.6
+     },
+     {
+      "ticker": "META",
+      "rank": 7,
+      "metric": 1847.4
+     },
+     {
+      "ticker": "AVGO",
+      "rank": 8,
+      "metric": 1676.5
+     },
+     {
+      "ticker": "TSLA",
+      "rank": 9,
+      "metric": 1401.3
+     },
+     {
+      "ticker": "MU",
+      "rank": 10,
+      "metric": 1202.9
+     }
+    ],
+    "MOM": [
+     {
+      "ticker": "SNDK",
+      "rank": 1,
+      "metric": 1280.4
+     },
+     {
+      "ticker": "MU",
+      "rank": 2,
+      "metric": 485.9
+     },
+     {
+      "ticker": "LITE",
+      "rank": 3,
+      "metric": 462.7
+     },
+     {
+      "ticker": "WDC",
+      "rank": 4,
+      "metric": 286.5
+     },
+     {
+      "ticker": "STX",
+      "rank": 5,
+      "metric": 264.5
+     },
+     {
+      "ticker": "AMD",
+      "rank": 6,
+      "metric": 191.7
+     },
+     {
+      "ticker": "TER",
+      "rank": 7,
+      "metric": 160.8
+     },
+     {
+      "ticker": "INTC",
+      "rank": 8,
+      "metric": 159.6
+     },
+     {
+      "ticker": "MRVL",
+      "rank": 9,
+      "metric": 157.4
+     },
+     {
+      "ticker": "LRCX",
+      "rank": 10,
+      "metric": 130.8
+     }
+    ]
+   },
+   "through": "2026-11-02",
+   "ret": {
+    "SIZE": -7.13,
+    "MOM": -34.4,
+    "QQQ": -8.21
+   }
+  },
+  {
+   "month": "2026-11",
+   "signal": "2026-10-30",
+   "trade": "2026-11-02",
+   "live": true,
+   "status": "OPEN",
+   "picks": {
+    "SIZE": [
+     {
+      "ticker": "AAPL",
+      "rank": 1,
+      "metric": 5029.6
+     },
+     {
+      "ticker": "NVDA",
+      "rank": 2,
+      "metric": 4941.4
+     },
+     {
+      "ticker": "MSFT",
+      "rank": 3,
+      "metric": 3875.8
+     },
+     {
+      "ticker": "GOOGL",
+      "rank": 4,
+      "metric": 3440.4
+     },
+     {
+      "ticker": "AMZN",
+      "rank": 5,
+      "metric": 2598.9
+     },
+     {
+      "ticker": "SPCX",
+      "rank": 6,
+      "metric": 1829.6
+     },
+     {
+      "ticker": "TSLA",
+      "rank": 7,
+      "metric": 1580.3
+     },
+     {
+      "ticker": "META",
+      "rank": 8,
+      "metric": 1572.4
+     },
+     {
+      "ticker": "AVGO",
+      "rank": 9,
+      "metric": 1556.6
+     },
+     {
+      "ticker": "MU",
+      "rank": 10,
+      "metric": 1001.0
+     }
+    ],
+    "MOM": [
+     {
+      "ticker": "SNDK",
+      "rank": 1,
+      "metric": 774.8
+     },
+     {
+      "ticker": "MRNA",
+      "rank": 2,
+      "metric": 664.9
+     },
+     {
+      "ticker": "LITE",
+      "rank": 3,
+      "metric": 388.0
+     },
+     {
+      "ticker": "MU",
+      "rank": 4,
+      "metric": 384.7
+     },
+     {
+      "ticker": "STX",
+      "rank": 5,
+      "metric": 258.1
+     },
+     {
+      "ticker": "WDC",
+      "rank": 6,
+      "metric": 227.8
+     },
+     {
+      "ticker": "MRVL",
+      "rank": 7,
+      "metric": 197.8
+     },
+     {
+      "ticker": "INTC",
+      "rank": 8,
+      "metric": 190.3
+     },
+     {
+      "ticker": "TER",
+      "rank": 9,
+      "metric": 139.5
+     },
+     {
+      "ticker": "AMD",
+      "rank": 10,
+      "metric": 132.9
+     }
+    ]
+   },
+   "through": "2026-11-25",
+   "ret": {
+    "SIZE": -7.31,
+    "MOM": -19.27,
+    "QQQ": -6.92
+   }
+  }
+ ],
+ "summary": {
+  "since": "2026-11-24",
+  "rebalance_pending": false,
+  "buys": {},
+  "sells": {}
+ }
+}
