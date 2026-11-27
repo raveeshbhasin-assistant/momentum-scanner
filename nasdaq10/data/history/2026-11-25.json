@@ -1,7 +1,7 @@
 {
  "version": 1,
  "asof": "2026-11-25",
- "run_at": "2026-11-26T03:48Z",
+ "run_at": "2026-11-27T03:49Z",
  "rule": {
   "n": 10,
   "mom_far": 252,
@@ -180,7 +180,7 @@
      "last": 601.25,
      "ret": -27.87,
      "rank_now": 11,
-     "metric_now": 680.3
+     "metric_now": 682.4
     }
    ],
    "top_now": [
@@ -247,7 +247,7 @@
     {
      "ticker": "MU",
      "rank": 11,
-     "metric": 680.3,
+     "metric": 682.4,
      "name": "Micron Technology"
     },
     {
@@ -728,7 +728,7 @@
   }
  ],
  "summary": {
-  "since": "2026-11-24",
+  "since": "2026-11-25",
   "rebalance_pending": false,
   "buys": {},
   "sells": {}
