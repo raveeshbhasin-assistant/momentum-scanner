@@ -1,7 +1,7 @@
 {
  "version": 2,
  "asof": "2026-11-27",
- "scanned_at": "2026-11-27 16:06 ET",
+ "scanned_at": "2026-11-27 22:28 ET",
  "universe": 903,
  "ledger_start": "2025-01-02",
  "rule": {
@@ -106,7 +106,7 @@
    "P",
    "SITM"
   ],
-  "since": "2026-11-25",
+  "since": "2026-11-27",
   "new_events": [],
   "new_fires": [],
   "new_sells": [],
@@ -132,9 +132,7 @@
    "median": -11.1,
    "pct_up": 39.1
   },
-  "carried": [
-   "ROKU"
-  ],
+  "carried": [],
   "kept_closed": 1,
   "cap_review": [
    "LITE"
@@ -723,7 +721,7 @@
    "peak_ret": 8.3,
    "whatif_ret": -1.0,
    "held": 46,
-   "weight_x": 0.75,
+   "weight_x": 0.76,
    "cap_trim": null
   },
   {
@@ -1113,7 +1111,7 @@
    "peak_ret": 315.9,
    "whatif_ret": 118.0,
    "held": 306,
-   "weight_x": 1.66,
+   "weight_x": 1.67,
    "cap_trim": null
   },
   {
@@ -1308,7 +1306,7 @@
    "peak_ret": 45.0,
    "whatif_ret": 31.8,
    "held": 174,
-   "weight_x": 1.0,
+   "weight_x": 1.01,
    "cap_trim": null
   },
   {
@@ -1503,7 +1501,7 @@
    "peak_ret": 141.5,
    "whatif_ret": 51.2,
    "held": 314,
-   "weight_x": 1.15,
+   "weight_x": 1.16,
    "cap_trim": null
   },
   {
@@ -1776,7 +1774,7 @@
    "peak_ret": 17.9,
    "whatif_ret": 14.9,
    "held": 127,
-   "weight_x": 0.87,
+   "weight_x": 0.88,
    "cap_trim": null
   },
   {
@@ -2361,7 +2359,7 @@
    "peak_ret": 25.1,
    "whatif_ret": 22.8,
    "held": 193,
-   "weight_x": 0.91,
+   "weight_x": 0.92,
    "cap_trim": null
   },
   {
@@ -2556,8 +2554,8 @@
    "peak_ret": 660.6,
    "whatif_ret": 245.3,
    "held": 307,
-   "weight_x": 2.63,
-   "cap_trim": 23.9
+   "weight_x": 2.64,
+   "cap_trim": 24.2
   },
   {
    "ticker": "LSCC",
@@ -2719,7 +2717,7 @@
    "ticker": "MKSI",
    "fired": "2026-02-11",
    "fire_close": 258.03,
-   "fire_r5": 17.7,
+   "fire_r5": 17.8,
    "fire_volr": 1.6,
    "gap": false,
    "gap_day": "2026-02-06",
@@ -3024,7 +3022,7 @@
    "peak_ret": 31.4,
    "whatif_ret": -5.1,
    "held": 124,
-   "weight_x": 0.72,
+   "weight_x": 0.73,
    "cap_trim": null
   },
   {
@@ -3258,7 +3256,7 @@
    "peak_ret": 1.6,
    "whatif_ret": 1.6,
    "held": 35,
-   "weight_x": 0.77,
+   "weight_x": 0.78,
    "cap_trim": null
   },
   {
@@ -3457,6 +3455,45 @@
    "cap_trim": null
   },
   {
+   "ticker": "ROKU",
+   "fired": "2026-06-18",
+   "fire_close": 138.07,
+   "fire_r5": 15.4,
+   "fire_volr": 1.69,
+   "gap": true,
+   "gap_day": "2026-06-12",
+   "gap_ret": 20.1,
+   "gap_share": 130.3,
+   "pinned": false,
+   "pin_sessions": 102,
+   "pin_dev": 13.3,
+   "base": 119.64,
+   "entry_date": "2026-06-22",
+   "entry": 137.72,
+   "refires": 0,
+   "last_fire": "2026-06-18",
+   "last_refire": null,
+   "exit_date": null,
+   "exit": null,
+   "exit_reason": null,
+   "sell_signal": null,
+   "checkpoint": null,
+   "checkpoint_ret": null,
+   "checkpoint_exit": null,
+   "price": 160.52,
+   "to_stop": -25.5,
+   "tolerance": false,
+   "peak": 162.77,
+   "sessions_since_fire": 112,
+   "status": "EDGE_EXPIRED",
+   "ret": 16.6,
+   "peak_ret": 18.2,
+   "whatif_ret": 16.6,
+   "held": 111,
+   "weight_x": 0.89,
+   "cap_trim": null
+  },
+  {
    "ticker": "RRC",
    "fired": "2026-10-28",
    "fire_close": 55.88,
@@ -3492,7 +3529,7 @@
    "peak_ret": -0.2,
    "whatif_ret": -8.8,
    "held": 20,
-   "weight_x": 0.69,
+   "weight_x": 0.7,
    "cap_trim": null
   },
   {
@@ -4077,7 +4114,7 @@
    "peak_ret": 38.5,
    "whatif_ret": 5.6,
    "held": 200,
-   "weight_x": 0.72,
+   "weight_x": 0.73,
    "cap_trim": null
   },
   {
@@ -4155,7 +4192,7 @@
    "peak_ret": 223.9,
    "whatif_ret": 64.8,
    "held": 267,
-   "weight_x": 1.25,
+   "weight_x": 1.26,
    "cap_trim": null
   },
   {
@@ -4194,7 +4231,7 @@
    "peak_ret": 350.2,
    "whatif_ret": 55.5,
    "held": 275,
-   "weight_x": 1.18,
+   "weight_x": 1.19,
    "cap_trim": null
   },
   {
@@ -4352,47 +4389,6 @@
    "held": 10,
    "weight_x": null,
    "cap_trim": null
-  },
-  {
-   "ticker": "ROKU",
-   "fired": "2026-06-18",
-   "fire_close": 138.07,
-   "fire_r5": 15.4,
-   "fire_volr": 1.69,
-   "gap": true,
-   "gap_day": "2026-06-12",
-   "gap_ret": 20.1,
-   "gap_share": 130.3,
-   "pinned": false,
-   "pin_sessions": 102,
-   "pin_dev": 13.3,
-   "base": 119.64,
-   "entry_date": "2026-06-22",
-   "entry": 137.72,
-   "refires": 0,
-   "last_fire": "2026-06-18",
-   "last_refire": null,
-   "exit_date": null,
-   "exit": null,
-   "exit_reason": null,
-   "sell_signal": null,
-   "checkpoint": null,
-   "checkpoint_ret": null,
-   "checkpoint_exit": null,
-   "price": 160.52,
-   "to_stop": -25.5,
-   "tolerance": false,
-   "peak": 162.77,
-   "sessions_since_fire": 111,
-   "status": "EDGE_EXPIRED",
-   "ret": 16.6,
-   "peak_ret": 18.2,
-   "whatif_ret": 16.6,
-   "held": 110,
-   "weight_x": null,
-   "cap_trim": null,
-   "carried": "no price data (ticker missing from the latest download or universe)",
-   "carried_since": "2026-11-25"
   },
   {
    "ticker": "PSKY",
@@ -5303,7 +5299,7 @@
    "date": "2026-02-11",
    "ticker": "MKSI",
    "type": "FIRE",
-   "detail": "+17.7% week on 1.6x volume"
+   "detail": "+17.8% week on 1.6x volume"
   },
   {
    "date": "2026-02-12",
@@ -5853,6 +5849,12 @@
   },
   {
    "date": "2026-06-18",
+   "ticker": "ROKU",
+   "type": "FIRE",
+   "detail": "+15.4% week on 1.69x volume"
+  },
+  {
+   "date": "2026-06-18",
    "ticker": "VICR",
    "type": "EDGE_EXPIRED",
    "detail": "63 sessions since last fire"
@@ -6092,6 +6094,12 @@
    "detail": "+16.1% week on 1.73x volume"
   },
   {
+   "date": "2026-09-18",
+   "ticker": "ROKU",
+   "type": "EDGE_EXPIRED",
+   "detail": "63 sessions since last fire"
+  },
+  {
    "date": "2026-09-21",
    "ticker": "DAL",
    "type": "CHECKPOINT",
@@ -6259,7 +6267,7 @@
    "ticker": "VFC",
    "price": 22.25,
    "r63": 63.9,
-   "rs63": 65.6,
+   "rs63": 65.5,
    "volr": 1.17,
    "pct_from_hi": 0.0
   },
@@ -6267,7 +6275,7 @@
    "ticker": "GME",
    "price": 26.34,
    "r63": 47.4,
-   "rs63": 49.1,
+   "rs63": 49.0,
    "volr": 0.93,
    "pct_from_hi": -6.0
   },
@@ -6275,7 +6283,7 @@
    "ticker": "VNT",
    "price": 45.92,
    "r63": 40.4,
-   "rs63": 42.1,
+   "rs63": 42.0,
    "volr": 1.23,
    "pct_from_hi": 0.0
   },
@@ -6283,7 +6291,7 @@
    "ticker": "COLM",
    "price": 81.0,
    "r63": 40.2,
-   "rs63": 41.9,
+   "rs63": 41.8,
    "volr": 1.35,
    "pct_from_hi": 0.0
   },
@@ -6291,7 +6299,7 @@
    "ticker": "FCN",
    "price": 212.24,
    "r63": 38.1,
-   "rs63": 39.8,
+   "rs63": 39.7,
    "volr": 1.12,
    "pct_from_hi": -0.0
   },
@@ -6299,7 +6307,7 @@
    "ticker": "CROX",
    "price": 162.02,
    "r63": 32.6,
-   "rs63": 34.3,
+   "rs63": 34.2,
    "volr": 1.2,
    "pct_from_hi": -1.0
   },
@@ -6307,7 +6315,7 @@
    "ticker": "OPCH",
    "price": 31.68,
    "r63": 32.6,
-   "rs63": 34.3,
+   "rs63": 34.2,
    "volr": 1.02,
    "pct_from_hi": -13.4
   },
@@ -6331,7 +6339,7 @@
    "ticker": "IDXX",
    "price": 719.23,
    "r63": 29.6,
-   "rs63": 31.3,
+   "rs63": 31.2,
    "volr": 1.15,
    "pct_from_hi": -4.9
   },
@@ -6340,14 +6348,14 @@
    "price": 92.17,
    "r63": 29.4,
    "rs63": 31.1,
-   "volr": 0.85,
+   "volr": 0.86,
    "pct_from_hi": 0.0
   },
   {
    "ticker": "ACN",
    "price": 241.84,
    "r63": 28.6,
-   "rs63": 30.3,
+   "rs63": 30.2,
    "volr": 0.67,
    "pct_from_hi": -13.8
   },
@@ -6355,7 +6363,7 @@
    "ticker": "BBY",
    "price": 104.18,
    "r63": 27.7,
-   "rs63": 29.4,
+   "rs63": 29.3,
    "volr": 0.9,
    "pct_from_hi": -2.0
   },
@@ -6371,7 +6379,7 @@
    "ticker": "HOG",
    "price": 35.05,
    "r63": 25.6,
-   "rs63": 27.3,
+   "rs63": 27.2,
    "volr": 0.96,
    "pct_from_hi": 0.0
   }
